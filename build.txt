@@ -1,0 +1,39 @@
+★ にゃあシリーズ・ビルドの仕方
+
+用意するもの：
+    ○ … 必須
+    △ … あった方がいい
+
+NYADOS
+    用意するもの
+	○ Digital Mars C++ compiler for Win32
+	○ Libraries for 16 bit DOS development 
+	    → http://www.digitalmars.com/
+	△ Ruby 処理系
+	    → http://www.ruby-lang.org/ja/
+    ビルト手順
+	C:>nyados -f makemake.ny
+	C:>make -fmakefile.sc 
+
+NYACUS
+    用意するもの
+	○ Borland C++
+	△ Ruby 処理系
+    ビルト手順
+	C:>nyacus -f makemake.ny
+	C:>make -fmakefile.bcc
+
+NYAOS-II
+    用意するもの
+	○ emx/gcc 0.9d FIX 3
+	    → http://hobbes.nmsu.edu/ 
+	△ GNU Make
+	△ lxlite
+    ビルト手順
+	C:>nyaos2 -f makemake.ny
+	C:>make -f makefile.emx
+
+★ 改造版の配布について
+
+    ・本ソフトウェアは GNU General Public License に従って、
+    　複写・配布・改変などができます。
