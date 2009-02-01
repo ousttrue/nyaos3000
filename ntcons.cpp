@@ -150,6 +150,19 @@ int Console::color()
 }
 
 
+int Console::getWidth()
+{
+    CONSOLE_SCREEN_BUFFER_INFO  csbi;
+    DWORD                       dwConsoleSize;
+    if (hStdout == (HANDLE )-1L)
+	initializeStdio();
+
+    if(GetConsoleScreenBufferInfo(hStdout,&csbi) == FALSE)
+	initializeStdio();
+
+    return (int)csbi.dwSize.X;
+}
+
 #endif
 
 int Console::getkey()

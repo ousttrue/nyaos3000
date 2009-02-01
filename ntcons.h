@@ -12,6 +12,7 @@ public:
     static void getLocate(int &x,int &y);
     static void color(int c);
     static int color();
+    static int getWidth();
 #endif
     /* enum{ SHIFT = 0x3 }; */
     static void locate(int x,int y);

@@ -356,6 +356,11 @@ int DosShell::prompt()
     {
         whole_width = DEFAULT_WIDTH;
     }
+#ifdef NYACUS
+    else {
+        whole_width = Console::getWidth();
+    }
+#endif
 
     int width=whole_width - prompt_size % whole_width ;
     if( width <= minEditWidth ){
