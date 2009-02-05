@@ -234,7 +234,8 @@ int cmd_chdir( NyadosShell &shell , const NnString &argv )
     NnString newdir;
     if( argv.empty() ){
 	 /* ˆø”‚ª‹ó‚Ìê‡ */
-	if( getEnv("HOME") == NULL )
+	if( getEnv("HOME") == NULL &&
+            getEnv("USERPROFILE") == NULL )
 	    return cmd_pwd(shell,argv);
 	newdir = "~";
     }else if( argv.startsWith("-") ){

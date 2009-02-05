@@ -121,7 +121,10 @@ int isFolder( const char *sp , int quote , int spc )
     if( ! spc  ||  quote )
 	return 0;
 
-    if( *sp=='~' && getEnv("HOME")!=NULL && properties.get("tilde")!=NULL){
+    if( *sp=='~' && 
+        (getEnv("HOME")!=NULL || getEnv("USERPROFILE") != NULL ) && 
+        properties.get("tilde")!=NULL)
+    {
 	int n=1;
 	while( isalnum(sp[n] & 255) || sp[n]=='_' )
 	    ++n;

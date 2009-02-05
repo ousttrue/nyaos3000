@@ -11,7 +11,7 @@
 #include "ishell.h"
 #include "writer.h"
 
-#define VER "2.22a"
+#define VER "2.23_0"
 
 #ifdef _MSC_VER
 int  nya_new_handler(size_t size)
@@ -47,6 +47,9 @@ static int seekrc( NnString &rcfname , const char *argv0 )
         }
 	/* HOME ディレクトリの _nya を試みる */
         const char *home=getEnv("HOME");
+        if( home == NULL )
+            home = getEnv("USERPROFILE");
+
         if( home != NULL ){
             rcfn = home;
             rcfn.trim();
@@ -233,7 +236,7 @@ int main( int argc, char **argv )
 #else
 	"Nihongo Yet Another OS/2 Shell "
 #endif
-	VER" (C) 2001-2004 HAYAMA,Kaoru\n";
+	VER" (C) 2001-2009 by NYAOS.ORG\n";
 
     NnDir::set_default_special_folder();
 

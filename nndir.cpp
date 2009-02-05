@@ -547,7 +547,10 @@ void NnDir::filter( const char *sp , NnString &dst_ )
 	}else{
 	    dst << '~' << name;
 	}
-    }else if( *sp == '~'  && (home=getEnv("HOME",NULL)) != NULL ){
+    }else if( *sp == '~'  && 
+             ( (home=getEnv("HOME",NULL))        != NULL  ||
+               (home=getEnv("USERPROFILE",NULL)) != NULL ) )
+    {
 	dst << home;
 	++sp;
     }else if( sp[0]=='.' &&  sp[1]=='.' && sp[2]=='.' ){

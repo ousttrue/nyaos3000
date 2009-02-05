@@ -43,7 +43,7 @@ if %nyatype% == NYACUS then
     # NYACUS でのみ実行する部分をここに記述.
     # option start "start """""
 endif
-option prompt $e[31;40;1m[$p]$e[37;1m
+option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
 
 # 関数 which の定義.
 which{
@@ -52,7 +52,7 @@ which{
 	    if exist $dir\$1$ext then
 		print found $dir\$1$ext
 	    endif
-	end 
+	end
     end
 }
 
