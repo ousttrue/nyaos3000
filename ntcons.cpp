@@ -7,7 +7,9 @@
 #  include <conio.h>
 #endif
 #include <stdio.h>
-#include <dos.h>
+#if defined(NYADOS)
+#  include <dos.h>
+#endif
 #include "ntcons.h"
 #include "nnstring.h"
 
@@ -76,7 +78,10 @@ static NnString tinyClipBoard;
 /* コンソールのクリア */
 void  Console::clear()
 {
-#ifdef __BORLANDC__
+#if defined(ESCAPE_SEQUENCE_OK)
+    fputs("\x1B[2J",stdout);
+#else
+# if defined(NYACUS)
     static COORD                coordScreen;
     DWORD                       dwCharsWritten;
     DWORD                       dwConsoleSize;
@@ -106,8 +111,9 @@ void  Console::clear()
 
     /* カーソル位置を左上角に移動 */
     SetConsoleCursorPosition(hStdout,coordScreen);
-#else
-    fputs("\x1B[2J",stdout);
+# else
+#   error Write Platform specific Console::clear()!
+# endif
 #endif
 }
 
@@ -180,7 +186,7 @@ int Console::getkey()
     int86( 0x21 , &in , &out );
     return out.h.al & 255;
 #endif
-#elif defined(NYAOS)
+#elif defined(NYAOS2)
     return _read_kbd(0,1,0);
 #else
     return getch() & 255;

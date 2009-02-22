@@ -3,7 +3,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
-#include <new.h>
+#if defined(HAVE_NOT_OLD_NEW_H)
+#  include <new>
+#else
+#  include <new.h>
+#endif
 
 #include "config.h"
 #include "nnstring.h"
@@ -228,7 +232,10 @@ int main( int argc, char **argv )
             nnargv.append( new NnString(argv[i]) );
 	}
     }
-    conOut << "\x1B[2J" << 
+    conOut << 
+#ifdef ESCAPE_SEQUENCE_OK
+"\x1B[2J" << 
+#endif
 #ifdef NYADOS
 	"Nihongo Yet Another DOS Shell "
 #elif defined(NYACUS)

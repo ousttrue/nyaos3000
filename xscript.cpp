@@ -59,19 +59,19 @@ void KeyFunctionXScript::init()
     /* bind コマンドでカスタマイズできるように、
      * 機能名と、機能コードの関連付けを行う
      */
-    new KeyFunctionXScript("xscript:none"         ,XK_NOBOUND )->regist();
-    new KeyFunctionXScript("xscript:previous"     ,XK_UP      )->regist();
-    new KeyFunctionXScript("xscript:next"         ,XK_DOWN    )->regist();
-    new KeyFunctionXScript("xscript:backward"     ,XK_LEFT    )->regist();
-    new KeyFunctionXScript("xscript:forward"      ,XK_RIGHT   )->regist();
-    new KeyFunctionXScript("xscript:head"         ,XK_HOME    )->regist();
-    new KeyFunctionXScript("xscript:tail"         ,XK_END     )->regist();
-    new KeyFunctionXScript("xscript:heaven"       ,XK_CTRLHOME)->regist();
-    new KeyFunctionXScript("xscript:earth"        ,XK_CTRLEND )->regist();
-    new KeyFunctionXScript("xscript:previous-page",XK_PGUP    )->regist();
-    new KeyFunctionXScript("xscript:next-page"    ,XK_PGDN    )->regist();
-    new KeyFunctionXScript("xscript:copy"         ,XK_COPY    )->regist();
-    new KeyFunctionXScript("xscript:leave"        ,XK_LEAVE   )->regist();
+    (new KeyFunctionXScript("xscript:none"         ,XK_NOBOUND ))->regist();
+    (new KeyFunctionXScript("xscript:previous"     ,XK_UP      ))->regist();
+    (new KeyFunctionXScript("xscript:next"         ,XK_DOWN    ))->regist();
+    (new KeyFunctionXScript("xscript:backward"     ,XK_LEFT    ))->regist();
+    (new KeyFunctionXScript("xscript:forward"      ,XK_RIGHT   ))->regist();
+    (new KeyFunctionXScript("xscript:head"         ,XK_HOME    ))->regist();
+    (new KeyFunctionXScript("xscript:tail"         ,XK_END     ))->regist();
+    (new KeyFunctionXScript("xscript:heaven"       ,XK_CTRLHOME))->regist();
+    (new KeyFunctionXScript("xscript:earth"        ,XK_CTRLEND ))->regist();
+    (new KeyFunctionXScript("xscript:previous-page",XK_PGUP    ))->regist();
+    (new KeyFunctionXScript("xscript:next-page"    ,XK_PGDN    ))->regist();
+    (new KeyFunctionXScript("xscript:copy"         ,XK_COPY    ))->regist();
+    (new KeyFunctionXScript("xscript:leave"        ,XK_LEAVE   ))->regist();
 
     /* キーマップを全て、機能なしに初期化する */
     for(int i=0;i<numof(map);++i)

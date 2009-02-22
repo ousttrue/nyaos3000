@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <process.h>
 #include <io.h>
-#include <dos.h>
+#if defined(NYADOS)
+#  include <dos.h>
+#endif
 #include <string.h>
 
 #include "config.h"

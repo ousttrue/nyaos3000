@@ -1,4 +1,8 @@
-#include <dos.h>
+#include "config.h"
+
+#if defined(NYADOS)
+#  include <dos.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -7,8 +11,6 @@
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-
-#include "config.h"
 
 #ifndef NYADOS
 #  include <fcntl.h>
@@ -819,8 +821,10 @@ int NnDir::getcwdrive()
     return 
 #ifdef OS2EMX
 	_getdrive();
-#else
+#elif defined(__TURBOC__)
 	'A'+getdisk();
+#else
+	'A'+ _getdrive() - 1;
 #endif
 }
 
