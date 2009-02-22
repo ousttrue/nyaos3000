@@ -223,7 +223,6 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 
 	NnString *printline=new NnString[ nlines ];
 	for(int i=0 ; i<list.size() ; ++i ){
-	    char buffer[ FILENAME_MAX ];
 	    const NnFileStat *st=(const NnFileStat *)list.const_at(i) ;
 	    int left = max+1 ;
 	    NnString &line = printline[ i % nlines ] ;
@@ -266,9 +265,9 @@ public:
 private:
     int reverse;
 public:
-    NnFileComparer() : reverse(0) , type(COMPARE_WITH_NAME){}
+    NnFileComparer() : type(COMPARE_WITH_NAME) , reverse(0){}
     NnFileComparer( int reverse_ , NnCompareType type_ )
-	: reverse(reverse_) , type(type_) {}
+	: type(type_),reverse(reverse_){}
 
     void set_type   ( NnCompareType type_ ){ type = type_ ; }
     void set_reverse( int reverse_ ){ reverse = reverse_ ; }

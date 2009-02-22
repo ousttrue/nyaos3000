@@ -278,6 +278,8 @@ void XScript::loop()
             goto exit;
         case KeyFunctionXScript::XK_LEAVE:
             goto exit;
+        default:
+            break;
         }
 
 	if( !isSelecting){

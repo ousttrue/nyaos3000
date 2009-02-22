@@ -50,7 +50,7 @@ int NnTimeStamp::compare( const NnTimeStamp &o ) const
 	                      :  o.second - second ;
 }
 
-
+#if 0
 static void stamp_conv( unsigned fdate , unsigned ftime , NnTimeStamp &stamp_ )
 {
     /* Žž */
@@ -63,6 +63,8 @@ static void stamp_conv( unsigned fdate , unsigned ftime , NnTimeStamp &stamp_ )
     stamp_.month = ( (fdate >> 5 ) & 0x0F );   /* ŒŽ:4bit(0..16) */
     stamp_.year   =  (fdate >> 9 ) + 1980;     /* ”N:7bit */
 }
+#endif
+
 static void stamp_conv( time_t time1 , NnTimeStamp &stamp_ )
 {
     struct tm *tm1;
@@ -886,7 +888,7 @@ NnFileStat *NnFileStat::stat(const NnString &name)
 {
     NnTimeStamp stamp1;
     struct stat stat1;
-    unsigned attr=0 , size ;
+    unsigned attr=0 ;
 #ifdef __DMC__
     NnString name_( NnDir::long2short(name.chars()) );
 #else

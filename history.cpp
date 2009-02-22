@@ -156,7 +156,7 @@ int preprocessHistory( History &hisObj , const NnString &src , NnString &dst )
 NnString *History::operator[](int at)
 {
     if( at >= history.size() )
-	NULL;
+	return NULL;
     if( at >= 0 )
         return (NnString *)history.at(at);
     at += history.size();

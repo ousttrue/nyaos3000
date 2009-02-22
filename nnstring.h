@@ -207,7 +207,7 @@ public:
 	letter_t operator * (){ return last; }
 	Iter( const char *p_    ) : next( p_ ){ ++*this; }
 	Iter( const NnString &s ) : next( s.chars() ){ ++*this; }
-	Iter( const Iter &i     ) : next( i.next ),last(i.last){}
+	Iter( const Iter &i     ) : last(i.last),next( i.next ){}
 	int space(){ return last < 256 && isspace(last); }
 	int alpha(){ return last < 256 && isalpha(last); }
 	int alnum(){ return last < 256 && isalnum(last); }

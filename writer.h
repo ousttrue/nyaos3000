@@ -85,12 +85,12 @@ class AnsiConsoleWriter : public StreamWriter {
     static int default_color;
     int flag;
     int param[20];
-    int n;
+    size_t n;
     enum { PRINTING , STACKING } mode ;
     enum { BAREN = 1 , GREATER = 2 } ;
 public:
     AnsiConsoleWriter( FILE *fp ) 
-	: StreamWriter(fp) , n(0) , mode(PRINTING) , flag(0){}
+	: StreamWriter(fp) , flag(0) , n(0) , mode(PRINTING) {}
 
     Writer &write( char c );
     Writer &write( const char *p );

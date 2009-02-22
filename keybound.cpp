@@ -254,7 +254,7 @@ public:
 
 int KeyFunctionEdit::bind(int keycode)
 {
-    if( keycode > numof(GetLine::bindmap) )
+    if( keycode > 0 && (size_t)keycode > numof(GetLine::bindmap) )
 	return -1;
     GetLine::bindmap[ keycode ] = this->func;
     return 0;
@@ -344,7 +344,7 @@ void GetLine::bindinit()
 #endif
 	{ "yank"		, &GetLine::yank },
     };
-    int i;
+    size_t i;
     static int bindmap_inited=0;
     if( bindmap_inited != 0 )
         return;

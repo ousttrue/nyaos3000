@@ -108,7 +108,7 @@ class BufferedShell : public NyadosShell {
 protected:
     virtual int readline( NnString &line );
 public:
-    BufferedShell() : count(0), params(0){}
+    BufferedShell() : params(0), count(0){}
     ~BufferedShell()
 	{ delete params; }
     virtual int operator !() const

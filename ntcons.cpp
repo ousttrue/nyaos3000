@@ -159,7 +159,6 @@ int Console::color()
 int Console::getWidth()
 {
     CONSOLE_SCREEN_BUFFER_INFO  csbi;
-    DWORD                       dwConsoleSize;
     if (hStdout == (HANDLE )-1L)
 	initializeStdio();
 

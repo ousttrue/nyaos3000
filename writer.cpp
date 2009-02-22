@@ -52,7 +52,7 @@ Writer &AnsiConsoleWriter::write( char c )
 		if( default_color == -1 )
 		    default_color = lastcolor ;
 
-		for(int i=0 ; i <= n ; ++i ){
+		for(size_t i=0 ; i <= n ; ++i ){
 		    /* ANSI-ESC : BGR Ë * NT-CODE  : RGB ‚Ì•ÏŠ·ƒe[ƒuƒ‹ */
 		    static int cnv[]={ 0 , 4 , 2 , 6 , 1 , 5 , 3 , 7 };
 
