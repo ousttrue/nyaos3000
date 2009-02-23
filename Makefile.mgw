@@ -48,7 +48,7 @@ CXX=g++
 # CFLAGS=-O3 $(CCC) -mno-cygwin -D_MSC_VER=1000
 CFLAGS=-Wall -O3 $(CCC) -mno-cygwin -D_MSC_VER=1000
 CXXFLAGS=$(CFLAGS)
-LIBS=-lole32 -luuid -lstdc++
+LIBS=-lole32 -luuid -lstdc++ -L/usr/lib/mingw/
 LDFLAGS=-s
 
 .SUFFIXES : $(X) .$(O) .res .rc .cpp .h
