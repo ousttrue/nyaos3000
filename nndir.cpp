@@ -50,7 +50,23 @@ int NnTimeStamp::compare( const NnTimeStamp &o ) const
 	                      :  o.second - second ;
 }
 
-#if 0
+#ifdef _MSC_VER
+static void stamp_conv( const FILETIME *p , NnTimeStamp &stamp_)
+{
+    FILETIME local;
+    SYSTEMTIME s;
+
+    FileTimeToLocalFileTime( p , &local );
+    FileTimeToSystemTime( &local , &s );
+    stamp_.second = s.wSecond ;
+    stamp_.minute = s.wMinute ;
+    stamp_.hour   = s.wHour ;
+    stamp_.day    = s.wDay ;
+    stamp_.month  = s.wMonth ;
+    stamp_.year   = s.wYear ;
+}
+#endif
+
 static void stamp_conv( unsigned fdate , unsigned ftime , NnTimeStamp &stamp_ )
 {
     /* 時刻 */
@@ -63,7 +79,6 @@ static void stamp_conv( unsigned fdate , unsigned ftime , NnTimeStamp &stamp_ )
     stamp_.month = ( (fdate >> 5 ) & 0x0F );   /* 月:4bit(0..16) */
     stamp_.year   =  (fdate >> 9 ) + 1980;     /* 年:7bit */
 }
-#endif
 
 static void stamp_conv( time_t time1 , NnTimeStamp &stamp_ )
 {
@@ -338,6 +353,8 @@ unsigned NnDir::findfirst(  const NnString &p_path , unsigned attr )
     if( result==0){
 	name_ = wfd.cFileName;
 	attr_ = wfd.dwFileAttributes;
+        size_ = ((wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ;
+        stamp_conv( &wfd.ftLastWriteTime , stamp_ );
 	hasHandle = 1;
     }
 #else /*** Borland-C++ code for NYACUS ***/
@@ -407,7 +424,8 @@ unsigned NnDir::findnext()
     if( result==0){
 	name_ = wfd.cFileName;
 	attr_ = wfd.dwFileAttributes;
-	/** 何を設定すればよい？？？ */
+        size_ = ((wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ;
+        stamp_conv( &wfd.ftLastWriteTime , stamp_ );
     }
 #else /*** Borland-C++ for NYACUS ***/
     int result=::findnext( &findbuf );
