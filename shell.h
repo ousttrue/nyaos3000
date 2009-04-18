@@ -24,7 +24,8 @@ class NyadosShell : public NnObject {
     void transPercent( const char *&sp , NnString &dst , int level );
     int explode4external( const NnString &src , NnString &dst );
     int explode4internal( const NnString &src , NnString &dst );
-    int interpret9( const NnString &statement );
+    int interpret1( const NnString &statement ); /* && || */
+    int interpret2( const NnString &statement ); /* pipeline */
 protected:
     NyadosShell *parent_;
 public:

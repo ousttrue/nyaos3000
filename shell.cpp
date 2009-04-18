@@ -341,12 +341,12 @@ int sub_brace_start( NyadosShell &bshell ,
 		     const NnString &argv );
 
 /* 「 ;」等で区切られた後の１コマンドを実行する。
- * (interpret から呼び出されます)
+ * (interpret1 から呼び出されます)
  *	replace - コマンド
  * return
  *	終了コード
  */
-int NyadosShell::interpret9( const NnString &replace_ )
+int NyadosShell::interpret2( const NnString &replace_ )
 {
     NnString replace(replace_);
     VariableFilter variable_filter( *this );
@@ -505,17 +505,26 @@ int NyadosShell::readcommand( NnString &buffer )
 	    current.erase();
 	    break;
 	}
-	/* コマンドターミネータ「 ;」があった! */
-	if( !quote  && isSpace(current.at(i)) && current.at(i+1)==';' ){
-	    current = current.chars()+i+2;
-	    break;
-	}
-	/* コマンドターミネータ「&」があった! */
-	if( !quote  && prevchar != '>' && prevchar != '|' && current.at(i)=='&' ){
-	    buffer << '&'; // フラグの意味でわざと残しておく...
-	    current = current.chars()+i+1;
-	    break;
-	}
+        if( !quote ){
+            /* コマンドターミネータ「 ;」があった! */
+            if( !quote  && isSpace(current.at(i)) && current.at(i+1)==';' ){
+                current = current.chars()+i+2;
+                break;
+            }
+            /* コマンドターミネータ「&」があった! */
+            if( !quote  && prevchar != '>' && prevchar != '|' && current.at(i)=='&' ){
+                if( i+1 < current.length() && current.at(i+1) == '&' ){
+                    buffer << "&&";
+                    i+=2;
+                    continue;
+                }
+                if( i+1>=current.length() || current.at(i+1) != '&'  ){
+                    buffer << '&'; // フラグの意味でわざと残しておく...
+                    current = current.chars()+i+1;
+                    break;
+                }
+            }
+        }
 	if( current.at(i) == '"' ){
 	    quote ^= 1;
 	}
@@ -578,15 +587,15 @@ static int insertInterpreter( const char *start ,
 }
 
 /* 一行インタープリタ.
- * ・引数文字列(コマンド行)を ; で分割し、おのおのを interpret9 で処理する.
+ * ・引数文字列(コマンド行)を ; で分割し、おのおのを interpret2 で処理する.
  *      statement : コマンド行
  * return
  *      0 継続 -1 終了
  */
-int NyadosShell::interpret( const NnString &statement )
+int NyadosShell::interpret1( const NnString &statement )
 {
 #ifdef TRACE
-    fprintf(stderr,"NyadosShell::interpret(\"%s\")\n",statement.chars());
+    fprintf(stderr,"NyadosShell::interpret1(\"%s\")\n",statement.chars());
 #endif
     NnString cmdline(statement);
 
@@ -652,8 +661,44 @@ int NyadosShell::interpret( const NnString &statement )
 	if( dem == '|' )
 	    replace << " | ";
     }
-    return this->interpret9( replace );
+    return this->interpret2( replace );
 }
+
+int NyadosShell::interpret( const NnString &statement )
+{
+    const char *p=statement.chars();
+    NnString replace;
+    int quote=0;
+
+    while( *p != '\0' ){
+        if( quote == 0 ){
+            if( p[0] == '&' && p[1] == '&' ){
+                int result = this->interpret1( replace );
+                if( this->exitStatus() != 0 ){
+                    return result;
+                }
+                replace.erase();
+                p += 2;
+                continue;
+            }
+            if( p[0] == '|' && p[1] == '|' ){
+                int result = this->interpret1( replace );
+                if( this->exitStatus() == 0 ){
+                    return result;
+                }
+                replace.erase();
+                p += 2;
+                continue;
+            }
+        }
+        if( *p == '"' ){
+            quote ^= 1;
+        }
+        replace << *p++;
+    }
+    return this->interpret1( replace );
+}
+
 
 /* シェルのメインループ。
  *	シェルコマンドの取得先は readline関数として仮想化してある。
