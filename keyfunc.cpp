@@ -371,10 +371,11 @@ Status GetLine::erase_word(int)
             at = i; 
         spc = spc_;
     }
+    bs = pos - at;
     if( at > offset ){
-        putbs( bs=pos - at );
+        putbs( bs );
     }else{
-        putbs( bs=pos - offset );
+        putbs( pos - offset );
         offset = at;
     }
     savekillring( at , pos );
