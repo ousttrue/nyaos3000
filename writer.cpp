@@ -19,6 +19,8 @@ Writer &AnsiConsoleWriter::write( char c )
 
     if( mode == PRINTING ){
 	if( c == '\x1B' ){
+	    fflush( stdout );
+	    fflush( stderr );
 	    mode = STACKING;
 	    param[ n = 0 ] = 0;
 	}else if( c == '\b' ){
