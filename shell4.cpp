@@ -42,6 +42,8 @@ static int doQuote( const char *&sp , NnString &dst , int max , NyadosShell &sh 
         dst += '`';
         return 0;
     }
+    fflush(stdout);
+    fflush(stderr);
 
     /* テンポラリファイルを使って実現…ださださ */
     NnString tempfn=NnDir::tempfn();
