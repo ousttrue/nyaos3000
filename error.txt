@@ -1,9 +1,0 @@
-// BCCタイプ
-エラー E2268 test.cpp 16: 未定義の関数 'exit' を呼び出した(関数 main() )
-エラー E2268 test.cpp 3: 未定義の関数 'exit' を呼び出した(関数 main() )
-警告 W2268 test.cpp 5: 未定義の関数 'exit' を呼び出した(関数 main() )
-
-// SHC(Ｃ，アセンブラ)タイプ
-test.cpp(5) : 200 (E) UNDEFINED SYMBOL REFERENCE
-test.cpp(7) : 200 (E) UNDEFINED SYMBOL REFERENCE
-p:\myprog\apbuild\test\test.cpp(9) : 200 (E) UNDEFINED SYMBOL REFERENCE

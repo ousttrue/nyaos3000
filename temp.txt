@@ -1,9 +1,0 @@
-MAKE Version 5.2  Copyright (c) 1987, 2000 Borland
-        bcc32 -O -d -Z -DNDEBUG -c getline.cpp
-Borland C++ 5.5.1 for Win32 Copyright (c) 1993, 2000 Borland
-getline.cpp:
-エラー E2141 getline.cpp 377: 宣言の構文エラー
-*** 1 errors in Compile ***
-
-** error 1 ** deleting getline.obj
-
