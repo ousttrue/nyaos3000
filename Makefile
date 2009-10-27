@@ -96,9 +96,9 @@ nyacusrc.$(O)  : nyacus.rc redcat.ico
 	windres --output-format=coff -o $@ $<
 
 package :
-	zip nyaos2-`date "+%Y%m%d`"`.zip nyaos2.exe nyaos2.txt 
-	zip nyacus-`date "+%Y%m%d`"`.zip nyacus.txt nyacus.exe _nya tagjump.vbs
-	zip nyados-`date "+%Y%m%d`"`.zip nyados.txt nyados.exe greencat.ico _nya
+	zip nyaos2-`date "+%Y%m%d"`.zip nyaos2.exe nyaos2.txt _nya
+	zip nyacus-`date "+%Y%m%d"`.zip nyacus.exe nyacus.txt _nya tagjump.vbs
+	zip nyados-`date "+%Y%m%d"`.zip nyados.exe nyados.txt _nya greencat.ico 
 	zip nya-`date "+%Y%m%d"`.zip  Makefile *.h *.cpp *.ico *.m4 _nya
 
 documents : nyados.txt nyaos2.txt nyacus.txt
