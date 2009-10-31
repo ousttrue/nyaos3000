@@ -1,7 +1,7 @@
 all:
 	@echo "make"
 	@echo "  print usage(this)"
-	@echo "make nua"
+	@echo "make mingwnua"
 	@echo "  build nua.exe with MinGW and Lua"
 	@echo "make mingw"
 	@echo "  build nyacus.exe with MinGW"
@@ -22,7 +22,7 @@ all:
 
 CCC=-DNDEBUG
 
-nua : 
+mingwnua : 
 	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
 		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L/usr/lib/mingw/ -L../lua-5.1.4" \
 		NUA.EXE

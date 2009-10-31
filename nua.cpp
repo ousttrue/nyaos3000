@@ -13,7 +13,8 @@ extern "C" {
 #include "lauxlib.h"
 }
 
-#define TRACE(X) (X)
+//#define TRACE(X) ((X),fflush(stdout))
+#define TRACE(X)
 
 extern lua_State *nua_init();
 static lua_State *nua=NULL;
@@ -28,11 +29,15 @@ int nua_get(lua_State *lua)
     const char *key=lua_tostring(lua,-1);
 
     if( dict == NULL || key == NULL ){
-        lua_pushnil(lua);
         return 0;
     }
-    lua_pushstring( lua , (*dict)->get( NnString(key) )->repr() );
-    return 1;
+    NnObject *result=(*dict)->get( NnString(key) );
+    if( result != NULL ){
+        lua_pushstring( lua , result->repr() );
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 int nua_put(lua_State *lua)
@@ -51,21 +56,63 @@ int nua_put(lua_State *lua)
     return 0;
 }
 
-int nua_items(lua_State *lua)
+int nua_iter(lua_State *lua)
 {
+    TRACE(puts("Enter: nua_iter") );
+    NnHash::Each **ptr=(NnHash::Each**)lua_touserdata(lua,1);
+
+    if( ptr != NULL && ***ptr != NULL ){
+        lua_pushstring(lua,(**ptr)->key().chars());
+        lua_pushstring(lua,(**ptr)->value()->repr());
+        ++(**ptr);
+        TRACE(puts("Leave: nua_iter: next") );
+        return 2;
+    }else{
+        TRACE(puts("Leave: nua_iter: last") );
+        return 0;
+    }
+}
+
+int nua_iter_gc(lua_State *lua)
+{
+    TRACE(puts("Enter: nua_iter_gc") );
+    NnHash::Each **ptr=(NnHash::Each**)lua_touserdata(lua,1);
+    if( ptr != NULL && *ptr !=NULL ){
+        delete *ptr;
+        *ptr = NULL;
+    }
+    TRACE(puts("Leave: nua_iter_gc"));
+    return 0;
+}
+
+int nua_iter_factory(lua_State *lua)
+{
+    TRACE(puts("Enter: nua_iter_factory"));
     NnHash **dict=(NnHash**)lua_touserdata(lua,1);
     if( dict == NULL ){
+        TRACE(puts("Leave: nua_iter_factory: dict==NULL"));
+        return 0;
+    }
+    NnHash::Each *ptr=new NnHash::Each(**dict);
+    if( ptr == NULL ){
+        TRACE(puts("Leave: nua_iter_factory: ptr==NULL"));
         return 0;
     }
 
+    lua_pushcfunction(lua,nua_iter);
+    void *state = lua_newuserdata(lua,sizeof(NnHash::Each*));
+    memcpy(state,&ptr,sizeof(NnHash::Each*));
+
     lua_newtable(lua);
-    for(NnHash::Each ptr(**dict) ; *ptr ; ++ptr ){
-        lua_pushstring(lua,ptr->key().chars());
-        lua_pushstring(lua,ptr->value()->repr());
-        lua_settable(lua,-3);
-    }
-    return 1;
+    lua_pushstring(lua,"__gc");
+    lua_pushcfunction(lua,nua_iter_gc);
+    lua_settable(lua,-3);
+    lua_setmetatable(lua,-2);
+
+    TRACE(puts("Leave: nua_iter_factory: success") );
+    return 2;
 }
+
 
 lua_State *nua_init()
 {
@@ -79,11 +126,12 @@ lua_State *nua_init()
             NnHash *dict;
             int (*index)(lua_State *);
             int (*newindex)(lua_State *);
+            int (*call)(lua_State *);
         } list[]={
-            { "functions" , &functions , nua_get , NULL },
-            { "alias"     , &aliases   , nua_get , nua_put },
-            { "suffix"    , &DosShell::executableSuffix , nua_get , nua_put },
-            { "properties", &properties , nua_get } ,
+            { "functions" , &functions , nua_get , NULL  , nua_iter_factory},
+            { "alias"     , &aliases   , nua_get , nua_put , nua_iter_factory },
+            { "suffix"    , &DosShell::executableSuffix , nua_get , nua_put , nua_iter_factory },
+            { "properties", &properties , nua_get , nua_put , nua_iter_factory } ,
             { NULL , NULL , 0 } ,
         }, *p = list;
 
@@ -109,14 +157,16 @@ lua_State *nua_init()
                 lua_pushcfunction(nua,p->newindex);
                 lua_settable(nua,-3);
             }
+            if( p->call != NULL ){
+                lua_pushstring(nua,"__call");
+                lua_pushcfunction(nua,p->call);
+                lua_settable(nua,-3);
+            }
             lua_setmetatable(nua,-2);
 
             lua_settable(nua,-3);
             p++;
         }
-        lua_pushstring(nua,"items");
-        lua_pushcfunction(nua,nua_items);
-        lua_settable(nua,-3);
         lua_setglobal(nua,"nyaos");
     }
     return nua;
