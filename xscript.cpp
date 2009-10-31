@@ -74,7 +74,7 @@ void KeyFunctionXScript::init()
     (new KeyFunctionXScript("xscript:leave"        ,XK_LEAVE   ))->regist();
 
     /* キーマップを全て、機能なしに初期化する */
-    for(int i=0;i<numof(map);++i)
+    for(size_t i=0;i<numof(map);++i)
         map[i] = XK_NOBOUND;
 
     /* 機能コードを実際にキーに紐付ける */
@@ -414,7 +414,7 @@ void XScript::expandTo( const COORD &cursor )
     }
     /* x 方向で移動 */
     if( cursor.X != end.X ){
-	int x0, x1, y0, y1;
+	int x0=0, x1=0, y0=0, y1=0;
 	if( cursor.X < end.X ){
 	    if( cursor.X < start.X){
 		x0 = cursor.X;x1 = end.X;
@@ -438,7 +438,7 @@ void XScript::expandTo( const COORD &cursor )
     }
     /* y 方向で移動する */
     if( cursor.Y!=end.Y){
-	int x0, x1, y0, y1;
+	int x0=0, x1=0, y0=0, y1=0;
 	if( cursor.Y<end.Y){
 	    if( cursor.Y<start.Y){
                 /* c < s,e */
