@@ -144,7 +144,7 @@ void NnVector::uniq()
         return;
         
     for(int p=0 ; (p+1)<size() ; p++ ){
-        NnSortable *rhs;
+        NnSortable *rhs=NULL;
         while(  p+1 < size() 
             && (   array[p+1] == NULL 
                 || (rhs=array[p+1]->sortable())== NULL

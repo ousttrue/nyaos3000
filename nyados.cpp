@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
-#if defined(HAVE_NOT_OLD_NEW_H)
+#if defined(HAVE_NOT_OLD_NEW_H) || defined(_MSC_VER)
 #  include <new>
 #else
 #  include <new.h>
@@ -195,14 +195,6 @@ static int opt_a( int , char ** , int & )
     aliases.put("rm"    , new NnString("del $@") );
 
     return 0;
-}
-
-static void comspec_check()
-{
-    const char *env=getenv("COMSPEC");
-    if( env != NULL && ((strstr(env,"NYA") != NULL || strstr(env,"nya") != NULL) )){
-	properties.put("standalone",new NnString("(COMSPEC)"));
-    }
 }
 
 int main( int argc, char **argv )
