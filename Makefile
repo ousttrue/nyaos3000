@@ -1,6 +1,8 @@
 all:
 	@echo "make"
 	@echo "  print usage(this)"
+	@echo "make nua"
+	@echo "  build nua.exe with MinGW and Lua"
 	@echo "make mingw"
 	@echo "  build nyacus.exe with MinGW"
 	@echo "make emxos2"
@@ -20,10 +22,16 @@ all:
 
 CCC=-DNDEBUG
 
+nua : 
+	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
+		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L/usr/lib/mingw/ -L../lua-5.1.4" \
+		NUA.EXE
+
 mingw :
 	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -mno-cygwin -D_MSC_VER=1000" O=o \
-		LDFLAGS="-s -lole32 -luuid -lstdc++ -L/usr/lib/mingw/" \
+		       LDFLAGS="-s -lole32 -luuid -lstdc++ -L/usr/lib/mingw/" \
 		nyacus.exe
+
 
 digitalmars :
 	make CC=sc NAME=NYADOS CFLAGS="-P -ml -o $(CCC)" O=obj nyados.exe
@@ -33,18 +41,31 @@ emxos2 :
 	$(MAKE) CC=gcc NAME=NYAOS2 CFLAGS="-O2 -Zomf -Zsys -DOS2EMX $(CCC)" O=obj \
 		LDFLAGS=-lstdcpp nyaos2.exe
 
+LUAPATH=../lua-5.1.4
+lua :
+	$(MAKE) -C $(LUAPATH) CC="gcc -mno-cygwin" generic
+
+clean-lua :
+	$(MAKE) -C $(LUAPATH) clean
+
 OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O) \
 	getline.$(O) getline2.$(O) keybound.$(O) dosshell.$(O) nnhash.$(O) \
 	writer.$(O) history.$(O) ishell.$(O) scrshell.$(O) wildcard.$(O) cmdchdir.$(O) \
 	shell.$(O) shell4.$(O) foreach.$(O) which.$(O) reader.$(O) nnvector.$(O) \
 	ntcons.$(O) shellstr.$(O) cmds1.$(O) cmds2.$(O) xscript.$(O) shortcut.$(O) \
-	strfork.$(O) lsf.$(O) open.$(O)
+	strfork.$(O) lsf.$(O) open.$(O) nua.$(O)
 
 nyaos2.exe : $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 nyacus.exe : $(OBJS) nyacusrc.$(O)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	objdump -x $< | grep "DLL Name"
+	upx -9 $@
+
+NUA.EXE : $(OBJS) nyacusrc.$(O)
+	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	objdump -x $@ | grep "DLL Name"
 	upx -9 $@
 
 nyados.exe : $(OBJS)
@@ -91,6 +112,8 @@ wildcard.$(O) : wildcard.cpp  nnstring.h nnvector.h nndir.h
 ntcons.$(O) : ntcons.cpp
 open.$(O) : open.cpp
 
+nua.$(O) : nua.cpp
+
 # ƒŠƒ\[ƒX
 nyacusrc.$(O)  : nyacus.rc redcat.ico
 	windres --output-format=coff -o $@ $<
@@ -110,7 +133,7 @@ nyaos2.txt : nya.m4
 nyacus.txt : nya.m4
 	m4 -DSHELL=NYACUS $< > $@
 clean : 
-	del *.obj *.o *.exe || rm *.obj *.o *.exe
+	del *.obj *.o *.exe || rm *.obj *.o *.exe *.EXE
 
 cleanobj :
 	del *.obj *.o || rm *.obj *.o

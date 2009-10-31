@@ -52,6 +52,7 @@ public:
     virtual ~NnString();
     /** オブジェクト object と比較し、大小関係を負・零・正の数値で返す */
     virtual int compare( const NnSortable &object ) const;
+    const char *repr() const { return this->chars(); }
 
     /** 空で初期化する */
     NnString() : rep(&zero) {}

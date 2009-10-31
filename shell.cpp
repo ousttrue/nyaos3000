@@ -752,6 +752,7 @@ int cmd_foreach ( NyadosShell & , const NnString & );
 int cmd_pwd     ( NyadosShell & , const NnString & );
 int cmd_folder  ( NyadosShell & , const NnString & );
 int cmd_xptest  ( NyadosShell & , const NnString & );
+int cmd_require ( NyadosShell & , const NnString & );
 
 int cmd_eval( NyadosShell &shell , const NnString &argv )
 {
@@ -783,6 +784,7 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "if"      , &cmd_if       },
 	{ "list"    , &cmd_ls       },
 	{ "ls"      , &cmd_ls       },
+        { "require" , &cmd_require  },
 #ifndef NYADOS
 	{ "open"    , &cmd_open     },
 #endif

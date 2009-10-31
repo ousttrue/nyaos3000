@@ -53,6 +53,7 @@ public:
     virtual const NnString *argv(int) const;
     virtual void shift();
     virtual const char *className() const =0;
+    const char *repr() const { return this->className(); }
 
     void setOut( Writer *w ){ delete out_ ; out_= w; }
     void setErr( Writer *w ){ delete err_ ; err_= w; }

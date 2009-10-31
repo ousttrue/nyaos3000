@@ -68,6 +68,7 @@ public:
     virtual ~NnObject();
     virtual NnObject   *clone() const;
     virtual NnSortable *sortable();
+    virtual const char *repr() const { return "<NnObject>"; }
 };
 
 /** NnSortable ƒNƒ‰ƒX

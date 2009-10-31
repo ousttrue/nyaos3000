@@ -22,6 +22,7 @@ suffix jar java -jar
 suffix awk awk -f
 suffix vbs cscript
 suffix js  cscript
+suffix lua require
 
 option uncompletechar ,;=
 option tilde   on
