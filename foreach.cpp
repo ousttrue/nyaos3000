@@ -75,6 +75,22 @@ static void loadToBufferedShell( NyadosShell   &shell ,
 }
 
 extern NnHash functions;
+
+class NnExecutable_BufferedShell : public NnExecutable{
+    BufferedShell *shell_;
+public:
+    NnExecutable_BufferedShell( BufferedShell *shell ) : shell_(shell){}
+    ~NnExecutable_BufferedShell(){ delete shell_; }
+
+    int operator()( const NnVector &args );
+};
+
+int NnExecutable_BufferedShell::operator()( const NnVector &args )
+{
+    shell_->setArgv((NnVector*)args.clone());
+    return shell_->mainloop();
+}
+
 int cmd_sub( NyadosShell &shell , const NnString &argv )
 {
     if( argv.empty() ){
@@ -91,7 +107,7 @@ int cmd_sub( NyadosShell &shell , const NnString &argv )
     BufferedShell *bShell=new BufferedShell();
     loadToBufferedShell( shell , *bShell , "sub>" , "sub" , "endsub" );
 
-    functions.put( argv , bShell );
+    functions.put( argv , new NnExecutable_BufferedShell(bShell) );
     return 0;
 }
 
@@ -110,7 +126,7 @@ int sub_brace_start( NyadosShell &shell ,
 	bShell->append( (NnString*)argv.clone() );
     }
     loadToBufferedShell( shell, *bShell , "brace>" , "{" , "}" );
-    functions.put( funcname , bShell );
+    functions.put( funcname , new NnExecutable_BufferedShell(bShell) );
     return 0;
 }
 

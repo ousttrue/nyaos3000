@@ -382,15 +382,14 @@ int NyadosShell::interpret2( const NnString &replace_ )
         if( rc != 0 )
             return -1;
     }else{
-	BufferedShell *bShell = (BufferedShell*)functions.get(arg0low);
-	if( bShell != NULL ){
+        NnExecutable *func = (NnExecutable*)functions.get(arg0low);
+	// BufferedShell *bShell = (BufferedShell*)
+	if( func != NULL ){
 	    /* サブシェルを実行する */
-	    NnVector *param=new NnVector();
-	    param->append( arg0.clone() );
-	    argv.splitTo( *param );
-	    // splitParam( argv , *param );
-	    bShell->setArgv( param );
-	    bShell->mainloop();
+	    NnVector param;
+	    param.append( arg0.clone() );
+	    argv.splitTo( param );
+            (*func)( param );
 	}else{
 	    /* 外部コマンドを実行する */
 	    NnString cmdline2;

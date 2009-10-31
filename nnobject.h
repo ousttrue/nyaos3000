@@ -109,5 +109,11 @@ template <class T> T min1(T a,T b){ return a<b ? a : b ; }
 
 const char *getEnv( const char *var , const char *none=NULL );
 
+class NnVector;
+class NnExecutable : public NnObject{
+public:
+    virtual int operator()( const NnVector &args )=0;
+};
+
 #endif
 
