@@ -5,17 +5,18 @@ define(FULLNAME,[[Nihongo Yet Another DOS Shell]])dnl
 ┏┓┳┳　┳┏━┓┳━┓┏━┓┏━┓
 ┃┃┃┗━┫┣━┫┃　┃┃　┃┗━┓
 ┻┗┛┗━┛┻　┻┻━┛┗━┛┗━┛
-]],NYACUS,[[dnl
+]],SHELL,NYACUS,[[dnl
 define(FULLNAME,[[Nihongo Yet Another CUi Shell]])dnl
 ┏┓┳┳　┳┏━┓┏━┓┏　┓┏━┓
 ┃┃┃┗━┫┣━┫┃　　┃　┃┗━┓
 ┻┗┛┗━┛┻　┻┗━┛┗━┛┗━┛
-]],NYAOS2,[[dnl
+]],SHELL,NYAOS2,[[dnl
 define(FULLNAME,[[Nihongo Yet Another OS/2 Shell II]])dnl
  ┏┓┳┳　┳┏━┓┏━┓┏━┓ ┳┳
  ┃┃┃┗━┫┣━┫┃  ┃┗━┓-┃┃
  ┻┗┛┗━┛┻　┻┗━┛┗━┛ ┻┻
 ]])dnl
+define(SHELL.EXE,SHELL[[.EXE]])dnl
      The Free Software 
    FULLNAME
   Copyright (C) 2001-2009 HAYAMA,Kaoru
@@ -53,11 +54,11 @@ FULLNAME とは....
 ifelse(SHELL,NYADOS,[[dnl
 NYADOS --- Nihongo Yet Another DOS Shell は、Windows95/98/Me の
 DOS窓,純粋なDOS,OS/2のVDMで動作するコマンドラインシェルです。
-]],NYACUS,[[dnl
+]],SHELL,NYACUS,[[dnl
 NYACUS --- Nihongo Yet Another CUi Shell は、
 WindowsNT,2000,XP のコマンドプロンプトで動作するコマンドライン
 シェルです。
-]],NYAOS2,[[dnl
+]],SHELL,NYAOS2,[[dnl
 NYAOS 2 --- Nihongo Yet Another OS/2 Shell 2 は、OS/2 Warp の
 コマンドプロンプトで動作するコマンドラインシェルです。
 ]])dnl
@@ -102,12 +103,12 @@ ifelse(SHELL,NYADOS,[[dnl
     ・対応OSは Windows9x , DOS , OS/2 VDM のみ。WindowsNT,2000,XP では
       NYACUS , OS/2 Warp コマンドプロンプトでは NYAOS 2 をお使いく
       ださい。
-]],NYACUS,[[dnl
+]],SHELL,NYACUS,[[dnl
     ・対応OSは、WindowsNT,2000,XP。95,98,Me でも動作しますが、日本語入力
       が正常に行えません。95,98,Me で日本語の入力が必要である場合は、
       NYADOSをお使いください。
     ・クリップボードとのアクセスも可能(Ctrl-K,Ctrl-Y)
-]],NYAOS2,[[dnl
+]],SHELL,NYAOS2,[[dnl
     ・NYAOS 1 よりコンパクト！緊急起動フロッピーなどにいれておくのがお薦め。
     ・対応OSは、OS/2 Warp 4 です。Windowsご使用の方は別途 Windows版
       NYACUS / NYADOS をご利用ください。
@@ -126,14 +127,14 @@ SHELL.EXE を PATH の通ったディレクトリにおいて、実行してください。
     ・実行時のカレントディレクトリ
     ・環境変数HOMEの示すディレクトリ
     ・カレントドライブのルートディレクトリ
-のうちのいずれかに置いてください。SHELL 起動時に読み込んで実行します。
+のうちのいずれかに置いてください。 SHELL 起動時に読み込んで実行します。
 _nya にはSET コマンドなどを記述して、環境変数などを設定することができますが...
     ・# で始まる行はコメント行として無視する。
     ・if errorlevel は利用することはできない。
     ・代わりにブロック-if が使える
 などの違いがあります。
 
-_nya内では、SHELL.EXE を実行したときのパラメータを %1 , %2 などで
+_nya内では、 SHELL.EXE を実行したときのパラメータを %1 , %2 などで
 取得することができます。これを利用して、コマンドプロンプトヒアの
 ような機能を実現することもできます。(なお、互換性のため、_nyaの代わりに
 _nyados , _nyagos などを使用することもできます)
@@ -142,9 +143,9 @@ SHELL 自身のオプションとして次のようなものがあります。
 
     -f スクリプトファイル名 引数…
         ファイル名を内容を読みこんで実行します。_nyaは
-        読みこまないことを除けば、SHELL内で source 文を
+        読みこまないことを除けば、 SHELL 内で source 文を
         実行するのと同じです。通常、_nya内でしか使えない
-        コマンドも使用できます。実行後、SHELLは終了します。
+        コマンドも使用できます。実行後、 SHELL は終了します。
     
     -fx スクリプトファイル名 引数…
         -f と同じですが、スクリプト中に「#!」と「nya」の両方が含まれる
@@ -252,8 +253,8 @@ alias
         $n* n番目以降の引数
         $$  「$」自体
         $B  パイプ記号(|)
-        $L	入力リダイレクト記号(<)
-        $G	出力リダイレクト記号(>)
+        $L  入力リダイレクト記号(<)
+        $G  出力リダイレクト記号(>)
         $Q  出力引用記号(`)
         $@  $* と同じだが DOS風表現を UNIX風表現に置換する
                 「/」          ⇒ \
@@ -519,7 +520,7 @@ ifelse(SHELL,NYACUS,[[]],[[dnl
 
 option
 ------
-    SHELLの動作を左右するオプション(シェル変数)を設定します。
+    SHELL の動作を左右するオプション(シェル変数)を設定します。
     
         > option オプション名 値
             オプション名に値を設定します。
@@ -612,7 +613,7 @@ ifelse(SHELL,NYACUS,[[dnl
         width
             画面の桁数を指定しますが、これで設定すれば、実際に画面が
             その桁数になるわけではありません。V-Text 等で変更した画面幅
-            を $(SHELL) に通知するためのオプションです。指定しない場合
+            を SHELL に通知するためのオプションです。指定しない場合
             画面幅が80桁と仮定します。
 
     オプションは起動時に
@@ -726,7 +727,7 @@ suffix
 
     注意：
         ・suffix命令に与える拡張子には「.」を付けないでください。
-        ・Windows の関連付けと、SHELLの関連付けは関係ありません。
+        ・Windows の関連付けと、 SHELL の関連付けは関係ありません。
         ・suffix命令で定義された拡張子を持つファイルは、コマンド名
           補完の候補になります。
     
@@ -873,9 +874,9 @@ UNIX ライクな $環境変数名 , ${環境変数名} が使えます。
 カレントディレクトリ名のうち、最も下の部分のみを表示します。カレン
 トディレクトリが深すぎて、プロンプトが長すぎるという場合にお使い
 ください。
-<% if shell == NYACUS %>
+ifelse(SHELL,NYACUS,[[dnl
 また、エスケープシーケンスを使うこともできます。
-<% end %>
+]])dnl
 
 
 行の継続
@@ -1061,7 +1062,7 @@ ifelse(SHELL,NYADOS,[[dnl
         ・Digital Mars C++ compiler for Win32
 	・Libraries for 16 bit DOS development 
 	    → http://www.digitalmars.com/
-]],NYACUS,[[dnl
+]],SHELL,NYACUS,[[dnl
         ・MinGW 
 ]],[[dnl
 	・emx/gcc 0.9d FIX 3
@@ -1072,9 +1073,9 @@ ifelse(SHELL,NYADOS,[[dnl
 
 ifelse(SHELL,NYADOS,[[dnl
     C:> make digitalmars
-]],NYACUS,[[dnl
+]],SHELL,NYACUS,[[dnl
     C:> make mingw
-]],NYAOS2,[[dnl
+]],SHELL,NYAOS2,[[dnl
     C:> make emxos2
 ]])dnl
 
@@ -1083,7 +1084,7 @@ ifelse(SHELL,NYADOS,[[dnl
 ========
 
 ・バッチファイル内でカレントディレクトリ・環境変数の変更を行っても、
-  呼び出し元のSHELLには反映されません。
+  呼び出し元の SHELL には反映されません。
 ・source コマンド経由でバッチファイルを実行した場合は、カレントディ
   レクトリ・環境変数の変更は呼び出し元にも反映されます。ただし、こ
   の場合、次のコマンドが未サポートにつき、エラーになります。
@@ -1104,7 +1105,7 @@ ifelse(SHELL,NYADOS,[[dnl
 
 アイコンへドロップしたフォルダーから起動させたい
     _nyaに一行「if not "%1" == "" cd --basedir "%1"」を追加し、
-    SHELLを送るメニューに入れてみてください。送ったディレクトリを
+    SHELL を送るメニューに入れてみてください。送ったディレクトリを
     カレントディレクトリとして SHELL を起動させることができます。
     また、ファイル名を送ると、そのファイルのあるディレクトリをカレント
     ディレクトリにできます。
@@ -1155,16 +1156,16 @@ _nya の中から、他のスクリプトを読み込みたい
     しまいますので、これで回避します。
     
 ifelse(SHELL,NYACUS,[[dnl
-STANDALONE モードで、パイプラインの右側に DOS コマンド(UNIX like
-     tools の head 等) をつなげると
+    STANDALONE モードで、パイプラインの右側に DOS コマンド(UNIX like
+    tools の head 等) をつなげると
             エラーです. 読み取り中 デバイス
             中止 (A), 再試行 (R), 失敗 (F)?
-     と表示されることがあります。これは…どうも、OS のバグか制限のようです。
-     (NYAシリーズとは関係ない、某シェル上でも同様の症状が確認されました)
+    と表示されることがあります。これは…どうも、OS のバグか制限のようです。
+    (NYAシリーズとは関係ない、某シェル上でも同様の症状が確認されました)
 
-     そもそも、NYACUS を使う環境(WindowsNT,2000,XP のコマンドプロンプト)
-     で、DOS コマンドを使うのが間違いとも考えられますので、Win32系の同様
-     のコマンドを利用して回避してください。
+    そもそも、NYACUS を使う環境(WindowsNT,2000,XP のコマンドプロンプト)
+    で、DOS コマンドを使うのが間違いとも考えられますので、Win32系の同様
+    のコマンドを利用して回避してください。
     
 プロンプトや print コマンドではエスケープシーケンスが使えるのに
      外部コマンドでは文字化けします。
@@ -1181,37 +1182,50 @@ dir/w がエラーになります
 変更履歴
 ========
 
-rev.2009.10.25
-・Makefile を一本に統一した。
-・ドキュメントのソースを m4 形式にした。
+2.30 (2009/11/01)
+  (nyacus)
+    ・mingw コンパイル時に出る warning に対応.
+  (all)
+    ・変更履歴を整理
 
-rev.2009.10.18
-[虫繕]
-・「echo `pwd`」などバッククォートから「pwd」を実行した後、echoなどで
-  出力する時に、次の行の先頭からでなく、カーソルの位置から出力される
-  不具合を修正
-・バッククォートを一度使った後、プロンプトの色が無効になってしまう
-  不具合を修正 
-・行の表示限界を超えて文字を入力したあと Ctrl-Wで削除した場合など、
-  表示が乱れる不具合を修正
+TEST-VERSION 2009.10.25
+  (all)
+    ・Makefile を一本に統一した。
+    ・ドキュメントのソースを m4 形式にした。
 
-rev.2009.04.18
-[虫繕]
-・&& と || が効かなくなっていたのを修正
+TEST-VERSION 2009.10.18
+  (nyacus)
+    [虫繕]
+    ・「echo `pwd`」などバッククォートから「pwd」を実行した後、echoなどで
+      出力する時に、次の行の先頭からでなく、カーソルの位置から出力される
+      不具合を修正
+    ・バッククォートを一度使った後、プロンプトの色が無効になってしまう
+      不具合を修正 
+  (all)
+    [虫繕]
+    ・行の表示限界を超えて文字を入力したあと Ctrl-Wで削除した場合など、
+      表示が乱れる不具合を修正
 
-rev.2009.03.04
-[虫繕]
-・内蔵ls のタイムスタンプとファイルサイズがおかしかったのを修正
+TEST-VERSION 2009.04.18
+  (all)
+    [虫繕]
+    ・&& と || が効かなくなっていたのを修正
 
-rev.2009.02.22
-・Windows版は MinGW でビルドするようにした。
-  (lukewarm さんパッチ: http://d.hatena.ne.jp/lukewarm/20090221#p1 )
-・ターミナルソフト ckw で動作する時に、桁数の変更を自動反映するようにした
-  (hideden さんパッチ: http://d.hatena.ne.jp/hideden/20071125/1196015990 )
+TEST-VERSION 2009.03.04
+  (nyacus)
+    [虫繕]
+    ・内蔵ls のタイムスタンプとファイルサイズがおかしかったのを修正。
+
+TEST-VERSION 2009.02.22
+  (nyacus)
+    ・Windows版は MinGW でビルドするようにした。
+      (lukewarm さんパッチ: http://d.hatena.ne.jp/lukewarm/20090221#p1 )
+    ・ターミナルソフト ckw で動作する時に、桁数の変更を自動反映するようにした
+      (hideden さんパッチ: http://d.hatena.ne.jp/hideden/20071125/1196015990 )
 
 2.22a (2004/10/23)
-[虫繕]
-・%未定義変数.defined% が 2 になっていた
+    [虫繕]
+    ・%未定義変数.defined% が 2 になっていた
 
 2.22 (2004/10/17)
 ifelse(SHELL,NYACUS,[[dnl
@@ -1284,7 +1298,7 @@ ifelse(SHELL,NYACUS,[[dnl
 ・プロンプトや print コマンドで一部のエスケープシーケンスを
   使えるようになった(今のところ、ESC[2J , ESC[…m だけ)。
 ]])dnl
-ifelse(SHELL,NYADOS,[[]],dnl
+ifelse(SHELL,NYADOS,[[dnl
 ・open コマンド
 ]])dnl
 ・補完文字列にワイルドカード(*,?)を使えるようにした。
@@ -1646,7 +1660,7 @@ ifelse(SHELL,NYACUS,[[dnl
 ・foreach で、値が 0 個の時、end 節までスキップするようにした。
 ・-f,-S オプションの追加
 ・エイリアスもコマンド名の補完候補に加えるようにした。
-・CTRL-C でSHELL自身が終了してしまわないようにした。
+・CTRL-C で SHELL 自身が終了してしまわないようにした。
 ・bindkey が _nya 内で効かないのを修正。
 ・カット＆ペーストのサポート(NYAGOS ではクリップボードとアクセス可能)
 ・環境変数に対する演算子(.defined,.split,.length)
