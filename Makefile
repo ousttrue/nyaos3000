@@ -11,6 +11,10 @@ all:
 	@echo "  clean *.obj *.o *.exe. Please ignore error message"
 	@echo "make cleanobj"
 	@echo "  clean *.obj *.o. Please ignore error message"
+	@echo ""
+	@echo "make documents"
+	@echo "make release"
+	@echo "make nightly"
 
 .SUFFIXES : .cpp .obj .exe .h .res .rc .cpp .h .o
 .cpp.obj :
@@ -95,11 +99,17 @@ open.$(O) : open.cpp
 nyacusrc.$(O)  : nyacus.rc redcat.ico
 	windres --output-format=coff -o $@ $<
 
-package :
-	zip nyaos2-`date "+%Y%m%d"`.zip nyaos2.exe nyaos2.txt _nya
-	zip nyacus-`date "+%Y%m%d"`.zip nyacus.exe nyacus.txt _nya tagjump.vbs
-	zip nyados-`date "+%Y%m%d"`.zip nyados.exe nyados.txt _nya greencat.ico 
-	zip nya-`date "+%Y%m%d"`.zip  Makefile *.h *.cpp *.ico *.m4 _nya
+release :
+	$(MAKE) _package VER=`gawk '/^#define VER/{ print $$3 }' nyados.cpp`
+
+nightly :
+	$(MAKE) _package VER=`date "+%Y%m%d"`
+
+_package :
+	zip nyaos2-$(VER).zip nyaos2.exe nyaos2.txt _nya
+	zip nyacus-$(VER).zip nyacus.exe nyacus.txt _nya tagjump.vbs
+	zip nyados-$(VER).zip nyados.exe nyados.txt _nya greencat.ico 
+	zip nya-$(VER).zip  Makefile *.h *.cpp *.ico *.m4 _nya
 
 documents : nyados.txt nyaos2.txt nyacus.txt
 
