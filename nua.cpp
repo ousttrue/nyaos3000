@@ -6,17 +6,11 @@
 #include <stdlib.h>
 #include "nnhash.h"
 #include "getline.h"
-
-extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
+#include "nua.h"
 
 //#define TRACE(X) ((X),fflush(stdout))
 #define TRACE(X)
 
-extern lua_State *nua_init();
 static lua_State *nua=NULL;
 static void nua_shutdown()
 {
@@ -118,12 +112,10 @@ int nua_iter_factory(lua_State *lua)
     return 2;
 }
 
-
 lua_State *nua_init()
 {
     if( nua == NULL ){
         extern NnHash aliases;
-        extern NnHash functions;
         extern NnHash properties;
 
         static struct {
@@ -133,7 +125,6 @@ lua_State *nua_init()
             int (*newindex)(lua_State *);
             int (*call)(lua_State *);
         } list[]={
-            { "functions" , &functions , nua_get , NULL  , nua_iter_factory},
             { "alias"     , &aliases   , nua_get , nua_put , nua_iter_factory },
             { "suffix"    , &DosShell::executableSuffix , nua_get , nua_put , nua_iter_factory },
             { "properties", &properties , nua_get , nua_put , nua_iter_factory } ,
@@ -145,6 +136,9 @@ lua_State *nua_init()
         atexit(nua_shutdown);
 
         lua_newtable(nua); /* nyaos = {} */
+        lua_newtable(nua);
+        lua_setfield(nua,-2,"command");
+
         while( p->name != NULL ){
             lua_pushstring(nua,p->name);
 

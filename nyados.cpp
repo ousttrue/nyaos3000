@@ -231,7 +231,7 @@ int main( int argc, char **argv )
 #ifdef NYADOS
 	"Nihongo Yet Another DOS Shell "
 #elif defined(NYACUS)
-	"Nihongo Yet Another CUI Shell "
+	"NYAOS for Windows powered by Lua"
 #else
 	"Nihongo Yet Another OS/2 Shell "
 #endif
