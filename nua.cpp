@@ -172,7 +172,7 @@ lua_State *nua_init()
 }
 #endif /* defined(LUA_ENABLED) */
 
-int cmd_require( NyadosShell &shell , const NnString &argv )
+int cmd_lua_l( NyadosShell &shell , const NnString &argv )
 {
 #ifdef LUA_ENABLE
     NnString arg1,left;
@@ -187,6 +187,32 @@ int cmd_require( NyadosShell &shell , const NnString &argv )
         const char *msg = lua_tostring( nua , -1 );
         shell.err() << msg << '\n';
     }
+#else
+    shell.err() << "require: built-in lua disabled.\n";
+#endif /* defined(LUA_ENABLED) */
+    return 0;
+}
+
+int cmd_lua_e( NyadosShell &shell , const NnString &argv )
+{
+#ifdef LUA_ENABLE
+    NnString arg1,left;
+    argv.splitTo( arg1 , left );
+    NyadosShell::dequote( arg1 );
+
+    if( arg1.empty() ){
+        shell.err() << "lua_e \"lua-code\"\n" ;
+        return 0;
+    }
+    lua_State *nua = nua_init();
+
+    if( luaL_loadstring( nua ,  luaL_gsub( nua , arg1.chars() , "$T" , "\n" ) ) ||
+        lua_pcall( nua , 0 , 0 , 0 ) )
+    {
+        const char *msg = lua_tostring( nua , -1 );
+        shell.err() << msg << '\n';
+    }
+    lua_settop(nua,0);
 #else
     shell.err() << "require: built-in lua disabled.\n";
 #endif /* defined(LUA_ENABLED) */

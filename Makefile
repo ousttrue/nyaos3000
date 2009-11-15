@@ -28,14 +28,8 @@ CCC=-DNDEBUG
 
 nyaos3k : 
 	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
-		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L/usr/lib/mingw/ -L../lua-5.1.4" \
-		NYAOS.EXE
-
-mingw :
-	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -mno-cygwin -D_MSC_VER=1000" O=o \
-		       LDFLAGS="-s -lole32 -luuid -lstdc++ -L/usr/lib/mingw/" \
-		nyacus.exe
-
+		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L/usr/lib/mingw/" \
+		nyaos.exe
 
 digitalmars :
 	make CC=sc NAME=NYADOS CFLAGS="-P -ml -o $(CCC)" O=obj nyados.exe
@@ -62,7 +56,7 @@ OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O
 nyaos2.exe : $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
-NYAOS.EXE : $(OBJS) nyacusrc.$(O)
+nyaos.exe : $(OBJS) nyacusrc.$(O)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 	objdump -x $@ | grep "DLL Name"
 	upx -9 $@
@@ -121,13 +115,14 @@ release :
 	$(MAKE) _package VER=`gawk '/^#define VER/{ print $$3 }' nyados.cpp`
 
 nightly :
-	$(MAKE) _package VER=`date "+%Y%m%d"`
+	cd ../ ; zip nyaos3k-`date "+%Y%m%d"`.zip \
+		nyaos3k/{*.exe,Makefile,*.h,*.cpp,*.ico,,*.rc,_nya}
 
 _package :
 	zip nyaos2-$(VER).zip nyaos2.exe nyaos2.txt _nya
 	zip nyacus-$(VER).zip nyacus.exe nyacus.txt _nya tagjump.vbs
 	zip nyados-$(VER).zip nyados.exe nyados.txt _nya greencat.ico 
-	zip nya-$(VER).zip  Makefile *.h *.cpp *.ico *.m4 _nya
+	zip nya-$(VER).zip Makefile *.h *.cpp *.ico *.m4 *.rc _nya
 
 documents : nyados.txt nyaos2.txt nyacus.txt
 

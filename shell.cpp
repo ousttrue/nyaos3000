@@ -448,7 +448,6 @@ int NyadosShell::readcommand( NnString &buffer )
 #ifdef TRACE
     fprintf(stderr,"NyadosShell::readcommand(\"%s\")\n",buffer.chars() );
 #endif
-    NnObject *multiLineQuote=properties.get("multilinequote");
     if( current.empty() ){
 	NnString temp;
 	int rc;
@@ -498,7 +497,7 @@ int NyadosShell::readcommand( NnString &buffer )
 		brace_expand( current );
 		
 	    current.trim();
-	    if( multiLineQuote != NULL && countQuote(current.chars()) % 2 != 0 ){
+	    if( countQuote(current.chars()) % 2 != 0 ){
 		nesting.append(new NnString("quote>"));
 	    }else if( current.endsWith("^") ){
                 // lastchar() == '^'
@@ -791,7 +790,8 @@ int cmd_foreach ( NyadosShell & , const NnString & );
 int cmd_pwd     ( NyadosShell & , const NnString & );
 int cmd_folder  ( NyadosShell & , const NnString & );
 int cmd_xptest  ( NyadosShell & , const NnString & );
-int cmd_require ( NyadosShell & , const NnString & );
+int cmd_lua_l   ( NyadosShell & , const NnString & );
+int cmd_lua_e   ( NyadosShell & , const NnString & );
 
 int cmd_eval( NyadosShell &shell , const NnString &argv )
 {
@@ -823,7 +823,8 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "if"      , &cmd_if       },
 	{ "list"    , &cmd_ls       },
 	{ "ls"      , &cmd_ls       },
-        { "require" , &cmd_require  },
+        { "lua_e"   , &cmd_lua_e    },
+        { "lua_l"   , &cmd_lua_l    },
 #ifndef NYADOS
 	{ "open"    , &cmd_open     },
 #endif

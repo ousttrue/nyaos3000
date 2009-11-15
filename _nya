@@ -70,7 +70,19 @@ vzbind{
 }
 # vzbind
 
-# タグジャンプ参照コマンド設定.
-set TAGJUMP=tagjump.vbs
+lua_e "
+    -- NYAOS-3000 を拡張する Lua コード --
 
-print done
+    --「%(Lua式)」を処理する Lua コード --
+    function nyaos.filter(cmdline)
+        return cmdline:gsub('%%(%b())',function(m)
+            return loadstring('return '..m)()
+        end)
+    end
+    -- say コマンド --
+    function nyaos.command.say(message)
+        print(message)
+    end
+
+    print('done')
+"
