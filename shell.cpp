@@ -395,7 +395,8 @@ int NyadosShell::interpret2( const NnString &replace_ )
                 // fputs("Enter: Found Function\n",stderr);
                 lua_pushstring(lua,argv.chars());
                 if( lua_pcall(lua,1,0,0) != 0 ){
-                    fputs("lua runtime error\n",stderr);
+                    const char *msg = lua_tostring( lua , -1 );
+                    this->err() << msg << '\n';
                 }
                 lua_settop(lua,0);
                 return 0;
@@ -631,7 +632,8 @@ int NyadosShell::interpret1( const NnString &statement )
                 break;
             }
         }else{
-            fputs("lua runtime error\n",stderr);
+            const char *msg = lua_tostring( lua , -1 );
+            this->err() << msg << '\n';
         }
     }
     lua_settop(lua,0);
