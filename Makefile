@@ -1,7 +1,7 @@
 all:
 	@echo "make"
 	@echo "  print usage(this)"
-	@echo "make mingwlua"
+	@echo "make nyaos3k"
 	@echo "  build nyaos.exe with MinGW and Lua"
 	@echo "make mingw"
 	@echo "  build nyacus.exe with MinGW"
@@ -26,7 +26,7 @@ all:
 
 CCC=-DNDEBUG
 
-mingwlua : 
+nyaos3k : 
 	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
 		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L/usr/lib/mingw/ -L../lua-5.1.4" \
 		NYAOS.EXE
@@ -63,11 +63,6 @@ nyaos2.exe : $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
 NYAOS.EXE : $(OBJS) nyacusrc.$(O)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
-	objdump -x $< | grep "DLL Name"
-	upx -9 $@
-
-NUA.EXE : $(OBJS) nyacusrc.$(O)
 	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 	objdump -x $@ | grep "DLL Name"
 	upx -9 $@

@@ -15,7 +15,7 @@
 #include "ishell.h"
 #include "writer.h"
 
-#define VER "2.30_0"
+#define VER "20091115"
 
 #ifdef _MSC_VER
 int  nya_new_handler(size_t size)
@@ -231,11 +231,11 @@ int main( int argc, char **argv )
 #ifdef NYADOS
 	"Nihongo Yet Another DOS Shell "
 #elif defined(NYACUS)
-	"NYAOS for Windows powered by Lua"
+	"Nihongo Yet Another OSes Shell-3000 "
 #else
 	"Nihongo Yet Another OS/2 Shell "
 #endif
-	VER" (C) 2001-2009 by NYAOS.ORG\n";
+	"v."VER" (C) 2001-09 by NYAOS.ORG\n";
 
     NnDir::set_default_special_folder();
 
