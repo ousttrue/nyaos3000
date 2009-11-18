@@ -22,8 +22,10 @@ suffix jar java -jar
 suffix awk awk -f
 suffix vbs cscript
 suffix js  cscript
-suffix lua require
+suffix cmd cmd /c
+suffix bat cmd /c
 
+option +standalone
 option uncompletechar ,;=
 option tilde   on
 option history on
