@@ -5,6 +5,9 @@
 #include "nnvector.h"
 #include "nndir.h"
 #include "getline.h" /* DosShell.executableSuffix のためのみ */
+#ifdef NYACUS
+#  include "ntcons.h" 
+#endif
 
 enum {
     OPT_LONG = 0x1 ,
@@ -213,7 +216,12 @@ static void dir_files( const NnVector &list , int option , Writer &out )
     }else{
 	/*** 格子状フォーマット ***/
 	int max = maxlength(list);
+#ifdef NYACUS
+        int n_per_line = (Console::getWidth()-1)/(max+1);
+#else
 	int n_per_line = 79 / (max+1);
+#endif
+
 	int nlines;
 	if( n_per_line <= 0 ){
 	    nlines = list.size();
