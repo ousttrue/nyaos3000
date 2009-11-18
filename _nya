@@ -33,9 +33,11 @@ option backquote  4000
 option +keep_bottom_line
 # option +standalone
 if $standalone = (set) then
-    foreach i ( dir mkdir rmdir )
+    foreach i ( dir mkdir rmdir copy move)
 	alias $i $COMSPEC /c $i
     end
+    suffix cmd $COMSPEC /c
+    suffix bat $COMSPEC /c
 endif
 
 bindkey CTRL_P vzlike-previous-history
@@ -73,8 +75,6 @@ vzbind{
 # vzbind
 
 lua_e "
-    -- NYAOS-3000 を拡張する Lua コード --
-
     --「%(Lua式)」を処理する Lua コード --
     function nyaos.filter(cmdline)
         return cmdline:gsub('%%(%b())',function(m)

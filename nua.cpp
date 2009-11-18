@@ -125,9 +125,9 @@ lua_State *nua_init()
             int (*newindex)(lua_State *);
             int (*call)(lua_State *);
         } list[]={
-            { "alias"     , &aliases   , nua_get , nua_put , nua_iter_factory },
-            { "suffix"    , &DosShell::executableSuffix , nua_get , nua_put , nua_iter_factory },
-            { "properties", &properties , nua_get , nua_put , nua_iter_factory } ,
+            { "alias"  , &aliases   , nua_get , nua_put , nua_iter_factory },
+            { "suffix" , &DosShell::executableSuffix , nua_get , nua_put , nua_iter_factory },
+            { "option" , &properties , nua_get , nua_put , nua_iter_factory } ,
             { NULL , NULL , 0 } ,
         }, *p = list;
 
