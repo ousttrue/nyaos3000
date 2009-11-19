@@ -6,7 +6,10 @@
 #if !defined(__DMC__) && !defined(__OS2__)
 #  include <conio.h>
 #endif
+#include <fcntl.h>
+#include <io.h>
 #include <stdio.h>
+#include <stdlib.h>
 #if defined(NYADOS)
 #  include <dos.h>
 #endif
@@ -15,7 +18,6 @@
 
 #if defined(OS2EMX) /*** OS/2 専用 static 変数/関数群 ***/
 
-#include <stdlib.h>
 #include <sys/kbdscan.h>
 #define INCL_WIN
 #define INCL_VIO
@@ -50,12 +52,34 @@ static int init_os2()
 
 static HANDLE   hStdin = (HANDLE )-1L;
 static HANDLE   hStdout = (HANDLE )-1L;
+static BOOL     bStdioInitialized;
+static BOOL     bStdinIsConsole;
+static DWORD    dwPrevConsoleMode;
 
 /* APIによる標準入出力の初期化 */
 static void initializeStdio()
 {
     hStdin  = GetStdHandle(STD_INPUT_HANDLE);   /* 標準入力ハンドルの取得 */
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);  /* 標準出力ハンドルの取得 */
+    if (!bStdioInitialized) {
+        DWORD dw;
+        bStdioInitialized = TRUE;
+        /* stdin リダイレクト時の対処（stdinをunbuffered mode に）*/
+        setvbuf(stdin, NULL, _IONBF, 0);
+        setmode(fileno(stdin), O_BINARY);
+        if (GetConsoleMode(hStdin, &dw)) {
+            /* Win32コンソールの場合は念のためダイレクトモードに設定 */
+            bStdinIsConsole = TRUE;
+            dwPrevConsoleMode = dw;
+            dw &= ~(ENABLE_PROCESSED_INPUT |
+                    ENABLE_LINE_INPUT |
+                    ENABLE_ECHO_INPUT |
+                    ENABLE_INSERT_MODE |
+                    ENABLE_QUICK_EDIT_MODE);
+            SetConsoleMode(hStdin, dw);
+            /* 終了時は元の値に戻したほうがいいかも… */
+        }
+    }
 }
 
 void Console::getLocate(int &x,int &y)
@@ -187,6 +211,17 @@ int Console::getkey()
 #endif
 #elif defined(NYAOS2)
     return _read_kbd(0,1,0);
+#elif defined(NYACUS)
+    int c;
+    if (bStdinIsConsole) {
+        c = getch();
+    } else {
+        /* stdin がリダイレクトされている場合（わりと適当） */
+        c = fgetc(stdin);
+        if (c == '\n') c = '\r';
+        if (c == EOF) exit(0);
+    }
+    return c & 255;
 #else
     return getch() & 255;
 #endif
