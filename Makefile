@@ -54,10 +54,10 @@ OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O
 	strfork.$(O) lsf.$(O) open.$(O) nua.$(O)
 
 nyaos2.exe : $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 nyaos.exe : $(OBJS) nyacusrc.$(O)
-	$(CC) $(CFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	objdump -x $@ | grep "DLL Name"
 	upx -9 $@
 
