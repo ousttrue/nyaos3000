@@ -386,9 +386,10 @@ int NyadosShell::interpret2( const NnString &replace_ )
     }else{
 #ifdef LUA_ENABLE
         lua_State *lua = nua_init();
-        lua_getglobal(lua,"nyaos");
-        lua_getfield(lua,-1,"command");
-        if( lua_type(lua,-1) == LUA_TTABLE ){
+
+        if( (lua_getglobal(lua,"nyaos"),    lua_type(lua,-1)) == LUA_TTABLE  &&
+            (lua_getfield(lua,-1,"command"),lua_type(lua,-1)) == LUA_TTABLE )
+        {
             // fputs("Enter: Found Table\n",stderr);
             lua_getfield(lua,-1,arg0low.chars());
             if( lua_type(lua,-1) == LUA_TFUNCTION ){
@@ -621,9 +622,9 @@ int NyadosShell::interpret1( const NnString &statement )
 #ifdef LUA_ENABLE
     lua_State *lua=nua_init();
 
-    lua_getglobal(lua,"nyaos");
-    lua_getfield(lua,-1,"filter");
-    if( lua_type(lua,-1) == LUA_TFUNCTION ){
+    if( (lua_getglobal(lua,"nyaos")   ,lua_type(lua,-1)) == LUA_TFUNCTION &&
+        (lua_getfield(lua,-1,"filter"),lua_type(lua,-1)) == LUA_TFUNCTION )
+    {
         lua_pushstring(lua,statement.chars());
         if( lua_pcall(lua,1,1,0) == 0 ){
             switch( lua_type(lua,-1) ){
