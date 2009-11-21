@@ -193,7 +193,7 @@ SHELL のキーバインドは次のとおりです。基本的に tcsh のそれを踏襲しています。
        Esc      行全体を削除する                     (kill-whole-line)
     ^O ^TAB     ファイル名を循環補完します。         (complete-next)
 ifelse(SHELL,NYACUS,[[dnl
-    ^↑         逆スクロール機能を起動する           (xscript:start)
+    ^]          逆スクロール機能を起動する           (xscript:start)
     ^→         カーソルを次の単語の頭に             (forward-word)
     ^←         カーソルを前の単語の前に             (backward-word)
 ]],[[dnl
