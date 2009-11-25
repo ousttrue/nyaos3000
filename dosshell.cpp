@@ -139,7 +139,7 @@ int DosShell::getkey()
 
     int ch=Console::getkey();
     if( isKanji(ch) ){
-#if 0
+#if 1
 	if( ch ==0xE0 ) /* xscript */
 	    ch = 0x01;
 #endif

@@ -115,8 +115,9 @@ release :
 	$(MAKE) _package VER=`gawk '/^#define VER/{ print $$3 }' nyados.cpp`
 
 nightly :
-	cd ../ ; zip nyaos3k-`date "+%Y%m%d"`.zip \
-		nyaos3k/{*.exe,Makefile,*.h,*.cpp,*.ico,,*.rc,_nya}
+	cd ../ ; \
+	zip nyaos3k-`gawk '/^#define VER/{ gsub(/\042/,""); print $$3 }' nyaos3k/nyados.cpp` \
+	nyaos3k/{*.exe,Makefile,*.h,*.cpp,*.ico,,*.rc,_nya}
 
 _package :
 	zip nyaos2-$(VER).zip nyaos2.exe nyaos2.txt _nya
