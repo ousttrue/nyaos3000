@@ -76,13 +76,9 @@ vzbind{
 
 lua_e "
     --- keyhook ---
-    function nyaos.keyhook(keycode)
-        if string.char(keycode)=='F' then
-            return string.byte("123456789",1,-1)
-        elseif string.char(keycode)=='D' then
-            return nyaos.key.DEL
-        elseif string.char(keycode)=='X' then
-            return true
+    function nyaos.keyhook(t)
+        if t.key == nyaos.key.ESCAPE and t.text == '' then
+            return os.getenv('EDITOR') or 'notepad',true
         end
         return nil
     end

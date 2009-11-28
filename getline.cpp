@@ -149,7 +149,14 @@ int GetLine::operator() ( NnString &result )
         if( lua_hook_on ){
             lua_getfield(L,-1,"keyhook");
             if( lua_type(L,-1) == LUA_TFUNCTION ){
+                lua_newtable(L);
                 lua_pushinteger(L,key);
+                lua_setfield(L,-2,"key");
+                lua_pushinteger(L,pos);
+                lua_setfield(L,-2,"pos");
+                lua_pushstring(L,buffer.chars());
+                lua_setfield(L,-2,"text");
+
                 if( lua_pcall(L,1,LUA_MULTRET,0) == 0 ){
                     int n=lua_gettop(L);
                     if( n < 2 ){
@@ -174,6 +181,7 @@ int GetLine::operator() ( NnString &result )
                         }
                     }
                 }else{
+                    /* messaging error */
                     putchr('\n');
                     const char *p=lua_tostring(L,-1);
                     while( p != NULL && *p != '\0' ){

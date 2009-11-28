@@ -30,6 +30,7 @@ class TwinBuffer {
         DBC2ND ,	// 倍角文字 右側 , DBCS 文字 第２バイト目
     };
 public:
+    const char *chars() const { return strbuf; }
     int      length() const { return len; }
     int      makeroom(int at,int size);	      // at から sizeバイト分の桁を作る。
     void     delroom(int at,int size);	      // at から sizeバイト分を削除する。
