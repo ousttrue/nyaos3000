@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include "getline.h"
 #include "nnhash.h"
+#include "nua.h"
 
 #undef  CTRL
 #define CTRL(x) ((x) & 0x1F)
@@ -24,7 +25,10 @@ int KeyFunction::bind( const char *keyName , const char *funcName )
     return 0;
 }
 
-KeyFunction::Keyname_t KeyFunction::keynames[] = {
+static struct {
+    const char *name;
+    int code;
+} keynames[] = {
   { "ALT_0",                 0x181    /* <Alt>+<0> */ },
   { "ALT_1",                 0x178    /* <Alt>+<1> */ },
   { "ALT_2",                 0x179    /* <Alt>+<2> */ },
@@ -402,6 +406,20 @@ void GetLine::bindinit()
     bindmap[ CTRL(']') ] =
     bindmap[ KEY_CTRL_UP ]    = &GetLine::xscript;
     KeyFunctionXScript::init();
+#endif
+#ifdef LUA_ENABLE
+    lua_State *L=nua_init();
+    if( (lua_getglobal(L,"nyaos"),lua_type(L,-1))==LUA_TTABLE ){
+        lua_newtable(L);
+        for(size_t i=0 ; i<numof(keynames) ; ++i ){
+            lua_pushstring(L,keynames[i].name );
+            lua_pushinteger(L,keynames[i].code );
+            lua_settable(L,-3);
+        }
+        lua_setfield(L,-2,"key");
+    }
+    lua_settop(L,0);
+    
 #endif
 }
 

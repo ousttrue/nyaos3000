@@ -75,6 +75,17 @@ vzbind{
 # vzbind
 
 lua_e "
+    --- keyhook ---
+    function nyaos.keyhook(keycode)
+        if string.char(keycode)=='F' then
+            return string.byte("123456789",1,-1)
+        elseif string.char(keycode)=='D' then
+            return nyaos.key.DEL
+        elseif string.char(keycode)=='X' then
+            return true
+        end
+        return nil
+    end
     --「%(Lua式)」を処理する Lua コード --
     function nyaos.filter(cmdline)
         return cmdline:gsub('%%(%b())',function(m)

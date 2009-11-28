@@ -68,10 +68,6 @@ struct Completion;
  * 分からないのは、対応するキーと、バインドマップの存在だけ.
  */
 class KeyFunction : public NnObject {
-    static struct Keyname_t {
-	const char *name;
-	int code;
-    } keynames[];
     static int code_sub( const char *key , int start , int end );
     static int code( const char *key );
     static NnHash function_dictionary;

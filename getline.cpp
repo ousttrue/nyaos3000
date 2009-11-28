@@ -8,6 +8,7 @@
 
 #include "getline.h"
 #include "nnhash.h"
+#include "nua.h"
 
 Status (GetLine::*GetLine::which_command(int key))(int key)
 {
@@ -127,11 +128,72 @@ int GetLine::operator() ( NnString &result )
     }
 
     lastKey = 0;
+#ifdef LUA_ENABLE
   
+    int lua_hook_on=0;
+    lua_State *L=nua_init();
+    if( L != NULL ){
+        lua_getglobal(L,"nyaos");
+        if( lua_type(L,-1) == LUA_TTABLE ){
+            lua_hook_on = 1;
+        }else{
+            lua_pop(L,1);
+        }
+    }
+#endif
+    
     for(;;){
         int key=getkey();
+        int rc=CONTINUE;
+#ifdef LUA_ENABLE
+        if( lua_hook_on ){
+            lua_getfield(L,-1,"keyhook");
+            if( lua_type(L,-1) == LUA_TFUNCTION ){
+                lua_pushinteger(L,key);
+                if( lua_pcall(L,1,LUA_MULTRET,0) == 0 ){
+                    int n=lua_gettop(L);
+                    if( n < 2 ){
+                        rc = interpret( key );
+                    }else{
+                        for(int i=2 ; i<=n && rc==CONTINUE ;i++){
+                            switch( lua_type(L,i) ){
+                            default:
+                            case LUA_TNIL:
+                                rc = interpret( key );
+                                break;
+                            case LUA_TBOOLEAN:
+                                rc = lua_toboolean(L,i) ? ENTER : CANCEL;
+                                break;
+                            case LUA_TNUMBER:
+                                rc = interpret( lua_tointeger(L,i) );
+                                break;
+                            case LUA_TSTRING:
+                                this->insertHere( lua_tostring(L,i) );
+                                break;
+                            }
+                        }
+                    }
+                }else{
+                    putchr('\n');
+                    const char *p=lua_tostring(L,-1);
+                    while( p != NULL && *p != '\0' ){
+                        putchr(*p++);
+                    }
+                    putchr('\n');
+                    prompt();
+                    puts_between( offset , pos );
+                    repaint_after();
+                }
+            }
+            lua_settop(L,1);
+        }else{
+#endif
+            rc = interpret(key);
+#ifdef LUA_ENABLE
+        }
+#endif
 	int len;
-        switch( interpret(key) ){
+        switch( rc ){
         case CONTINUE:
             break;
 
@@ -140,6 +202,10 @@ int GetLine::operator() ( NnString &result )
             end();
             result.erase();
             history.drop();
+#ifdef LUA_ENABLE
+            if( lua_hook_on )
+                lua_settop(L,0);
+#endif
             return -1;
           
         case ENTER:
@@ -156,6 +222,10 @@ int GetLine::operator() ( NnString &result )
             }
             end();
             buffer.term();
+#ifdef LUA_ENABLE
+            if( lua_hook_on )
+                lua_settop(L,0);
+#endif
             return len;
         }
         lastKey = key;
