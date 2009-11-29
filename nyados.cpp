@@ -15,7 +15,7 @@
 #include "ishell.h"
 #include "writer.h"
 
-#define VER "20091128"
+#define VER "20091129"
 
 #ifdef _MSC_VER
 int  nya_new_handler(size_t size)

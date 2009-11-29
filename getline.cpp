@@ -192,6 +192,8 @@ int GetLine::operator() ( NnString &result )
                     puts_between( offset , pos );
                     repaint_after();
                 }
+            }else{
+                rc = interpret(key);
             }
             lua_settop(L,1);
         }else{
