@@ -54,15 +54,15 @@
 
 #if defined(NYADOS)
 #  define SHELL_NAME		"NYADOS"
-#  define RUN_COMMANDS		{ "_nyados","_nya" , NULL }
 #elif defined(NYACUS)
 #  define SHELL_NAME		"NYACUS"
-#  define RUN_COMMANDS		{ "_nyacus","_nyagos","_nya" , NULL }
 #elif defined(NYAOS2)
 #  define SHELL_NAME		"NYAOS2"
-#  define RUN_COMMANDS		{ "_nyacus","_nyagos2","_nya" , NULL }
 #else
 #  error NO SUPPORT COMPILER
 #endif
+
+#define RUN_COMMANDS "_nya"
+
 
 #endif

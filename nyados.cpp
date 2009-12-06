@@ -15,7 +15,11 @@
 #include "ishell.h"
 #include "writer.h"
 
-#define VER "20091129"
+#define VER "20091206"
+
+#ifdef _MSC_VER
+#  include <windows.h>
+#endif
 
 #ifdef _MSC_VER
 int  nya_new_handler(size_t size)
@@ -30,57 +34,79 @@ void nya_new_handler()
 #endif
 }
 
-/* _nya ファイルのパス */
+/* 現在処理中の rcfname の名前
+ * 空だと通常の _nya が呼び出される。
+ */
 static NnString rcfname;
 
-/* rcファイルを探す.
- *	rcfname - 見つかった場合、rcファイル名が入る
- *	argv0   - exeファイルの名前.
- * return
- *	0 - 見つかった , 1 - 見つからなかった
- */
-static int seekrc( NnString &rcfname , const char *argv0 )
+/* rcfname_ を _nya として呼び出す */
+static void callrc( const NnString &rcfname_ , const NnVector &argv )
 {
-    const static char *rcfnames[] = RUN_COMMANDS ;
-    NnString rcfn;
-    for( const char **p =rcfnames ; *p != NULL ; ++p ){
-	/* カレントディレクトリの _nya を試みる */
-        if( access( *p ,0 ) == 0 ){
-            rcfname = *p ;
-            return 0;
-        }
-	/* HOME ディレクトリの _nya を試みる */
-        const char *home=getEnv("HOME");
-        if( home == NULL )
-            home = getEnv("USERPROFILE");
-
-        if( home != NULL ){
-            rcfn = home;
-            rcfn.trim();
-            rcfn << '\\' << *p;
-            if( access( rcfn.chars() , 0 )==0 ){
-                rcfname = rcfn;
-                return 0;
-            }
-        }
-        rcfn  = "\\";
-        rcfn += *p;
-        if( access(rcfn.chars(),0) == 0 ){
-            rcfname = rcfn;
-            return 0;
-        }
-	/* EXE ファイルと同じディレクトリの _nya を試みる */
-	int lastroot=NnDir::lastRoot( argv0 );
-	if( lastroot != -1 ){
-	    rcfn.assign( argv0 , lastroot );
-	    rcfn << '\\' << *p;
-	    if( access( rcfn.chars(),0) == 0 ){
-		rcfname = rcfn;
-		return 0;
-	    }
-	}
+    if( access( rcfname_.chars() , 0 ) != 0 ){
+        /* printf( "%s: not found.\n",rcfname_.chars() ); */
+        return;
     }
-    return 1;
+
+    rcfname = rcfname_;
+
+    rcfname.slash2yen();
+    ScriptShell scrShell( rcfname.chars() );
+
+    scrShell.addArgv( rcfname );
+    for( int i=0 ; i < argv.size() ; i++ ){
+        if( argv.const_at(i) != NULL )
+            scrShell.addArgv( *(const NnString *)argv.const_at(i) );
+    }
+    scrShell.mainloop();
+}
+
+/* rcファイルを探し、見付かったものから、呼び出す。
+ *	argv0 - exeファイルの名前.
+ *      argv - パラメータ
+ */
+static void seek_and_call_rc( const char *argv0 , const NnVector &argv )
+{
+    /* EXE ファイルと同じディレクトリの _nya を試みる */
+    NnString rcfn1;
+
+    int lastroot=NnDir::lastRoot( argv0 );
+    if( lastroot != -1 ){
+        rcfn1.assign( argv0 , lastroot );
+        rcfn1 << '\\' << RUN_COMMANDS;
+        callrc( rcfn1 , argv );
+    /* / or \ が見付からなかった時は
+     * カレントディレクトリとみなして実行しない
+     * (二重呼び出しになるので)
+     */
+#if 0
+    }else{
+        printf("DEBUG: '%s' , (%d)\n", argv0 , lastroot);
+#endif
+    }
+    /* %HOME%\_nya or %USERPROFILE%\_nya or \_nya  */
+    NnString rcfn2;
+
+    const char *home=getEnv("HOME");
+    if( home == NULL )
+        home = getEnv("USERPROFILE");
+
+    if( home != NULL ){
+        rcfn2 = home;
+        rcfn2.trim();
+    }
+    rcfn2 << "\\" << RUN_COMMANDS;
+    if( rcfn2.compare(rcfn1) != 0 )
+        callrc( rcfn2 , argv );
+
+    /* カレントディレクトリの _nya を試みる */
+    NnString rcfn3;
+    char cwd[ FILENAME_MAX ];
+
+    getcwd( cwd , sizeof(cwd) );
+    rcfn3 << cwd << '\\' << RUN_COMMANDS ;
+
+    if( rcfn3.compare(rcfn1) !=0 && rcfn3.compare(rcfn2) !=0 )
+        callrc( rcfn3 , argv );
 }
 
 /* -d デバッグオプション
@@ -228,28 +254,25 @@ int main( int argc, char **argv )
 #ifdef ESCAPE_SEQUENCE_OK
 "\x1B[2J" << 
 #endif
-#ifdef NYADOS
-	"Nihongo Yet Another DOS Shell "
-#elif defined(NYACUS)
-	"Nihongo Yet Another OSes Shell-3000 "
-#else
-	"Nihongo Yet Another OS/2 Shell "
-#endif
-	"v."VER" (C) 2001-09 by NYAOS.ORG\n";
+	"Nihongo Yet Another OSes Shell 3000 v."VER" (C) 2001-09 by NYAOS.ORG\n";
 
     NnDir::set_default_special_folder();
 
-    /* _nyados を実行する */
-    if( !rcfname.empty() || seekrc(rcfname,argv[0])==0 ){
-	rcfname.slash2yen();
-	ScriptShell scrShell( rcfname.chars() );
+    /* _nya を実行する */
+    if( rcfname.empty() ){
+#ifdef _MSC_VER
+        char execname[ FILENAME_MAX ];
 
-        scrShell.addArgv( rcfname );
-        for( int i=0 ; i < nnargv.size() ; i++ ){
-            if( nnargv.const_at(i) != NULL )
-                scrShell.addArgv( *(const NnString *)nnargv.const_at(i) );
+        if( GetModuleFileName( NULL , execname , sizeof(execname)-1 ) > 0 ){
+            seek_and_call_rc(execname,nnargv);
+        }else{
+#endif
+            seek_and_call_rc(argv[0],nnargv);
+#ifdef _MSC_VER
         }
-	scrShell.mainloop();
+#endif
+    }else{
+        callrc(rcfname,nnargv);
     }
 
     signal( SIGINT , SIG_IGN );
