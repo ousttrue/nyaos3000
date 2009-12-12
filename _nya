@@ -2,8 +2,8 @@
 #   (1) NYAOS.EXE のあるディレクトリ
 #   (2) %HOME% の下(未定義であれば %USERPROFILE%)
 #   (3) カレントディレクトリ
-# にある _nya を順に呼び出します.
-# ※ (1)==(3) の場合などは、(3) を呼び出しません.
+# にある _nya を「順に全て」呼び出します.
+# ※ ただし、(1)==(3) の場合等は、(3)を呼び出しません.
 #
 # 通常
 #    - NYAOS.EXE に添付の _nya (当ファイル) は (1) へ
@@ -12,15 +12,15 @@
 
 print %0 reading ...
 
-suffix ny %nyatype% -f
-suffix pl perl
-suffix rb ruby
+suffix ny  %nyatype% -f
+suffix pl  perl
+suffix py  python
+suffix rb  ruby
 suffix jar java -jar
+suffix lua lua
 suffix awk awk -f
 suffix vbs cscript
 suffix js  cscript
-suffix cmd %COMSPEC% /c
-suffix bat %COMSPEC% /c
 
 option +standalone
 option uncompletechar ,;=
@@ -28,7 +28,6 @@ option tilde   on
 option history on
 option backquote  4000
 option +keep_bottom_line
-# option +standalone
 if $standalone = (set) then
     foreach i (dir mkdir rmdir copy move rename ren type md rd start)
 	alias $i $COMSPEC /c $i
