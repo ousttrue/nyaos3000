@@ -11,6 +11,7 @@
 //#define TRACE(X) ((X),fflush(stdout))
 #define TRACE(X)
 
+extern int open_luautil( lua_State *L );
 static lua_State *nua=NULL;
 static void nua_shutdown()
 {
@@ -135,7 +136,7 @@ lua_State *nua_init()
         luaL_openlibs(nua);
         atexit(nua_shutdown);
 
-        lua_newtable(nua); /* nyaos = {} */
+        open_luautil(nua); 
         lua_newtable(nua);
         lua_setfield(nua,-2,"command");
 
