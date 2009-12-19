@@ -14,6 +14,7 @@
 #include "getline.h"
 #include "ishell.h"
 #include "writer.h"
+#include "nua.h"
 
 #define VER "20091219"
 
@@ -168,6 +169,46 @@ static int opt_e( int argc , char **argv , int &i )
     return 1;
 }
 
+/* -E 1行Luaコマンド用オプション処理
+ */
+static int opt_E( int argc , char **argv , int &i )
+{
+#ifdef LUA_ENABLE
+    if( i+1 >= argc ){
+	conErr << "-e needs commandline.\n";
+	return 2;
+    }
+    lua_State *lua=nua_init();
+    int n=0;
+
+    if( luaL_loadstring( lua , argv[++i] ) )
+        goto errpt;
+
+    lua_newtable(lua);
+    while( ++i < argc ){
+        lua_pushinteger(lua,++n);
+        lua_pushstring(lua,argv[i]);
+        lua_settable(lua,-3);
+    }
+    lua_setglobal(lua,"arg");
+
+    if( lua_pcall( lua , 0 , 0 , 0 ) )
+        goto errpt;
+
+    lua_settop(lua,0);
+#else
+    shell.err() << "require: built-in lua disabled.\n";
+#endif /* defined(LUA_ENABLE) */
+    return 1;
+#ifdef LUA_ENABLE
+  errpt:
+    const char *msg = lua_tostring( lua , -1 );
+    fputs(msg,stderr);
+    putc('\n',stderr);
+    return 2;
+#endif
+}
+
 /* -f スクリプト実行用オプション処理
  *	argc , argv : main の引数
  *	i : 現在読み取り中の argv の添字
@@ -238,6 +279,7 @@ int main( int argc, char **argv )
             case 'f': rv=opt_f(argc,argv,i); break;
 	    case 'e': rv=opt_e(argc,argv,i); break;
 	    case 'a': rv=opt_a(argc,argv,i); break;
+            case 'E': rv=opt_E(argc,argv,i); break;
 	    default:
 		rv = 2;
 		conErr << argv[0] << " : -" 

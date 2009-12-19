@@ -86,9 +86,20 @@ lua_e "
             return loadstring('return '..m)()
         end)
     end
-    -- say ƒRƒ}ƒ“ƒh --
+    -- say command  --
     function nyaos.command.say(message)
         print(message)
+    end
+    -- which command  --
+    function nyaos.command.which2(cmd)
+        local path=('.;' .. os.getenv('PATH'))
+        for path1 in path:gmatch('[^;]+') do
+            for fname in nyaos.dir(path1) do
+                if cmd:lower() == fname:sub(1,cmd:len()):lower() then
+                    print( path1 .. '\\' .. fname )
+                end
+            end
+        end
     end
 
     print('done')
