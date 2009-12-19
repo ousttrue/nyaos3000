@@ -78,6 +78,22 @@ int nua_history_get(lua_State *lua)
     }
 }
 
+int nua_history_set(lua_State *lua)
+{
+    History **history=(History**)lua_touserdata(lua,-3);
+    int key=lua_tointeger(lua,-2);
+    const char *val=lua_tostring(lua,-1);
+    if( history == NULL || !lua_isnumber(lua,-2) ){
+        lua_pushstring(lua,"invalid key index");
+        lua_error(lua);
+        return 0;
+    }
+    NnString rightvalue(val != NULL ? val : "" );
+    (*history)->set(key-1,rightvalue);
+    /* printf("[%d]='%s'\n",key-1,rightvalue.chars()); */
+    return 0;
+}
+
 
 class NnLuaFunction : public NnExecutable {
 public:
@@ -169,7 +185,6 @@ int nua_history_iter_factory(lua_State *lua)
     return 3;
 }
 
-
 lua_State *nua_init()
 {
     if( nua == NULL ){
@@ -228,6 +243,8 @@ lua_State *nua_init()
         lua_setfield(nua,-2,"__len");
         lua_pushcfunction(nua,nua_history_iter_factory);
         lua_setfield(nua,-2,"__call");
+        lua_pushcfunction(nua,nua_history_set);
+        lua_setfield(nua,-2,"__newindex");
         lua_setmetatable(nua,-2);
         lua_setfield(nua,-2,"history");
 
