@@ -120,7 +120,7 @@ public:
 class GetLine {
     friend class KeyFunctionEdit;
 public:
-    History history;
+    static History history;
 protected:
     int history_pointor;
     enum{ 

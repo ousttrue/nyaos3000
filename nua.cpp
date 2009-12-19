@@ -51,6 +51,34 @@ int nua_put(lua_State *lua)
     return 0;
 }
 
+int nua_history_len(lua_State *lua)
+{
+    History **history=(History**)lua_touserdata(lua,-2);
+    if( history == NULL ){
+        return 0;
+    }
+    lua_pushinteger(lua,(*history)->size());
+    return 1;
+}
+
+int nua_history_get(lua_State *lua)
+{
+    History **history=(History**)lua_touserdata(lua,-2);
+    int key=lua_tointeger(lua,-1);
+
+    if( history == NULL || !lua_isnumber(lua,-1) ){
+        return 0;
+    }
+    NnObject *result=(**history)[key-1];
+    if( result != NULL ){
+        lua_pushstring( lua , result->repr() );
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+
 class NnLuaFunction : public NnExecutable {
 public:
     int operator()( const NnVector &args );
@@ -141,32 +169,37 @@ lua_State *nua_init()
         lua_setfield(nua,-2,"command");
 
         while( p->name != NULL ){
-            lua_pushstring(nua,p->name);
-
             NnHash **u=(NnHash**)lua_newuserdata(nua,sizeof(NnHash *));
             *u = p->dict;
 
             lua_newtable(nua); /* metatable */
             if( p->index != NULL ){
-                lua_pushstring(nua,"__index");
                 lua_pushcfunction(nua,p->index);
-                lua_settable(nua,-3);
+                lua_setfield(nua,-2,"__index");
             }
             if( p->newindex != NULL ){
-                lua_pushstring(nua,"__newindex");
                 lua_pushcfunction(nua,p->newindex);
-                lua_settable(nua,-3);
+                lua_setfield(nua,-2,"__newindex");
             }
             if( p->call != NULL ){
-                lua_pushstring(nua,"__call");
                 lua_pushcfunction(nua,p->call);
-                lua_settable(nua,-3);
+                lua_setfield(nua,-2,"__call");
             }
             lua_setmetatable(nua,-2);
 
-            lua_settable(nua,-3);
+            lua_setfield(nua,-2,p->name);
             p++;
         }
+        History **h=(History**)lua_newuserdata(nua,sizeof(History*));
+        *h = &GetLine::history;
+        lua_newtable(nua);
+        lua_pushcfunction(nua,nua_history_get);
+        lua_setfield(nua,-2,"__index");
+        lua_pushcfunction(nua,nua_history_len);
+        lua_setfield(nua,-2,"__len");
+        lua_setmetatable(nua,-2);
+        lua_setfield(nua,-2,"history");
+
         lua_setglobal(nua,"nyaos");
     }
     return nua;

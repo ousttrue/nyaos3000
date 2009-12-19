@@ -10,6 +10,8 @@
 #include "nnhash.h"
 #include "nua.h"
 
+History GetLine::history;
+
 Status (GetLine::*GetLine::which_command(int key))(int key)
 {
     return (unsigned)key>=numof(bindmap) 

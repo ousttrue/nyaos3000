@@ -15,7 +15,7 @@
 #include "ishell.h"
 #include "writer.h"
 
-#define VER "20091206"
+#define VER "20091219"
 
 #ifdef _MSC_VER
 #  include <windows.h>
