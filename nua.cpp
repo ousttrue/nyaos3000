@@ -61,12 +61,46 @@ int nua_history_len(lua_State *lua)
     return 1;
 }
 
+int nua_history_add(lua_State *lua)
+{
+    History **history=(History**)lua_touserdata(lua,-2);
+    const char *val=lua_tostring(lua,-1);
+    if( history == NULL || val == NULL ){
+        return 0;
+    }
+    **history << val;
+    return 0;
+}
+
+int nua_history_drop(lua_State *lua)
+{
+    History **history=(History**)lua_touserdata(lua,-1);
+    if( history == NULL )
+        return 0;
+
+    (*history)->drop();
+    return 0;
+}
+
 int nua_history_get(lua_State *lua)
 {
     History **history=(History**)lua_touserdata(lua,-2);
     int key=lua_tointeger(lua,-1);
 
-    if( history == NULL || !lua_isnumber(lua,-1) ){
+    if( history == NULL )
+        return 0;
+
+    if( !lua_isnumber(lua,-1) ){
+        const char *key=lua_tostring(lua,-1);
+        if( key != NULL ){
+            if( strcmp(key,"add") == 0 ){
+                lua_pushcfunction(lua,nua_history_add);
+                return 1;
+            }else if( strcmp(key,"drop") == 0 ){
+                lua_pushcfunction(lua,nua_history_drop);
+                return 1;
+            }
+        }
         return 0;
     }
     NnObject *result=(**history)[key-1];
