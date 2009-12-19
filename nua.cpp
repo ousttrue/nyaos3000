@@ -141,6 +141,35 @@ int nua_iter_factory(lua_State *lua)
     return 2;
 }
 
+int nua_history_iter(lua_State *lua)
+{
+    History **history=(History**)lua_touserdata(lua,-2);
+    if( history == NULL || !lua_isnumber(lua,-1) ){
+        return 0;
+    }
+    int n=lua_tointeger(lua,-1);
+    if( n >= (*history)->size() ){
+        return 0;
+    }
+    lua_pushinteger(lua,n+1);
+    lua_pushstring(lua,(**history)[n]->repr());
+
+    return 2;
+}
+
+int nua_history_iter_factory(lua_State *lua)
+{
+    History **history=(History**)lua_touserdata(lua,-1);
+    if( history == NULL ){
+        return 0;
+    }
+    lua_pushcfunction(lua,nua_history_iter);
+    lua_insert(lua,-2);
+    lua_pushinteger(lua,0);
+    return 3;
+}
+
+
 lua_State *nua_init()
 {
     if( nua == NULL ){
@@ -197,6 +226,8 @@ lua_State *nua_init()
         lua_setfield(nua,-2,"__index");
         lua_pushcfunction(nua,nua_history_len);
         lua_setfield(nua,-2,"__len");
+        lua_pushcfunction(nua,nua_history_iter_factory);
+        lua_setfield(nua,-2,"__call");
         lua_setmetatable(nua,-2);
         lua_setfield(nua,-2,"history");
 
