@@ -219,6 +219,21 @@ int nua_history_iter_factory(lua_State *lua)
     return 3;
 }
 
+int nua_exec(lua_State *lua)
+{
+    const char *statement = lua_tostring(lua,-1);
+    if( statement != NULL ){
+        OneLineShell shell( statement );
+
+        shell.mainloop();
+
+        lua_pushinteger(lua,shell.exitStatus());
+    }else{
+        lua_pushboolean(lua,0);
+    }
+    return 1;
+}
+
 lua_State *nua_init()
 {
     if( nua == NULL ){
@@ -243,9 +258,12 @@ lua_State *nua_init()
         atexit(nua_shutdown);
 
         open_luautil(nua); 
+
+        /* nyaos.command[] */
         lua_newtable(nua);
         lua_setfield(nua,-2,"command");
 
+        /* table-like objects */
         while( p->name != NULL ){
             NnHash **u=(NnHash**)lua_newuserdata(nua,sizeof(NnHash *));
             *u = p->dict;
@@ -270,6 +288,8 @@ lua_State *nua_init()
         }
         History **h=(History**)lua_newuserdata(nua,sizeof(History*));
         *h = &GetLine::history;
+
+        /* history object */
         lua_newtable(nua);
         lua_pushcfunction(nua,nua_history_get);
         lua_setfield(nua,-2,"__index");
@@ -281,7 +301,11 @@ lua_State *nua_init()
         lua_setfield(nua,-2,"__newindex");
         lua_setmetatable(nua,-2);
         lua_setfield(nua,-2,"history");
+        
+        lua_pushcfunction(nua,nua_exec);
+        lua_setfield(nua,-2,"exec");
 
+        /* close nyaos table */
         lua_setglobal(nua,"nyaos");
     }
     return nua;
