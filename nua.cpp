@@ -222,15 +222,26 @@ int nua_history_iter_factory(lua_State *lua)
 int nua_exec(lua_State *lua)
 {
     const char *statement = lua_tostring(lua,-1);
-    if( statement != NULL ){
-        OneLineShell shell( statement );
+    if( statement == NULL )
+        return luaL_argerror(lua,1,"invalid nyaos-statement");
+    
+    OneLineShell shell( statement );
 
-        shell.mainloop();
+    shell.mainloop();
 
-        lua_pushinteger(lua,shell.exitStatus());
-    }else{
-        lua_pushboolean(lua,0);
-    }
+    lua_pushinteger(lua,shell.exitStatus());
+    return 1;
+}
+
+int nua_access(lua_State *lua)
+{
+    const char *fname = lua_tostring(lua,1);
+    int amode = lua_tointeger(lua,2);
+
+    if( fname == NULL )
+        return luaL_argerror(lua,2,"invalid filename");
+    
+    lua_pushboolean(lua, access(fname,amode)==0 );
     return 1;
 }
 
@@ -304,6 +315,8 @@ lua_State *nua_init()
         
         lua_pushcfunction(nua,nua_exec);
         lua_setfield(nua,-2,"exec");
+        lua_pushcfunction(nua,nua_access);
+        lua_setfield(nua,-2,"access");
 
         /* close nyaos table */
         lua_setglobal(nua,"nyaos");
