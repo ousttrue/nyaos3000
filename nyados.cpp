@@ -170,19 +170,25 @@ static int opt_e( int argc , char **argv , int &i )
 }
 
 /* -E 1行Luaコマンド用オプション処理
+ * -F ファイル読み込みオプション処理
  */
-static int opt_E( int argc , char **argv , int &i )
+static int opt_EF( int argc , char **argv , int &i )
 {
 #ifdef LUA_ENABLE
     if( i+1 >= argc ){
-	conErr << "-e needs commandline.\n";
+	conErr << "option needs commandline.\n";
 	return 2;
     }
     lua_State *lua=nua_init();
     int n=0;
 
-    if( luaL_loadstring( lua , argv[++i] ) )
-        goto errpt;
+    if( argv[i][1] == 'E' ){
+        if( luaL_loadstring( lua , argv[++i] ) )
+            goto errpt;
+    }else{
+        if( luaL_loadfile( lua , argv[++i] ) )
+            goto errpt;
+    }
 
     lua_newtable(lua);
     while( ++i < argc ){
@@ -279,7 +285,8 @@ int main( int argc, char **argv )
             case 'f': rv=opt_f(argc,argv,i); break;
 	    case 'e': rv=opt_e(argc,argv,i); break;
 	    case 'a': rv=opt_a(argc,argv,i); break;
-            case 'E': rv=opt_E(argc,argv,i); break;
+            case 'F':
+            case 'E': rv=opt_EF(argc,argv,i); break;
 	    default:
 		rv = 2;
 		conErr << argv[0] << " : -" 
