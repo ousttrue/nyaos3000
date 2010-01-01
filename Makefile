@@ -27,8 +27,8 @@ all:
 CCC=-DNDEBUG
 
 nyaos3k : 
-	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
-		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L/usr/lib/mingw/" \
+	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -I$(LUAPATH)/src -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
+		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L$(LUAPATH)/src -L/usr/lib/mingw/" \
 		nyaos.exe
 
 digitalmars :
@@ -58,7 +58,7 @@ nyaos2.exe : $(OBJS)
 
 nyaos.exe : $(OBJS) nyacusrc.$(O)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	objdump -x $@ | grep "DLL Name"
+	objdump -x $@ | findstr "DLL Name"
 	upx -9 $@
 
 nyados.exe : $(OBJS)

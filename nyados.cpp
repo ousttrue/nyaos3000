@@ -16,7 +16,7 @@
 #include "writer.h"
 #include "nua.h"
 
-#define VER "20091219"
+#define VER "20091220"
 
 #ifdef _MSC_VER
 #  include <windows.h>
