@@ -40,6 +40,24 @@ void nya_new_handler()
  */
 static NnString rcfname;
 
+/* nyaos.rcfname という Lua 変数にファイル名をセットする */
+static void set_rcfname_for_Lua( const char *fname )
+{
+    lua_State *lua = nua_init();
+
+    lua_getglobal(lua,"nyaos");
+    if( lua_istable(lua,-1) ){
+        if( fname != NULL ){
+            lua_pushstring(lua,fname);
+        }else{
+            lua_pushnil(lua);
+        }
+        lua_setfield(lua,-2,"rcfname");
+    }
+    lua_pop(lua,1); /* drop nyaos */
+}
+
+
 /* rcfname_ を _nya として呼び出す */
 static void callrc( const NnString &rcfname_ , const NnVector &argv )
 {
@@ -58,7 +76,12 @@ static void callrc( const NnString &rcfname_ , const NnVector &argv )
         if( argv.const_at(i) != NULL )
             scrShell.addArgv( *(const NnString *)argv.const_at(i) );
     }
+
+    set_rcfname_for_Lua( rcfname.chars() );
+
     scrShell.mainloop();
+
+    set_rcfname_for_Lua( NULL );
 }
 
 /* rcファイルを探し、見付かったものから、呼び出す。
