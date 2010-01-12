@@ -73,8 +73,28 @@ vzbind{
 # vzbind
 
 lua_e "
+    --- permanent history ---
+    -- nyaos.savehist = nyaos.rcfname .. 'os_history'
+
+    if nyaos.savehist and nyaos.access(nyaos.savehist) then
+        for line in io.lines(nyaos.savehist) do
+            nyaos.history:add(line)
+        end
+    end
+
     --- logoff --
     function nyaos.goodbye()
+        if nyaos.savehist then
+            local fd,err=io.open(nyaos.savehist,'w')
+            if fd then
+                for i,e in nyaos.history() do
+                    fd:write(e,'\n')
+                end
+                fd:close()
+            else
+                print(err)
+            end
+        end
         print('Good bye !!')
     end
 
