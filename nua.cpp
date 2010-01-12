@@ -7,6 +7,7 @@
 #include "nnhash.h"
 #include "getline.h"
 #include "nua.h"
+#include "ntcons.h"
 
 //#define TRACE(X) ((X),fflush(stdout))
 #define TRACE(X)
@@ -245,6 +246,13 @@ int nua_access(lua_State *lua)
     return 1;
 }
 
+int nua_getkey(lua_State *lua)
+{
+    char key=Console::getkey();
+    lua_pushlstring(lua,&key,1);
+    return 1;
+}
+
 lua_State *nua_init()
 {
     if( nua == NULL ){
@@ -317,6 +325,8 @@ lua_State *nua_init()
         lua_setfield(nua,-2,"exec");
         lua_pushcfunction(nua,nua_access);
         lua_setfield(nua,-2,"access");
+        lua_pushcfunction(nua,nua_getkey);
+        lua_setfield(nua,-2,"getkey");
 
         /* close nyaos table */
         lua_setglobal(nua,"nyaos");
