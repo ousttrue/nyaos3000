@@ -73,6 +73,11 @@ vzbind{
 # vzbind
 
 lua_e "
+    --- logoff --
+    function nyaos.goodbye()
+        print('Good bye !!')
+    end
+
     --- keyhook ---
     function nyaos.keyhook(t)
         if t.key == nyaos.key.ESCAPE and t.text == '' then

@@ -15,8 +15,9 @@
 #include "ishell.h"
 #include "writer.h"
 #include "nua.h"
+#include "ntcons.h"
 
-#define VER "20091220"
+#define VER "20100113"
 
 #ifdef _MSC_VER
 #  include <windows.h>
@@ -292,6 +293,28 @@ static int opt_a( int , char ** , int & )
 
     return 0;
 }
+static void goodbye()
+{
+    lua_State *lua=nua_init();
+
+    lua_getglobal(lua,"nyaos");
+    if( lua_istable(lua,-1) ){
+        lua_getfield(lua,-1,"goodbye");
+        if( lua_isfunction(lua,-1) ){
+            if( lua_pcall(lua,0,0,0) != 0 ){
+                const char *msg = lua_tostring(lua,-1);
+                conErr << "logoff code nyaos.goodbye() raise error.\n"
+                       << msg << "\n[Hit any key]\n";
+                lua_pop(lua,1);
+                (void)Console::getkey();
+            }
+        }else{
+            lua_pop(lua,1); /* drop nil when goodbye not exists */
+        }
+    }
+    lua_pop(lua,1); /* drop 'nyaos' */
+    assert( lua_gettop(lua) == 0 );
+}
 
 int main( int argc, char **argv )
 {
@@ -382,7 +405,7 @@ int main( int argc, char **argv )
                 (Writer&)fw << his1 << '\n';
         }
     }
-    conOut << "\nGood bye!\n";
+    goodbye();
     return 0;
 }
 
