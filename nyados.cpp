@@ -17,7 +17,7 @@
 #include "nua.h"
 #include "ntcons.h"
 
-#define VER "20100113"
+#define VER "20100220"
 
 #ifdef _MSC_VER
 #  include <windows.h>
