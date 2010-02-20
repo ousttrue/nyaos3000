@@ -17,7 +17,9 @@
 #include "nua.h"
 #include "ntcons.h"
 
+#ifndef VER
 #define VER "20100220"
+#endif
 
 #ifdef _MSC_VER
 #  include <windows.h>
@@ -349,7 +351,7 @@ int main( int argc, char **argv )
 #ifdef ESCAPE_SEQUENCE_OK
 "\x1B[2J" << 
 #endif
-	"Nihongo Yet Another OSes Shell 3000 v."VER" (C) 2001-09 by NYAOS.ORG\n";
+	"Nihongo Yet Another OSes Shell 3000 v."VER" (C) 2001-10 by NYAOS.ORG\n";
 
     NnDir::set_default_special_folder();
 

@@ -116,7 +116,7 @@ release :
 
 nightly :
 	cd ../ ; \
-	zip nyaos3k-`gawk '/^#define VER/{ gsub(/\042/,""); print $$3 }' nyaos3k/nyados.cpp` \
+	zip nyaos3k-`gawk '/^# *define VER/{ gsub(/\042/,""); print $$3 }' nyaos3k/nyados.cpp` \
 	nyaos3k/{*.exe,Makefile,*.h,*.cpp,*.ico,,*.rc,_nya}
 
 _package :
