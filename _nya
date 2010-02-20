@@ -29,7 +29,7 @@ option history on
 option backquote  4000
 option +keep_bottom_line
 if $standalone = (set) then
-    foreach i (dir mkdir rmdir copy move rename ren type md rd start)
+    foreach i (dir mkdir rmdir copy move rename ren type md rd start del echo)
 	alias $i $COMSPEC /c $i
     end
     suffix cmd %COMSPEC% /c
