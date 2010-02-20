@@ -59,7 +59,6 @@ nyaos2.exe : $(OBJS)
 nyaos.exe : $(OBJS) nyacusrc.$(O)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	objdump -x $@ | findstr "DLL Name"
-	upx -9 $@
 
 nyados.exe : $(OBJS)
 	$(CC) $(CFLAGS) -o$@ $(OBJS) $(LDFLAGS)
