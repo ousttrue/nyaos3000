@@ -32,6 +32,8 @@ enum{
  *      wait - P_WAIT , P_NOWAIT
  * return
  *      spawn の戻り値
+ *      - wait == P_WAIT   の時は、プロセスの戻り値
+ *      - wait == P_NOWAIT の時は、プロセスID
  */
 static int mySpawn( const NnVector &args , int wait )
 {
@@ -41,11 +43,19 @@ static int mySpawn( const NnVector &args , int wait )
         argv[i] = ((NnString*)args.const_at(i))->chars();
     argv[ args.size() ] = NULL;
     int result;
-    result = spawnvp( wait , (char*)NnDir::long2short(argv[0]) , (char**)argv );
+    result = spawnvp(wait,(char*)NnDir::long2short(argv[0]) , (char**)argv );
     free( argv );
     return result;
 }
 
+/* リダイレクト部分を解析する。
+ *    - >> であれば、アペンドモードであることを検出する
+ * 
+ *  cmdline - コマンドラインへのポインタ
+ *            最初の「>」の「上」にあることを想定
+ *  redirect - 読み取り結果を格納するオブジェクト
+ *
+ *  */
 static void parseRedirect( const char *&cmdline , Redirect &redirect )
 {
     const char *mode="w";
@@ -94,7 +104,8 @@ static void devidePipes( const char *cmdline , NnVector &vector )
  *	cmdline - コマンド
  *	wait - P_WAIT or P_NOWAIT
  * return
- *	コマンドの実行結果
+ *	wait == P_WAIT の時：プロセスの実行結果
+ *	wait == P_NOWAIT の時：コマンドの ID
  */
 static int do_one_command( const char *cmdline , int wait )
 {
@@ -145,22 +156,17 @@ static int do_one_command( const char *cmdline , int wait )
 
 /* NYADOS 専用：system代替関数（パイプライン処理）
  *	cmdline - コマンド文字列	
+ *	wait - 1 ならばコマンド終了まで待つ
+ *	       0 ならば全てのプロセスは非同期で実行する
+ *	       (そしてプロセスIDをポインタに代入する)
  * return
- *	最後に実行したコマンドのエラーコード
+ *	wait==1 : 最後に実行したコマンドのエラーコード
+ *	wait==0 : 最後に実行したコマンドのプロセスID
  */
-int mySystem( const char *cmdline )
+int mySystem( const char *cmdline , int wait=1 )
 {
     if( cmdline[0] == '\0' )
 	return 0;
-#ifdef NYADOS
-    /* NYADOS の場合は、標準エラー出力・擬似パイプの自前処理のため、
-     * もう少し深い階層部分(do_one_command関数)で、system 関数を呼ぶ。
-     *
-     * NYACUS でそれをしないのは、95,98,Me では本物のパイプの動作が
-     * いまいち不安定であるため。
-     */
-    NnString outempfn;
-#else
     NnString *mode=(NnString*)properties.get("standalone");
     if( mode == NULL || mode->length() <= 0 ){
 	errno = 0;
@@ -173,35 +179,12 @@ int mySystem( const char *cmdline )
     }
     int pipefd0 = -1;
     int save0 = -1;
-#endif
     NnVector pipeSet;
     int result=0;
 
     devidePipes( cmdline , pipeSet );
     for( int i=0 ; i < pipeSet.size() ; ++i ){
 	errno = 0;
-#ifdef NYADOS
-	/* NYADOS ではテンポラリファイルをベースとした、
-	 * 擬似パイプを構築する。
-	 */
-	NnString intempfn;
-	{
-	    Redirect redirect0(0);
-	    Redirect redirect1(1);
-
-	    if( ! outempfn.empty() ){
-		intempfn = outempfn;
-		redirect0.switchTo( intempfn , "r" );
-	    }
-	    if( i < pipeSet.size()-1 ){
-		outempfn = NnDir::tempfn(); 
-		redirect1.switchTo( outempfn , "w" );
-	    }
-	    result = do_one_command( ((NnString*)pipeSet.at(i))->chars() , P_WAIT );
-	}
-	if( ! intempfn.empty() )
-	    ::remove( intempfn.chars() );
-#else
 	/* NYACUS,NYAOS2 では、本物のパイプをコマンドを連結する */
         if( pipefd0 != -1 ){
 	    /* パイプラインが既に作られている場合、
@@ -229,19 +212,14 @@ int mySystem( const char *cmdline )
 	    ::close( handles[1] );
             pipefd0 = handles[0];
 
-            do_one_command( ((NnString*)pipeSet.at(i))->chars(),P_NOWAIT );
-
+            result = do_one_command( ((NnString*)pipeSet.at(i))->chars(),P_NOWAIT);
             dup2( save1 , 1 );
             ::close( save1 );
         }else{
-            result = do_one_command( ((NnString*)pipeSet.at(i))->chars(),P_WAIT );
+            result = do_one_command( ((NnString*)pipeSet.at(i))->chars(),
+                    wait ? P_WAIT : P_NOWAIT );
         }
-#endif
 	if( result < 0 ){
-#ifdef NYADOS
-	    if( ! outempfn.empty() )
-		::remove( outempfn.chars() );
-#endif
 	    if( ((NnString*)pipeSet.at(i))->length() > 110 ){
 		conErr << "Too long command line,"
 			    " or bad command or file name.\n";
@@ -252,14 +230,37 @@ int mySystem( const char *cmdline )
 	}
     }
   exit:
-#ifndef NYADOS
-    if( pipefd0 != -1 ){
-	::close( pipefd0 );
-    }
-    if( save0 != -1 ){
-        dup2( save0 , 0 );
-        ::close( save0 );
-    }
-#endif
     return result;
 }
+
+/* CMD.EXE を使わない popen 関数相当
+ *    cmdname : コマンド名
+ *    mode : "r" or "w"
+ * return
+ *    -1 : パイプ生成失敗
+ *    -2 : spawn 失敗
+ *    others : ファイルハンドル
+ */
+int myPopen(const char *cmdline , const char *mode , int *pid )
+{
+    int pipefd[2];
+    int backfd;
+    int d=(mode[0]=='r' ? 1 : 0 );
+
+    if( _pipe(pipefd,1024,_O_TEXT | _O_NOINHERIT ) != 0 ){
+        return -1;
+    }
+
+    backfd = dup(d);
+    ::_dup2( pipefd[d] , d );
+    ::_close( pipefd[d] );
+    int result=mySystem( cmdline , 0 );
+    ::_dup2( backfd , d );
+    ::_close( backfd );
+    if( pid != NULL )
+        *pid = result;
+
+    return pipefd[ d ? 0 : 1 ];
+}
+#define read_from_command(cmdname,argv) mypopen(cmdname,argv,1)
+#define write_to_command(cmdname,argv)  mypopen(cmdname,argv,0)

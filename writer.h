@@ -36,44 +36,36 @@ public:
     int isatty() const;
 };
 
-/* テキストファイルに出力する Writer系クラス。
- * 終了時にファイルをクローズする。
+/* 低水準I/Oインターフェイスを使って、画面出力をする。
+ * - ファイルディスクリプタは自動クローズしない
  */
-#ifdef NYADOS
-    /* NYADOS では,VFAT-API & RAW I/O API を使った実装を行う */
-    class FileWriter : public Writer {
-        unsigned short fd_,size;
-        char buffer[128];
-        void put(char c);
-    public:
-        ~FileWriter();
-        FileWriter( const char *fn     , const char *mode );
-        FileWriter( const NnString &fn , const char *mode );
-        Writer &write( char c );
-        Writer &write( const char *s );
-        int ok(){ return fd_ != -1; }
-        int fd(){ return fd_; }
-	int (isatty)() const ;
-    };
-#else
-    /* NYADOS以外では、普通に FILE* を使った実装を使う */
-    class FileWriter : public StreamWriter {
-    public:
-        ~FileWriter();
-        FileWriter( const char *fn , const char *mode );
-    };
-#endif
+class RawWriter : public Writer {
+    int fd_;
+public:
+    ~RawWriter();
+    RawWriter(int fd=-1) : fd_(fd){}
+    Writer &write( char c );
+    Writer &write( const char *s );
+    int ok() const { return fd_ >= 0 ; }
+    int fd() const { return fd_; }
+    void setFd(int fd){ fd_ = fd; }
+    int isatty() const;
+};
 
-class PipeWriter : public StreamWriter {
-#ifdef NYADOS
-    NnString tempfn;
-#endif
+class FileWriter : public StreamWriter {
+public:
+    ~FileWriter();
+    FileWriter( const char *fn , const char *mode );
+};
+
+class PipeWriter : public RawWriter {
     NnString cmds;
     void open( const NnString &cmds );
+    int pid;
 public:
     ~PipeWriter();
     PipeWriter( const char *cmds );
-    PipeWriter( const NnString &cmds ){ open(cmds); }
+    PipeWriter( const NnString &cmds ){ pid=0;open(cmds); }
 };
 
 #ifdef NYACUS
@@ -81,7 +73,7 @@ public:
 /* エスケープシーケンスを解釈して、画面のアトリビュートの
  * コントロールまで行う出力クラス.
  */
-class AnsiConsoleWriter : public StreamWriter {
+class AnsiConsoleWriter : public RawWriter {
     static int default_color;
     int flag;
     int param[20];
@@ -89,8 +81,10 @@ class AnsiConsoleWriter : public StreamWriter {
     enum { PRINTING , STACKING } mode ;
     enum { BAREN = 1 , GREATER = 2 } ;
 public:
-    AnsiConsoleWriter( FILE *fp ) 
-	: StreamWriter(fp) , flag(0) , n(0) , mode(PRINTING) {}
+    AnsiConsoleWriter( int fd ) 
+	: RawWriter(fd) , flag(0) , n(0) , mode(PRINTING) {}
+    AnsiConsoleWriter( FILE *fp )
+	: RawWriter(fileno(fp)) , flag(0) , n(0) , mode(PRINTING) {fflush(fp);}
 
     Writer &write( char c );
     Writer &write( const char *p );

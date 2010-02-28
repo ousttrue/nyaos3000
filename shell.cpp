@@ -33,7 +33,7 @@ public:
 };
 
 int preprocessHistory( History &hisObj , const NnString &src , NnString &dst );
-int mySystem( const char *cmdline );
+int mySystem( const char *cmdline , int wait=1 );
 int which( const char *nm, NnString &which );
 void brace_expand( NnString &s );
 

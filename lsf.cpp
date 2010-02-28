@@ -9,6 +9,8 @@
 #  include "ntcons.h" 
 #endif
 
+#include "writer.h" /* for test  */
+
 enum {
     OPT_LONG = 0x1 ,
     OPT_ALL  = 0x2 ,

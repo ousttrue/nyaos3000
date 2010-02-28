@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <io.h>
+#include <process.h>
 #include "nndir.h"
 #include "writer.h"
 #include "reader.h"
@@ -12,6 +13,7 @@
 #ifdef NYACUS
 
 int AnsiConsoleWriter::default_color=-1;
+int myPopen(const char *cmdline , const char *mode , int *pid );
 
 Writer &AnsiConsoleWriter::write( char c )
 {
@@ -19,16 +21,20 @@ Writer &AnsiConsoleWriter::write( char c )
 
     if( mode == PRINTING ){
 	if( c == '\x1B' ){
-	    fflush( stdout );
-	    fflush( stderr );
+            _commit( 1 );
+            _commit( 2 );
+	    // fflush( stdout );
+	    // fflush( stderr );
 	    mode = STACKING;
 	    param[ n = 0 ] = 0;
 	}else if( c == '\b' ){
-	    fflush( stdout );
-	    fflush( stderr );
+            _commit( 1 );
+            _commit( 2 );
+	    // fflush( stdout );
+	    // fflush( stderr );
 	    Console::backspace();
 	}else{
-	    fputc( c, fp() );
+            ::_write( this->fd() , &c , sizeof(char) );
 	}
     }else{
 	if( c == '[' ){
@@ -92,19 +98,19 @@ Writer &AnsiConsoleWriter::write( const char *s )
 {
     while( *s != '\0' )
 	this->write( *s++ );
-    fflush( fp() );
+    _commit( fd() );
+    // fflush( fp() );
     return *this;
 }
 
 #endif
 
-AnsiConsoleWriter conOut(stdout),conErr(stderr);
+AnsiConsoleWriter conOut(1),conErr(2);
 
 int Writer::isatty() const
 { 
     return 0;
 }
-
 
 Writer::~Writer(){}
 
@@ -146,122 +152,28 @@ Writer &StreamWriter::write( const char *s )
 
 void PipeWriter::open( const NnString &cmds_ )
 {
-#ifdef NYADOS
-    tempfn = NnDir::tempfn();
-    FILE *fp = fopen( tempfn.chars() , "w" );
-#elif defined(__BORLANDC__)
-    FILE *fp = _popen( cmds_.chars() , "w" );
-#else
-    FILE *fp = popen( cmds_.chars() , "w" );
-#endif
-    if( fp == NULL )
+    int fd=myPopen( cmds_.chars() , "w" , &pid );
+    if( fd < 0 )
         return;
-    cmds   = cmds_;
+    cmds = cmds_;
     cmds.trim();
-    setFp( fp );
+    setFd( fd );
 }
 
 PipeWriter::PipeWriter( const char *s )
 {
     NnString cmds_(s);
+    pid = 0;
     open( cmds_ );
 }
 
 PipeWriter::~PipeWriter()
 {
-    if( fp() == NULL )
-        return;
-    
-#ifdef NYADOS
-    fclose( fp() );
-
-#if 1
-    {
-	Redirect redirect0(0);
-	redirect0.switchTo( tempfn.chars() ,"r" );
-	system( cmds.chars() );
-    }
-#else
-    int quote=0;
-    const char *p=cmds.chars();
-    for(;;){
-        if( *p == '"' )
-            quote = !quote;
-        if( *p == '\0' ){
-            if( quote )
-                exestr << '"';
-            exestr << " < " << tempfn;
-            break;
-        }
-        if( quote == 0  &&  *p=='|' ){
-            exestr << " < " << tempfn << ' ' << p;
-            break;
-        }
-        exestr += *p++;
-    }
-    system( exestr.chars() );
-#endif
-    remove( tempfn.chars() );
-#elif defined(__BORLANDC__)
-    _pclose( fp() );
-#else
-    pclose( fp() );
-#endif
-}
-
-#ifdef NYADOS
-
-FileWriter::FileWriter( const char *fn , const char *mode )
-{
-    fd_=NnDir::open(fn,mode);
-    size = 0;
-}
-FileWriter::FileWriter( const NnString &fn , const char *mode )
-{
-    fd_=NnDir::open(fn.chars() , mode );
-    size = 0;
-}
-
-FileWriter::~FileWriter()
-{
-    if( fd_ != -1 ){
-        if( size > 0 ){
-            NnDir::write(fd_,buffer,size);
-        }
-        NnDir::close(fd_);
+    ::close(fd());
+    if( pid ){
+        _cwait(NULL,pid,0);
     }
 }
-void FileWriter::put( char c )
-{
-    buffer[ size++ ] = c;
-    if( size >= sizeof(buffer) ){
-        NnDir::write(fd_,buffer,size);
-        size = 0;
-    }
-}
-Writer &FileWriter::write( const char *s )
-{
-    while( *s != '\0' ){
-        if( *s == '\n' )
-            this->put('\r');
-        this->put(*s++);
-    }
-    return *this;
-}
-Writer &FileWriter::write( char c )
-{
-    if( c == '\n' )
-        this->put('\r');
-    this->put('\n');
-    return *this;
-}
-
-int FileWriter::isatty() const
-{ 
-    return ::isatty(fd_);
-}
-
-#else /* NYADOS 以外の場合は、コンストラクタのみ */
 
 FileWriter::FileWriter( const char *fn , const char *mode )
     : StreamWriter( fopen(fn,mode) )
@@ -280,9 +192,6 @@ FileWriter::~FileWriter()
     if( ok() )
         fclose( this->fp() );
 }
-
-
-#endif
 
 /* 標準出力・入力をリダイレクトする
  *      x - ファイルハンドル
@@ -345,5 +254,23 @@ int StreamWriter::isatty() const
     return ::isatty( fd() ); 
 }
 
+RawWriter::~RawWriter(){}
+
+Writer &RawWriter::write( char c )
+{
+    ::write( fd_ , &c , 1 );
+    return *this;
+}
+
+Writer &RawWriter::write( const char *s )
+{
+    ::write( fd_ , s , strlen(s) );
+    return *this;
+}
+
+int RawWriter::isatty() const
+{
+    return ::isatty(fd_);
+}
 
 
