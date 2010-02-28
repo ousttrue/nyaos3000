@@ -793,7 +793,6 @@ int cmd_foreach ( NyadosShell & , const NnString & );
 int cmd_pwd     ( NyadosShell & , const NnString & );
 int cmd_folder  ( NyadosShell & , const NnString & );
 int cmd_xptest  ( NyadosShell & , const NnString & );
-int cmd_lua_l   ( NyadosShell & , const NnString & );
 int cmd_lua_e   ( NyadosShell & , const NnString & );
 
 int cmd_eval( NyadosShell &shell , const NnString &argv )
@@ -827,7 +826,6 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "list"    , &cmd_ls       },
 	{ "ls"      , &cmd_ls       },
         { "lua_e"   , &cmd_lua_e    },
-        { "lua_l"   , &cmd_lua_l    },
 #ifndef NYADOS
 	{ "open"    , &cmd_open     },
 #endif

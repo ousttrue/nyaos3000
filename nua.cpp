@@ -335,27 +335,6 @@ lua_State *nua_init()
 }
 #endif /* defined(LUA_ENABLED) */
 
-int cmd_lua_l( NyadosShell &shell , const NnString &argv )
-{
-#ifdef LUA_ENABLE
-    NnString arg1,left;
-    argv.splitTo( arg1 , left );
-    NyadosShell::dequote( arg1 );
-
-    lua_State *nua = nua_init();
-
-    if( luaL_loadfile( nua , arg1.chars() ) ||
-        lua_pcall( nua , 0 , 0 , 0 ) )
-    {
-        const char *msg = lua_tostring( nua , -1 );
-        shell.err() << msg << '\n';
-    }
-#else
-    shell.err() << "require: built-in lua disabled.\n";
-#endif /* defined(LUA_ENABLED) */
-    return 0;
-}
-
 int cmd_lua_e( NyadosShell &shell , const NnString &argv )
 {
 #ifdef LUA_ENABLE
@@ -368,6 +347,27 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         return 0;
     }
     lua_State *nua = nua_init();
+    int currfd=+1;
+
+    StreamWriter *sw=dynamic_cast<StreamWriter*>( &shell.out() );
+    if( sw != NULL ){
+        currfd = sw->fd();
+    }else{
+        RawWriter *rw=dynamic_cast<RawWriter*>( &shell.out() );
+        if( rw != NULL ){
+            currfd = rw->fd();
+        }else{
+            conErr << "CAN NOT GET HANDLE\n";
+        }
+    }
+
+    int backfd=-1;
+    if( currfd != 1 ){
+        fflush(stdout);
+        fflush(stderr);
+        backfd = ::dup(1);
+        ::dup2( currfd , 1 );
+    }
 
     if( luaL_loadstring( nua ,  luaL_gsub( nua , arg1.chars() , "$T" , "\n" ) ) ||
         lua_pcall( nua , 0 , 0 , 0 ) )
@@ -376,6 +376,12 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         shell.err() << msg << '\n';
     }
     lua_settop(nua,0);
+    if( backfd != -1 ){
+        fflush(stdout);
+        fflush(stderr);
+        ::dup2( backfd , 1 );
+        ::close( backfd );
+    }
 #else
     shell.err() << "require: built-in lua disabled.\n";
 #endif /* defined(LUA_ENABLED) */
