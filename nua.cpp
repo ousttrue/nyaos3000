@@ -347,40 +347,67 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         return 0;
     }
     lua_State *nua = nua_init();
-    int currfd=+1;
 
+    /* 標準出力のリダイレクト・パイプ出力に対応 */
+    int cur_out=+1;
     StreamWriter *sw=dynamic_cast<StreamWriter*>( &shell.out() );
     if( sw != NULL ){
-        currfd = sw->fd();
+        cur_out = sw->fd();
     }else{
         RawWriter *rw=dynamic_cast<RawWriter*>( &shell.out() );
         if( rw != NULL ){
-            currfd = rw->fd();
+            cur_out = rw->fd();
         }else{
-            conErr << "CAN NOT GET HANDLE\n";
+            conErr << "CAN NOT GET HANDLE(STDOUT)\n";
         }
     }
-
-    int backfd=-1;
-    if( currfd != 1 ){
-        fflush(stdout);
-        fflush(stderr);
-        backfd = ::dup(1);
-        ::dup2( currfd , 1 );
+    fflush(stdout);
+    int back_out=-1;
+    if( cur_out != 1 ){
+        back_out = ::dup(1);
+        ::dup2( cur_out , 1 );
+    }
+    /* 標準エラー出力のリダイレクト・パイプ出力に対応 */
+    int cur_err=+2;
+    sw=dynamic_cast<StreamWriter*>( &shell.err() );
+    if( sw != NULL ){
+        cur_err = sw->fd();
+    }else{
+        RawWriter *rw=dynamic_cast<RawWriter*>( &shell.err() );
+        if( rw != NULL ){
+            cur_err = rw->fd();
+        }else{
+            conErr << "Redirect and pipeline for stderr are not supported yet.\n";
+        }
+    }
+    fflush(stderr);
+    int back_err=-1;
+    if( cur_err != 2 ){
+        back_err = ::dup(2);
+        ::dup2( cur_err , 2 );
     }
 
-    if( luaL_loadstring( nua ,  luaL_gsub( nua , arg1.chars() , "$T" , "\n" ) ) ||
+    /* Lua インタプリタコール */
+    if( luaL_loadstring(nua,luaL_gsub( nua, arg1.chars(), "$T", "\n") ) ||
         lua_pcall( nua , 0 , 0 , 0 ) )
     {
         const char *msg = lua_tostring( nua , -1 );
         shell.err() << msg << '\n';
     }
     lua_settop(nua,0);
-    if( backfd != -1 ){
-        fflush(stdout);
-        fflush(stderr);
-        ::dup2( backfd , 1 );
-        ::close( backfd );
+
+    fflush(stderr);
+    fflush(stdout);
+
+    /* 標準エラー出力を元に戻す */
+    if( back_err >= 0 ){
+        ::dup2( back_err , 2 );
+        ::close( back_err );
+    }
+    /* 標準出力を元に戻す */
+    if( back_out >= 0 ){
+        ::dup2( back_out , 1 );
+        ::close( back_out );
     }
 #else
     shell.err() << "require: built-in lua disabled.\n";
