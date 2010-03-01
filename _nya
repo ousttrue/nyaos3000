@@ -21,23 +21,19 @@ suffix lua lua
 suffix awk awk -f
 suffix vbs cscript
 suffix js  cscript
+suffix cmd %COMSPEC% /c
+suffix bat %COMSPEC% /c
 
-option +standalone
 option uncompletechar ,;=
 option tilde   on
 option history on
 option backquote  4000
 option +keep_bottom_line
-if $standalone = (set) then
-    foreach i (dir mkdir rmdir copy move rename ren type md rd start del echo)
-	alias $i $COMSPEC /c $i
-    end
-    suffix cmd %COMSPEC% /c
-    suffix bat %COMSPEC% /c
-    alias dir\w %COMSPEC% /c dir /w
-else
-    alias dir\w dir /w
-endif
+
+foreach i (dir mkdir rmdir copy move rename ren type md rd start del echo)
+    alias $i $COMSPEC /c $i
+end
+alias dir\w %COMSPEC% /c dir /w
 
 bindkey CTRL_P vzlike-previous-history
 bindkey CTRL_N vzlike-next-history

@@ -34,17 +34,4 @@ public:
     void setpos( fpos_t &pos ){ fsetpos(fp,&pos); }
 };
 
-class PipeReader : public StreamReader {
-#ifdef NYADOS
-    NnString tempfn;
-#endif
-    void open( const char *cmds );
-    void open_null();
-public:
-    void close();
-    PipeReader( const char *cmds );
-    PipeReader();
-    ~PipeReader();
-};
-
 #endif

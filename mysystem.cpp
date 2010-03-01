@@ -139,15 +139,6 @@ static int do_one_command( const char *cmdline , int wait )
 	    execstr << *cmdline++;
 	}
     }
-#ifdef NYADOS
-    /* NYADOS 以外の場合は、ここに来る時は、既に
-     * standalone モードであることが確定しているので、
-     * 判断する必要がなくない。
-     */
-    if( properties.get("standalone") == NULL ){
-	return system( execstr.chars() );
-    }
-#endif
     NnVector args;
 
     execstr.splitTo( args );
@@ -167,16 +158,6 @@ int mySystem( const char *cmdline , int wait=1 )
 {
     if( cmdline[0] == '\0' )
 	return 0;
-    NnString *mode=(NnString*)properties.get("standalone");
-    if( mode == NULL || mode->length() <= 0 ){
-	errno = 0;
-	int rc=system( cmdline );
-	if( errno != 0 ){
-	    perror( SHELL_NAME );
-	    return -1;
-	}
-	return rc;
-    }
     int pipefd0 = -1;
     int save0 = -1;
     NnVector pipeSet;
