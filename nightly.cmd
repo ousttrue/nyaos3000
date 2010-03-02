@@ -1,6 +1,6 @@
 @echo off
 if '%1' == '' (
-    echo Usage: $0 VERSION-STRING
+    echo Usage: %0 VERSION-STRING
 ) else (
     cd ../
     zip nyaos3k-%1.zip ^
@@ -10,5 +10,6 @@ if '%1' == '' (
         nyaos3k/*.cpp ^
         nyaos3k/*.ico ^
         nyaos3k/*.rc  ^
-        nyaos3k/_nya
+        nyaos3k/*.m4 ^
+        nyaos3k/_nya 
 )

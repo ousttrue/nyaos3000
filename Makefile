@@ -3,12 +3,8 @@ all:
 	@echo "  print usage(this)"
 	@echo "make nyaos3k"
 	@echo "  build nyaos.exe with MinGW and Lua"
-	@echo "make mingw"
-	@echo "  build nyacus.exe with MinGW"
 	@echo "make emxos2"
 	@echo "  build nyaos2.exe with emx/gcc on OS/2 Warp"
-	@echo "make digitalmars"
-	@echo "  build nyados.exe with Digitalmars C++ on Windows"
 	@echo "make clean"
 	@echo "  clean *.obj *.o *.exe. Please ignore error message"
 	@echo "make cleanobj"
@@ -16,7 +12,8 @@ all:
 	@echo ""
 	@echo "make documents"
 	@echo "make release"
-	@echo "make nightly"
+
+LUAPATH=../lua-5.1.4
 
 .SUFFIXES : .cpp .obj .exe .h .res .rc .cpp .h .o
 .cpp.obj :
@@ -31,15 +28,10 @@ nyaos3k :
 		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L$(LUAPATH)/src -L/usr/lib/mingw/" \
 		nyaos.exe
 
-digitalmars :
-	make CC=sc NAME=NYADOS CFLAGS="-P -ml -o $(CCC)" O=obj nyados.exe
-	# -P ... Pascal linkcage
-
 emxos2 :
 	$(MAKE) CC=gcc NAME=NYAOS2 CFLAGS="-O2 -Zomf -Zsys -DOS2EMX $(CCC)" O=obj \
 		LDFLAGS=-lstdcpp nyaos2.exe
 
-LUAPATH=../lua-5.1.4
 lua :
 	$(MAKE) -C $(LUAPATH) CC="gcc -mno-cygwin" generic
 
@@ -59,9 +51,6 @@ nyaos2.exe : $(OBJS)
 nyaos.exe : $(OBJS) nyacusrc.$(O)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	objdump -x $@ | findstr "DLL Name"
-
-nyados.exe : $(OBJS)
-	$(CC) $(CFLAGS) -o$@ $(OBJS) $(LDFLAGS)
 
 # ÉÅÉCÉìÉãÅ[É`Éì
 nyados.$(O)   : nyados.cpp   nnstring.h getline.h
@@ -111,24 +100,8 @@ luautil.$(O) : luautil.cpp
 nyacusrc.$(O)  : nyacus.rc redcat.ico
 	windres --output-format=coff -o $@ $<
 
-release :
-	$(MAKE) _package VER=`gawk '/^#define VER/{ print $$3 }' nyados.cpp`
+documents : nyaos2.txt nyacus.txt
 
-nightly :
-	cd ../ ; \
-	zip nyaos3k-`gawk '/^# *define VER/{ gsub(/\042/,""); print $$3 }' nyaos3k/nyados.cpp` \
-	nyaos3k/{*.exe,Makefile,*.h,*.cpp,*.ico,,*.rc,_nya}
-
-_package :
-	zip nyaos2-$(VER).zip nyaos2.exe nyaos2.txt _nya
-	zip nyacus-$(VER).zip nyacus.exe nyacus.txt _nya tagjump.vbs
-	zip nyados-$(VER).zip nyados.exe nyados.txt _nya greencat.ico 
-	zip nya-$(VER).zip Makefile *.h *.cpp *.ico *.m4 *.rc _nya
-
-documents : nyados.txt nyaos2.txt nyacus.txt
-
-nyados.txt : nya.m4
-	m4 -DSHELL=NYADOS $< > $@
 nyaos2.txt : nya.m4
 	m4 -DSHELL=NYAOS2 $< > $@
 nyacus.txt : nya.m4
