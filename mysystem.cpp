@@ -43,7 +43,16 @@ static int mySpawn( const NnVector &args , int wait )
         argv[i] = ((NnString*)args.const_at(i))->chars();
     argv[ args.size() ] = NULL;
     int result;
-    result = spawnvp(wait,(char*)NnDir::long2short(argv[0]) , (char**)argv );
+
+    /* コマンド名から、ダブルクォートを除く */
+    NnString cmdname;
+    for( const char *p=argv[0] ; *p != '\0' ; ++p ){
+        if( *p != '"' ){
+            cmdname << *p;
+        }
+    }
+
+    result = spawnvp(wait,(char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
     free( argv );
     return result;
 }
