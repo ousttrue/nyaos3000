@@ -29,31 +29,16 @@ option tilde   on
 option history on
 option backquote  4000
 option +keep_bottom_line
+option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
 
 foreach i (dir mkdir rmdir copy move rename ren type md rd start del echo)
     alias $i $COMSPEC /c $i
 end
 alias dir\w %COMSPEC% /c dir /w
+alias start cmd /c start 
 
 bindkey CTRL_P vzlike-previous-history
 bindkey CTRL_N vzlike-next-history
-
-if %nyatype% == NYACUS then
-    # NYACUS でのみ実行する部分をここに記述.
-    # option start "start """""
-endif
-option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
-
-# 関数 which の定義.
-which{
-    foreach dir . ${PATH.split}
-	foreach ext .com .exe .bat .cmd
-	    if exist $dir\$1$ext then
-		print found $dir\$1$ext
-	    endif
-	end
-    end
-}
 
 ### Vzライクなキーバインドにする関数
 ### 利用時には「vzbind」とだけの行を入れてください。
@@ -69,54 +54,52 @@ vzbind{
 # vzbind
 
 lua_e "
-    --- permanent history ---
-    -- nyaos.savehist = nyaos.rcfname .. 'os_history'
-
-    if nyaos.savehist and nyaos.access(nyaos.savehist) then
-        for line in io.lines(nyaos.savehist) do
-            nyaos.history:add(line)
-        end
-    end
-
-    --- logoff --
+    --- NYAOS 終了時のフック ---
     function nyaos.goodbye()
-        if nyaos.savehist then
-            local fd,err=io.open(nyaos.savehist,'w')
-            if fd then
-                for i,e in nyaos.history() do
-                    fd:write(e,'\n')
-                end
-                fd:close()
-            else
-                print(err)
-            end
-        end
         print('Good bye !!')
     end
 
-    --- keyhook ---
+    --- キーフックサンプル ---
     function nyaos.keyhook(t)
-        if t.key == nyaos.key.ESCAPE and t.text == '' then
+        if t.key == nyaos.key.F1 and t.text == '' then
             return os.getenv('EDITOR') or 'notepad',true
         end
         return nil
     end
+
     --「%(Lua式)」を処理する Lua コード --
     function nyaos.filter(cmdline)
         return cmdline:gsub('%%(%b())',function(m)
             return loadstring('return '..m)()
         end)
     end
-    -- say command  --
-    function nyaos.command.say(message)
-        print(message)
-    end
-    -- which command  --
-    function nyaos.command.which2(cmd)
-        local path=('.;' .. os.getenv('PATH'))
+
+    --- which コマンド ---
+    function nyaos.command.which(cmd)
+        local path='.;' .. os.getenv('PATH')
+
+        --- 引数が無い場合は、PATH の一覧を表示するだけ ---
+        if not cmd or cmd:len()==0 then
+            for path1 in path:gmatch('[^;]+') do
+                print(path1)
+            end
+            return
+        end
+        local cmdl=cmd:lower()
+        local variation={
+            [ cmdl ] = true ,
+            [ cmdl .. '.exe' ] = true ,
+            [ cmdl .. '.cmd' ] = true ,
+            [ cmdl .. '.bat' ] = true ,
+            [ cmdl .. '.com' ] = true
+        }
+        for key,val in nyaos.suffix() do
+            variation[ cmdl .. '.' .. key:lower() ] = true
+        end
+
         for path1 in path:gmatch('[^;]+') do
             for fname in nyaos.dir(path1) do
-                if cmd:lower() == fname:sub(1,cmd:len()):lower() then
+                if variation[ fname:lower() ] then
                     print( path1 .. '\\' .. fname )
                 end
             end
