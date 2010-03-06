@@ -45,12 +45,8 @@ static int mySpawn( const NnVector &args , int wait )
     int result;
 
     /* コマンド名から、ダブルクォートを除く */
-    NnString cmdname;
-    for( const char *p=argv[0] ; *p != '\0' ; ++p ){
-        if( *p != '"' ){
-            cmdname << *p;
-        }
-    }
+    NnString cmdname(argv[0]);
+    cmdname.dequote();
 
     result = spawnvp(wait,(char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
     free( argv );
