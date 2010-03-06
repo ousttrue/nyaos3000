@@ -345,10 +345,12 @@ int sub_brace_start( NyadosShell &bshell ,
 /* 「 ;」等で区切られた後の１コマンドを実行する。
  * (interpret1 から呼び出されます)
  *	replace - コマンド
+ *	wait != 0 コマンド終了を待つ
+ *	          コマンドをバックグラウンドで実行させる
  * return
- *	終了コード
+ *      0
  */
-int NyadosShell::interpret2( const NnString &replace_ )
+int NyadosShell::interpret2( const NnString &replace_ , int wait )
 {
     NnString replace(replace_);
     VariableFilter variable_filter( *this );
@@ -419,7 +421,7 @@ int NyadosShell::interpret2( const NnString &replace_ )
 	    if( explode4external( replace , cmdline2 ) != 0 )
 		goto exit;
 
-	    exitStatus_ = mySystem( cmdline2.chars() );
+	    exitStatus_ = mySystem( cmdline2.chars() , wait );
 	}
     }
   exit:
@@ -659,16 +661,12 @@ int NyadosShell::interpret1( const NnString &statement )
         return 0;
     }
 
+    int wait=1;
     NnString arg0,arg0low;
     NnString argv;
     NnString replace;
     if( cmdline.endsWith("&") ){
-	NnString *startStr=(NnString*)properties.get("start");
-	if( startStr != NULL ){
-	    replace << *startStr << ' ';
-	}else{
-	    replace << "start ";
-	}
+        wait = 0 ;
 	cmdline.chop();
     }
 
@@ -702,7 +700,7 @@ int NyadosShell::interpret1( const NnString &statement )
 	if( dem == '|' )
 	    replace << " | ";
     }
-    return this->interpret2( replace );
+    return this->interpret2( replace  , wait );
 }
 
 int NyadosShell::interpret( const NnString &statement )

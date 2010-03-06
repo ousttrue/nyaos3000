@@ -25,7 +25,7 @@ class NyadosShell : public NnObject {
     int explode4external( const NnString &src , NnString &dst );
     int explode4internal( const NnString &src , NnString &dst );
     int interpret1( const NnString &statement ); /* && || */
-    int interpret2( const NnString &statement ); /* pipeline */
+    int interpret2( const NnString &statement , int wait ); /* pipeline */
 protected:
     NyadosShell *parent_;
 public:

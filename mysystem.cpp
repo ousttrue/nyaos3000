@@ -243,5 +243,3 @@ int myPopen(const char *cmdline , const char *mode , int *pid )
 
     return pipefd[ d ? 0 : 1 ];
 }
-#define read_from_command(cmdname,argv) mypopen(cmdname,argv,1)
-#define write_to_command(cmdname,argv)  mypopen(cmdname,argv,0)
