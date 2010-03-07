@@ -1,35 +1,19 @@
 changequote([[,]])dnl
-  日本語拡張コマンドラインシェル
-ifelse(SHELL,NYADOS,[[dnl
-define(FULLNAME,[[Nihongo Yet Another DOS Shell]])dnl
-┏┓┳┳　┳┏━┓┳━┓┏━┓┏━┓
-┃┃┃┗━┫┣━┫┃　┃┃　┃┗━┓
-┻┗┛┗━┛┻　┻┻━┛┗━┛┗━┛
-]],SHELL,NYACUS,[[dnl
-define(FULLNAME,[[Nihongo Yet Another CUi Shell]])dnl
-┏┓┳┳　┳┏━┓┏━┓┏　┓┏━┓
-┃┃┃┗━┫┣━┫┃　　┃　┃┗━┓
-┻┗┛┗━┛┻　┻┗━┛┗━┛┗━┛
-]],SHELL,NYAOS2,[[dnl
-define(FULLNAME,[[Nihongo Yet Another OS/2 Shell II]])dnl
- ┏┓┳┳　┳┏━┓┏━┓┏━┓ ┳┳
- ┃┃┃┗━┫┣━┫┃  ┃┗━┓-┃┃
- ┻┗┛┗━┛┻　┻┗━┛┗━┛ ┻┻
-]])dnl
-define(SHELL.EXE,SHELL[[.EXE]])dnl
-     The Free Software 
-   FULLNAME
-  Copyright (C) 2001-2009 HAYAMA,Kaoru
+      日本語拡張コマンドラインシェル
+┏┓┳┳　┳┏━┓┏━┓┏━┓ ┏┓┏┓┏┓┏┓
+┃┃┃┗━┫┣━┫┃　┃┗━┓-　┫┃┃┃┃┃┃
+┻┗┛┗━┛┻　┻┗━┛┗━┛ ┗┛┗┛┗┛┗┛
+              The Free Software 
+      Nihongo Yet Another OSes Shell 3000
+  Copyright (C) 2001-2010 HAYAMA,Kaoru
 
 目次
-    - FULLNAME(NAME)とは....
+    - NYAOS-3000 とは....
     - 実行方法
     - キーバインド
     - 内蔵コマンド
     - ！マークによるヒストリ置換
-ifelse(SHELL,NYADOS,[[]],[[dnl
     - 標準エラー出力のリダイレクト
-]])dnl
     - 逆クォートによる、外部コマンド出力の引用機能
     - 環境変数参照
     - 拡張プロンプト
@@ -48,20 +32,11 @@ ifelse(SHELL,NYACUS,[[dnl
     - BUGS
     - 連絡先
 
-FULLNAME とは....
-=========================================
+Nihongo Yet Another OSes Shell 3000 とは
+========================================
 
-ifelse(SHELL,NYADOS,[[dnl
-NYADOS --- Nihongo Yet Another DOS Shell は、Windows95/98/Me の
-DOS窓,純粋なDOS,OS/2のVDMで動作するコマンドラインシェルです。
-]],SHELL,NYACUS,[[dnl
-NYACUS --- Nihongo Yet Another CUi Shell は、
-WindowsNT,2000,XP のコマンドプロンプトで動作するコマンドライン
-シェルです。
-]],SHELL,NYAOS2,[[dnl
-NYAOS 2 --- Nihongo Yet Another OS/2 Shell 2 は、OS/2 Warp の
-コマンドプロンプトで動作するコマンドラインシェルです。
-]])dnl
+NYAOS-3000 --- Nihongo Yet Another OS Shell 3000 は、
+32bit系 Windows で動作するコマンドラインシェルです。
 
 特徴として次のようなものがあります。
 
@@ -92,54 +67,29 @@ NYAOS 2 --- Nihongo Yet Another OS/2 Shell 2 は、OS/2 Warp の
         ただし、Windows95,98,Me の場合、COMMAND.COM の制限で、
         110 バイト以上のコマンドは入力はできても実行ができません。
     ・逆クォートによる、外部コマンド出力の引用機能
-ifelse(SHELL,NYADOS,[[dnl
-    ・日本語をIMEでちゃんと入力することができる。
-        Win32系のコマンドラインシェルを Windows95/98/Me で使用すると、
-        日本語を入力できないという現象が見うけられますが、NYADOS は
-        16bitコードであるので、問題なく日本語が入力できます。
-        反面、NT/2000/XP では動作しない、コンベンショナルメモリを120KB
-        ほど消費してしまうなどの弱点があります。
-        なお、NT/2000/XP では、32bitバージョンの NYACUS があります。
-    ・対応OSは Windows9x , DOS , OS/2 VDM のみ。WindowsNT,2000,XP では
-      NYACUS , OS/2 Warp コマンドプロンプトでは NYAOS 2 をお使いく
-      ださい。
-]],SHELL,NYACUS,[[dnl
-    ・対応OSは、WindowsNT,2000,XP。95,98,Me でも動作しますが、日本語入力
-      が正常に行えません。95,98,Me で日本語の入力が必要である場合は、
-      NYADOSをお使いください。
     ・クリップボードとのアクセスも可能(Ctrl-K,Ctrl-Y)
-]],SHELL,NYAOS2,[[dnl
-    ・NYAOS 1 よりコンパクト！緊急起動フロッピーなどにいれておくのがお薦め。
-    ・対応OSは、OS/2 Warp 4 です。Windowsご使用の方は別途 Windows版
-      NYACUS / NYADOS をご利用ください。
-]])dnl
+    ・内蔵された Lua 5.1.4 インタープリタで内部動作をカスタマイズ可能
 
 アンインストールもファイルを消すだけで簡単ですので、下記に従って
 気軽にご利用ください。
 
-
 実行方法
 ========
 
-SHELL.EXE を PATH の通ったディレクトリにおいて、実行してください。
+NYAOS.EXE を PATH の通ったディレクトリにおいて、実行してください。
+パッケージ添付の設定ファイル _nya は NYAOS.EXE と同じディレクトリに
+配置してください。
 
-設定ファイル _nya は必要に応じて変更して、
-    ・実行時のカレントディレクトリ
-    ・環境変数HOMEの示すディレクトリ
-    ・カレントドライブのルートディレクトリ
-のうちのいずれかに置いてください。 SHELL 起動時に読み込んで実行します。
-_nya にはSET コマンドなどを記述して、環境変数などを設定することができますが...
+また、ユーザ定義の設定については、環境変数 USERPROFILE か HOME の指定する
+ディレクトリに _nya という同名の名前で作成してください。
+
+_nya には SET コマンドなどを記述して、環境変数などを設定することができますが...
     ・# で始まる行はコメント行として無視する。
     ・if errorlevel は利用することはできない。
     ・代わりにブロック-if が使える
 などの違いがあります。
 
-_nya内では、 SHELL.EXE を実行したときのパラメータを %1 , %2 などで
-取得することができます。これを利用して、コマンドプロンプトヒアの
-ような機能を実現することもできます。(なお、互換性のため、_nyaの代わりに
-_nyados , _nyagos などを使用することもできます)
-
-SHELL 自身のオプションとして次のようなものがあります。
+NYAOS.EXE のオプションとして次のようなものがあります。
 
     -f スクリプトファイル名 引数…
         ファイル名を内容を読みこんで実行します。_nyaは
@@ -164,6 +114,11 @@ SHELL 自身のオプションとして次のようなものがあります。
     -e "コマンド"
         引数内のコマンドを実行します。
 
+    -E "コマンド"
+        引数内のコマンドを Lua インタープリタで実行します。
+
+    -F ファイル名
+        ファイルを Lua インタープリタで実行します。
 
 キーバインド
 ============
@@ -392,10 +347,10 @@ folder 特殊フォルダ名 本当のディレクトリ名
 ------------------------------------------
     チルダで始まる特殊フォルダを定義できます。
     例えば
-        folder desktop c:\Windows\筑集眺餅
+        folder desktop c:\Windows\デスクトップ
     と定義すると、今後、空白文字に続く
         ~desktop
-    というディレクトリ名は「c:\Windows\筑集眺餅」に置換されます。
+    というディレクトリ名は「c:\Windows\デスクトップ」に置換されます。
 
 ifelse(SHELL,NYACUS,[[dnl
 	デフォルトで次のフォルダーが定義されています。
@@ -469,7 +424,6 @@ ifelse(SHELL,NYADOS,[[dnl
     
 
 ls [オプション] [ファイル名]
-list [オプション] [ファイル名]
 ------------------------------
 
     ファイルの一覧を ls 風に表示します。
@@ -499,6 +453,12 @@ list [オプション] [ファイル名]
         (例)
             set LS_COLORS="fi=37;1:di=32;1:sy=31"
 
+lua_e "コード"
+--------------
+
+内蔵 Lua のコードを実行します。
+
+
 ifelse(SHELL,NYADOS,[[]],[[dnl
 open [-/+アクション] [ファイル or ディレクトリ名]
 -------------------------------------------------
@@ -521,6 +481,8 @@ ifelse(SHELL,NYACUS,[[]],[[dnl
 option
 ------
     SHELL の動作を左右するオプション(シェル変数)を設定します。
+    これらの変数は，内蔵 Lua から nyaos.option[] というテーブル
+    で参照・変更することができます。
     
         > option オプション名 値
             オプション名に値を設定します。
@@ -580,25 +542,7 @@ ifelse(SHELL,NYACUS,[[dnl
         savehist
             ヒストリを保存するファイル名を指定します。
             設定されていない場合は、ディスクへ保存しません。
-        standalone
-            設定すると、command.com/cmd.exe を使用せずにコマンドを
-            実行するようにします。その結果、機能が次のように変わります。
-            正直、不安定です。
 
-            ・DOS,95,98,Me では if errorlevel でエラーを判定できるように
-            　なる。(NTシリーズでは CMD.EXE がエラーコードをちゃんと
-              返してくれるので関係なし)
-
-            ・type , dir 等が command.com/cmd.exe 内蔵コマンドが
-            　使えなくなる。
-
-ifelse(SHELL,NYACUS,[[dnl
-            ・9xシリーズでは、パイプが一時ファイルではない、本当のパイ
-              プになり、２コマンドが並行動作するようになる。
-            　(NTシリーズでは元々並行動作しているので関係なし)
-
-            ・UNC 形式のディレクトリにも chdir できる…らしいです。
-]])
         tilde
             設定すると、外部コマンド実行時においても、~ (チルダ) 文字を
             環境変数 HOME の内容に置換されます。置換される ~ は空白の
@@ -715,7 +659,7 @@ suffix
 
         >拡張子 インタープリタ名
     
-    以後、その拡張子をつけたプログラム名を入力すると、インタープリタ名を
+    この拡張子をつけたプログラム名を入力すると、インタープリタ名を
     入力行に補います。インタープリタ名を省略すると、その拡張子に対応付け
     られたインタープリタ名を表示します。全ての引数を省略すると、全ての
     関連付けを表示します。
@@ -723,13 +667,15 @@ suffix
     例：
         [C:\usr] suffix rb ruby
         [C:\usr] hoge.rb
-            => 「ruby hoge.rb」と入力したのと等価になる。
+            ⇒ 「ruby hoge.rb」と入力したのと等価になる。
 
-    注意：
-        ・suffix命令に与える拡張子には「.」を付けないでください。
-        ・Windows の関連付けと、 SHELL の関連付けは関係ありません。
-        ・suffix命令で定義された拡張子を持つファイルは、コマンド名
-          補完の候補になります。
+    ・この関連付けは内蔵 Lua から、nyaos.suffix[] というテーブルで
+      参照・変更することができます。
+
+    ・suffix命令に与える拡張子には「.」を付けないでください。
+    ・Windows の関連付けと、 SHELL の関連付けは関係ありません。
+    ・suffix命令で定義された拡張子を持つファイルは、コマンド名
+      補完の候補になります。
     
 unalias
 -------
@@ -746,37 +692,34 @@ unoption
     オプションを無効(空)にします。
         > unoption オプション
 
-
 マルチステートメント
 ====================
 
-    ・空白＋セミコロン(;)
-        １行に複数のコマンドを記述できます。
-            [C:\]echo ahaha ; echo ihihi
-            ahaha
-            ihihi
-        優先順位はパイプ記号より下です。したがって、
-            [C:\]echo ihihi ; echo ahaha | sort
-        の出力結果は
-            ahaha
-            ihihi
-        ではなく、
-            ihihi
-            ahaha
-        となります。(sort に流れ込むのは ahaha のみ)
+・空白＋セミコロン(;)
+    １行に複数のコマンドを記述できます。
+        [C:\]echo ahaha ; echo ihihi
+        ahaha
+        ihihi
+    優先順位はパイプ記号より下です。したがって、
+        [C:\]echo ihihi ; echo ahaha | sort
+    の出力結果は
+        ahaha
+        ihihi
+    ではなく、
+        ihihi
+        ahaha
+    となります。(sort に流れ込むのは ahaha のみ)
 
-        なお、逆クォート内のコマンドに ; は使えません。
-    
-    ・アンパサント (&)
+    なお、逆クォート内のコマンドに ; は使えません。
 
-        セミコロンと同じですが、前のコマンドを別窓で実行します。
-            [C:\]foo & bar
-        は
-            [C:\]start foo
-            [C:\]bar
-        と等価です。また
-            [C:\]foo &
-        のような使い方も可能です。
+・アンパサント (&)
+
+    コマンドをバックグラウンドで実行します。
+
+    UNIX/Linux系の & に動作が近くなっていますので、
+    NYAOS2,NYACUS と同様、別のコマンドプロンプト画面を開きたい場合は
+        cmd /c start コマンド名
+    と実行してください。
 
 
 ！マークによるヒストリ置換
@@ -921,19 +864,6 @@ ifelse(SHELL,NYACUS,[[dnl
         found C:\usr\bin\nyados.exe
         [D:nya]
 
-2.19 までは関数の定義は、sub～endsub 文で行っていました。
-こちらも従来通り使用できますが、今後、廃止する予定です。
-
-    sub which
-        foreach dir . %PATH.split%
-            foreach ext .com .exe .bat .cmd
-                if exist %dir%\%1%ext% then
-                    echo found %dir%\%1%ext%
-                endif
-            end 
-        end
-    endsub
-    
 ifelse(SHELL,NYACUS,[[
 逆スクロール機能
 ================
@@ -1058,15 +988,11 @@ Ctrl-V ESC で入力してください。
 
 実行ファイルの生成には次のツールが必要です。
 
-ifelse(SHELL,NYADOS,[[dnl
-        ・Digital Mars C++ compiler for Win32
-	・Libraries for 16 bit DOS development 
-	    → http://www.digitalmars.com/
-]],SHELL,NYACUS,[[dnl
-        ・MinGW 
+ifelse(SHELL,NYACUS,[[dnl
+    ・mingw32-gcc.exe (GCC) 3.4.5
 ]],[[dnl
-	・emx/gcc 0.9d FIX 3
-	・GNU Make
+    ・emx/gcc 0.9d FIX 3
+    ・GNU Make
 ]])dnl
 
 次の手順でビルトします。
@@ -1119,17 +1045,6 @@ SET 文中で、補完が効きません。
     ください。ディレクトリ名が空白以外でリストされているときでも、
     ファイル名補完が聞きます。
 
-画面に制御文字ばかり出て、編集ができません(NYADOS)。
-    DOS のデバイスドライバ ANSI.SYS が組みこまれていません。
-    Windows9x では、C:\CONFIG.SYS に
-        devicehigh=c:\windows\COMMAND\ansi.sys
-    という行をを加えてください。 Windows2000,XP では、NYACUS を
-    使うべきですが、どうしても NYADOS を使う場合は、Windows フォルダ
-    内の system32 フォルダ内にある config.nt ファイルに
-        device=%SystemRoot%\system32\ansi.sys
-        dosonly
-    を追加します。
-
 空白を含むコマンド名を使うエイリアスが定義できない。
     二重引用符を下記のように使用してやる必要があります。
         alias foo """C:\Program Files\bar\foo.exe"" -hoge"
@@ -1148,39 +1063,93 @@ pushd で引数を省略したときに「pushd .」になるようにしたい
 _nya の中から、他のスクリプトを読み込みたい
     source コマンドを利用ください。
 
-二重引用符を用いたコマンドを & 起動しようするとすると、コマンド名が
-　   タイトルだけになって、CMD.EXE だけが別窓で起動してしまう(NT系)。
-
-    「option start "start """""」と定義してください。
-    NT系の start 句の仕様で、二重引用符が最初にあると、タイトルと認識して
-    しまいますので、これで回避します。
-    
-ifelse(SHELL,NYACUS,[[dnl
-    STANDALONE モードで、パイプラインの右側に DOS コマンド(UNIX like
-    tools の head 等) をつなげると
-            エラーです. 読み取り中 デバイス
-            中止 (A), 再試行 (R), 失敗 (F)?
-    と表示されることがあります。これは…どうも、OS のバグか制限のようです。
-    (NYAシリーズとは関係ない、某シェル上でも同様の症状が確認されました)
-
-    そもそも、NYACUS を使う環境(WindowsNT,2000,XP のコマンドプロンプト)
-    で、DOS コマンドを使うのが間違いとも考えられますので、Win32系の同様
-    のコマンドを利用して回避してください。
-    
 プロンプトや print コマンドではエスケープシーケンスが使えるのに
      外部コマンドでは文字化けします。
 
-     NYACUS の内部では、エスケープシーケンスをエミュレーションして
+     NYAOS エスケープシーケンスをエミュレーションして
      いますが、これは外部コマンドに及ぶものではありません。
 ]])
 dir/w がエラーになります
     内部的に dir\w に変換されているためです。
         alias dir\w dir /w
     という一文を _nya に入れることで回避できます。
-    (2.21 移行に添付の _nya では既に記述されています)
 
 変更履歴
 ========
+
+TEST-VERSION 2010.03.07
+    [蟲繕]
+    ・独自の getch で「澤」問題に対応した。
+      (lukewarm さんパッチ取り込み)
+    [廃止]
+    ・sub～endsub コマンド
+
+TEST-VERSION 2010.03.06
+    [蟲繕]
+    ・「&」が CMD.EXE の start コマンドを利用するような形のままになっていたのを
+      bash 等と同様に、バックグラウンドで動作するようにした。
+    ・コマンド名がダブルクォートで囲まれていると実行できない問題を修正した。
+
+TEST-VERSION 2010.03.01
+    ・CMD.EXE を一切呼ばないようにした。(常に standalone モードとなった)
+    ・lua_e コマンドでもリダイレクトが効くようにした。
+
+TEST-VERSION 2010.02.20
+    ・Lua のツール関数 nyaos.getkey() を追加
+    ・終了時のフックとして nyaos.goodbye を設置
+    ・$0 に相当する Lua 変数 nyaos.rcfname を追加
+    ・コンパイラのベースを Cygwin ではなく、MinGW32 の gcc とした。
+
+TEST-VERSION 2009.12.20
+    ・全てのパス(実行ファイルのあるディレクトリ、%USERPROFILE% or %HOME%、
+      カレントディレクトリの _nya を読むようにした。
+    ・Lua のツール関数
+        access, exec, chdir, dir, bitand, bitor, bitxor, rshift, lshift 
+      を追加
+    ・オプション -E , -F を追加
+    ・ヒストリ保持テーブル nyaos.history を追加
+    [蟲繕]
+    ・-r オプションが効いていなかった問題を修正
+    [廃止]
+    ・設定ファイル _nyados , _nyacus 
+
+TEST-VERSION 2009.11.29
+    [蟲繕]
+    ・nyaos.keyhook が nil の時、ハングアップする不具合を修正
+
+TEST-VERSION 2009.11.28
+    ・コマンドライン入力時のキーフックを Lua に用意(nyaos.keyhook)
+
+TEST-VERSION 2009.11.25
+    ・カーソルキーが効かなくなったのを修正した。
+      かわりに、また「澤」が入力できなくなった。
+      (MSVCRT.DLL の getch の問題のため、両立不能であることが判明)
+
+TEST-VERSION 2009.11.21
+    ・TeraTerm で稼働できるようにした(ただし、編集機能はなし)
+      ( lukewarm さんパッチ取り込み )
+    [蟲繕]
+    ・Lua コードで「nyaos=nil」を実行するとハングアップする問題を修正
+    ・「澤」と入力できない問題を修正
+    ・xscript-mode が使えなくなっていた問題を修正
+
+TEST-VERSION 2009.11.20
+    [蟲繕]
+    ・標準入力がリダイレクトされていた時にハングアップしないようにした
+      ( lukewarm さんパッチ取り込み )
+    ・アイコンが実行ファイルに組み込まれていなかった点を修正
+
+TEST-VERSION 2009.11.19
+    ・ls にて80桁以上のコンソールをサポート
+    ・nyaos.properties を nyaos.option へ変更
+
+TEST-VERSION 2009.11.16
+    ・アプリケーション名を NYAOS 3000 とする。
+    ・lua インタプリタ内蔵(lua_e コマンド)
+    ・オプション multilinequote 廃止
+
+NYAOS 2.xx の更新履歴
+---------------------
 
 2.30 (2009/11/01)
   (nyacus)
@@ -1814,7 +1783,7 @@ ifelse(SHELL,NYACUS,[[dnl
 連絡先
 ======
 
-FULLNAME (SHELL) はフリーソフトウェアです。
+Nihongo Yet Another OSes Shell (NYAOS) はフリーソフトウェアです。
 ユーザは、GNU General Public License に従う限り、本ソフトウェアを
 使用・複製・改変・配布・改変版の配布をすることができます。
 作者 葉山 薫は、本ソフトウェアによって生じた現象・障害に関して
@@ -1839,7 +1808,7 @@ FULLNAME (SHELL) はフリーソフトウェアです。
     T.Uchida 様       ギス(gis_dur)様  そいつ！ 様
     横林 武 様        Christoph Brendes様  
     TEM 様            hideden 様       lukewarm 様
-    林 雅之 様
+    林 雅之 様        thinca 様        Shougo 様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
 dnl vim:set sw=4 ts=8 et textmode:
