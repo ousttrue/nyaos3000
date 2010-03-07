@@ -836,7 +836,6 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "set"	    , &cmd_set      },
 	{ "shift"   , &cmd_shift    },
 	{ "source"  , &cmd_source   },
-	{ "sub"     , &cmd_sub      },
 	{ "suffix"  , &cmd_suffix   },
 	{ "unalias" , &cmd_unalias  },
 	{ "unoption", &cmd_unoption },

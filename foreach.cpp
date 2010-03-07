@@ -91,26 +91,6 @@ int NnExecutable_BufferedShell::operator()( const NnVector &args )
     return shell_->mainloop();
 }
 
-int cmd_sub( NyadosShell &shell , const NnString &argv )
-{
-    if( argv.empty() ){
-	for( NnHash::Each e(functions) ; e.more() ; ++e ){
-	    shell.out() << e->key() << "{\n";
-	    BufferedShell *bShell=(BufferedShell*)e->value();
-	    for(int i=0 ; i<bShell->size() ; ++i ){
-		shell.out() << "\t" << bShell->statement(i) << "\n";
-	    }
-	    shell.out() << "}\n";
-	}
-	return 0;
-    }
-    BufferedShell *bShell=new BufferedShell();
-    loadToBufferedShell( shell , *bShell , "sub>" , "sub" , "endsub" );
-
-    functions.put( argv , new NnExecutable_BufferedShell(bShell) );
-    return 0;
-}
-
 /* ’†Š‡ŒÊ‚É‚æ‚éŠÖ”éŒ¾ */
 int sub_brace_start( NyadosShell &shell , 
 		     const NnString &arg1 ,
