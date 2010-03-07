@@ -218,11 +218,19 @@ static void dir_files( const NnVector &list , int option , Writer &out )
     }else{
 	/*** 格子状フォーマット ***/
 	int max = maxlength(list);
+        NnString *env_width=(NnString*)properties.get("width");
+        int screen_width=80;
+        if( env_width != NULL ){
+            screen_width = atoi(env_width->chars());
 #ifdef NYACUS
-        int n_per_line = (Console::getWidth()-1)/(max+1);
-#else
-	int n_per_line = 79 / (max+1);
+        }else{
+            screen_width = Console::getWidth();
 #endif
+        }
+        if( screen_width < 20 || screen_width > 255 ){
+            screen_width = 80;
+        }
+        int n_per_line = (screen_width-1)/(max+1);
 
 	int nlines;
 	if( n_per_line <= 0 ){

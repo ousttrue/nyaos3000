@@ -50,6 +50,8 @@ static int init_os2()
 
 #include <windows.h>
 
+int getch_replacement_for_msvc();
+
 static HANDLE   hStdin = (HANDLE )-1L;
 static HANDLE   hStdout = (HANDLE )-1L;
 static BOOL     bStdioInitialized;
@@ -194,7 +196,7 @@ int Console::getWidth()
 
 #endif
 
-int Console::getkey()
+static int getkey_()
 {
 #ifdef __DMC__
 #ifdef ASM_OK
@@ -214,7 +216,7 @@ int Console::getkey()
 #elif defined(NYACUS)
     int c;
     if (bStdinIsConsole) {
-        c = getch();
+        c = getch_replacement_for_msvc();
     } else {
         /* stdin がリダイレクトされている場合（わりと適当） */
         c = fgetc(stdin);
@@ -225,6 +227,29 @@ int Console::getkey()
 #else
     return getch() & 255;
 #endif
+}
+
+int Console::getkey()
+{
+    int ch=getkey_();
+    if( isKanji(ch) ){
+#if 0
+        /* 純正 MSVCRT.DLL を使う場合、制御キーが
+         * 0xE0 というプレフィックスで与えられてしまうので、
+         * このような例外を設けなくてはいけなかった。
+         * 
+         * 現在は、Lukewarm氏作の自前 getch を利用しているので、
+         * 当問題は解消されている。
+         * (プレフィックスが 0 になっている)
+         */
+	if( ch ==0xE0 ) /* xscript */
+	    ch = 0x01;
+#endif
+        ch = (ch<<8) | getkey_() ;
+    }else if( ch == 0 ){
+        ch = 0x100 | getkey_() ;
+    }
+    return ch;
 }
 
 void Console::writeClipBoard( const char *ptr , int size )

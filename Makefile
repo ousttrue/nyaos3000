@@ -43,7 +43,7 @@ OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O
 	writer.$(O) history.$(O) ishell.$(O) scrshell.$(O) wildcard.$(O) cmdchdir.$(O) \
 	shell.$(O) shell4.$(O) foreach.$(O) which.$(O) reader.$(O) nnvector.$(O) \
 	ntcons.$(O) shellstr.$(O) cmds1.$(O) cmds2.$(O) xscript.$(O) shortcut.$(O) \
-	strfork.$(O) lsf.$(O) open.$(O) nua.$(O) luautil.$(O)
+	strfork.$(O) lsf.$(O) open.$(O) nua.$(O) luautil.$(O) getch_msvc.$(O)
 
 nyaos2.exe : $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
@@ -92,6 +92,7 @@ nndir.$(O) : nndir.cpp nndir.h
 wildcard.$(O) : wildcard.cpp  nnstring.h nnvector.h nndir.h
 ntcons.$(O) : ntcons.cpp
 open.$(O) : open.cpp
+getch_msvc.$(O) : getch_msvc.cpp
 
 nua.$(O) : nua.cpp
 luautil.$(O) : luautil.cpp

@@ -247,13 +247,6 @@ void XScript::invartPoint( const COORD &cursor)
 KeyFunctionXScript::XScriptFuncCode XScript::inputFuncCode()
 {
     int ch = Console::getkey();
-    if( isKanji(ch) ){
-        if( ch == 0xE0 )
-            ch = 0x01;
-        ch = (ch << 8) | Console::getkey();
-    }else if( ch == 0 ){
-        ch = 0x100 | Console::getkey();
-    }
     if( (unsigned)ch >= KeyFunction::MAPSIZE )
         return  KeyFunctionXScript::XK_NOBOUND ;
 

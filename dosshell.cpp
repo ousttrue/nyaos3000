@@ -136,18 +136,7 @@ int DosShell::getkey()
 #ifdef NYACUS
     conOut << "\x1B[>5l";
 #endif
-
-    int ch=Console::getkey();
-    if( isKanji(ch) ){
-#if 1
-	if( ch ==0xE0 ) /* xscript */
-	    ch = 0x01;
-#endif
-        ch = (ch<<8) | Console::getkey() ;
-    }else if( ch == 0 ){
-        ch = 0x100 | Console::getkey() ;
-    }
-    return ch;
+    return Console::getkey();
 }
 
 /* 編集開始フック */
