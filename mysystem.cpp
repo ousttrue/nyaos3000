@@ -216,6 +216,9 @@ int mySystem( const char *cmdline , int wait=1 )
 	}
     }
   exit:
+    if( save0 >= 0 ){
+        dup2( save0 , 0 );
+    }
     return result;
 }
 
