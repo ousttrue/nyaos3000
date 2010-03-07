@@ -1,20 +1,4 @@
-all:
-	@echo "make"
-	@echo "  print usage(this)"
-	@echo "make nyaos3k"
-	@echo "  build nyaos.exe with MinGW and Lua"
-	@echo "make emxos2"
-	@echo "  build nyaos2.exe with emx/gcc on OS/2 Warp"
-	@echo "make clean"
-	@echo "  clean *.obj *.o *.exe. Please ignore error message"
-	@echo "make cleanobj"
-	@echo "  clean *.obj *.o. Please ignore error message"
-	@echo ""
-	@echo "make documents"
-	@echo "make release"
-
 LUAPATH=../lua-5.1.4
-
 .SUFFIXES : .cpp .obj .exe .h .res .rc .cpp .h .o
 .cpp.obj :
 	$(CC) $(CFLAGS) -c $<
@@ -23,14 +7,15 @@ LUAPATH=../lua-5.1.4
 
 CCC=-DNDEBUG
 
-nyaos3k : 
+all : lua
+ifeq ($(OS),Windows_NT)
 	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -I$(LUAPATH)/src -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
 		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L$(LUAPATH)/src -L/usr/lib/mingw/" \
 		nyaos.exe
-
-emxos2 :
+else
 	$(MAKE) CC=gcc NAME=NYAOS2 CFLAGS="-O2 -Zomf -Zsys -DOS2EMX $(CCC)" O=obj \
 		LDFLAGS=-lstdcpp nyaos2.exe
+endif
 
 lua :
 	$(MAKE) -C $(LUAPATH) CC="gcc -mno-cygwin" generic
@@ -108,9 +93,8 @@ nyaos2.txt : nya.m4
 nyacus.txt : nya.m4
 	m4 -DSHELL=NYACUS $< > $@
 clean : 
-	del *.obj *.o *.exe || rm *.obj *.o *.exe *.EXE
-
+	del *.obj *.o *.exe 2>nul
 cleanobj :
-	del *.obj *.o || rm *.obj *.o
+	del *.obj *.o 2>nul
 
 # vim:set noet ts=8 sw=8 nobk:
