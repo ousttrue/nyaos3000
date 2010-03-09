@@ -45,9 +45,12 @@ static void handle_ctrl_c(int sig)
 #else /* NYACUS */
 static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
 {
-    if( CTRL_C_EVENT == ctrlChar )
+    if( CTRL_C_EVENT == ctrlChar ){
         ctrl_c = 1;
-    return TRUE;
+        return TRUE;
+    }else{
+        return FALSE;
+    }
 }
 #endif
 

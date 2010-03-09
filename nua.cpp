@@ -30,8 +30,12 @@ static void lstop (lua_State *L, lua_Debug *ar) {
 
 static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
 {
-    lua_sethook(nua, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
-    return TRUE;
+    if( CTRL_C_EVENT == ctrlChar){
+        lua_sethook(nua, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+        return TRUE;
+    }else{
+        return FALSE;
+    }
 }
 
 int nua_get(lua_State *lua)
