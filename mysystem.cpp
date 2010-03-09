@@ -175,7 +175,16 @@ int mySystem( const char *cmdline , int wait=1 )
         if( pipefd0 != -1 ){
 	    /* パイプラインが既に作られている場合、
 	     * 入力側を標準入力へ張る必要がある
+             *
+             * (ただし、既に前のコマンドがエラー終了するなりしている場合は
+             *  ハングアップしてしまうので、続くコマンドを発行せずに、
+             *  ここで中断する)
 	     */
+            if( _eof(save0) ){
+                ::close( pipefd0 );
+                pipefd0 = -1;
+                goto exit;
+            }
             if( save0 == -1  )
 		save0 = dup( 0 );
             dup2( pipefd0 , 0 );
