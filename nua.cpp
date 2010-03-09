@@ -9,6 +9,9 @@
 #include "nua.h"
 #include "ntcons.h"
 
+#include <windows.h>
+#include <wincon.h>
+
 //#define TRACE(X) ((X),fflush(stdout))
 #define TRACE(X)
 
@@ -17,6 +20,18 @@ static lua_State *nua=NULL;
 static void nua_shutdown()
 {
     lua_close(nua);
+}
+
+static void lstop (lua_State *L, lua_Debug *ar) {
+  (void)ar;  /* unused arg. */
+  lua_sethook(L, NULL, 0, 0);
+  luaL_error(L, "interrupted!");
+}
+
+static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
+{
+    lua_sethook(nua, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+    return TRUE;
 }
 
 int nua_get(lua_State *lua)
@@ -387,6 +402,9 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         ::dup2( cur_err , 2 );
     }
 
+    Console::enable_ctrl_c();
+    SetConsoleCtrlHandler( handle_ctrl_c , TRUE );
+
     /* Lua インタプリタコール */
     if( luaL_loadstring(nua,luaL_gsub( nua, arg1.chars(), "$T", "\n") ) ||
         lua_pcall( nua , 0 , 0 , 0 ) )
@@ -396,8 +414,8 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     }
     lua_settop(nua,0);
 
-    fflush(stderr);
-    fflush(stdout);
+    SetConsoleCtrlHandler( handle_ctrl_c , FALSE );
+    Console::disable_ctrl_c();
 
     /* 標準エラー出力を元に戻す */
     if( back_err >= 0 ){

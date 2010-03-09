@@ -7,6 +7,8 @@
 #include "getline.h" /* DosShell.executableSuffix のためのみ */
 #ifdef NYACUS
 #  include "ntcons.h" 
+#  include <windows.h>
+#  include <wincon.h>
 #endif
 
 #include "writer.h" /* for test  */
@@ -34,19 +36,20 @@ static NnString ls_end_code ;
 volatile int ctrl_c=0;
 
 /* CTRL-C が押された時のハンドル */
-#ifdef NYADOS
-    static void __CLIB handle_ctrl_c(int)
-#elif defined(NYAOS2)
-    static void handle_ctrl_c(int sig)
-#else /* NYACUS , NYAOS-II */
-    static void handle_ctrl_c(int)
-#endif
+#ifdef NYAOS2
+static void handle_ctrl_c(int sig)
 {
     ctrl_c = 1;
-#ifdef NYAOS2
     signal(sig,SIG_ACK);
-#endif
 }
+#else /* NYACUS */
+static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
+{
+    if( CTRL_C_EVENT == ctrlChar )
+        ctrl_c = 1;
+    return TRUE;
+}
+#endif
 
 
 /* 環境変数 LS_COLORS の内容を読み取って、ls の色設定に反映させる.
@@ -387,7 +390,12 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
 
     env_to_color( shell.err() );
     ctrl_c = 0;
+#ifdef NYACUS
+    Console::enable_ctrl_c();
+    SetConsoleCtrlHandler( handle_ctrl_c , TRUE );
+#else
     signal( SIGINT , handle_ctrl_c );
+#endif
     
     argv.splitTo( args );
 
@@ -469,6 +477,11 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
 	}
     }
     ctrl_c = 0;
+#ifdef NYACUS
+    Console::disable_ctrl_c();
+    SetConsoleCtrlHandler( handle_ctrl_c , FALSE );
+#else
     signal( SIGINT , SIG_IGN );
+#endif
     return 0;
 }

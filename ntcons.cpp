@@ -84,6 +84,24 @@ static void initializeStdio()
     }
 }
 
+void Console::enable_ctrl_c()
+{
+    DWORD dw;
+
+    initializeStdio();
+    GetConsoleMode(hStdin, &dw);
+    SetConsoleMode(hStdin, dw | ENABLE_PROCESSED_INPUT );
+}
+
+void Console::disable_ctrl_c()
+{
+    DWORD dw;
+
+    initializeStdio();
+    GetConsoleMode(hStdin, &dw);
+    SetConsoleMode(hStdin, dw & ~ENABLE_PROCESSED_INPUT );
+}
+
 void Console::getLocate(int &x,int &y)
 {
     if (hStdout == (HANDLE )-1L)

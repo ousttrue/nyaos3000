@@ -9,6 +9,8 @@ public:
     static unsigned int getShiftKey();
     enum { SHIFT = 0x8000 };
 #ifdef NYACUS
+    static void enable_ctrl_c();
+    static void disable_ctrl_c();
     static void getLocate(int &x,int &y);
     static void color(int c);
     static int color();
