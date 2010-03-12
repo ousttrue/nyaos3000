@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#ifdef OS2EMX
+#  include <sys/wait.h>
+#endif
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <io.h>
@@ -10,10 +13,11 @@
 #include "reader.h"
 #include "ntcons.h"
 
+int myPopen(const char *cmdline , const char *mode , int *pid );
+
 #ifdef NYACUS
 
 int AnsiConsoleWriter::default_color=-1;
-int myPopen(const char *cmdline , const char *mode , int *pid );
 
 Writer &AnsiConsoleWriter::write( char c )
 {
@@ -171,7 +175,11 @@ PipeWriter::~PipeWriter()
 {
     ::close(fd());
     if( pid ){
+#ifdef OS2EMX
+        ::wait(NULL);
+#else
         _cwait(NULL,pid,0);
+#endif
     }
 }
 

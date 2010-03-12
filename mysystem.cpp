@@ -250,7 +250,11 @@ int myPopen(const char *cmdline , const char *mode , int *pid )
     int backfd;
     int d=(mode[0]=='r' ? 1 : 0 );
 
+#ifdef OS2EMX
+    if( _pipe(pipefd) != 0 ){
+#else
     if( _pipe(pipefd,1024,_O_TEXT | _O_NOINHERIT ) != 0 ){
+#endif
         return -1;
     }
 

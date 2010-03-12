@@ -1,4 +1,5 @@
 LUAPATH=../lua-5.1.4
+
 .SUFFIXES : .cpp .obj .exe .h .res .rc .cpp .h .o
 .cpp.obj :
 	$(CC) $(CFLAGS) -c $<
@@ -7,18 +8,26 @@ LUAPATH=../lua-5.1.4
 
 CCC=-DNDEBUG
 
-all : lua
+all :
 ifeq ($(OS),Windows_NT)
 	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -I$(LUAPATH)/src -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
 		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L$(LUAPATH)/src -L/usr/lib/mingw/" \
 		nyaos.exe
 else
-	$(MAKE) CC=gcc NAME=NYAOS2 CFLAGS="-O2 -Zomf -Zsys -DOS2EMX $(CCC)" O=obj \
-		LDFLAGS=-lstdcpp nyaos2.exe
+	$(MAKE) CC=gcc NAME=NYAOS2 CFLAGS="-O2 -DOS2EMX $(CCC) -I$(LUAPATH)/src -DLUA_ENABLE" O=o \
+		LDFLAGS="-lstdcpp -lliblua -L$(LUAPATH)/src" nyaos.exe
 endif
 
 lua :
+ifeq ($(OS),Windows_NT)
 	$(MAKE) -C $(LUAPATH) CC="gcc -mno-cygwin" generic
+else
+	$(MAKE) -C $(LUAPATH) generic 
+	# ranlib liblua.a == ar -s liblua.a
+	cd $(LUAPATH)/src && emxomf -s -l -q -o lua.lib liblua.a 
+endif
+
+omflib :
 
 clean-lua :
 	$(MAKE) -C $(LUAPATH) clean
@@ -30,12 +39,14 @@ OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O
 	ntcons.$(O) shellstr.$(O) cmds1.$(O) cmds2.$(O) xscript.$(O) shortcut.$(O) \
 	strfork.$(O) lsf.$(O) open.$(O) nua.$(O) luautil.$(O) getch_msvc.$(O)
 
-nyaos2.exe : $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-
+ifeq ($(OS),Windows_NT)
 nyaos.exe : $(OBJS) nyacusrc.$(O)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 	objdump -x $@ | findstr "DLL Name"
+else
+nyaos.exe : $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+endif
 
 # ƒƒCƒ“ƒ‹[ƒ`ƒ“
 nyados.$(O)   : nyados.cpp   nnstring.h getline.h
@@ -93,8 +104,11 @@ nyaos2.txt : nya.m4
 nyacus.txt : nya.m4
 	m4 -DSHELL=NYACUS $< > $@
 clean : 
-	del *.obj *.o *.exe 2>nul
+	-cmd /c del *.obj
+	-cmd /c del *.o
+	-cmd /c del *.exe
 cleanobj :
-	del *.obj *.o 2>nul
+	-cmd /c del *.obj
+	-cmd /c del *.o
 
 # vim:set noet ts=8 sw=8 nobk:

@@ -398,6 +398,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
     SetConsoleCtrlHandler( handle_ctrl_c , TRUE );
 #else
     signal( SIGINT , handle_ctrl_c );
+    signal( SIGPIPE , handle_ctrl_c );
 #endif
     
     argv.splitTo( args );
@@ -485,6 +486,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
     SetConsoleCtrlHandler( handle_ctrl_c , FALSE );
 #else
     signal( SIGINT , SIG_IGN );
+    signal( SIGPIPE , SIG_IGN );
 #endif
     return 0;
 }

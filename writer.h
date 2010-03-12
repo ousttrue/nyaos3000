@@ -92,7 +92,7 @@ public:
 
 #else
 
-#define AnsiConsoleWriter StreamWriter
+#define AnsiConsoleWriter RawWriter
 
 #endif
 

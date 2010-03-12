@@ -4,13 +4,18 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <io.h>
 #include "nnhash.h"
 #include "getline.h"
 #include "nua.h"
 #include "ntcons.h"
 
-#include <windows.h>
-#include <wincon.h>
+#ifdef NYACUS
+#  include <windows.h>
+#  include <wincon.h>
+#else
+#  include <signal.h>
+#endif
 
 //#define TRACE(X) ((X),fflush(stdout))
 #define TRACE(X)
@@ -28,6 +33,13 @@ static void lstop (lua_State *L, lua_Debug *ar) {
   luaL_error(L, "interrupted!");
 }
 
+#ifdef OS2EMX
+static void handle_ctrl_c(int sig)
+{
+    lua_sethook(nua, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+    signal(sig,SIG_ACK);
+}
+#else
 static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
 {
     if( CTRL_C_EVENT == ctrlChar){
@@ -37,6 +49,7 @@ static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
         return FALSE;
     }
 }
+#endif
 
 int nua_get(lua_State *lua)
 {
@@ -406,8 +419,12 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         ::dup2( cur_err , 2 );
     }
 
+#ifdef OS2EMX
+    signal( SIGINT , handle_ctrl_c );
+#else
     Console::enable_ctrl_c();
     SetConsoleCtrlHandler( handle_ctrl_c , TRUE );
+#endif
 
     /* Lua インタプリタコール */
     if( luaL_loadstring(nua,luaL_gsub( nua, arg1.chars(), "$T", "\n") ) ||
@@ -418,8 +435,12 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     }
     lua_settop(nua,0);
 
+#ifdef OS2EMX
+    signal( SIGINT , SIG_IGN );
+#else
     SetConsoleCtrlHandler( handle_ctrl_c , FALSE );
     Console::disable_ctrl_c();
+#endif
 
     /* 標準エラー出力を元に戻す */
     if( back_err >= 0 ){
