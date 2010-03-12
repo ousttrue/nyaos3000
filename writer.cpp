@@ -176,7 +176,7 @@ PipeWriter::~PipeWriter()
     ::close(fd());
     if( pid ){
 #ifdef OS2EMX
-        ::wait(NULL);
+        ::waitpid(pid,NULL,WNOHANG|WUNTRACED);
 #else
         _cwait(NULL,pid,0);
 #endif

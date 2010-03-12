@@ -373,6 +373,7 @@ int main( int argc, char **argv )
     }
 
     signal( SIGINT , SIG_IGN );
+    signal( SIGPIPE , SIG_IGN );
 
     /* DOS‘‹‚©‚ç‚Ì“ü—Í‚É]‚Á‚ÄÀs‚·‚é */
     InteractiveShell intShell;
