@@ -18,7 +18,7 @@
 #include "ntcons.h"
 
 #ifndef VER
-#define VER "20100310"
+#define VER "20100313"
 #endif
 
 #ifdef _MSC_VER
@@ -373,7 +373,9 @@ int main( int argc, char **argv )
     }
 
     signal( SIGINT , SIG_IGN );
+#ifdef OS2EMX
     signal( SIGPIPE , SIG_IGN );
+#endif
 
     /* DOS‘‹‚©‚ç‚Ì“ü—Í‚É]‚Á‚ÄÀs‚·‚é */
     InteractiveShell intShell;

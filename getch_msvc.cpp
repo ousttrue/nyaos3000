@@ -9,7 +9,7 @@
   
 */
 
-#ifdef NYACUS
+#ifndef OS2EMX
 
 #include <windows.h>
 #ifdef BUILD_FOR_WCHAR
