@@ -18,7 +18,7 @@
 #include "ntcons.h"
 
 #ifndef VER
-#define VER "20100313"
+#define VER "20100315"
 #endif
 
 #ifdef _MSC_VER
@@ -322,6 +322,8 @@ int main( int argc, char **argv )
 {
     // set_new_handler(nya_new_handler);
     properties.put("nyatype",new NnString(SHELL_NAME) );
+    setvbuf( stdout , NULL , _IONBF , 0 );
+    setvbuf( stderr , NULL , _IONBF , 0 );
 
     NnVector nnargv;
     for(int i=1;i<argc;i++){

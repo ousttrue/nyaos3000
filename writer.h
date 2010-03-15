@@ -60,12 +60,12 @@ public:
 
 class PipeWriter : public RawWriter {
     NnString cmds;
+    NnString tempfn;
     void open( const NnString &cmds );
-    int pid;
 public:
     ~PipeWriter();
     PipeWriter( const char *cmds );
-    PipeWriter( const NnString &cmds ){ pid=0;open(cmds); }
+    PipeWriter( const NnString &cmds ){ open(cmds); }
 };
 
 #ifdef NYACUS
@@ -106,6 +106,7 @@ public:
     ~WriterClone(){}
     Writer &write( char c ){ return (*rep)->write( c ); }
     Writer &write( const char *s ){ return (*rep)->write( s ); }
+    int isatty() const { return (*rep)->isatty(); }
 };
 
 /* o—Í“à—e‚ğ‘S‚ÄÌ‚Ä‚Ä‚µ‚Ü‚¤ Writer */

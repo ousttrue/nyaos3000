@@ -235,37 +235,3 @@ int mySystem( const char *cmdline , int wait=1 )
     }
     return result;
 }
-
-/* CMD.EXE を使わない popen 関数相当
- *    cmdname : コマンド名
- *    mode : "r" or "w"
- * return
- *    -1 : パイプ生成失敗
- *    -2 : spawn 失敗
- *    others : ファイルハンドル
- */
-int myPopen(const char *cmdline , const char *mode , int *pid )
-{
-    int pipefd[2];
-    int backfd;
-    int d=(mode[0]=='r' ? 1 : 0 );
-
-#ifdef OS2EMX
-    if( _pipe(pipefd) != 0 ){
-#else
-    if( _pipe(pipefd,1024,_O_TEXT | _O_NOINHERIT ) != 0 ){
-#endif
-        return -1;
-    }
-
-    backfd = dup(d);
-    ::_dup2( pipefd[d] , d );
-    ::_close( pipefd[d] );
-    int result=mySystem( cmdline , 0 );
-    ::_dup2( backfd , d );
-    ::_close( backfd );
-    if( pid != NULL )
-        *pid = result;
-
-    return pipefd[ d ? 0 : 1 ];
-}
