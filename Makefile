@@ -97,12 +97,6 @@ luautil.$(O) : luautil.cpp
 nyacusrc.$(O)  : nyacus.rc redcat.ico
 	windres --output-format=coff -o $@ $<
 
-documents : nyaos2.txt nyacus.txt
-
-nyaos2.txt : nya.m4
-	m4 -DSHELL=NYAOS2 $< > $@
-nyacus.txt : nya.m4
-	m4 -DSHELL=NYACUS $< > $@
 clean : 
 	-cmd /c del *.obj
 	-cmd /c del *.o

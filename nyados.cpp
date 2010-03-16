@@ -18,7 +18,7 @@
 #include "ntcons.h"
 
 #ifndef VER
-#define VER "20100315"
+#define VER "2.90_0"
 #endif
 
 #ifdef _MSC_VER
