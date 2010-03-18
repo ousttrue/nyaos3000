@@ -13,6 +13,12 @@
 #ifndef NYADOS
 #  include <fcntl.h>
 #endif
+#ifdef OS2EMX
+#  define INCL_DOSSESMGR
+#  define INCL_DOSERRORS
+#  define INCL_DOSFILEMGR
+#  include <os2.h>
+#endif
 
 #include "nnstring.h"
 #include "nnvector.h"
@@ -48,6 +54,15 @@ static int mySpawn( const NnVector &args , int wait )
     NnString cmdname(argv[0]);
     cmdname.dequote();
 
+#ifdef OS2EMX
+    if( wait == P_WAIT ){
+        unsigned long type=0;
+        int rc= DosQueryAppType( (unsigned char *)cmdname.chars() , &type );
+        if( rc ==0  &&  (type & 7 )== FAPPTYP_WINDOWAPI){
+            wait = P_PM;
+        }
+    }
+#endif
     result = spawnvp(wait,(char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
     free( argv );
     return result;
