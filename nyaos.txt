@@ -1961,7 +1961,7 @@ Nihongo Yet Another OSes Shell (NYAOS) はフリーソフトウェアです。
     http://nyaos.org
 
 質問・バグリポート・提案がございましたら、以下までご連絡ください。
-    iyahaya@gmail.org
+    iyahaya@nifty.com
 
 本ソフトウェア開発にあたり、次の方々にご協力いただきました。
 
