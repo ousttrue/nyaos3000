@@ -1230,8 +1230,15 @@ dir/w がエラーになります
 変更履歴
 ========
 
-TEST-VERSION 2010.03.16
+2.90_1 (2010.03.19)
+  (OS/2)
+    [蟲繕]
+    ・PMアプリケーションが起動できなかった問題を修正した。
+
+2.90_0 (2010.03.16)
+    ・正式バージョンナンバー付与
     ・ドキュメント再整備(統一)
+    ・パッケージングスクリプト再作成
 
 TEST-VERSOIN 2010.03.15
     ・内蔵コマンドが介するパイプラインではテンポラリファイルを使うようにした。
@@ -1967,8 +1974,9 @@ Nihongo Yet Another OSes Shell (NYAOS) はフリーソフトウェアです。
     Susumu Chida 様   Nogue 様         斎藤 研一 様
     T.Uchida 様       ギス(gis_dur)様  そいつ！ 様
     横林 武 様        Christoph Brendes様
-    TEM 様            hideden 様       lukewarm 様
+    TEM 様            hideden 様       lukewarm(sava)様
     林 雅之 様        thinca 様        Shougo 様
+    齊藤 様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
 
