@@ -5,6 +5,7 @@
 #include "nnvector.h"
 #include "nndir.h"
 #include "getline.h" /* DosShell.executableSuffix ÇÃÇΩÇﬂÇÃÇ› */
+#include "nnhash.h"
 #ifdef NYACUS
 #  include "ntcons.h" 
 #  include <windows.h>
@@ -72,10 +73,17 @@ static int env_to_color( Writer &err )
     ls_read_only_file   = LS_LEFT "33;1" LS_RIGHT ; /* â© */
     ls_end_code         = LS_LEFT "0"    LS_RIGHT ; /* äDêF */
 
-    const char *env_=getenv("LS_COLORS");
-    if( env_ == NULL ) return 0;
+    NnString env,one;
 
-    NnString env(env_),one;
+    NnString *opt_ = dynamic_cast<NnString*>( properties.get("ls_colors") );
+    if( opt_ != NULL ){
+        env = *opt_;
+    }else{
+        const char *env_=getenv("LS_COLORS");
+        if( env_ == NULL ) return 0;
+        env = env_;
+    }
+
     env.dequote();
     NnString left,right;
     while( env.splitTo(one,env,":") , one.length() > 0 ){

@@ -425,8 +425,16 @@ ls [オプション] [ファイル名]
         -r ソート順を逆にする。
         -S サイズでソートする。
 
-    環境変数 LS_COLORS にフォーマットで
+        --color       
+        --color=always  常にカラー出力する 
+        --color=never   カラーを抑制する
+        --color=auto    出力先に応じて、カラー出力を判断する
 
+    色については、オプション ls_colors (あるいは 環境変数 LS_COLORS )に
+    次のようなフォーマットで定義します。
+
+        option ls_colors x1=v1:x2=v2:x3=v3…
+            OR
         set LS_COLORS=x1=v1:x2=v2:x3=v3…
 
             x1	|         意味		|デフォルト
@@ -503,6 +511,9 @@ option
             設定すると、コンソール画面の最後の行を使用しないように
             します。IME 使用時に変換前文字列が見えなくなるのを回避
             する為のものです。
+        ls_colors
+            ls でカラー出力する際の属性と色との対応を定義します。
+            詳細は ls の項目を参照してください。
         lnkexp (Windowsのみ)
             TAB補完で、ショートカットをリンク先に自動変換します。
         mineditwidth
@@ -992,10 +1003,11 @@ Lua 拡張
     * nyaos.alias
     * nyaos.option
     * nyaos.suffix
+    * nyaos.argv
 
-alias/option/suffix の定義を格納しているオブジェクトです。
-追加・変更・削除が可能ですが、pair/ipair だけは使えないので、
-全要素走査は、関数呼び出し演算子で代用します。
+alias/option/suffix の定義、nyaos起動時のパラメータを格納している
+オブジェクトです。追加・変更・削除が可能ですが、pair/ipair だけは
+使えないので、全要素走査は、関数呼び出し演算子で代用します。
 
     lua_e "
         nyaos.alias['cp'] = 'cmd /c copy'

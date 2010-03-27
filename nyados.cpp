@@ -326,7 +326,14 @@ int main( int argc, char **argv )
     setvbuf( stderr , NULL , _IONBF , 0 );
 
     NnVector nnargv;
+
+    lua_State *lua = nua_init();
+    lua_getglobal(lua,"nyaos"); /* [1] */
+    lua_newtable(lua); /* [2] */
     for(int i=1;i<argc;i++){
+        lua_pushinteger(lua,i); /* [3] */
+        lua_pushstring(lua,argv[i]); /* [4] */
+        lua_settable(lua,-3);
 	if( argv[i][0] == '-' ){
 	    int rv;
 	    switch( argv[i][1] ){
@@ -356,6 +363,15 @@ int main( int argc, char **argv )
             nnargv.append( new NnString(argv[i]) );
 	}
     }
+    /* nyaos.argv() == pairs( nyaos.argv ) ‚Æ“™‰¿‚É‚·‚é */
+    lua_newtable(lua);
+    lua_getglobal(lua,"pairs");
+    lua_setfield(lua,-2,"__call");
+    lua_setmetatable(lua,-2);
+
+    /* argv ‚ð nyaos ‚ÌƒtƒB[ƒ‹ƒh‚É“o˜^‚·‚é */
+    lua_setfield(lua,-2,"argv");
+    lua_settop(lua,0);
     conOut << 
 #ifdef ESCAPE_SEQUENCE_OK
 "\x1B[2J" << 
