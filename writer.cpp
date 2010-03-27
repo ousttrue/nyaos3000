@@ -109,7 +109,8 @@ Writer &AnsiConsoleWriter::write( const char *s )
 
 #endif
 
-AnsiConsoleWriter conOut(1),conErr(2);
+Writer *conOut_ = new AnsiConsoleWriter(1) ;
+Writer *conErr_ = new AnsiConsoleWriter(2) ; 
 
 int Writer::isatty() const
 { 

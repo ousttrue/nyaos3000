@@ -34,6 +34,7 @@ public:
     int ok() const { return fp_ != NULL ; }
     int fd() const { return fileno(fp_); }
     int isatty() const;
+    NnObject *clone() const { return new StreamWriter(fp_); }
 };
 
 /* 低水準I/Oインターフェイスを使って、画面出力をする。
@@ -50,12 +51,14 @@ public:
     int fd() const { return fd_; }
     void setFd(int fd){ fd_ = fd; }
     int isatty() const;
+    NnObject *clone() const { return new RawWriter(fd_); }
 };
 
 class FileWriter : public StreamWriter {
 public:
     ~FileWriter();
     FileWriter( const char *fn , const char *mode );
+    NnObject *clone() const { return 0; }
 };
 
 class PipeWriter : public RawWriter {
@@ -66,6 +69,7 @@ public:
     ~PipeWriter();
     PipeWriter( const char *cmds );
     PipeWriter( const NnString &cmds ){ open(cmds); }
+    NnObject *clone() const { return 0; }
 };
 
 #ifdef NYACUS
@@ -88,6 +92,8 @@ public:
 
     Writer &write( char c );
     Writer &write( const char *p );
+
+    NnObject *clone() const { return new AnsiConsoleWriter(fd()); }
 };
 
 #else
@@ -96,7 +102,9 @@ public:
 
 #endif
 
-extern AnsiConsoleWriter conOut,conErr;
+extern Writer *conOut_,*conErr_;
+#define conOut (*conOut_)
+#define conErr (*conErr_)
 
 /* Writer のポインタ変数に対してリダイレクトする Writer クラス. */
 class WriterClone : public Writer {

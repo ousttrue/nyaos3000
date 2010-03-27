@@ -18,7 +18,7 @@
 #include "ntcons.h"
 
 #ifndef VER
-#define VER "2.90_1"
+#define VER "2.91_0"
 #endif
 
 #ifdef _MSC_VER
@@ -337,6 +337,13 @@ int main( int argc, char **argv )
 	    case 'a': rv=opt_a(argc,argv,i); break;
             case 'F':
             case 'E': rv=opt_EF(argc,argv,i); break;
+#ifdef NYACUS
+            case 't':
+                delete conOut_; conOut_ = new RawWriter(1);
+                delete conErr_; conErr_ = new RawWriter(2);
+                rv = 0;
+                break;
+#endif
 	    default:
 		rv = 2;
 		conErr << argv[0] << " : -" 

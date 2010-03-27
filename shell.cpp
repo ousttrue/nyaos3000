@@ -380,8 +380,8 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
         int rc=cmdp->run( *this , argv2  );
 
         // 標準出力/エラー出力/入力を元に戻す.
-        this->setOut( new AnsiConsoleWriter(1) );
-	this->setErr( new AnsiConsoleWriter(2) );
+        this->setOut( dynamic_cast<Writer*>( conOut.clone()) );
+	this->setErr( dynamic_cast<Writer*>( conErr.clone()) );
 	this->setIn(  new StreamReader(stdin) );
         if( rc != 0 )
             return -1;
@@ -858,8 +858,8 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	}
     }
     parent_ = parent ;
-    out_    = new AnsiConsoleWriter( 1 ) ;
-    err_    = new AnsiConsoleWriter( 2 ) ;
+    out_    = dynamic_cast<Writer*>( conOut.clone() );
+    err_    = dynamic_cast<Writer*>( conErr.clone() );
     in_     = new StreamReader( stdin  ) ;
 }
 NnHash NyadosShell::command;

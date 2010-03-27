@@ -14,10 +14,11 @@
 #include "writer.h" /* for test  */
 
 enum {
-    OPT_LONG = 0x1 ,
-    OPT_ALL  = 0x2 ,
-    OPT_ONE  = 0x4 ,
-    OPT_REC  = 0x8 ,
+    OPT_LONG  = 0x1 ,
+    OPT_ALL   = 0x2 ,
+    OPT_ONE   = 0x4 ,
+    OPT_REC   = 0x8 ,
+    OPT_COLOR = 0x10 , 
 };
 
 # define LS_LEFT  "\033["
@@ -183,7 +184,7 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 	}
     }else if( option & OPT_LONG ){
 	/*** ロングフォーマット ***/
-	if( out.isatty() )
+	if( option & OPT_COLOR )
 	    out << ls_end_code ;
 	
 	for(int i=0 ; i<list.size() ; ++i ){
@@ -206,11 +207,11 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 		    st->stamp().minute );
 	    out << buffer ;
 
-	    if( out.isatty() ){
+	    if( option & OPT_COLOR ){
 		out << attr2color(*st);
 	    }
 	    out << st->name();
-	    if( out.isatty() ){
+	    if( option & OPT_COLOR ){
 		out << ls_end_code ;
 	    }
 
@@ -251,12 +252,12 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 	    int left = max+1 ;
 	    NnString &line = printline[ i % nlines ] ;
 
-	    if( out.isatty() ){
+	    if( option & OPT_COLOR ){
 		 line << attr2color( *st );
 	    }
 	    line << st->name();
 	    left -= st->name().length();
-	    if( out.isatty() ){
+	    if( option & OPT_COLOR ){
 		line << ls_end_code ;
 	    }
 	    if( st->isDir() ){
@@ -400,6 +401,11 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
     signal( SIGINT , handle_ctrl_c );
     signal( SIGPIPE , handle_ctrl_c );
 #endif
+
+    /* 出力先が端末の時はカラーをデフォルトとする */
+    if( shell.out().isatty() ){
+        option |= OPT_COLOR;
+    }
     
     argv.splitTo( args );
 
@@ -408,26 +414,46 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
 	path.dequote();
 
 	if( path.chars()[0] == '-' ){
-	    for(const char *p=path.chars()+1 ; *p != '\0' ; ++p ){
-		switch( *p ){
-		case 'l': option |= OPT_LONG ; break;
-		case 'a': option |= OPT_ALL  ; break;
-		case '1': option |= OPT_ONE  ; break;
-		case 'R': option |= OPT_REC  ; break;
-		case 'r':
-		    filecmpr.set_reverse(1) ;
-		    break;
-		case 't':
-		    filecmpr.set_type( NnFileComparer::COMPARE_WITH_TIME );
-		    break;
-		case 'S':
-		    filecmpr.set_type( NnFileComparer::COMPARE_WITH_SIZE );
-		    break;
-		default :
-		    shell.err() << *p << ": not such option.\n";
-		    return 0;
-		}
-	    }
+            if( path.chars()[1] == '-' ){
+                const char *p=path.chars()+2;
+                if( strcmp(p,"color=always")==0 ||
+                    strcmp(p,"color"       )==0 )
+                {
+                    /* 端末以外に対しても、常にカラー出力する */
+                    option |= OPT_COLOR;
+                }else if( strcmp(p,"color=auto")==0 ||
+                          strcmp(p,"color=tty" )==0 ){
+                    /* オプション無しと等価: 何もしない */
+                    ;
+                }else if( strcmp(p,"color=never")==0 ){
+                    /* カラーを抑制する */
+                    option &= ~OPT_COLOR;
+                }else{
+                    shell.err() << path.chars() << ": not such option.\n";
+                    return 0;
+                }
+            }else{
+                for(const char *p=path.chars()+1 ; *p != '\0' ; ++p ){
+                    switch( *p ){
+                    case 'l': option |= OPT_LONG ; break;
+                    case 'a': option |= OPT_ALL  ; break;
+                    case '1': option |= OPT_ONE  ; break;
+                    case 'R': option |= OPT_REC  ; break;
+                    case 'r':
+                        filecmpr.set_reverse(1) ;
+                        break;
+                    case 't':
+                        filecmpr.set_type( NnFileComparer::COMPARE_WITH_TIME );
+                        break;
+                    case 'S':
+                        filecmpr.set_type( NnFileComparer::COMPARE_WITH_SIZE );
+                        break;
+                    default :
+                        shell.err() << *p << ": not such option.\n";
+                        return 0;
+                    }
+                }
+            }
 	}else{
 	    NnVector temp;
 	    fnexplode( path.chars() , temp );
