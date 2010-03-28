@@ -9,7 +9,7 @@ void ScriptShell::shift()
 int ScriptShell::setLabel( NnString &label )
 {
     LabelOnScript *los=new LabelOnScript;
-    fr.getpos( los->pos );
+    fr->getpos( los->pos );
     labels.put( label , los );
     return 0;
 }
@@ -17,16 +17,16 @@ int ScriptShell::goLabel( NnString &label )
 {
     LabelOnScript *los=(LabelOnScript*)labels.get(label);
     if( los != NULL ){
-        fr.setpos( los->pos );
+        fr->setpos( los->pos );
         return 0;
     }else{
         NnString cmdline;
         fpos_t start;
-        fr.getpos( start );
+        fr->getpos( start );
         for(;;){
             int rc=this->readcommand(cmdline);
             if( rc < 0 ){
-                fr.setpos( start );
+                fr->setpos( start );
                 return 0;
             }
             cmdline.trim();

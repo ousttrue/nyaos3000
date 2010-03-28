@@ -20,6 +20,9 @@ public:
     virtual int getchr();
     virtual int eof() const;
     int fd() const { return fileno(fp); }
+
+    void getpos( fpos_t &pos ){ fgetpos(fp,&pos); }
+    void setpos( fpos_t &pos ){ fsetpos(fp,&pos); }
 };
 
 class FileReader : public StreamReader {
@@ -30,8 +33,6 @@ public:
 
     int open( const char *path );
     void close();
-    void getpos( fpos_t &pos ){ fgetpos(fp,&pos); }
-    void setpos( fpos_t &pos ){ fsetpos(fp,&pos); }
 };
 
 #endif

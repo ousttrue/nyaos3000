@@ -8,6 +8,7 @@
 #include "nnstring.h"
 #include "getline.h"
 #include "shell.h"
+#include "nua.h"
 
 int cmd_bindkey( NyadosShell &shell, const NnString &argv )
 {
@@ -402,6 +403,65 @@ int cmd_exit( NyadosShell & , const NnString & )
     return -1;
 }
 
+struct ReaderAndBuffer {
+    Reader *reader;
+    NnString line;
+};
+
+static const char *reader_for_lua(lua_State *L , void *data , size_t *size )
+{
+    ReaderAndBuffer *rb = (ReaderAndBuffer*)data;
+    if( rb->reader->eof() || rb->reader->readLine(rb->line) < 0 )
+        return NULL;
+    rb->line << '\n';
+    *size = rb->line.length();
+    return rb->line.chars();
+}
+
+int do_source( const NnString &cmdname , const NnVector &argv , Writer &err )
+{
+    /* 「source …」：コマンド読みこみ */
+    FileReader *fr=new FileReader(cmdname.chars());
+    if( fr == 0 || fr->eof() ){
+        err << cmdname << ": no such file or directory.\n";
+        delete fr;
+        return -1;
+    }
+
+    fpos_t pos;
+    NnString line;
+
+    fr->getpos(pos);
+    fr->readLine(line);
+    fr->setpos(pos);
+
+    if( line.startsWith("--") ){
+        /* Lua-code */
+        ReaderAndBuffer rb;
+        rb.reader = fr;
+
+        lua_State *L=nua_init();
+        if( lua_load(L , reader_for_lua , &rb, cmdname.chars()) != 0 ||
+            lua_pcall( L , 0 , 0 , 0 ) != 0 )
+        {
+            err << cmdname.chars() << ": " << lua_tostring(L,-1) << '\n';
+            lua_pop(L,1);
+        }
+        delete fr;
+    }else{
+        ScriptShell scrShell( fr ); /* fr の削除義務は scrShell へ委譲 */
+        if( scrShell ){
+            scrShell.addArgv( cmdname );
+            for( int i=0 ; i < argv.size() ; i++ ){
+                if( argv.const_at(i) != NULL )
+                    scrShell.addArgv( *(const NnString *)argv.const_at(i) );
+            }
+            scrShell.mainloop();
+        }
+    }
+    return 0;
+}
+
 /* シェルファイルの読み込み.
  * return
  *	常に 0
@@ -422,17 +482,14 @@ int cmd_source( NyadosShell &shell , const NnString &argv )
 	    shell.getHistoryObject()->read( fr );
 	}
     }else{
-	/* 「source …」：コマンド読みこみ */
-	ScriptShell scrShell( arg1.chars() );
-	if( scrShell ){
-	    while( ! arg1.empty() ){
-		scrShell.addArgv( arg1 );
-		left.splitTo( arg1 , left );
-	    }
-	    scrShell.mainloop();
-	}else{
-	    shell.err() << argv << ": no such file or directory.\n";
-	}
+        NnVector argv;
+
+        NnString t(arg1);
+        while( ! t.empty() ){
+            argv.append( t.clone() );
+            left.splitTo( t , left );
+        }
+        return do_source( arg1 , argv , shell.err() );
     }
     return 0;
 }

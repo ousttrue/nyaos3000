@@ -2,7 +2,7 @@
 #include "reader.h"
 
 /* ˆês“ü—Í
- *    line - “ü—Í•¶š—ñ
+ *    line - “ü—Í•¶š—ñ(‰üs‚ÍŠÜ‚Ü‚È‚¢)
  * return
  *     •¶š” / -1:EOF
  */

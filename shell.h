@@ -73,15 +73,18 @@ public:
 };
 
 class ScriptShell : public NyadosShell {
-    FileReader fr;
+    StreamReader *fr;
     NnHash labels;
     NnVector  argv_;
 public:
-    int readline(NnString &line){ return fr.readLine(line); }
-    ScriptShell(){}
-    ScriptShell( const char *fname ) : fr(fname){}
-    int open( const char *fname ){ return fr.open(fname); }
-    int operator !() const { return fr.eof(); }
+    int readline(NnString &line){ return fr->readLine(line); }
+    ScriptShell() : fr(0){}
+    ScriptShell( StreamReader *reader ) : fr(reader){}
+    ScriptShell( const char *fname ) : fr(new FileReader(fname)){}
+    ~ScriptShell(){ delete fr; }
+    int open( const char *fname )
+        { return (fr=new FileReader(fname)) == 0 || fr->eof() ; }
+    int operator !() const { return fr==0 || fr->eof(); }
 
     virtual int setLabel( NnString &label );
     virtual int goLabel( NnString &label );

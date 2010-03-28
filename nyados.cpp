@@ -43,6 +43,7 @@ void nya_new_handler()
  */
 static NnString rcfname;
 
+int do_source( const NnString &cmdname , const NnVector &argv , Writer &err );
 /* nyaos.rcfname という Lua 変数にファイル名をセットする */
 static void set_rcfname_for_Lua( const char *fname )
 {
@@ -70,19 +71,10 @@ static void callrc( const NnString &rcfname_ , const NnVector &argv )
     }
 
     rcfname = rcfname_;
-
     rcfname.slash2yen();
-    ScriptShell scrShell( rcfname.chars() );
-
-    scrShell.addArgv( rcfname );
-    for( int i=0 ; i < argv.size() ; i++ ){
-        if( argv.const_at(i) != NULL )
-            scrShell.addArgv( *(const NnString *)argv.const_at(i) );
-    }
-
     set_rcfname_for_Lua( rcfname.chars() );
 
-    scrShell.mainloop();
+    do_source( rcfname , argv , conErr );
 
     set_rcfname_for_Lua( NULL );
 }
