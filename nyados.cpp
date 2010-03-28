@@ -16,6 +16,7 @@
 #include "writer.h"
 #include "nua.h"
 #include "ntcons.h"
+#include "source.h"
 
 #ifndef VER
 #define VER "2.91_0"
@@ -36,96 +37,6 @@ void nya_new_handler()
 #ifdef _MSC_VER
     return 0;
 #endif
-}
-
-/* 現在処理中の rcfname の名前
- * 空だと通常の _nya が呼び出される。
- */
-static NnString rcfname;
-
-int do_source( const NnString &cmdname , const NnVector &argv , Writer &err );
-/* nyaos.rcfname という Lua 変数にファイル名をセットする */
-static void set_rcfname_for_Lua( const char *fname )
-{
-    lua_State *lua = nua_init();
-
-    lua_getglobal(lua,"nyaos");
-    if( lua_istable(lua,-1) ){
-        if( fname != NULL ){
-            lua_pushstring(lua,fname);
-        }else{
-            lua_pushnil(lua);
-        }
-        lua_setfield(lua,-2,"rcfname");
-    }
-    lua_pop(lua,1); /* drop nyaos */
-}
-
-
-/* rcfname_ を _nya として呼び出す */
-static void callrc( const NnString &rcfname_ , const NnVector &argv )
-{
-    if( access( rcfname_.chars() , 0 ) != 0 ){
-        /* printf( "%s: not found.\n",rcfname_.chars() ); */
-        return;
-    }
-
-    rcfname = rcfname_;
-    rcfname.slash2yen();
-    set_rcfname_for_Lua( rcfname.chars() );
-
-    do_source( rcfname , argv , conErr );
-
-    set_rcfname_for_Lua( NULL );
-}
-
-/* rcファイルを探し、見付かったものから、呼び出す。
- *	argv0 - exeファイルの名前.
- *      argv - パラメータ
- */
-static void seek_and_call_rc( const char *argv0 , const NnVector &argv )
-{
-    /* EXE ファイルと同じディレクトリの _nya を試みる */
-    NnString rcfn1;
-
-    int lastroot=NnDir::lastRoot( argv0 );
-    if( lastroot != -1 ){
-        rcfn1.assign( argv0 , lastroot );
-        rcfn1 << '\\' << RUN_COMMANDS;
-        callrc( rcfn1 , argv );
-    /* / or \ が見付からなかった時は
-     * カレントディレクトリとみなして実行しない
-     * (二重呼び出しになるので)
-     */
-#if 0
-    }else{
-        printf("DEBUG: '%s' , (%d)\n", argv0 , lastroot);
-#endif
-    }
-    /* %HOME%\_nya or %USERPROFILE%\_nya or \_nya  */
-    NnString rcfn2;
-
-    const char *home=getEnv("HOME");
-    if( home == NULL )
-        home = getEnv("USERPROFILE");
-
-    if( home != NULL ){
-        rcfn2 = home;
-        rcfn2.trim();
-    }
-    rcfn2 << "\\" << RUN_COMMANDS;
-    if( rcfn2.compare(rcfn1) != 0 )
-        callrc( rcfn2 , argv );
-
-    /* カレントディレクトリの _nya を試みる */
-    NnString rcfn3;
-    char cwd[ FILENAME_MAX ];
-
-    getcwd( cwd , sizeof(cwd) );
-    rcfn3 << cwd << '\\' << RUN_COMMANDS ;
-
-    if( rcfn3.compare(rcfn1) !=0 && rcfn3.compare(rcfn2) !=0 )
-        callrc( rcfn3 , argv );
 }
 
 /* -d デバッグオプション
@@ -304,7 +215,6 @@ static int opt_t( int , char ** , int & )
     return 0;
 }
 #endif
-
 
 static void goodbye()
 {
