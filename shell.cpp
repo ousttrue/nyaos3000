@@ -821,16 +821,12 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "goto"    , &cmd_goto     },
 	{ "history" , &cmd_history  },
 	{ "if"      , &cmd_if       },
-	{ "list"    , &cmd_ls       },
 	{ "ls"      , &cmd_ls       },
         { "lua_e"   , &cmd_lua_e    },
-#ifndef NYADOS
 	{ "open"    , &cmd_open     },
-#endif
 	{ "option"  , &cmd_option   },
 	{ "popd"    , &cmd_popd     },
-	{ "print"   , &cmd_echoOut  },
-	{ "printerr", &cmd_echoErr  },
+	{ "echo"   , &cmd_echoOut  },
 	{ "pushd"   , &cmd_pushd    },
 	{ "pwd"     , &cmd_pwd      },
 	{ "set"	    , &cmd_set      },
@@ -840,7 +836,6 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "unalias" , &cmd_unalias  },
 	{ "unoption", &cmd_unoption },
 	{ "unsuffix", &cmd_unsuffix },
-	{ "xptest"  , &cmd_xptest },
 	{ 0 , 0 },
     };
     /* Ã“Iƒƒ“ƒo•Ï”‚ğˆê“x‚¾‚¯‰Šú‰»‚·‚é */

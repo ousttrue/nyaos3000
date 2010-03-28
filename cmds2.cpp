@@ -408,19 +408,3 @@ int cmd_echoOut( NyadosShell &shell , const NnString &argv )
     shell.out() << argv << '\n';
     return 0;
 }
-int cmd_echoErr( NyadosShell &shell , const NnString &argv )
-{
-    shell.err() << argv << '\n';
-    return 0;
-}
-
-/* 関数テスト用 */
-int cmd_xptest( NyadosShell &shell , const NnString &argv )
-{
-    NnString dst;
-    for(NnString::Iter p(argv) ; *p ; ++p ){
-	dst << *p;
-    }
-    shell.out() << dst << '\n';
-    return 0;
-}

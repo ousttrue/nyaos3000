@@ -10,7 +10,7 @@
 #    - そのユーザで定義する設定は (2) へ
 # 配置してください.
 
-print %0 reading ...
+echo %0 reading ...
 
 suffix ny  %nyatype% -f
 suffix pl  perl
