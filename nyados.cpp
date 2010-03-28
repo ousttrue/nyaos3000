@@ -295,6 +295,25 @@ static int opt_a( int , char ** , int & )
 
     return 0;
 }
+
+#ifdef NYACUS
+/* -t コンソールの直接のコントロールを抑制し、
+ *    ANSIエスケープシーケンスをそのまま出力する
+ *	i : 現在読み取り中の argv の添字
+ * return
+ *	0 : 継続 
+ *	not 0 : NYA*S を終了させる(mainの戻り値+1を返す)
+ */
+static int opt_t( int , char ** , int & )
+{
+    delete conOut_; conOut_ = new RawWriter(1);
+    delete conErr_; conErr_ = new RawWriter(2);
+
+    return 0;
+}
+#endif
+
+
 static void goodbye()
 {
     lua_State *lua=nua_init();
@@ -345,11 +364,7 @@ int main( int argc, char **argv )
             case 'F':
             case 'E': rv=opt_EF(argc,argv,i); break;
 #ifdef NYACUS
-            case 't':
-                delete conOut_; conOut_ = new RawWriter(1);
-                delete conErr_; conErr_ = new RawWriter(2);
-                rv = 0;
-                break;
+            case 't': rv=opt_t(argc,argv,i); break;
 #endif
 	    default:
 		rv = 2;
