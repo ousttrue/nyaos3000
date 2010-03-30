@@ -149,6 +149,9 @@ void DosShell::start()
 void DosShell::end()
 {
     putchar('\n');
+#ifdef NYACUS
+    Console::restore_default_console_mode();
+#endif
 }
 
 #ifdef PROMPT_SHIFT

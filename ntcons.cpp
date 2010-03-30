@@ -56,7 +56,17 @@ static HANDLE   hStdin = (HANDLE )-1L;
 static HANDLE   hStdout = (HANDLE )-1L;
 static BOOL     bStdioInitialized;
 static BOOL     bStdinIsConsole;
-static DWORD    dwPrevConsoleMode;
+
+static DWORD    default_console_mode = ~0u;
+
+/* 変更された標準入出力を元に戻す */
+void Console::restore_default_console_mode()
+{
+    if( default_console_mode != ~0u ){
+        SetConsoleMode( GetStdHandle(STD_INPUT_HANDLE) , 
+                        default_console_mode );
+    }
+}
 
 /* APIによる標準入出力の初期化 */
 static void initializeStdio()
@@ -72,7 +82,10 @@ static void initializeStdio()
         if (GetConsoleMode(hStdin, &dw)) {
             /* Win32コンソールの場合は念のためダイレクトモードに設定 */
             bStdinIsConsole = TRUE;
-            dwPrevConsoleMode = dw;
+            if( default_console_mode == ~0u ){
+                default_console_mode = dw;
+                atexit( Console::restore_default_console_mode );
+            }
             dw &= ~(ENABLE_PROCESSED_INPUT |
                     ENABLE_LINE_INPUT |
                     ENABLE_ECHO_INPUT |
