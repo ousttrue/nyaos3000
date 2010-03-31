@@ -75,7 +75,7 @@ int cmd_open( NyadosShell &shell , const NnString &argv )
 		action=OPEN_EXPLORE;
 		break;
 	    default:
-		shell.err() << arg1 << ": unknown option.\n";
+		conErr << arg1 << ": unknown option.\n";
 		return 0;
 	    }
 	}else if( arg1.at(0) == '+' ){

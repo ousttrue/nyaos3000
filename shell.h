@@ -8,16 +8,12 @@
 #include "writer.h"
 #include "history.h"
 
-// #define TRACE
-
 class NyadosShell : public NnObject {
     enum { MAX_NESTING = 50 };
     static NnHash command;
 
     NnString current;
     NnString heredocfn;
-    Writer *out_ , *err_ ;
-    Reader *in_;
     int exitStatus_;
 
     void doHereDocument( const char *&sp , NnString &dst , char prefix );
@@ -54,13 +50,6 @@ public:
     virtual void shift();
     virtual const char *className() const =0;
     const char *repr() const { return this->className(); }
-
-    void setOut( Writer *w ){ delete out_ ; out_= w; }
-    void setErr( Writer *w ){ delete err_ ; err_= w; }
-    void setIn(  Reader *r ){ delete in_  ; in_ = r; }
-    Writer &out() const { return *out_; }
-    Writer &err() const { return *err_; }
-    Reader &in()  const { return *in_;  }
 
     NyadosShell( NyadosShell *parent = 0 );
 

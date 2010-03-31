@@ -94,7 +94,7 @@ static FileWriter *readWriteRedirect( const char *&sp )
     NnString fn;
     NyadosShell::readNextWord(sp,fn);
     if( fn.empty() ){
-	fputs("syntax error near unexpected token `newline'\n",stderr);
+        conErr << "syntax error near unexpected token `newline'\n";
 	return NULL;
     }
 
@@ -179,8 +179,8 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
                 delete pw;
                 return -1;
 	    }
-	    this->setOut( pw );
-	    this->setErr( new WriterClone(&out_) );
+            conOut_ = pw ;
+            conErr_ = new WriterClone(pw);
 	}else{ /* •W€o—Í‚Ì‚Ý */
             NnString pipecmds( restcmd.chars()+1 );
 
@@ -190,7 +190,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
                 delete pw;
                 return -1;
 	    }
-	    this->setOut( pw );
+            conOut_ = pw;
 	}
     }
     int prevchar=' ';
@@ -212,7 +212,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    ++sp;
 	    FileWriter *fw=readWriteRedirect( sp );
 	    if( fw != NULL ){
-		this->setOut(fw);
+                conOut_ = fw;
 	    }else{
 		conErr << "can't redirect stdout.\n";
 		return -1;
@@ -226,14 +226,14 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    sp += 2;
 	    if( *sp == '&'  &&  *(sp+1) == '2' ){
 		sp += 2;
-		this->setOut( new WriterClone(&err_) );
+                conOut_ = new WriterClone(conErr_);
 	    }else if( *sp == '&' && *(sp+1) == '-' ){
 		sp += 2;
-		this->setOut( new NullWriter() );
+                conOut_ = new NullWriter();
 	    }else{
 		FileWriter *fw=readWriteRedirect( sp );
 		if( fw != NULL ){
-		    this->setOut(fw);
+                    conOut_ = fw;
 		}else{
 		    conErr << "can't redirect stdout.\n";
 		    return -1;
@@ -243,14 +243,14 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    sp += 2;
 	    if( *sp == '&' && *(sp+1) == '1' ){
 		sp += 2;
-		this->setErr( new WriterClone(&out_) );
+                conErr_ = new WriterClone(conOut_);
 	    }else if( *sp == '&' && *(sp+1) == '-' ){
 		sp += 2;
-		this->setErr( new NullWriter() );
+                conErr_ = new NullWriter();
 	    }else{
 		FileWriter *fw=readWriteRedirect( sp );
 		if( fw != NULL ){
-		    this->setErr(fw);
+                    conErr_ = fw;
 		}else{
 		    conErr << "can't redirect stderr.\n";
 		    return -1;
@@ -259,7 +259,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
         }else if( *sp == '`' && backquotemax > 0 ){
 	    ++sp;
             if( doQuote( sp , dst , backquotemax , *this ) == -1 ){
-                fputs("over flow commandline.\n",stderr);
+                conErr << "over flow commandline.\n";
                 return -1;
             }
 	    ++sp;
@@ -357,7 +357,7 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
         }else if( *sp == '`'  && backquotemax > 0 ){
 	    ++sp;
             if( doQuote( sp , dst , backquotemax , *this ) == -1 ){
-                fputs("Over flow commandline.\n",stderr);
+                conErr << "Over flow commandline.\n";
                 return -1;
             }
 	}else if( *sp == '<' && *(sp+1) == '<'  &&  quote == 0 ){

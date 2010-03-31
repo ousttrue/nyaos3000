@@ -116,7 +116,7 @@ int cmd_foreach( NyadosShell &shell , const NnString &argv )
     NnString varname,rest;
     argv.splitTo(varname,rest);
     if( varname.empty() ){
-        shell.err() << "foreach: foreach VARNAME VALUE-1 VALUE-2 ...\n";
+        conErr << "foreach: foreach VARNAME VALUE-1 VALUE-2 ...\n";
         return 0;
     }
     varname.downcase();
@@ -181,6 +181,6 @@ int cmd_foreach( NyadosShell &shell , const NnString &argv )
     return 0;
 
   memerror:
-    shell.err() << "foreach: memory allocation error\n";
+    conErr << "foreach: memory allocation error\n";
     return 0;
 }

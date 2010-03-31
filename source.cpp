@@ -22,12 +22,12 @@ static const char *reader_for_lua(lua_State *L , void *data , size_t *size )
 }
 
 /* 通常ソース・Luaソース共通読み込み処理 */
-static int do_source( const NnString &cmdname , const NnVector &argv , Writer &err )
+static int do_source( const NnString &cmdname , const NnVector &argv )
 {
     /* 「source …」：コマンド読みこみ */
     FileReader *fr=new FileReader(cmdname.chars());
     if( fr == 0 || fr->eof() ){
-        err << cmdname << ": no such file or directory.\n";
+        conErr << cmdname << ": no such file or directory.\n";
         delete fr;
         return -1;
     }
@@ -48,7 +48,7 @@ static int do_source( const NnString &cmdname , const NnVector &argv , Writer &e
         if( lua_load(L , reader_for_lua , &rb, cmdname.chars()) != 0 ||
             lua_pcall( L , 0 , 0 , 0 ) != 0 )
         {
-            err << cmdname.chars() << ": " << lua_tostring(L,-1) << '\n';
+            conErr << cmdname.chars() << ": " << lua_tostring(L,-1) << '\n';
             lua_pop(L,1);
         }
         delete fr;
@@ -81,7 +81,7 @@ int cmd_source( NyadosShell &shell , const NnString &argv )
 	NyadosShell::dequote( left );
 	FileReader fr( left.chars() );
 	if( fr.eof() ){
-	    shell.err() << left << ": no such file or directory.\n";
+	    conErr << left << ": no such file or directory.\n";
 	}else{
 	    shell.getHistoryObject()->read( fr );
 	}
@@ -93,7 +93,7 @@ int cmd_source( NyadosShell &shell , const NnString &argv )
             argv.append( t.clone() );
             left.splitTo( t , left );
         }
-        return do_source( arg1 , argv , shell.err() );
+        return do_source( arg1 , argv );
     }
     return 0;
 }
@@ -103,7 +103,6 @@ int cmd_source( NyadosShell &shell , const NnString &argv )
  */
 NnString rcfname;
 
-int do_source( const NnString &cmdname , const NnVector &argv , Writer &err );
 /* nyaos.rcfname という Lua 変数にファイル名をセットする */
 static void set_rcfname_for_Lua( const char *fname )
 {
@@ -134,7 +133,7 @@ void callrc( const NnString &rcfname_ , const NnVector &argv )
     rcfname.slash2yen();
     set_rcfname_for_Lua( rcfname.chars() );
 
-    do_source( rcfname , argv , conErr );
+    do_source( rcfname , argv );
 
     set_rcfname_for_Lua( NULL );
 }

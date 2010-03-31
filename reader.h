@@ -11,6 +11,9 @@ public:
     int readLine( NnString &line );
 };
 
+extern Reader *conIn_;
+#define conIn (*conIn_)
+
 class StreamReader : public Reader {
 protected:
     FILE *fp;

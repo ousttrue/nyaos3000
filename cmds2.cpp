@@ -18,7 +18,7 @@ int cmd_bindkey( NyadosShell &shell, const NnString &argv )
     argv.splitTo( keystr , left );
     if( keystr.empty() ){
 	for( NnHash::Each e(mapping) ; e.more() ; ++e ){
-	    shell.out() << e->key() << ' ' << *(NnString*)e->value() << '\n';
+	    conOut << e->key() << ' ' << *(NnString*)e->value() << '\n';
 	}
         return 0;
     }
@@ -31,16 +31,16 @@ int cmd_bindkey( NyadosShell &shell, const NnString &argv )
 	    mapping.put( keystr , new NnString(funcname) );
 	    break;
 	case -1:
-	    shell.err() << "function name " << funcname << " was invalid.\n" ;
+	    conErr << "function name " << funcname << " was invalid.\n" ;
 	    break;
 	case -2:
-	    shell.err() << "key number " << keystr << " was invalid.\n" ;
+	    conErr << "key number " << keystr << " was invalid.\n" ;
 	    break;
 	case -3:
-	    shell.err() << "key name " << keystr << " was invalid.\n" ;
+	    conErr << "key name " << keystr << " was invalid.\n" ;
 	    break;
 	default:
-	    shell.err() << "Unexpected error was occured.\n";
+	    conErr << "Unexpected error was occured.\n";
 	    break;
 	}
     }
@@ -50,7 +50,7 @@ int cmd_bindkey( NyadosShell &shell, const NnString &argv )
 int cmd_endif( NyadosShell &shell , const NnString & )
 {
     if( shell.nesting.size() <= 0 ){
-        shell.err() << "Unexpected endif.\n";
+        conErr << "Unexpected endif.\n";
     }else{
         delete shell.nesting.pop();
     }
@@ -93,7 +93,7 @@ static int has_keyword_if_then( const NnString &line )
 int cmd_else( NyadosShell &shell , const NnString & )
 {
     if( shell.nesting.size() <= 0 ){
-        shell.err() << "Unexpected else.\n";
+        conErr << "Unexpected else.\n";
         return 0;
     }
     NnString *keyword=(NnString*)shell.nesting.pop();
@@ -102,7 +102,7 @@ int cmd_else( NyadosShell &shell , const NnString & )
 	 keyword->icompare( "skip:then>") !=0 ))
     {
 	delete keyword;
-        shell.err() << "Unexpected else.\n";
+        conErr << "Unexpected else.\n";
         return 0;
     }
     delete keyword;
@@ -211,7 +211,7 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
             if( atoi(arg1.chars()) >= atoi(rhs.chars()))
                 flag = !flag;
         }else{
-            shell.err() << arg1 << ": Syntax Error\n";
+            conErr << arg1 << ": Syntax Error\n";
             return 0;
         }
     }
@@ -339,13 +339,13 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
 {
     if( argv.empty() ){
         for( char **p=environ; *p != NULL ; ++p )
-            shell.out() << *p << '\n';
+            conOut << *p << '\n';
         return 0;
     }
     int equalPos=argv.findOf( "=" );
     if( equalPos < 0 ){
 	/* 「set ENV」のみ → 指定した環境変数の内容を表示. */
-	shell.out() << argv << '=' << getEnv(argv.chars(),"") << '\n';
+	conOut << argv << '=' << getEnv(argv.chars(),"") << '\n';
 	return 0;
     }
     NnString name( argv.chars() , equalPos );  name.upcase();
@@ -403,8 +403,8 @@ int cmd_exit( NyadosShell & , const NnString & )
     return -1;
 }
 
-int cmd_echoOut( NyadosShell &shell , const NnString &argv )
+int cmd_echoOut( NyadosShell & , const NnString &argv )
 {
-    shell.out() << argv << '\n';
+    conOut << argv << '\n';
     return 0;
 }

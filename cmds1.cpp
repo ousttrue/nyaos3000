@@ -32,7 +32,7 @@ int cmd_setter( NyadosShell &shell , NnHash &hash , const NnString &argv )
     if( argv.empty() ){
 	// 一覧表示.
 	for( NnHash::Each itr(hash) ; itr.more() ; ++itr )
-            shell.out()
+            conOut 
                 << itr->key() << ' '
                 << *(NnString*)itr->value()
                 << '\n';
@@ -59,7 +59,7 @@ int cmd_setter( NyadosShell &shell , NnHash &hash , const NnString &argv )
 	    // １エイリアス内容表示.
 	    NnString *rvalue=(NnString *)hash.get( name );
 	    if( rvalue != NULL )
-		shell.out() << name << ' ' << *rvalue << '\n';
+                conOut << name << ' ' << *rvalue << '\n';
 	    delete value;
 	}
     }else{
@@ -124,14 +124,14 @@ int cmd_history( NyadosShell &shell , const NnString &argv )
     for(int i=start ; i<hisObj->size() ; i++ ){
         NnString history;
 	hisObj->get(i,history);
-        shell.out() << i << " : ";
+        conOut << i << " : ";
 	for(int j=0;j<history.length();++j){
 	    if( TwinBuffer::isCtrl(history.at(j)) )
-		shell.out() << '^' << (char)('@'+history.at(j));
+                conOut << '^' << (char)('@'+history.at(j));
 	    else
-		shell.out() << (char)history.at(j);
+                conOut << (char)history.at(j);
 	}
-	shell.out() << '\n';
+        conOut << '\n';
     }
     return 0;
 }

@@ -352,20 +352,25 @@ int sub_brace_start( NyadosShell &bshell ,
  */
 int NyadosShell::interpret2( const NnString &replace_ , int wait )
 {
+    int rv=0;
+
     NnString replace(replace_);
     VariableFilter variable_filter( *this );
 
+    /* 標準入出力のセーブ */
+    Writer *save_out = conOut_;
+    Writer *save_err = conErr_;
+    Reader *save_in  = conIn_;
+
     /* 環境変数展開 */
     variable_filter( replace );
-
     NnString arg0 , argv , arg0low ;
-
     replace.splitTo( arg0 , argv );
 
     /* 関数定義文 */
     if( arg0.endsWith("{") ){
 	sub_brace_start( *this , arg0 , argv );
-	return 0;
+        goto exit;
     }
     arg0low = arg0;
     arg0low.downcase();
@@ -375,16 +380,14 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 	/* 内蔵コマンドを実行する */
         NnString argv2;
         if( explode4internal( argv , argv2 ) != 0 )
-            return 0;
+            goto exit;
 
         int rc=cmdp->run( *this , argv2  );
 
-        // 標準出力/エラー出力/入力を元に戻す.
-        this->setOut( dynamic_cast<Writer*>( conOut.clone()) );
-	this->setErr( dynamic_cast<Writer*>( conErr.clone()) );
-	this->setIn(  new StreamReader(stdin) );
-        if( rc != 0 )
-            return -1;
+        if( rc != 0 ){
+            rv = -1;
+            goto exit;
+        }
     }else{
 #ifdef LUA_ENABLE
         lua_State *lua = nua_init();
@@ -399,10 +402,11 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
                 lua_pushstring(lua,argv.chars());
                 if( lua_pcall(lua,1,0,0) != 0 ){
                     const char *msg = lua_tostring( lua , -1 );
-                    this->err() << msg << '\n';
+                    conErr << msg << '\n';
+                    
                 }
                 lua_settop(lua,0);
-                return 0;
+                goto exit;
             }
         }
         lua_settop(lua,0);
@@ -429,7 +433,20 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 	::remove( heredocfn.chars() );
 	heredocfn.erase();
     }
-    return 0;
+    // 標準出力/エラー出力/入力を元に戻す.
+    if( conOut_ != save_out ){
+        delete conOut_;
+        conOut_ = save_out;
+    }
+    if( conErr_ != save_err ){
+        delete conErr_;
+        conErr_ = save_err;
+    }
+    if( conIn_ != save_in ){
+        delete conIn_;
+        conIn_  = save_in;
+    }
+    return rv;
 }
 
 /* 文字列中の " の数を数える */
@@ -449,9 +466,6 @@ static int countQuote( const char *p )
  */
 int NyadosShell::readcommand( NnString &buffer )
 {
-#ifdef TRACE
-    fprintf(stderr,"NyadosShell::readcommand(\"%s\")\n",buffer.chars() );
-#endif
     if( current.empty() ){
 	NnString temp;
 	int rc;
@@ -617,9 +631,6 @@ static int insertInterpreter( const char *start ,
  */
 int NyadosShell::interpret1( const NnString &statement )
 {
-#ifdef TRACE
-    fprintf(stderr,"NyadosShell::interpret1(\"%s\")\n",statement.chars());
-#endif
     NnString cmdline(statement);
 #ifdef LUA_ENABLE
     lua_State *lua=nua_init();
@@ -636,7 +647,7 @@ int NyadosShell::interpret1( const NnString &statement )
             }
         }else{
             const char *msg = lua_tostring( lua , -1 );
-            this->err() << msg << '\n';
+            conErr << msg << '\n';
         }
     }
     lua_settop(lua,0);
@@ -749,7 +760,7 @@ int NyadosShell::mainloop()
     static int nesting=0;
 
     if( nesting >= MAX_NESTING ){
-	fputs("!!! too deep nesting shell !!!\n",stderr);
+        conErr << "!!! too deep nesting shell !!!\n";
 	return -1;
     }
 
@@ -771,14 +782,12 @@ int cmd_set     ( NyadosShell & , const NnString & );
 int cmd_exit    ( NyadosShell & , const NnString & );
 int cmd_source  ( NyadosShell & , const NnString & );
 int cmd_echoOut ( NyadosShell & , const NnString & );
-int cmd_echoErr ( NyadosShell & , const NnString & );
 int cmd_chdir   ( NyadosShell & , const NnString & );
 int cmd_goto    ( NyadosShell & , const NnString & );
 int cmd_shift   ( NyadosShell & , const NnString & );
 int cmd_alias   ( NyadosShell & , const NnString & );
 int cmd_unalias ( NyadosShell & , const NnString & );
 int cmd_suffix  ( NyadosShell & , const NnString & );
-int cmd_sub     ( NyadosShell & , const NnString & );
 int cmd_unsuffix( NyadosShell & , const NnString & );
 int cmd_open    ( NyadosShell & , const NnString & );
 int cmd_option  ( NyadosShell & , const NnString & );
@@ -790,7 +799,6 @@ int cmd_dirs    ( NyadosShell & , const NnString & );
 int cmd_foreach ( NyadosShell & , const NnString & );
 int cmd_pwd     ( NyadosShell & , const NnString & );
 int cmd_folder  ( NyadosShell & , const NnString & );
-int cmd_xptest  ( NyadosShell & , const NnString & );
 int cmd_lua_e   ( NyadosShell & , const NnString & );
 
 int cmd_eval( NyadosShell &shell , const NnString &argv )
@@ -853,9 +861,6 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	}
     }
     parent_ = parent ;
-    out_    = dynamic_cast<Writer*>( conOut.clone() );
-    err_    = dynamic_cast<Writer*>( conErr.clone() );
-    in_     = new StreamReader( stdin  ) ;
 }
 NnHash NyadosShell::command;
 

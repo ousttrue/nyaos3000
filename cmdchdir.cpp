@@ -92,11 +92,11 @@ int cmd_dirs( NyadosShell &shell , const NnString & )
     NnString cwd;
 
     NnDir::getcwd(cwd);
-    shell.out() << cwd ;
+    conOut << cwd ;
     for(int i=dirstack.size()-1 ; i>=0 ; i-- ){
-        shell.out() << ' ' << *(NnString*)dirstack.at(i);
+        conOut << ' ' << *(NnString*)dirstack.at(i);
     }
-    shell.out() << '\n';
+    conOut << '\n';
     return 0;
 }
 
@@ -123,7 +123,7 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
             if( here_flag ){
                 pushd_here();
             }else{
-                shell.err() << "pushd: directory stack empty.\n";
+                conErr << "pushd: directory stack empty.\n";
                 return 0;
             }
         }else{
@@ -132,7 +132,7 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
             }else{
 		NnString *dir=swap_here();
                 if( dir != NULL ){
-		    shell.err() << "pushd: stack top `" << *dir << "' not found.\n";
+		    conErr << "pushd: stack top `" << *dir << "' not found.\n";
 		    delete dir;
 		    return 0;
 		}
@@ -150,7 +150,7 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
                 dirstack.append( dirstack.shift() );
 	    NnString *faildir=popd_here();
 	    if( faildir != NULL ){
-		shell.err() << "pushd: directory `" << *faildir << "' not found.\n";
+		conErr << "pushd: directory `" << *faildir << "' not found.\n";
 		delete faildir;
 		return 0;
 	    }
@@ -161,7 +161,7 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
         /* ディレクトリを移動 */
         NyadosShell::dequote( argv );
 	if( chdir_( argv ) != 0 ){
-	    shell.err() << argv << ": no such directory.\n";
+	    conErr << argv << ": no such directory.\n";
 	    delete popd_here();
 	    return 0;
 	}
@@ -174,17 +174,17 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
 int cmd_popd( NyadosShell &shell , const NnString &argv )
 {
     if( dirstack.size() <= 0 ){
-        shell.err() << "popd: dir stack is empty.\n";
+        conErr << "popd: dir stack is empty.\n";
         return 0;
     }
     if( argv.at(0) == '+' && isDigit(argv.at(1)) ){
         NnString *dir=(NnString*)dirstack.at(atoi(argv.chars()+1));
         if( dir == NULL ){
-            shell.err() << "popd: " << argv << ": bad directory stack index\n";
+            conErr << "popd: " << argv << ": bad directory stack index\n";
             return 0;
         }else{
 	    if( chdir_( *dir ) != 0 ){
-		shell.err() << "popd: " << *dir << ": not found.\n";
+		conErr << "popd: " << *dir << ": not found.\n";
 		return 0;
 	    }
         }
@@ -192,7 +192,7 @@ int cmd_popd( NyadosShell &shell , const NnString &argv )
         NnString *dir=(NnString*)dirstack.pop();
 	chg_tilde();
 	if( chdir_( *dir ) != 0 ){
-	    shell.err() << "popd: " << *dir << ": not found.\n";
+	    conErr << "popd: " << *dir << ": not found.\n";
 	    delete dir;
 	    return 0;
 	}
@@ -219,9 +219,9 @@ int cmd_pwd( NyadosShell &shell , const NnString & )
 {
     NnString pwd;
     if( NnDir::getcwd( pwd ) == 0 ){
-        shell.out() << pwd << '\n';
+        conOut << pwd << '\n';
     }else{
-        shell.err() << "can't get current working directory.\n";
+        conErr << "can't get current working directory.\n";
     }
     return 0;
 }
@@ -247,12 +247,12 @@ int cmd_chdir( NyadosShell &shell , const NnString &argv )
 	    basedir = 1;
         }else if( opt.compare("-") == 0 ){
             if( prevdir.empty() ){
-                shell.err() << opt << ": can not chdir.\n";
+                conErr << opt << ": can not chdir.\n";
                 return 0;
             }
             tmp = prevdir;
 	}else{
-	    shell.err() << opt << ": no such option.\n";
+	    conErr << opt << ": no such option.\n";
 	    return 0;
 	}
 	NyadosShell::dequote( tmp.chars() , newdir );
@@ -275,6 +275,6 @@ int cmd_chdir( NyadosShell &shell , const NnString &argv )
         }
     }
     /* エラー終了 */
-    shell.err() << newdir << ": no such file or directory.\n";
+    conErr << newdir << ": no such file or directory.\n";
     return 0;
 }

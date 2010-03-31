@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include "reader.h"
 
+Reader *conIn_ = new StreamReader(stdin);
+
 /* ˆês“ü—Í
  *    line - “ü—Í•¶š—ñ(‰üs‚ÍŠÜ‚Ü‚È‚¢)
  * return

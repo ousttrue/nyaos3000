@@ -16,6 +16,10 @@ public:
     Writer &operator << (const NnString &s){ return *this << s.chars(); }
 };
 
+extern Writer *conOut_,*conErr_;
+#define conOut (*conOut_)
+#define conErr (*conErr_)
+
 /* <stdio.h> の FILE* を通じて出力する Writer系クラス.
  * ファイルのオープンクローズなどはしない。
  * ほとんど、stdout,stderr専用
@@ -102,19 +106,15 @@ public:
 
 #endif
 
-extern Writer *conOut_,*conErr_;
-#define conOut (*conOut_)
-#define conErr (*conErr_)
-
 /* Writer のポインタ変数に対してリダイレクトする Writer クラス. */
 class WriterClone : public Writer {
-    Writer **rep;
+    Writer *rep;
 public:
-    WriterClone( Writer **rep_ ) : rep(rep_) {}
+    WriterClone( Writer *rep_ ) : rep(rep_) {}
     ~WriterClone(){}
-    Writer &write( char c ){ return (*rep)->write( c ); }
-    Writer &write( const char *s ){ return (*rep)->write( s ); }
-    int isatty() const { return (*rep)->isatty(); }
+    Writer &write( char c ){ return rep->write( c ); }
+    Writer &write( const char *s ){ return rep->write( s ); }
+    int isatty() const { return rep->isatty(); }
 };
 
 /* 出力内容を全て捨ててしまう Writer */
@@ -125,8 +125,6 @@ public:
     Writer &write( char c ){ return *this; }
     Writer &write( const char *s ){ return *this; }
 };
-
-
 
 /* 標準出力・入力をリダイレクトしたり、元に戻したりするクラス */
 class Redirect {
@@ -143,6 +141,5 @@ public:
 
     int switchTo( const NnString &fn , const char *mode );
 };
-
 
 #endif

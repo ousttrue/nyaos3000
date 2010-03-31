@@ -400,7 +400,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
     int option = 0;
     int i;
 
-    env_to_color( shell.err() );
+    env_to_color( conErr );
     ctrl_c = 0;
 #ifdef NYACUS
     Console::enable_ctrl_c();
@@ -411,7 +411,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
 #endif
 
     /* 出力先が端末の時はカラーをデフォルトとする */
-    if( shell.out().isatty() ){
+    if( conOut.isatty() ){
         option |= OPT_COLOR;
     }
     
@@ -437,7 +437,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                     /* カラーを抑制する */
                     option &= ~OPT_COLOR;
                 }else{
-                    shell.err() << path.chars() << ": not such option.\n";
+                    conErr << path.chars() << ": not such option.\n";
                     return 0;
                 }
             }else{
@@ -457,7 +457,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                         filecmpr.set_type( NnFileComparer::COMPARE_WITH_SIZE );
                         break;
                     default :
-                        shell.err() << *p << ": not such option.\n";
+                        conErr << *p << ": not such option.\n";
                         return 0;
                     }
                 }
@@ -468,7 +468,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
 	    if( temp.size() <= 0 ){
 		NnFileStat *st=NnFileStat::stat( path );
 		if( st == NULL ){
-		    shell.err() << path << ": not found.\n";
+		    conErr << path << ": not found.\n";
 		    return 0;
 		}else if( st->isDir() ){
 		    dirs.append( st );
@@ -488,30 +488,30 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
 	}
     }
     if( files.size() <= 0 && dirs.size() <= 0 ){
-	dir1(NULL,option,filecmpr,dirs,shell.out() );
+	dir1(NULL,option,filecmpr,dirs,conOut );
     }else{
 	files.sort( filecmpr );
-	dir_files( files , option , shell.out() );
+	dir_files( files , option , conOut );
     }
 
     if( files.size() > 0 && dirs.size() > 0 )
-	shell.out() << '\n';
+	conOut << '\n';
     
     /* 注意：dirs.size は動的に変わる(関数内部で増える)場合がある */
     for( i=0 ; i < dirs.size() ; ++i ){
 	if( ctrl_c ){
-	    shell.err() << "^C\n";
+	    conErr << "^C\n";
 	    break;
 	}
 	NnFileStat *st=(NnFileStat*)dirs.at(i);
 	NnString name( st->name() );
 
 	if( dirs.size() >= 2 || files.size() > 0 ){
-	    shell.out() << st->name() << ":\n";
+	    conOut << st->name() << ":\n";
 	}
-	dir1( st->name().chars() , option , filecmpr , dirs , shell.out() );
+	dir1( st->name().chars() , option , filecmpr , dirs , conOut );
 	if( i+1 < dirs.size() ){
-	    shell.out() << '\n';
+	    conOut << '\n';
 	}
     }
     ctrl_c = 0;

@@ -369,18 +369,18 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     NyadosShell::dequote( arg1 );
 
     if( arg1.empty() ){
-        shell.err() << "lua_e \"lua-code\"\n" ;
+        conErr << "lua_e \"lua-code\"\n" ;
         return 0;
     }
     lua_State *nua = nua_init();
 
     /* 標準出力のリダイレクト・パイプ出力に対応 */
     int cur_out=+1;
-    StreamWriter *sw=dynamic_cast<StreamWriter*>( &shell.out() );
+    StreamWriter *sw=dynamic_cast<StreamWriter*>( conOut_  );
     if( sw != NULL ){
         cur_out = sw->fd();
     }else{
-        RawWriter *rw=dynamic_cast<RawWriter*>( &shell.out() );
+        RawWriter *rw=dynamic_cast<RawWriter*>( conOut_ );
         if( rw != NULL ){
             cur_out = rw->fd();
         }else{
@@ -395,11 +395,11 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     }
     /* 標準エラー出力のリダイレクト・パイプ出力に対応 */
     int cur_err=+2;
-    sw=dynamic_cast<StreamWriter*>( &shell.err() );
+    sw=dynamic_cast<StreamWriter*>( &conErr );
     if( sw != NULL ){
         cur_err = sw->fd();
     }else{
-        RawWriter *rw=dynamic_cast<RawWriter*>( &shell.err() );
+        RawWriter *rw=dynamic_cast<RawWriter*>( &conErr );
         if( rw != NULL ){
             cur_err = rw->fd();
         }else{
@@ -425,7 +425,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         lua_pcall( nua , 0 , 0 , 0 ) )
     {
         const char *msg = lua_tostring( nua , -1 );
-        shell.err() << msg << '\n';
+        conErr << msg << '\n';
     }
     lua_settop(nua,0);
 
@@ -447,7 +447,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         ::close( back_out );
     }
 #else
-    shell.err() << "require: built-in lua disabled.\n";
+    conErr << "require: built-in lua disabled.\n";
 #endif /* defined(LUA_ENABLED) */
     return 0;
 }
