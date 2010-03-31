@@ -356,6 +356,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 
     NnString replace(replace_);
     VariableFilter variable_filter( *this );
+    NyadosCommand *cmdp = NULL;
 
     /* 標準入出力のセーブ */
     Writer *save_out = conOut_;
@@ -375,8 +376,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
     arg0low = arg0;
     arg0low.downcase();
 
-    NyadosCommand *cmdp = (NyadosCommand*)command.get( arg0low );
-    if( cmdp != NULL ){
+    if( (cmdp=(NyadosCommand*)command.get( arg0low )) != NULL ){
 	/* 内蔵コマンドを実行する */
         NnString argv2;
         if( explode4internal( argv , argv2 ) != 0 )
