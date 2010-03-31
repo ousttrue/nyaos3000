@@ -218,6 +218,8 @@ class NnHash;
 // --- 普通のコンソール経由の入力ルーチン --- 
 class DosShell : public GetLine {
     NnString prompt_;
+    NnString clear_;
+    NnString cursor_on_;
 protected:
     virtual int makeTopCompletionList( const NnString &s , NnVector & );
 public:

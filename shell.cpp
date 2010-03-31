@@ -834,7 +834,7 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "open"    , &cmd_open     },
 	{ "option"  , &cmd_option   },
 	{ "popd"    , &cmd_popd     },
-	{ "echo"   , &cmd_echoOut  },
+	{ "echo"    , &cmd_echoOut  },
 	{ "pushd"   , &cmd_pushd    },
 	{ "pwd"     , &cmd_pwd      },
 	{ "set"	    , &cmd_set      },

@@ -51,7 +51,7 @@ int cmd_setter( NyadosShell &shell , NnHash &hash , const NnString &argv )
     }else if( value->length() <= 0 ){
 	if( name.at(0)=='+'){
 	    name.shift();
-	    hash.put( name , new NnString("(set)") );
+	    hash.put( name , new NnString() );
 	}else if( name.at(0)=='-'){
 	    name.shift();
 	    hash.remove( name );

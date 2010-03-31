@@ -52,6 +52,100 @@ static int isExecutable( const char *path )
         || DosShell::executableSuffix.get(sfxlwr) != NULL ;
 }
 
+/* $e などの文字列を制御文字を含んだテキストへ変換する
+ * (主にプロンプト用文字列解釈)
+ *    sp - 元文字列
+ *    result - 変換後文字列の格納先
+ */
+void eval_dollars_sequence( const char *sp , NnString &result )
+{
+    time_t now;
+    time( &now );
+    struct tm *thetime = localtime( &now );
+
+    result.erase();
+    
+    while( *sp != '\0' ){
+        if( *sp == '$' ){
+            ++sp;
+            switch( toupper(*sp) ){
+                case '_': result << '\n';   break;
+                case '$': result << '$'; break;
+                case 'A': result << '&'; break;
+                case 'B': result << '|'; break;
+                case 'C': result << '('; break;
+                case 'D':
+                    result.addValueOf(thetime->tm_year + 1900);
+                    result << '-';
+                    if( thetime->tm_mon + 1 < 10 )
+                        result << '0';
+                    result.addValueOf(thetime->tm_mon + 1);
+                    result << '-';
+                    if( thetime->tm_mday < 10 )
+                        result << '0';
+                    result.addValueOf( thetime->tm_mday );
+                    switch( thetime->tm_wday ){
+                        case 0: result << " (日)"; break;
+                        case 1: result << " (月)"; break;
+                        case 2: result << " (火)"; break;
+                        case 3: result << " (水)"; break;
+                        case 4: result << " (木)"; break;
+                        case 5: result << " (金)"; break;
+                        case 6: result << " (土)"; break;
+                    }
+                    break;
+                case 'E': result << '\x1B'; break;
+                case 'F': result << ')'; break;
+                case 'G': result << '>';    break;
+                case 'H': result << '\b';   break;
+                case 'I': break;
+                case 'L': result << '<';    break;
+                case 'N': result << (char)NnDir::getcwdrive(); break;
+                case 'P':{
+                    NnString pwd;
+                    NnDir::getcwd(pwd) ;
+                    result << pwd; 
+                    break;
+                }
+                case 'Q': result << '='; break;
+                case 'S': result << ' ';    break;
+                case 'T':
+                    if( thetime->tm_hour < 10 )
+                        result << '0';
+                    result.addValueOf(thetime->tm_hour);
+                    result << ':';
+                    if( thetime->tm_min < 10 )
+                        result << '0';
+                    result.addValueOf(thetime->tm_min);
+                    result << ':';
+
+                    if( thetime->tm_sec < 10 )
+                        result << '0';
+                    result.addValueOf(thetime->tm_sec) ;
+                    break;
+                case 'V':
+                    result << SHELL_NAME ; break;
+                case 'W':{
+                    NnString pwd;
+                    NnDir::getcwd(pwd);
+                    int rootpos=pwd.findLastOf("/\\");
+                    if( rootpos == -1 || rootpos == 2 ){
+                        result << pwd;
+                    }else{
+                        result << (char)pwd.at(0) << (char)pwd.at(1);
+                        result << pwd.chars()+rootpos+1;
+                    }
+                    break;
+                }
+                default:  result << '$' << *sp; break;
+            }
+            ++sp;
+        }else{
+            result += *sp++;
+        }
+    }
+}
+
 /* コマンド名補完のための候補リストを作成する。
  *      region - 被補完文字列の範囲
  *      array - 補完候補を入れる場所
@@ -134,7 +228,7 @@ int DosShell::getkey()
 {
     fflush(stdout);
 #ifdef NYACUS
-    conOut << "\x1B[>5l";
+    conOut << cursor_on_;
 #endif
     return Console::getkey();
 }
@@ -142,6 +236,20 @@ int DosShell::getkey()
 /* 編集開始フック */
 void DosShell::start()
 {
+    /* 画面消去コードの読み取り */
+    NnString *clear = dynamic_cast<NnString*>( properties.get("term_clear") );
+    if( clear != NULL ){
+        eval_dollars_sequence(clear->chars() , this->clear_ );
+    }else{
+        this->clear_ = "\x1B[2J";
+    }
+    /* カーソル表示コードの読み取り */
+    NnString *cursor_on = dynamic_cast<NnString*>( properties.get("term_cursor_on") );
+    if( cursor_on != NULL ){
+        eval_dollars_sequence(cursor_on->chars() , this->cursor_on_ );
+    }else{
+        this->cursor_on_ = "\x1B[>5l";
+    }
     prompt();
 }
 
@@ -228,6 +336,7 @@ static int strlenNotEscape( const char *p )
 }
 #endif
 
+
 /* プロンプトを表示する.
  * return プロンプトの桁数(バイト数ではない=>エスケープシーケンスを含まない)
  */
@@ -236,90 +345,8 @@ int DosShell::prompt()
     const char *sp=prompt_.chars();
     NnString prompt;
 
-    time_t now;
-    time( &now );
-    struct tm *thetime = localtime( &now );
-    
     if( sp != NULL && sp[0] != '\0' ){
-        while( *sp != '\0' ){
-            if( *sp == '$' ){
-                ++sp;
-                switch( toupper(*sp) ){
-                    case '_': prompt << '\n';   break;
-                    case '$': prompt << '$'; break;
-		    case 'A': prompt << '&'; break;
-                    case 'B': prompt << '|'; break;
-		    case 'C': prompt << '('; break;
-                    case 'D':
-			prompt.addValueOf(thetime->tm_year + 1900);
-			prompt << '-';
-			if( thetime->tm_mon + 1 < 10 )
-			    prompt << '0';
-			prompt.addValueOf(thetime->tm_mon + 1);
-			prompt << '-';
-			if( thetime->tm_mday < 10 )
-			    prompt << '0';
-			prompt.addValueOf( thetime->tm_mday );
-                        switch( thetime->tm_wday ){
-                            case 0: prompt << " (日)"; break;
-                            case 1: prompt << " (月)"; break;
-                            case 2: prompt << " (火)"; break;
-                            case 3: prompt << " (水)"; break;
-                            case 4: prompt << " (木)"; break;
-                            case 5: prompt << " (金)"; break;
-                            case 6: prompt << " (土)"; break;
-                        }
-                        break;
-                    case 'E': prompt << '\x1B'; break;
-		    case 'F': prompt << ')'; break;
-                    case 'G': prompt << '>';    break;
-                    case 'H': prompt << '\b';   break;
-                    case 'I': break;
-                    case 'L': prompt << '<';    break;
-		    case 'N': prompt << (char)NnDir::getcwdrive(); break;
-                    case 'P':{
-                        NnString pwd;
-                        NnDir::getcwd(pwd) ;
-                        prompt << pwd; 
-                        break;
-                    }
-                    case 'Q': prompt << '='; break;
-		    case 'S': prompt << ' ';    break;
-                    case 'T':
-			if( thetime->tm_hour < 10 )
-			    prompt << '0';
-			prompt.addValueOf(thetime->tm_hour);
-			prompt << ':';
-			if( thetime->tm_min < 10 )
-			    prompt << '0';
-			prompt.addValueOf(thetime->tm_min);
-			prompt << ':';
-
-			if( thetime->tm_sec < 10 )
-			    prompt << '0';
-			prompt.addValueOf(thetime->tm_sec) ;
-                        break;
-                    case 'V':
-			prompt << SHELL_NAME ; break;
-                    case 'W':{
-                        NnString pwd;
-                        NnDir::getcwd(pwd);
-			int rootpos=pwd.findLastOf("/\\");
-			if( rootpos == -1 || rootpos == 2 ){
-                            prompt << pwd;
-			}else{
-                            prompt << (char)pwd.at(0) << (char)pwd.at(1);
-                            prompt << pwd.chars()+rootpos+1;
-			}
-			break;
-                    }
-                    default:  prompt << '$' << *sp; break;
-                }
-                ++sp;
-            }else{
-                prompt += *sp++;
-            }
-        }
+        eval_dollars_sequence( sp , prompt );
     }else{
         NnString pwd;
         NnDir::getcwd(pwd);
@@ -367,5 +394,5 @@ int DosShell::prompt()
 
 void DosShell::clear()
 {
-    conOut << "\x1B[2J";
+    conOut << clear_ ;
 }
