@@ -161,12 +161,6 @@ int nua_history_set(lua_State *lua)
     return 0;
 }
 
-
-class NnLuaFunction : public NnExecutable {
-public:
-    int operator()( const NnVector &args );
-};
-
 int nua_iter(lua_State *lua)
 {
     TRACE(puts("Enter: nua_iter") );
