@@ -112,11 +112,14 @@ lua_e "
             -- ls にカラーオプションを付ける --
             nyaos.alias.ls = (nyaos.alias.ls or 'ls')..' --color'
 
-            -- ls の色をカスタマイズ ---
-            nyaos.option.ls_colors='fi=30:di=32:sy=31:ro=34:hi=33:ex=35:ec=0'
-
-            -- プロンプトのカラ --
-            nyaos.option.prompt='$e[31m[$w]$_$$ $e[30m'
+            if os.getenv('VIMSHELL') == '1' then
+                nyaos.option.ls_colors='fi=37:di=32:sy=31:ro=34:hi=33:ex=35:ec=0'
+                nyaos.option.prompt='$e[31m[$w]$_$$ $e[37m'
+                nyaos.option.term_clear = ''
+            else
+                nyaos.option.ls_colors='fi=30:di=32:sy=31:ro=34:hi=33:ex=35:ec=0'
+                nyaos.option.prompt='$e[31m[$w]$_$$ $e[30m'
+            end
         end
     end
 
