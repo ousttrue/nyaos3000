@@ -381,7 +381,11 @@ static void dir1( const char *dirname ,
 			    st->stamp() )
 			);
 	}
-	if( st->name().startsWith(".") && (option & OPT_ALL)==0 ){
+	if( ( st->name().startsWith(".") ||
+              st->name().startsWith("_") ||
+              st->isHidden() ) && 
+            (option & OPT_ALL)==0 )
+        {
 	    delete st;
 	}else{
 	    list.append( st );
