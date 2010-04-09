@@ -9,6 +9,8 @@
 #include "nnstring.h"
 #include "nnhash.h"
 
+typedef unsigned long long filesize_t;
+
 #ifdef NYADOS
     union  REGS;
     struct SREGS;
@@ -31,7 +33,7 @@ struct NnTimeStamp {
 class NnFileStat : public NnSortable {
     NnString  name_ ;
     unsigned  long attr_ ;
-    long      size_ ;
+    filesize_t size_ ;
     NnTimeStamp stamp_ ;
 public:
     enum{
@@ -43,7 +45,7 @@ public:
 	ATTR_ARCHIVED = 0x20 
     };
 
-    NnFileStat( const NnString &name , unsigned attr , unsigned long size ,
+    NnFileStat( const NnString &name , unsigned attr , filesize_t size ,
 	const NnTimeStamp &stamp )
 	: name_(name) ,    attr_(attr)    , size_(size) , stamp_(stamp) { }
     NnFileStat( const NnFileStat &p )
@@ -52,7 +54,7 @@ public:
 
     const NnString &name() const { return name_; }
     unsigned attr() const { return attr_; }
-    unsigned long size() const { return size_; }
+    filesize_t size() const { return size_; }
     const NnTimeStamp &stamp() const { return stamp_; }
 
     int isReadOnly() const { return (attr_ & ATTR_READONLY ) != 0 ; }
@@ -73,7 +75,7 @@ int fnexplode_( const char *path , NnVector &list );
 class NnDir : public NnEnum {
     int 	status , hasHandle;
     unsigned	handle , attr_ ;
-    unsigned long size_ ;
+    filesize_t  size_ ;
     NnString    name_;
     NnTimeStamp stamp_;
 #ifdef NYADOS
@@ -102,7 +104,7 @@ public:
     int isDir()      const { return (attr_ & NnFileStat::ATTR_DIRECTORY)!=0; }
     int isArchived() const { return (attr_ & NnFileStat::ATTR_ARCHIVED )!=0; }
     int attr()       const { return  attr_ ; }
-    long size()       const { return  size_ ; }
+    filesize_t size()const { return  size_ ; }
     const NnTimeStamp &stamp() const { return stamp_; }
 
     NnFileStat *stat() const { return new NnFileStat(name_,attr_,size_,stamp_);}

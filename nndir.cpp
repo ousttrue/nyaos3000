@@ -218,7 +218,7 @@ unsigned NnDir::findcore( union REGS &in , union REGS &out )
     
     name_ = findbuf.lname ;
     attr_ = (unsigned)findbuf.attrib;
-    size_ = findbuf.lsize;
+    size_ = (filesize_t)(findbuf.hsize << 32) | findbuf.lsize;
     stamp_conv( findbuf.mdate,  findbuf.mtime , stamp_ );
     
     return 0;
@@ -354,7 +354,7 @@ unsigned NnDir::findfirst(  const NnString &p_path , unsigned attr )
     if( result==0){
 	name_ = wfd.cFileName;
 	attr_ = wfd.dwFileAttributes;
-        size_ = (((long long)wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ;
+        size_ = (((filesize_t)wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ;
         stamp_conv( &wfd.ftLastWriteTime , stamp_ );
 	hasHandle = 1;
     }
@@ -425,7 +425,7 @@ unsigned NnDir::findnext()
     if( result==0){
 	name_ = wfd.cFileName;
 	attr_ = wfd.dwFileAttributes;
-        size_ = (((long long)wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ;
+        size_ = (((filesize_t)wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ;
         stamp_conv( &wfd.ftLastWriteTime , stamp_ );
     }
 #else /*** Borland-C++ for NYACUS ***/
@@ -906,7 +906,11 @@ NnHash NnDir::specialFolder;
 NnFileStat *NnFileStat::stat(const NnString &name)
 {
     NnTimeStamp stamp1;
+#ifdef _MSC_VER
+    struct _stati64 stat1;
+#else
     struct stat stat1;
+#endif
     unsigned attr=0 ;
 #ifdef __DMC__
     NnString name_( NnDir::long2short(name.chars()) );
@@ -916,7 +920,12 @@ NnFileStat *NnFileStat::stat(const NnString &name)
     if( name_.endsWith(":") || name_.endsWith("\\") || name_.endsWith("/") )
 	name_ << ".";
 
-    if( ::stat( name_.chars() , &stat1 ) != 0 ){
+#ifdef _MSC_VER
+    if( ::_stati64( name_.chars() , &stat1 ) != 0 )
+#else
+    if( ::stat( name_.chars() , &stat1 ) != 0 )
+#endif
+    {
 	return NULL;
     }
     if( stat1.st_mode & S_IFDIR )

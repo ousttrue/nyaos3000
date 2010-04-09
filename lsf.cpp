@@ -179,6 +179,18 @@ static int maxlength( const NnVector &list )
     return max;
 }
 
+/* sprintf が long long 型をサポートするのは、C99 以降であるため、
+ * 自前で、文字列化関数を作らねばならなかった
+ */
+void filesize2str( filesize_t n , NnString &buffer )
+{
+    if( n > 9u ){
+        filesize2str( n/10u , buffer );
+        n %= 10;
+    }
+    buffer << "0123456789"[ n ];
+}
+
 /* ファイルの一覧を格子状に出力する.
  *	list   (i) NnFileStat の配列
  *	option (i) オプション
@@ -205,9 +217,12 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 		<< (st->isReadOnly() ? '-' : 'w' )
 		<< (canExe ? 'x' : '-' )
 		<< ' ';
+
+            NnString filesize_str;
+            filesize2str( st->size() , filesize_str );
 	    
-	    sprintf( buffer , "%8ld %04d-%02d-%02d %02d:%02d ",
-		    st->size() ,
+	    sprintf( buffer , "%8s %04d-%02d-%02d %02d:%02d ",
+		    filesize_str.chars() ,
 		    st->stamp().year ,
 		    st->stamp().month ,
 		    st->stamp().day ,
