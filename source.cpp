@@ -132,7 +132,12 @@ void callrc( const NnString &rcfname_ , const NnVector &argv )
     rcfname.slash2yen();
     set_rcfname_for_Lua( rcfname.chars() );
 
-    do_source( rcfname , argv );
+    NnVector argv_ ;
+    argv_.append( new NnString(rcfname) );
+    for( int i=0 ; i < argv.size() ; i++ )
+        argv_.append( argv.const_at(i)->clone() );
+
+    do_source( rcfname , argv_ );
 
     set_rcfname_for_Lua( NULL );
 }
