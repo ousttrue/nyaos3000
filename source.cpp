@@ -55,7 +55,6 @@ static int do_source( const NnString &cmdname , const NnVector &argv )
     }else{
         ScriptShell scrShell( fr ); /* fr ‚Ìíœ‹`–±‚Í scrShell ‚ÖˆÏ÷ */
         if( scrShell ){
-            scrShell.addArgv( cmdname );
             for( int i=0 ; i < argv.size() ; i++ ){
                 if( argv.const_at(i) != NULL )
                     scrShell.addArgv( *(const NnString *)argv.const_at(i) );

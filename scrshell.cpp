@@ -1,7 +1,20 @@
 #include "shell.h"
 
+static const NnString *argv_or_null( const NnVector *argv , int n )
+{
+    static NnString empty;
+
+    if( argv != NULL && n < argv->size() ){
+        return (const NnString*)argv->const_at(n);
+    }else{
+        return &empty;
+    }
+}
+
 const NnString *ScriptShell::argv(int n) const
-{   return (const NnString*)argv_.const_at(n); }
+{ return argv_or_null( &argv_ , n ); }
+const NnString *BufferedShell::argv(int n) const
+{ return argv_or_null( params , n ); }
 
 void ScriptShell::shift()
 {   delete argv_.shift(); }

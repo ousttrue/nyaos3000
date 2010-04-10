@@ -117,8 +117,7 @@ public:
 
     virtual int argc() const 
 	{ return params != 0 ? params->size() : 0 ; }
-    virtual const NnString *argv(int n) const
-	{ return (NnString*)(params != NULL ? params->at(n) : NULL ); }
+    virtual const NnString *argv(int n) const;
     void setArgv( NnVector *p )
 	{ delete params; params = p; ; rewind(); }
     const NnString &statement(int n){ return *(NnString*)buffers.at(n); }
