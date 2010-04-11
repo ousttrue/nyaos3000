@@ -239,7 +239,7 @@ int mySystem( const char *cmdline , int wait=1 )
 		conErr << "Too long command line,"
 			    " or bad command or file name.\n";
 	    }else{
-		conErr << "Bad command or file name.\n";
+                conErr << strerror( errno ) << '\n';
 	    }
             goto exit;
 	}
