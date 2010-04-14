@@ -642,7 +642,7 @@ int NyadosShell::interpret1( const NnString &statement )
 #ifdef LUA_ENABLE
     lua_State *lua=nua_init();
 
-    if( (lua_getglobal(lua,"nyaos")   ,lua_type(lua,-1)) == LUA_TFUNCTION &&
+    if( (lua_getglobal(lua,"nyaos")   ,lua_type(lua,-1)) == LUA_TTABLE &&
         (lua_getfield(lua,-1,"filter"),lua_type(lua,-1)) == LUA_TFUNCTION )
     {
         lua_pushstring(lua,statement.chars());
