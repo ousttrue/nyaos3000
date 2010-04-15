@@ -1133,6 +1133,23 @@ NYAOS 終了時に呼び出されます。
     lua_e "nyaos.goodbye = function() print 'SAYONARA' end"
 
 
+拡張補完
+--------
+
+nyaos.complete という関数を定義しておくと、ファイル名以外の文字列を
+補完候補に含めることができます。
+
+    例：
+        function nyaos.complete( basestring , pos )
+                :
+            return c1,c2,c3
+        end
+
+    basestring : 被補完文字列
+    pos        : 被補完文字列の画面上での開始位置
+    c1,c2,c3   : 追加する補完候補
+
+
 ツール関数
 ----------
 
@@ -1239,6 +1256,9 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+2.93_0 (2010/04/16)
+    ・Lua 関数で、ファイル名以外の文字列を補完候補に含められるようにした。
 
 2.92_1 (2010/04/14)
     ・nyaos.filter が効かなくなっていた不具合を修正
