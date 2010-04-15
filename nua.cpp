@@ -51,6 +51,32 @@ static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
 }
 #endif
 
+/* Lua を(必要であれば)初期化すると同時に、
+ * NYAOS テーブル上のオブジェクトをスタックに積む
+ *    field - nyaos 上のフィールド名。NULL の時は nyaos 自体を積む
+ *    L     - luaState オブジェクト。NULL の時は、当関数で取得する。
+ * return
+ *    not NULL - luaState オブジェクト
+ *    NULL     - 初期化失敗 or nyaos がテーブルでなかった
+ */
+lua_State *get_nyaos_object(const char *field,lua_State *L)
+{
+    if( L==NULL  &&  (L = nua_init())==NULL )
+        return NULL;
+
+    lua_getglobal(L,"nyaos"); /* +1 */
+    if( ! lua_istable(L,-1) ){
+        lua_pop(L,1);
+        return NULL;
+    }
+    if( field != NULL && field[0] != '\0' ){
+        lua_getfield(L,-1,field);
+        lua_remove(L,-2); /* drop 'nyaos' */
+    }
+    return L;
+}
+
+
 int nua_get(lua_State *lua)
 {
     NnHash **dict=(NnHash**)lua_touserdata(lua,-2);

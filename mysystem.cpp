@@ -238,7 +238,7 @@ int mySystem( const char *cmdline , int wait=1 )
 	    if( ((NnString*)pipeSet.at(i))->length() > 110 ){
 		conErr << "Too long command line,"
 			    " or bad command or file name.\n";
-	    }else{
+	    }else if( errno != 0 ){
                 conErr << strerror( errno ) << '\n';
 	    }
             goto exit;

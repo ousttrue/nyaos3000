@@ -8,7 +8,7 @@
 #include <string.h>
 #include "nndir.h"
 #include "getline.h"
-
+#include "nua.h"
 
 extern int read_shortcut(const char *src,char *buffer,int size);
 
@@ -255,9 +255,43 @@ int GetLine::read_complete_list( Completion &r )
     if( r.word.empty()  && properties.get("nullcomplete") == NULL )
 	return -1;
 
+    r.n = 0;
+    lua_State *L=get_nyaos_object("complete");
+    if( L != NULL ){
+        if( lua_isfunction(L,-1) ){
+            int bottom = lua_gettop(L)-1;
+            /* 第一引数：ベース文字列 */
+            NnString word( r.word );
+            word.dequote();
+            lua_pushstring( L , word.chars() );
+
+            /* 第二引数：文字列開始位置 */
+            lua_pushinteger( L , r.at );
+
+            if( lua_pcall(L,2,LUA_MULTRET,0) == 0 ){
+                for( int n=lua_gettop(L) ; n >= bottom ; n-- ){
+                    const char *s=lua_tostring(L,-1);
+                    if( s != NULL ){
+                        r.list.append( new NnPair(new NnString(s)) );
+                    }
+                    lua_pop(L,1);
+                }
+            }else{
+                r.list.append( new NnPair(new NnString(lua_tostring(L,-1))) );
+                lua_pop(L,1);
+            }
+        }else{
+            lua_pop(L,1);
+        }
+    }
+
     // 補完リスト作成
-    return r.n = ( r.at == 0 ? makeTopCompletionList( r.word , r.list ) 
-                             : makeCompletionList   ( r.word , r.list ) );
+    if( r.at == 0 ){
+        makeTopCompletionList( r.word , r.list );
+    }else{
+        makeCompletionList( r.word , r.list );
+    }
+    return r.n = r.list.size();
 }
 
 /* カーソル位置～size文字前までの部分の置換 & 再表示を行う。
