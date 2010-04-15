@@ -275,7 +275,9 @@ int GetLine::read_complete_list( Completion &r )
                 for( int n=lua_gettop(L) ; n >= bottom ; n-- ){
                     const char *s=lua_tostring(L,-1);
                     if( s != NULL ){
-                        r.list.append( new NnPair(new NnString(s)) );
+                        if( strnicmp( word.chars() , s , word.length() ) == 0 ){
+                            r.list.append( new NnPair(new NnStringIC(s)) );
+                        }
                     }
                     lua_pop(L,1);
                 }
