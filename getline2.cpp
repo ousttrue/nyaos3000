@@ -66,8 +66,6 @@ static int expand_environemnt_variable(
     }
 }
 
-
-
 /* 補完候補リストを作成する.
  *      region  パスを含む範囲(引用符含む)
  *      array   候補リストを入れる先
@@ -168,6 +166,7 @@ int GetLine::makeCompletionList( const NnString &region, NnVector &array )
         if( dir.isDir() )
             *name += rootchar;
         if( array.append( 
+                // [ 全補完文字列 , 純粋ファイル名(非ディレクトリ部分) ] のペア.
 		new NnPair(name,new NnString(name->chars()+basename.length() )) 
 	    ) != 0 )
 	{
@@ -222,11 +221,14 @@ struct Completion {
     int at , size , n ;
     NnVector list ;
 
-    NnString &name(int n){
+    /* ディレクトリ名等を含まないファイル名(リスト表示のために使う */
+    NnString &name_of(int n){
 	return *(NnString*)((NnPair*)list.at(n))->second_or_first();
     }
-    NnString &path(int n){ return *(NnString*)((NnPair*)list.at(n))->first();  }
-    NnString &operator[](int n){ return path(n); }
+    /* フルパス名(主に実際の補完操作のために使う) */
+    NnString &path_of(int n){
+        return *(NnString*)((NnPair*)list.at(n))->first();  
+    }
     int maxlen();
 };
 
@@ -235,7 +237,7 @@ int Completion::maxlen()
 {
     int max=0;
     for(int i=0;i<n;i++){
-        int temp=this->name(i).length();
+        int temp=this->name_of(i).length();
 	if( temp > max )
             max = temp;
     }
@@ -256,6 +258,7 @@ int GetLine::read_complete_list( Completion &r )
 	return -1;
 
     r.n = 0;
+#ifdef LUA_ENABLE
     lua_State *L=get_nyaos_object("complete");
     if( L != NULL ){
         if( lua_isfunction(L,-1) ){
@@ -284,6 +287,7 @@ int GetLine::read_complete_list( Completion &r )
             lua_pop(L,1);
         }
     }
+#endif
 
     // 補完リスト作成
     if( r.at == 0 ){
@@ -339,16 +343,16 @@ Status GetLine::complete(int)
 	hasSpace = 1;
 
     // 補完候補の第一候補をとりあえずバッファへコピー.
-    NnString match=comp[0];
+    NnString match=comp.path_of(0);
     if( strchr( match.chars() , ' ' ) != NULL || comp.word.at(0) == '"' )
 	hasSpace = 1;
 
     // 候補が複数ある場合は、
     // 二番目以降の候補と比較してゆき、共通部分だけを残してゆく.
     for( i=1; i < n ; ++i ){
-	if( strchr( comp[i].chars() , ' ' ) != NULL )
+	if( strchr( comp.path_of(i).chars() , ' ' ) != NULL )
 	    hasSpace = 1;
-	match.chop( sameLength( comp[i].chars() , match.chars() )); 
+	match.chop( sameLength( comp.path_of(i).chars() , match.chars() )); 
     }
 
     // (基本的にありえないが)、補完候補の方が、元文字列より短い場合は
@@ -362,19 +366,19 @@ Status GetLine::complete(int)
 	return CONTINUE;
     
     /* ショートカット展開 */
-    if( n==1 && comp[0].iendsWith(".lnk") && properties.get("lnkexp") != NULL )
+    if( n==1 && comp.path_of(0).iendsWith(".lnk") && properties.get("lnkexp") != NULL )
     {
 	/* 候補が一つで、それがショートカットの場合 */
 
 	char buffer[ FILENAME_MAX ];
-	if( read_shortcut( comp[0].chars() , buffer , sizeof(buffer)-1 ) == 0 ){
-	    comp[0] = buffer;
+	if( read_shortcut( comp.path_of(0).chars() , buffer , sizeof(buffer)-1 ) == 0 ){
+	    comp.path_of(0) = buffer;
 
-	    NnDir stat( comp[0] );
+	    NnDir stat( comp.path_of(0) );
 	    if( stat.isDir() ){
-		comp[0] << '\\';
+		comp.path_of(0) << '\\';
 	    }
-	    match = comp[0];
+	    match = comp.path_of(0);
 	}
     }
 
@@ -424,8 +428,8 @@ void GetLine::listing_( Completion &comp )
         for(int y=0;y<ny;y++){
             if( i >= n )
                goto exit;
-            prints[ y ] += comp.name(i);
-            for( int j=comp.name(i).length() ; j<maxlen+1 ; j++ ){
+            prints[ y ] += comp.name_of(i);
+            for( int j=comp.name_of(i).length() ; j<maxlen+1 ; j++ ){
                 prints[ y ] << ' ';
             }
             i++;
@@ -515,8 +519,8 @@ Status GetLine::complete_vzlike(int direct)
 	int maxlen1=comp.maxlen();
 	for(;;){
 	    NnString seal;
-	    seal << (comp[i].chars() + baseSize );
-	    for(int j=comp[i].length() ; j<maxlen1+1 ; ++j ){
+	    seal << (comp.path_of(i).chars() + baseSize );
+	    for(int j=comp.path_of(i).length() ; j<maxlen1+1 ; ++j ){
 		seal << ' ';
 	    }
 	    seal << '[';
@@ -560,10 +564,10 @@ Status GetLine::complete_vzlike(int direct)
     }
 
     NnString buf;
-    if( comp[i].findOf(" \t\a\r\n\"") >= 0 ){
-	buf << '"' << comp[i] << "\"";
+    if( comp.path_of(i).findOf(" \t\a\r\n\"") >= 0 ){
+	buf << '"' << comp.path_of(i) << "\"";
     }else{
-	buf << comp[i];
+	buf << comp.path_of(i);
     }
     while( bs-- > 0 ){
 	putchr(buffer[pos++]);
