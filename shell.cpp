@@ -397,26 +397,23 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
         }
     }else{
 #ifdef LUA_ENABLE
-        lua_State *lua = nua_init();
-
-        if( (lua_getglobal(lua,"nyaos"),    lua_type(lua,-1)) == LUA_TTABLE  &&
-            (lua_getfield(lua,-1,"command"),lua_type(lua,-1)) == LUA_TTABLE )
-        {
-            // fputs("Enter: Found Table\n",stderr);
-            lua_getfield(lua,-1,arg0low.chars());
-            if( lua_type(lua,-1) == LUA_TFUNCTION ){
-                // fputs("Enter: Found Function\n",stderr);
-                lua_pushstring(lua,argv.chars());
-                if( lua_pcall(lua,1,0,0) != 0 ){
-                    const char *msg = lua_tostring( lua , -1 );
-                    conErr << msg << '\n';
-                    
+        lua_State *lua = get_nyaos_object("command");
+        if( lua != NULL ){
+            if( lua_istable(lua,-1) ){
+                lua_getfield(lua,-1,arg0low.chars());
+                if( lua_isfunction(lua,-1) ){
+                    lua_pushstring(lua,argv.chars());
+                    if( lua_pcall(lua,1,0,0) != 0 ){
+                        const char *msg = lua_tostring( lua , -1 );
+                        conErr << msg << '\n';
+                        
+                    }
+                    lua_settop(lua,0);
+                    goto exit;
                 }
-                lua_settop(lua,0);
-                goto exit;
             }
+            lua_settop(lua,0);
         }
-        lua_settop(lua,0);
 #endif
         NnExecutable *func = (NnExecutable*)functions.get(arg0low);
 	// BufferedShell *bShell = (BufferedShell*)
@@ -640,24 +637,25 @@ int NyadosShell::interpret1( const NnString &statement )
 {
     NnString cmdline(statement);
 #ifdef LUA_ENABLE
-    lua_State *lua=nua_init();
+    lua_State *lua=get_nyaos_object("filter");
 
-    if( (lua_getglobal(lua,"nyaos")   ,lua_type(lua,-1)) == LUA_TTABLE &&
-        (lua_getfield(lua,-1,"filter"),lua_type(lua,-1)) == LUA_TFUNCTION )
-    {
-        lua_pushstring(lua,statement.chars());
-        if( lua_pcall(lua,1,1,0) == 0 ){
-            switch( lua_type(lua,-1) ){
-            case LUA_TSTRING:
-                cmdline = lua_tostring(lua,-1); 
-                break;
+    if( lua != NULL ){
+        if( lua_isfunction(lua,-1) ){
+            lua_pushstring(lua,statement.chars());
+            if( lua_pcall(lua,1,1,0) == 0 ){
+                switch( lua_type(lua,-1) ){
+                case LUA_TSTRING:
+                    cmdline = lua_tostring(lua,-1); 
+                    break;
+                }
+            }else{
+                const char *msg = lua_tostring( lua , -1 );
+                conErr << msg << '\n';
             }
         }else{
-            const char *msg = lua_tostring( lua , -1 );
-            conErr << msg << '\n';
+            lua_pop(lua,1);
         }
     }
-    lua_settop(lua,0);
 #endif
 
     errno = 0;

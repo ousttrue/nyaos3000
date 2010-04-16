@@ -218,25 +218,16 @@ static int opt_t( int , char ** , int & )
 
 static void goodbye()
 {
-    lua_State *lua=nua_init();
-
-    lua_getglobal(lua,"nyaos");
-    if( lua_istable(lua,-1) ){
-        lua_getfield(lua,-1,"goodbye");
-        if( lua_isfunction(lua,-1) ){
-            if( lua_pcall(lua,0,0,0) != 0 ){
-                const char *msg = lua_tostring(lua,-1);
-                conErr << "logoff code nyaos.goodbye() raise error.\n"
-                       << msg << "\n[Hit any key]\n";
-                lua_pop(lua,1);
-                (void)Console::getkey();
-            }
-        }else{
-            lua_pop(lua,1); /* drop nil when goodbye not exists */
+    lua_State *L=get_nyaos_object("goodbye");
+    if( L != NULL ){
+        if( lua_isfunction(L,-1) && lua_pcall(L,0,0,0) != 0 ){
+            const char *msg = lua_tostring(L,-1);
+            conErr << "logoff code nyaos.goodbye() raise error.\n"
+                   << msg << "\n[Hit any key]\n";
+            (void)Console::getkey();
         }
+        lua_pop(L,1); /* drop 'nyaos' */
     }
-    lua_pop(lua,1); /* drop 'nyaos' */
-    assert( lua_gettop(lua) == 0 );
 }
 
 int main( int argc, char **argv )
@@ -248,8 +239,7 @@ int main( int argc, char **argv )
 
     NnVector nnargv;
 
-    lua_State *lua = nua_init();
-    lua_getglobal(lua,"nyaos"); /* [1] */
+    lua_State *lua = get_nyaos_object(); /* [1] */
     lua_newtable(lua); /* [2] */
     for(int i=1;i<argc;i++){
         lua_pushinteger(lua,i); /* [3] */

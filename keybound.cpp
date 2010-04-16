@@ -408,8 +408,8 @@ void GetLine::bindinit()
     KeyFunctionXScript::init();
 #endif
 #ifdef LUA_ENABLE
-    lua_State *L=nua_init();
-    if( (lua_getglobal(L,"nyaos"),lua_type(L,-1))==LUA_TTABLE ){
+    lua_State *L=get_nyaos_object();
+    if( L != NULL ){
         lua_newtable(L);
         for(size_t i=0 ; i<numof(keynames) ; ++i ){
             lua_pushstring(L,keynames[i].name );
@@ -419,7 +419,6 @@ void GetLine::bindinit()
         lua_setfield(L,-2,"key");
     }
     lua_settop(L,0);
-    
 #endif
 }
 

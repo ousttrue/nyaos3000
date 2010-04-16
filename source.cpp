@@ -105,18 +105,16 @@ NnString rcfname;
 /* nyaos.rcfname という Lua 変数にファイル名をセットする */
 static void set_rcfname_for_Lua( const char *fname )
 {
-    lua_State *lua = nua_init();
-
-    lua_getglobal(lua,"nyaos");
-    if( lua_istable(lua,-1) ){
+    lua_State *lua = get_nyaos_object();
+    if( lua != NULL ){
         if( fname != NULL ){
             lua_pushstring(lua,fname);
         }else{
             lua_pushnil(lua);
         }
         lua_setfield(lua,-2,"rcfname");
+        lua_pop(lua,1); /* drop nyaos */
     }
-    lua_pop(lua,1); /* drop nyaos */
 }
 
 

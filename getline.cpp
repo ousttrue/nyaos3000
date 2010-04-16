@@ -132,23 +132,14 @@ int GetLine::operator() ( NnString &result )
     lastKey = 0;
 #ifdef LUA_ENABLE
   
-    int lua_hook_on=0;
-    lua_State *L=nua_init();
-    if( L != NULL ){
-        lua_getglobal(L,"nyaos");
-        if( lua_type(L,-1) == LUA_TTABLE ){
-            lua_hook_on = 1;
-        }else{
-            lua_pop(L,1);
-        }
-    }
+    lua_State *L=get_nyaos_object();
 #endif
     
     for(;;){
         int key=getkey();
         int rc=CONTINUE;
 #ifdef LUA_ENABLE
-        if( lua_hook_on ){
+        if( L ){
             lua_getfield(L,-1,"keyhook");
             if( lua_type(L,-1) == LUA_TFUNCTION ){
                 lua_newtable(L);
@@ -215,7 +206,7 @@ int GetLine::operator() ( NnString &result )
             result.erase();
             history.drop();
 #ifdef LUA_ENABLE
-            if( lua_hook_on )
+            if( L )
                 lua_settop(L,0);
 #endif
             return -1;
@@ -235,7 +226,7 @@ int GetLine::operator() ( NnString &result )
             end();
             buffer.term();
 #ifdef LUA_ENABLE
-            if( lua_hook_on )
+            if( L )
                 lua_settop(L,0);
 #endif
             return len;
