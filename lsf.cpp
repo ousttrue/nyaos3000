@@ -147,12 +147,12 @@ static int isExecutable( const NnString &path )
 
 static const char *attr2color( const NnFileStat &stat )
 {
-    if( stat.isDir() ){
-	return ls_directory.chars() ;
-    }else if( stat.isHidden() ){
+    if( stat.isHidden() ){
 	return ls_hidden_file.chars();
     }else if ( stat.isSystem() ){
 	return ls_system_file.chars() ;
+    }else if( stat.isDir() ){
+	return ls_directory.chars() ;
     }else if ( stat.isReadOnly() ){
 	return ls_read_only_file.chars() ;
     }else if( isExecutable( stat.name() ) ){
