@@ -65,12 +65,12 @@ static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
  */
 static int env_to_color( Writer &err )
 {
-    ls_normal_file      = LS_LEFT "37;1" LS_RIGHT ; /* îí */
-    ls_directory        = LS_LEFT "32;1" LS_RIGHT ; /* óŒ */
-    ls_system_file      = LS_LEFT "31"   LS_RIGHT ; /* à√Ç¢ê‘ */
-    ls_hidden_file      = LS_LEFT "34"   LS_RIGHT ; /* à√Ç¢ê¬ */
-    ls_executable_file  = LS_LEFT "35;1" LS_RIGHT ; /* éá */
-    ls_read_only_file   = LS_LEFT "33;1" LS_RIGHT ; /* â© */
+    ls_normal_file      = LS_LEFT "1;37" LS_RIGHT ; /* îí */
+    ls_directory        = LS_LEFT "1;32" LS_RIGHT ; /* óŒ */
+    ls_system_file      = LS_LEFT "0;31" LS_RIGHT ; /* à√Ç¢ê‘ */
+    ls_hidden_file      = LS_LEFT "0;34" LS_RIGHT ; /* à√Ç¢ê¬ */
+    ls_executable_file  = LS_LEFT "1;35" LS_RIGHT ; /* éá */
+    ls_read_only_file   = LS_LEFT "1;33" LS_RIGHT ; /* â© */
     ls_end_code         = LS_LEFT "0"    LS_RIGHT ; /* äDêF */
 
     NnString env,one;
