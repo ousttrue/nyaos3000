@@ -36,6 +36,7 @@ foreach i (dir mkdir rmdir copy move rename ren type md rd start del echo)
 end
 alias dir\w %COMSPEC% /c dir /w
 alias start cmd /c start 
+alias kill  taskkill /pid
 
 bindkey CTRL_P vzlike-previous-history
 bindkey CTRL_N vzlike-next-history

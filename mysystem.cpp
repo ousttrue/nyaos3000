@@ -1,31 +1,32 @@
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <process.h>
-#include <io.h>
-#if defined(NYADOS)
-#  include <dos.h>
-#endif
-#include <string.h>
-
 #include "config.h"
 
-#ifndef NYADOS
+#include <ctype.h>
+#include <errno.h>
+#include <io.h>
+#include <process.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#if defined(NYADOS)
+#  include <dos.h>
+#elif defined(OS2EMX)
 #  include <fcntl.h>
-#endif
-#ifdef OS2EMX
 #  define INCL_DOSSESMGR
 #  define INCL_DOSERRORS
 #  define INCL_DOSFILEMGR
 #  include <os2.h>
+#else
+#  include <fcntl.h>
+#  include "windows.h"
 #endif
 
+#include "nndir.h"
+#include "nnhash.h"
 #include "nnstring.h"
 #include "nnvector.h"
-#include "nnhash.h"
-#include "writer.h"
-#include "nndir.h"
 #include "shell.h"
+#include "writer.h"
 
 enum{
     TOO_LONG_COMMANDLINE = -3  ,
@@ -43,6 +44,11 @@ enum{
  */
 static int mySpawn( const NnVector &args , int wait )
 {
+    /* コマンド名から、ダブルクォートを除く */
+    NnString cmdname(args.const_at(0)->repr());
+    cmdname.dequote();
+
+#ifdef OS2EMX
     const char **argv
         =(const char**)malloc( sizeof(const char *)*(args.size() + 1) );
     for(int i=0 ; i<args.size() ; i++)
@@ -50,11 +56,6 @@ static int mySpawn( const NnVector &args , int wait )
     argv[ args.size() ] = NULL;
     int result;
 
-    /* コマンド名から、ダブルクォートを除く */
-    NnString cmdname(argv[0]);
-    cmdname.dequote();
-
-#ifdef OS2EMX
     if( wait == P_WAIT ){
         unsigned long type=0;
         int rc= DosQueryAppType( (unsigned char *)cmdname.chars() , &type );
@@ -62,9 +63,54 @@ static int mySpawn( const NnVector &args , int wait )
             wait = P_PM;
         }
     }
-#endif
     result = spawnvp(wait,(char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
     free( argv );
+#else
+    extern int which( const char *nm, NnString &which );
+    DWORD result;
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+    NnString fullpath_cmdname;
+
+    memset(&si,0,sizeof(si));
+    memset(&pi,0,sizeof(pi));
+
+    if( NnDir::access(cmdname.chars())==0 ){
+        fullpath_cmdname = cmdname;
+    }else if( which( cmdname.chars() , fullpath_cmdname ) != 0 ){
+        errno = ENOENT;
+        return -1;
+    }
+
+    NnString cmdline;
+    for(int i=0 ; i < args.size() ; ++i ){
+        cmdline << args.const_at(i)->repr() << ' ';
+    }
+    cmdline.chop();
+        
+    if( ! CreateProcess(const_cast<CHAR*>(fullpath_cmdname.chars()) ,
+                        const_cast<CHAR*>(cmdline.chars()) ,
+                        NULL, 
+                        NULL,
+                        TRUE, /* 親プロセスの情報を継承するか？ */
+                        0,    /* 作成フラグ？ */
+                        NULL, /* 環境変数のポインタ */
+                        NULL, /* カレントディレクトリ */
+                        &si,
+                        &pi) )
+    {
+        errno = ENOEXEC;
+        return -1;
+    }
+    if( wait == P_NOWAIT ){
+        result = pi.dwProcessId ;
+    }else{
+        WaitForSingleObject(pi.hProcess,INFINITE); 
+        GetExitCodeProcess(pi.hProcess,&result);
+    }
+    CloseHandle(pi.hProcess);
+    CloseHandle(pi.hThread);
+#endif
     return result;
 }
 
@@ -233,6 +279,9 @@ int mySystem( const char *cmdline , int wait=1 )
         }else{
             result = do_one_command( ((NnString*)pipeSet.at(i))->chars(),
                     wait ? P_WAIT : P_NOWAIT );
+            if( ! wait ){
+                conErr << '<' << result << ">\n";
+            }
         }
 	if( result < 0 ){
 	    if( ((NnString*)pipeSet.at(i))->length() > 110 ){
