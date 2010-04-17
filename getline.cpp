@@ -142,6 +142,8 @@ int GetLine::operator() ( NnString &result )
         if( L ){
             lua_getfield(L,-1,"keyhook");
             if( lua_type(L,-1) == LUA_TFUNCTION ){
+                int start=lua_gettop(L);
+
                 lua_newtable(L);
                 lua_pushinteger(L,key);
                 lua_setfield(L,-2,"key");
@@ -152,10 +154,10 @@ int GetLine::operator() ( NnString &result )
 
                 if( lua_pcall(L,1,LUA_MULTRET,0) == 0 ){
                     int n=lua_gettop(L);
-                    if( n < 2 ){
+                    if( n < start ){ /* ˆø” 0 ŒÂ */
                         rc = interpret( key );
                     }else{
-                        for(int i=2 ; i<=n && rc==CONTINUE ;i++){
+                        for(int i=start ; i<=n && rc==CONTINUE ;i++){
                             switch( lua_type(L,i) ){
                             default:
                             case LUA_TNIL:
