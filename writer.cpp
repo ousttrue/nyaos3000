@@ -197,7 +197,7 @@ FileWriter::FileWriter( const char *fn , const char *mode )
      * 明示的に lseek で移動させてやる必要がある。
      * (stdio と io を混在させて使うのは本来はダメなので、文句は言えない…)
      */
-    if( *mode == 'a' )
+    if( this->ok() && *mode == 'a' )
 	fseek( fp() , 0 , SEEK_END );
 }
 
@@ -209,13 +209,21 @@ FileWriter::~FileWriter()
 
 /* 標準出力・入力をリダイレクトする
  *      x - ファイルハンドル
+ * return
+ *      0  : 成功
+ *      -1 : 失敗
  */
-void Redirect::set(int x)
+int Redirect::set(int x)
 {
-    if( original_fd == -1 )
+    if( original_fd == -1 ){
         original_fd = dup(fd());
-    dup2( x , fd() );
+        if( original_fd == -1 )
+            return -1;
+    }
+    if( dup2( x , fd() ) == -1 )
+        return -1;
     isOpenFlag = 1;
+    return 0;
 }
 
 void Redirect::close()
@@ -248,19 +256,16 @@ int Redirect::switchTo( const NnString &fname , const char *mode  )
     if( *mode == 'r' ){
 	FileReader fr(fname.chars());
 	if( fr.eof() )
-	    goto errpt;
+            return -1;
 	this->set( fr.fd() );
     }else{
 	FileWriter fw( fname.chars() , mode );
 	if( ! fw.ok() )
-	    goto errpt;
+            return -1;
 	this->set( fw.fd() );
 
     }
     return 0;
-  errpt:
-    conErr << fname << ": can't open temporary file.\n";
-    return -1;
 }
 
 int StreamWriter::isatty() const

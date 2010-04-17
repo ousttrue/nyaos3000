@@ -121,8 +121,11 @@ static int mySpawn( const NnVector &args , int wait )
  *            最初の「>」の「上」にあることを想定
  *  redirect - 読み取り結果を格納するオブジェクト
  *
+ * return
+ *    0  : 成功
+ *    -1 : 失敗
  *  */
-static void parseRedirect( const char *&cmdline , Redirect &redirect )
+static int parseRedirect( const char *&cmdline , Redirect &redirect )
 {
     const char *mode="w";
     if( *cmdline == '>' ){
@@ -132,27 +135,35 @@ static void parseRedirect( const char *&cmdline , Redirect &redirect )
     NnString path;
     NyadosShell::readNextWord( cmdline , path );
     if( redirect.switchTo( path , mode ) != 0 ){
-	conErr << path << ": can't open.\n";
+        return -1;
     }
+    return 0;
 }
 
 /* リダイレクトの > の右側移行の処理を行う.
  *	sp : > の次の位置
  *	redirect : リダイレクトオブジェクト
+ * return
+ *      0  : 成功
+ *      -1 : 失敗
  */
-static void after_lessthan( const char *&sp , Redirect &redirect )
+static int after_lessthan( const char *&sp , Redirect &redirect )
 {
     if( sp[0] == '&'  &&  isdigit(sp[1]) ){
 	/* n>&m */
-	redirect.set( sp[1]-'0' );
+        if( redirect.set( sp[1]-'0' ) != 0 )
+            return -1;
 	sp += 2;
     }else if( sp[0] == '&' && sp[1] == '-' ){
 	/* n>&- */
-	redirect.switchTo( "nul", "w" );
+        if( redirect.switchTo( "nul", "w" ) != 0 )
+            return -1;
     }else{
 	/* n> ファイル名 */
-	parseRedirect( sp , redirect );
+        if( parseRedirect( sp , redirect ) != 0 )
+            return -1;
     }
+    return 0;
 }
 
 /* コマンドラインを | で分割して、ベクターに各コマンドを代入する
@@ -172,6 +183,7 @@ static void devidePipes( const char *cmdline , NnVector &vector )
  * return
  *	wait == P_WAIT の時：プロセスの実行結果
  *	wait == P_NOWAIT の時：コマンドの ID
+ *   -1 : リダイレクト失敗.
  */
 static int do_one_command( const char *cmdline , int wait )
 {
@@ -190,17 +202,20 @@ static int do_one_command( const char *cmdline , int wait )
             NnString path;
             NyadosShell::readNextWord( cmdline , path );
             if( redirect0.switchTo( path , "r" ) != 0 ){
-                conErr << path << ": can't open.\n";
+                return -1;
             }
         }else if( quote==0 && cmdline[0]=='>' ){
 	    ++cmdline;
-	    parseRedirect( cmdline , redirect1 );
+            if( parseRedirect( cmdline , redirect1 ) != 0 )
+                return -1;
 	}else if( quote==0 && cmdline[0]=='1' && cmdline[1]=='>' ){
 	    cmdline += 2;
-	    after_lessthan( cmdline , redirect1 );
+	    if( after_lessthan( cmdline , redirect1 ) != 0 )
+                return -1;
 	}else if( quote==0 && cmdline[0]=='2' && cmdline[1]=='>' ){
 	    cmdline += 2;
-	    after_lessthan( cmdline , redirect2 );
+            if( after_lessthan( cmdline , redirect2 ) != 0 )
+                return -1;
 	}else{
 	    execstr << *cmdline++;
 	}

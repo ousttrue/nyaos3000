@@ -136,7 +136,7 @@ public:
     ~Redirect(){ reset(); }
     void close();
     void reset();
-    void set(int x);
+    int  set(int x);
     int  fd() const { return fd_; }
 
     int switchTo( const NnString &fn , const char *mode );
