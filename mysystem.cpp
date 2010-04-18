@@ -281,6 +281,8 @@ int mySystem( const char *cmdline , int wait=1 )
             int save1=dup(1);
 #ifdef NYAOS2
             _pipe( handles );
+            fcntl( handles[0], F_SETFD, FD_CLOEXEC );
+            fcntl( handles[1], F_SETFD, FD_CLOEXEC );
 #else
             _pipe( handles , 0 , O_BINARY | O_NOINHERIT );
 #endif
