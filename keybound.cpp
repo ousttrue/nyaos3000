@@ -324,6 +324,7 @@ void GetLine::bindinit()
 	{ "forward-char"        , &GetLine::foreward },   // bash.
 	{ "forward-word"	, &GetLine::foreward_word },
 	{ "head"		, &GetLine::goto_head },
+        { "ime-toggle"          , &GetLine::ime_toggle },
 	{ "insert-self"         , &GetLine::insert },
 	{ "kill-line"           , &GetLine::erase_line }, // bash.
 	{ "kill-whole-line"     , &GetLine::erase_all },  // bash.
@@ -392,6 +393,7 @@ void GetLine::bindinit()
     bindmap[ CTRL('L') ] = &GetLine::cls;
     bindmap[ CTRL('W') ] = &GetLine::erase_word;
     bindmap[ CTRL('V') ] = &GetLine::insert_ctrl;
+    bindmap[ CTRL('\\') ] = &GetLine::ime_toggle;
 
     /* bindmap[ KEY_ALT_RETURN ] = * Å©ALT_RETURN ÇÕDOSëãÇ≈ÇÕégÇ¶Ç»Ç¢ */
     bindmap[ CTRL('O') ]      =

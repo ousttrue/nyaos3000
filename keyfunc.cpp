@@ -4,8 +4,13 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include "config.h"
 #include "getline.h"
 #include "ntcons.h"
+
+#ifdef NYACUS
+#  include <windows.h>
+#endif
 
 /* コマンド：CTRL-A：カーソルを先頭へ移動させる。*/
 Status GetLine::goto_head(int)
@@ -455,3 +460,18 @@ Status GetLine::erase(int)
     return CONTINUE;
 }
 
+Status GetLine::ime_toggle(int)
+{
+#ifdef NYACUS
+  /* キー注入結果を反映させるための待ち（手元の環境では単なる Yield 扱いの 
+     0 でも問題なさそうだった。環境によってはもっと大きめの値がいるかも） */
+  const DWORD dwYieldMSecForKey = 1;
+  
+  keybd_event(VK_MENU, 0 /* 0x38 */, 0, 0);                 /* down Alt */
+  keybd_event(VK_KANJI, 0 /* 0x29 */, 0, 0);                /* down Kanji */
+  keybd_event(VK_MENU, 0 /* 0x38 */, KEYEVENTF_KEYUP, 0);   /* up Alt */
+  keybd_event(VK_KANJI, 0 /* 0x29 */, KEYEVENTF_KEYUP, 0);  /* up Kanji */
+  Sleep(dwYieldMSecForKey);  /* wait for a proof */
+#endif
+  return CONTINUE;
+}
