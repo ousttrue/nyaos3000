@@ -1,11 +1,19 @@
 #ifdef LUA_ENABLE
-extern "C" {
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-}
 
-extern lua_State *nua_init();
-extern lua_State *get_nyaos_object(const char *field=NULL,lua_State *L=NULL);
+#include "nnlua.h"
+
+class NyaosLua : public NnLua {
+    private:
+        static int initialized;
+        int init();
+        int ready;
+    public:
+        NyaosLua() : NnLua() , ready(1) { init(); }
+        NyaosLua( const char *field );
+        int ok() const { return L!=NULL && ready;  }
+        int ng() const { return L==NULL || !ready; }
+        operator lua_State*() { return L; }
+};
 
 #endif
+/* vim:set ft=cpp textmode: */

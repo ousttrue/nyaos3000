@@ -44,7 +44,7 @@ static int do_source( const NnString &cmdname , const NnVector &argv )
         ReaderAndBuffer rb;
         rb.reader = fr;
 
-        lua_State *L=nua_init();
+        NyaosLua L;
         if( lua_load(L , reader_for_lua , &rb, cmdname.chars()) != 0 ||
             lua_pcall( L , 0 , 0 , 0 ) != 0 )
         {
@@ -105,15 +105,14 @@ NnString rcfname;
 /* nyaos.rcfname という Lua 変数にファイル名をセットする */
 static void set_rcfname_for_Lua( const char *fname )
 {
-    lua_State *lua = get_nyaos_object();
-    if( lua != NULL ){
+    NyaosLua lua(NULL);
+    if( lua.ok() ){
         if( fname != NULL ){
             lua_pushstring(lua,fname);
         }else{
             lua_pushnil(lua);
         }
         lua_setfield(lua,-2,"rcfname");
-        lua_pop(lua,1); /* drop nyaos */
     }
 }
 

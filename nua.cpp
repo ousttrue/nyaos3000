@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "shell.h"
 
 #ifdef LUA_ENABLE
@@ -22,10 +23,6 @@
 
 extern int open_luautil( lua_State *L );
 static lua_State *nua=NULL;
-static void nua_shutdown()
-{
-    lua_close(nua);
-}
 
 static void lstop (lua_State *L, lua_Debug *ar) {
   (void)ar;  /* unused arg. */
@@ -59,23 +56,21 @@ static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
  *    not NULL - luaState オブジェクト
  *    NULL     - 初期化失敗 or nyaos がテーブルでなかった
  */
-lua_State *get_nyaos_object(const char *field,lua_State *L)
+NyaosLua::NyaosLua( const char *field ) : NnLua()
 {
-    if( L==NULL  &&  (L = nua_init())==NULL )
-        return NULL;
-
-    lua_getglobal(L,"nyaos"); /* +1 */
-    if( ! lua_istable(L,-1) ){
-        lua_pop(L,1);
-        return NULL;
+    if( init() ){
+        ready = 0;
+        return;
     }
+    lua_getglobal(L,"nyaos"); /* +1 */
+    assert( lua_istable(L,-1) ); 
+
     if( field != NULL && field[0] != '\0' ){
         lua_getfield(L,-1,field);
         lua_remove(L,-2); /* drop 'nyaos' */
     }
-    return L;
+    ready = 1;
 }
-
 
 int nua_get(lua_State *lua)
 {
@@ -305,9 +300,16 @@ int nua_getkey(lua_State *lua)
     return 1;
 }
 
-lua_State *nua_init()
+int NyaosLua::initialized=0;
+
+/* NYAOS 向け Lua 環境初期化
+ * return
+ *    0  : 成功 
+ *    !0 : 失敗
+ */
+int NyaosLua::init()
 {
-    if( nua == NULL ){
+    if( ! initialized ){
         extern NnHash aliases;
         extern NnHash properties;
 
@@ -324,66 +326,64 @@ lua_State *nua_init()
             { NULL , NULL , 0 } ,
         }, *p = list;
 
-        nua = luaL_newstate();
-        luaL_openlibs(nua);
-        atexit(nua_shutdown);
-
-        open_luautil(nua); 
+        open_luautil(L); 
 
         /* nyaos.command[] */
-        lua_newtable(nua);
-        lua_setfield(nua,-2,"command");
+        lua_newtable(L);
+        lua_setfield(L,-2,"command");
 
         /* table-like objects */
         while( p->name != NULL ){
-            NnHash **u=(NnHash**)lua_newuserdata(nua,sizeof(NnHash *));
+            NnHash **u=(NnHash**)lua_newuserdata(L,sizeof(NnHash *));
             *u = p->dict;
 
-            lua_newtable(nua); /* metatable */
+            lua_newtable(L); /* metatable */
             if( p->index != NULL ){
-                lua_pushcfunction(nua,p->index);
-                lua_setfield(nua,-2,"__index");
+                lua_pushcfunction(L,p->index);
+                lua_setfield(L,-2,"__index");
             }
             if( p->newindex != NULL ){
-                lua_pushcfunction(nua,p->newindex);
-                lua_setfield(nua,-2,"__newindex");
+                lua_pushcfunction(L,p->newindex);
+                lua_setfield(L,-2,"__newindex");
             }
             if( p->call != NULL ){
-                lua_pushcfunction(nua,p->call);
-                lua_setfield(nua,-2,"__call");
+                lua_pushcfunction(L,p->call);
+                lua_setfield(L,-2,"__call");
             }
-            lua_setmetatable(nua,-2);
+            lua_setmetatable(L,-2);
 
-            lua_setfield(nua,-2,p->name);
+            lua_setfield(L,-2,p->name);
             p++;
         }
-        History **h=(History**)lua_newuserdata(nua,sizeof(History*));
+        History **h=(History**)lua_newuserdata(L,sizeof(History*));
         *h = &GetLine::history;
 
         /* history object */
-        lua_newtable(nua);
-        lua_pushcfunction(nua,nua_history_get);
-        lua_setfield(nua,-2,"__index");
-        lua_pushcfunction(nua,nua_history_len);
-        lua_setfield(nua,-2,"__len");
-        lua_pushcfunction(nua,nua_history_iter_factory);
-        lua_setfield(nua,-2,"__call");
-        lua_pushcfunction(nua,nua_history_set);
-        lua_setfield(nua,-2,"__newindex");
-        lua_setmetatable(nua,-2);
-        lua_setfield(nua,-2,"history");
+        lua_newtable(L);
+        lua_pushcfunction(L,nua_history_get);
+        lua_setfield(L,-2,"__index");
+        lua_pushcfunction(L,nua_history_len);
+        lua_setfield(L,-2,"__len");
+        lua_pushcfunction(L,nua_history_iter_factory);
+        lua_setfield(L,-2,"__call");
+        lua_pushcfunction(L,nua_history_set);
+        lua_setfield(L,-2,"__newindex");
+        lua_setmetatable(L,-2);
+        lua_setfield(L,-2,"history");
         
-        lua_pushcfunction(nua,nua_exec);
-        lua_setfield(nua,-2,"exec");
-        lua_pushcfunction(nua,nua_access);
-        lua_setfield(nua,-2,"access");
-        lua_pushcfunction(nua,nua_getkey);
-        lua_setfield(nua,-2,"getkey");
+        lua_pushcfunction(L,nua_exec);
+        lua_setfield(L,-2,"exec");
+        lua_pushcfunction(L,nua_access);
+        lua_setfield(L,-2,"access");
+        lua_pushcfunction(L,nua_getkey);
+        lua_setfield(L,-2,"getkey");
 
         /* close nyaos table */
-        lua_setglobal(nua,"nyaos");
+        lua_setglobal(L,"nyaos");
+
+        initialized = 1;
     }
-    return nua;
+    return initialized ? 0 : -1;
 }
 #endif /* defined(LUA_ENABLED) */
 
@@ -398,7 +398,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         conErr << "lua_e \"lua-code\"\n" ;
         return 0;
     }
-    lua_State *nua = nua_init();
+    NyaosLua nua;
 
     /* 標準出力のリダイレクト・パイプ出力に対応 */
     int cur_out=+1;

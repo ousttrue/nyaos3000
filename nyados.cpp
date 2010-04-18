@@ -108,7 +108,7 @@ static int opt_EF( int argc , char **argv , int &i )
 	conErr << "option needs commandline.\n";
 	return 2;
     }
-    lua_State *lua=nua_init();
+    NyaosLua lua;
     int n=0;
 
     if( argv[i][1] == 'E' ){
@@ -218,7 +218,7 @@ static int opt_t( int , char ** , int & )
 
 static void goodbye()
 {
-    lua_State *L=get_nyaos_object("goodbye");
+    NyaosLua L("goodbye");
     if( L != NULL ){
         if( lua_isfunction(L,-1) && lua_pcall(L,0,0,0) != 0 ){
             const char *msg = lua_tostring(L,-1);
@@ -226,7 +226,6 @@ static void goodbye()
                    << msg << "\n[Hit any key]\n";
             (void)Console::getkey();
         }
-        lua_pop(L,1); /* drop 'nyaos' */
     }
 }
 
@@ -239,46 +238,47 @@ int main( int argc, char **argv )
 
     NnVector nnargv;
 
-    lua_State *lua = get_nyaos_object(); /* [1] */
-    lua_newtable(lua); /* [2] */
+    NyaosLua lua(NULL);
+    assert( lua.ok() );
+    lua_newtable(lua);
     for(int i=1;i<argc;i++){
         lua_pushinteger(lua,i); /* [3] */
         lua_pushstring(lua,argv[i]); /* [4] */
         lua_settable(lua,-3);
-	if( argv[i][0] == '-' ){
-	    int rv;
-	    switch( argv[i][1] ){
+        if( argv[i][0] == '-' ){
+            int rv;
+            switch( argv[i][1] ){
             case 'D': rv=opt_d(argc,argv,i); break;
-	    case 'r': rv=opt_r(argc,argv,i); break;
+            case 'r': rv=opt_r(argc,argv,i); break;
             case 'f': rv=opt_f(argc,argv,i); break;
-	    case 'e': rv=opt_e(argc,argv,i); break;
-	    case 'a': rv=opt_a(argc,argv,i); break;
+            case 'e': rv=opt_e(argc,argv,i); break;
+            case 'a': rv=opt_a(argc,argv,i); break;
             case 'F':
             case 'E': rv=opt_EF(argc,argv,i); break;
 #ifdef NYACUS
             case 't': rv=opt_t(argc,argv,i); break;
 #endif
-	    default:
-		rv = 2;
-		conErr << argv[0] << " : -" 
-		    << (char)argv[1][1] << ": No such option\n";
-		break;
-	    }
-	    if( rv != 0 )
-		return rv-1;
-	}else{
+            default:
+                rv = 2;
+                conErr << argv[0] << " : -" 
+                    << (char)argv[1][1] << ": No such option\n";
+                break;
+            }
+            if( rv != 0 )
+                return rv-1;
+        }else{
             nnargv.append( new NnString(argv[i]) );
-	}
+        }
     }
     /* nyaos.argv() == pairs( nyaos.argv ) ‚Æ“™‰¿‚É‚·‚é */
     lua_newtable(lua);
     lua_getglobal(lua,"pairs");
     lua_setfield(lua,-2,"__call");
     lua_setmetatable(lua,-2);
-
+    assert( lua.ok() );
     /* argv ‚ð nyaos ‚ÌƒtƒB[ƒ‹ƒh‚É“o˜^‚·‚é */
     lua_setfield(lua,-2,"argv");
-    lua_settop(lua,0);
+
     conOut << 
 #ifdef ESCAPE_SEQUENCE_OK
 "\x1B[2J" << 

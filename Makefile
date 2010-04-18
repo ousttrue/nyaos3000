@@ -6,7 +6,7 @@ LUAPATH=../lua-5.1.4
 .cpp.o :
 	$(CC) $(CFLAGS) -c $<
 
-CCC=-DNDEBUG
+CCC=
 
 all :
 ifeq ($(OS),Windows_NT)
@@ -38,7 +38,7 @@ OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O
 	shell.$(O) shell4.$(O) foreach.$(O) which.$(O) reader.$(O) nnvector.$(O) \
 	ntcons.$(O) shellstr.$(O) cmds1.$(O) cmds2.$(O) xscript.$(O) shortcut.$(O) \
 	strfork.$(O) lsf.$(O) open.$(O) nua.$(O) luautil.$(O) getch_msvc.$(O) \
-	source.$(O)
+	source.$(O) nnlua.$(O)
 
 ifeq ($(OS),Windows_NT)
 nyaos.exe : $(OBJS) nyacusrc.$(O)
@@ -81,6 +81,7 @@ nnstring.$(O)  : nnstring.cpp  nnstring.h  nnobject.h
 nnvector.$(O)  : nnvector.cpp  nnvector.h  nnobject.h
 nnhash.$(O) : nnhash.cpp nnhash.h nnobject.h
 strfork.$(O) : strfork.cpp
+nnlua.$(O) : nnlua.cpp nnlua.h
 
 # 環境依存ライブラリ
 writer.$(O) : writer.cpp    writer.h
@@ -91,7 +92,7 @@ ntcons.$(O) : ntcons.cpp
 open.$(O) : open.cpp
 getch_msvc.$(O) : getch_msvc.cpp
 
-nua.$(O) : nua.cpp
+nua.$(O) : nua.cpp nua.h nnlua.h
 luautil.$(O) : luautil.cpp
 
 # リソース

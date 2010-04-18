@@ -130,19 +130,16 @@ int GetLine::operator() ( NnString &result )
     }
 
     lastKey = 0;
-#ifdef LUA_ENABLE
-  
-    lua_State *L=get_nyaos_object();
-#endif
     
     for(;;){
         int key=getkey();
         int rc=CONTINUE;
 #ifdef LUA_ENABLE
-        if( L ){
-            lua_getfield(L,-1,"keyhook");
+        NyaosLua L(NULL); /* stacked [nyaos] */
+        if( L.ok() ){
+            lua_getfield(L,-1,"keyhook"); /* [nyaos,keyhook] */
             if( lua_type(L,-1) == LUA_TFUNCTION ){
-                int start=lua_gettop(L);
+                int start=lua_gettop(L);  /* [nyaos,keyhook] */
 
                 lua_newtable(L);
                 lua_pushinteger(L,key);
@@ -150,9 +147,10 @@ int GetLine::operator() ( NnString &result )
                 lua_pushinteger(L,pos);
                 lua_setfield(L,-2,"pos");
                 lua_pushstring(L,buffer.chars());
-                lua_setfield(L,-2,"text");
+                lua_setfield(L,-2,"text"); /* [nyaos,keyhook,T] */
 
                 if( lua_pcall(L,1,LUA_MULTRET,0) == 0 ){
+                    /* keyhook ‚Ü‚Å‚ª pop ‚³‚ê [nyaos,r1,r2...] */
                     int n=lua_gettop(L);
                     if( n < start ){ /* ˆø” 0 ŒÂ */
                         rc = interpret( key );
@@ -177,6 +175,7 @@ int GetLine::operator() ( NnString &result )
                     }
                 }else{
                     /* messaging error */
+                    /* keyhook ‚Ü‚Å‚ª pop ‚³‚ê [nyaos,message] */
                     putchr('\n');
                     const char *p=lua_tostring(L,-1);
                     while( p != NULL && *p != '\0' ){
@@ -190,7 +189,6 @@ int GetLine::operator() ( NnString &result )
             }else{
                 rc = interpret(key);
             }
-            lua_settop(L,1);
         }else{
 #endif
             rc = interpret(key);
@@ -207,10 +205,6 @@ int GetLine::operator() ( NnString &result )
             end();
             result.erase();
             history.drop();
-#ifdef LUA_ENABLE
-            if( L )
-                lua_settop(L,0);
-#endif
             return -1;
           
         case ENTER:
@@ -227,10 +221,6 @@ int GetLine::operator() ( NnString &result )
             }
             end();
             buffer.term();
-#ifdef LUA_ENABLE
-            if( L )
-                lua_settop(L,0);
-#endif
             return len;
         }
         lastKey = key;

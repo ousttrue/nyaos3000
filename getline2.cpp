@@ -259,7 +259,7 @@ int GetLine::read_complete_list( Completion &r )
 
     r.n = 0;
 #ifdef LUA_ENABLE
-    lua_State *L=get_nyaos_object("complete");
+    NyaosLua L("complete");
     if( L != NULL ){
         if( lua_isfunction(L,-1) ){
             int bottom = lua_gettop(L)-1;

@@ -397,8 +397,8 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
         }
     }else{
 #ifdef LUA_ENABLE
-        lua_State *lua = get_nyaos_object("command");
-        if( lua != NULL ){
+        NyaosLua lua("command");
+        if( lua.ok() ){
             if( lua_istable(lua,-1) ){
                 lua_getfield(lua,-1,arg0low.chars());
                 if( lua_isfunction(lua,-1) ){
@@ -406,13 +406,10 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
                     if( lua_pcall(lua,1,0,0) != 0 ){
                         const char *msg = lua_tostring( lua , -1 );
                         conErr << msg << '\n';
-                        
                     }
-                    lua_settop(lua,0);
                     goto exit;
                 }
             }
-            lua_settop(lua,0);
         }
 #endif
         NnExecutable *func = (NnExecutable*)functions.get(arg0low);
@@ -637,7 +634,7 @@ int NyadosShell::interpret1( const NnString &statement )
 {
     NnString cmdline(statement);
 #ifdef LUA_ENABLE
-    lua_State *lua=get_nyaos_object("filter");
+    NyaosLua lua("filter");
 
     if( lua != NULL ){
         if( lua_isfunction(lua,-1) ){
