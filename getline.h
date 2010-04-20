@@ -11,6 +11,7 @@
 #include "nnhash.h"
 
 #undef PROMPT_SHIFT
+#undef max
 
 // コマンドの戻り値
 typedef enum {

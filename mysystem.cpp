@@ -27,22 +27,42 @@
 #include "nnvector.h"
 #include "shell.h"
 #include "writer.h"
+#include "mysystem.h"
 
 enum{
     TOO_LONG_COMMANDLINE = -3  ,
     MAX_COMMANDLINE_SIZE = 127 ,
 };
 
+typedef enum mysystem_process_e {
+    MYP_WAIT ,
+    MYP_NOWAIT , 
+    MYP_PIPE ,
+} mysystem_process_t;
+
+#ifdef EMXOS2
+typedef int mysystem_result_t;
+#else
+typedef union mysystem_result_u {
+    DWORD     rc;
+    phandle_t phandle;
+    DWORD     pid;
+} mysystem_result_t ; 
+#endif
 
 /* 代替spawn。spawnのインターフェイスを NNライブラリに適した形で提供する。
  *      args - パラメータ
- *      wait - P_WAIT , P_NOWAIT
+ *      wait - MYP_WAIT   : プロセス終了を待つ
+ *             MYP_NOWAIT or MYP_PIPE : プロセス終了を待たない
+ *      result - プロセスの戻り値 or ID or ハンドルが格納される
  * return
- *      spawn の戻り値
- *      - wait == P_WAIT   の時は、プロセスの戻り値
- *      - wait == P_NOWAIT の時は、プロセスID
+ *      0  - 成功
+ *      -1 - 失敗
  */
-static int mySpawn( const NnVector &args , int wait )
+static int mySpawn( 
+        const NnVector     &args ,
+        mysystem_process_t wait  ,
+        mysystem_result_t  &result )
 {
     /* コマンド名から、ダブルクォートを除く */
     NnString cmdname(args.const_at(0)->repr());
@@ -54,20 +74,20 @@ static int mySpawn( const NnVector &args , int wait )
     for(int i=0 ; i<args.size() ; i++)
         argv[i] = ((NnString*)args.const_at(i))->chars();
     argv[ args.size() ] = NULL;
-    int result;
 
-    if( wait == P_WAIT ){
+    if( wait == MYP_WAIT ){
         unsigned long type=0;
         int rc= DosQueryAppType( (unsigned char *)cmdname.chars() , &type );
         if( rc ==0  &&  (type & 7 )== FAPPTYP_WINDOWAPI){
             wait = P_PM;
         }
     }
-    result = spawnvp(wait,(char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
+    result.rc = spawnvp(
+            wait == MYP_WAIT ? P_WAIT : P_NOWAIT ,
+            (char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
     free( argv );
 #else
     extern int which( const char *nm, NnString &which );
-    DWORD result;
     STARTUPINFO si;
     PROCESS_INFORMATION pi;
     NnString fullpath_cmdname;
@@ -102,16 +122,28 @@ static int mySpawn( const NnVector &args , int wait )
         errno = ENOEXEC;
         return -1;
     }
-    if( wait == P_NOWAIT ){
-        result = pi.dwProcessId ;
-    }else{
+    switch( wait ){
+    case MYP_WAIT: /* プロセス終了を待つ */
         WaitForSingleObject(pi.hProcess,INFINITE); 
-        GetExitCodeProcess(pi.hProcess,&result);
+        GetExitCodeProcess(pi.hProcess,&result.rc);
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        break;
+    case MYP_NOWAIT: /* プロセス終了を待たない */
+        result.pid = pi.dwProcessId ;
+        CloseHandle(pi.hProcess);
+        CloseHandle(pi.hThread);
+        break;
+    case MYP_PIPE: /* ここでは待たないが、呼び出し元で待つ */
+        result.phandle = pi.hProcess ;
+        CloseHandle(pi.hThread);
+        break;
+    default:
+        abort();
+        break;
     }
-    CloseHandle(pi.hProcess);
-    CloseHandle(pi.hThread);
 #endif
-    return result;
+    return 0;
 }
 
 /* リダイレクト部分を解析する。
@@ -179,13 +211,16 @@ static void devidePipes( const char *cmdline , NnVector &vector )
 
 /* NYADOS 専用：リダイレクト処理付き１コマンド処理ルーチン
  *	cmdline - コマンド
- *	wait - P_WAIT or P_NOWAIT
+ *	wait - MYP_WAIT / MYP_NOWAIT / MYP_PIPE
+ *	result - コマンドの実行結果を格納する先
  * return
- *	wait == P_WAIT の時：プロセスの実行結果
- *	wait == P_NOWAIT の時：コマンドの ID
- *   -1 : リダイレクト失敗.
+ *        0 : 成功
+ *       -1 : リダイレクト失敗.
  */
-static int do_one_command( const char *cmdline , int wait )
+static int do_one_command( 
+        const char *cmdline ,
+        mysystem_process_t wait ,
+        mysystem_result_t  &result )
 {
     Redirect redirect0(0);
     Redirect redirect1(1);
@@ -223,26 +258,23 @@ static int do_one_command( const char *cmdline , int wait )
     NnVector args;
 
     execstr.splitTo( args );
-    return mySpawn( args , wait );
+    return mySpawn( args , wait , result );
 }
 
 /* NYADOS 専用：system代替関数（パイプライン処理）
  *	cmdline - コマンド文字列	
- *	wait - 1 ならばコマンド終了まで待つ
- *	       0 ならば全てのプロセスは非同期で実行する
- *	       (そしてプロセスIDをポインタに代入する)
- * return
- *	wait==1 : 最後に実行したコマンドのエラーコード
- *	wait==0 : 最後に実行したコマンドのプロセスID
  */
-int mySystem( const char *cmdline , int wait=1 )
+static int do_pipeline(
+        const char *cmdline ,
+        mysystem_process_t wait ,
+        mysystem_result_t &result )
 {
     if( cmdline[0] == '\0' )
 	return 0;
     int pipefd0 = -1;
     int save0 = -1;
     NnVector pipeSet;
-    int result=0;
+    int rc=0;
 
     devidePipes( cmdline , pipeSet );
     for( int i=0 ; i < pipeSet.size() ; ++i ){
@@ -290,23 +322,23 @@ int mySystem( const char *cmdline , int wait=1 )
 	    ::close( handles[1] );
             pipefd0 = handles[0];
 
-            result = do_one_command( ((NnString*)pipeSet.at(i))->chars(),P_NOWAIT);
+            rc = do_one_command( ((NnString*)pipeSet.at(i))->chars(),
+                            MYP_NOWAIT , result);
             dup2( save1 , 1 );
             ::close( save1 );
         }else{
-            result = do_one_command( ((NnString*)pipeSet.at(i))->chars(),
-                    wait ? P_WAIT : P_NOWAIT );
-            if( ! wait ){
-                conErr << '<' << result << ">\n";
-            }
+            rc = do_one_command( ((NnString*)pipeSet.at(i))->chars(),
+                            wait , result );
         }
-	if( result < 0 ){
+	if( rc != 0 ){
 	    if( ((NnString*)pipeSet.at(i))->length() > 110 ){
 		conErr << "Too long command line,"
 			    " or bad command or file name.\n";
 	    }else if( errno != 0 ){
                 conErr << strerror( errno ) << '\n';
-	    }
+	    }else{
+                conErr << "unexpected error.\n";
+            }
             goto exit;
 	}
     }
@@ -314,5 +346,73 @@ int mySystem( const char *cmdline , int wait=1 )
     if( save0 >= 0 ){
         dup2( save0 , 0 );
     }
-    return result;
+    return rc;
+}
+
+int mySystem( const char *cmdline , int wait )
+{
+    mysystem_result_t result;
+    if( wait ){
+        int rc = do_pipeline( cmdline , MYP_WAIT , result );
+        return rc ? rc : result.rc ;
+    }else{
+        int rc = do_pipeline( cmdline , MYP_NOWAIT , result );
+        return rc ? rc : result.pid ;
+    }
+
+}
+
+/* CMD.EXE を使わない popen 関数相当
+ *    cmdname : コマンド名
+ *    mode : "r" or "w"
+ *    phandle : プロセスハンドル
+ * return
+ *    -1 : パイプ生成失敗
+ *    -2 : spawn 失敗
+ *    others : ファイルハンドル
+ */
+int myPopen(const char *cmdline , const char *mode , phandle_t *phandle )
+{
+    int pipefd[2];
+    int backfd;
+    int d=(mode[0]=='r' ? 1 : 0 );
+    mysystem_result_t result;
+
+#ifdef OS2EMX
+    if( _pipe(pipefd) != 0 ){
+#else
+    if( _pipe(pipefd,1024,_O_TEXT | _O_NOINHERIT ) != 0 ){
+#endif
+        return -1;
+    }
+
+    backfd = dup(d);
+    ::_dup2( pipefd[d] , d );
+    ::_close( pipefd[d] );
+    int rc=do_pipeline( cmdline , MYP_PIPE , result );
+    ::_dup2( backfd , d );
+    ::_close( backfd );
+    if( rc != 0 ){
+        return -1;
+    }
+    if( phandle != NULL )
+        *phandle = result.phandle ;
+
+    return pipefd[ d ? 0 : 1 ];
+}
+
+void myPclose(int fd, phandle_t phandle )
+{
+    if( fd >= 0 ){
+        ::_close(fd);
+#ifdef OS2EMX
+        ::waitpid(pid,NULL,WNOHANG|WUNTRACED);
+#else
+        if( phandle ){
+            WaitForSingleObject( phandle , INFINITE); 
+            CloseHandle( phandle );
+            phandle = 0;
+        }
+#endif
+    }
 }

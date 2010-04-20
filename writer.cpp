@@ -1,3 +1,4 @@
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -13,7 +14,7 @@
 #include "reader.h"
 #include "ntcons.h"
 
-int mySystem( const char *cmdline , int wait=1 );
+#include "mysystem.h"
 
 #ifdef NYACUS
 
@@ -157,9 +158,7 @@ Writer &StreamWriter::write( const char *s )
 
 void PipeWriter::open( const NnString &cmds_ )
 {
-    tempfn = NnDir::tempfn();
-    int fd=::_open( tempfn.chars() , O_WRONLY | O_CREAT | O_TEXT ,
-                   S_IREAD | S_IWRITE  );
+    int fd=myPopen( cmds_.chars() , "w" , &pid );
     if( fd < 0 )
         return;
     cmds = cmds_;
@@ -170,23 +169,13 @@ void PipeWriter::open( const NnString &cmds_ )
 PipeWriter::PipeWriter( const char *s )
 {
     NnString cmds_(s);
+    pid = 0;
     open( cmds_ );
 }
 
 PipeWriter::~PipeWriter()
 {
-    if( fd() < 0 )
-        return;
-    
-    ::close(fd());
-    int fd = ::open( tempfn.chars() , O_RDONLY | O_TEXT );
-    int savefd0 = ::dup(0);
-    ::dup2( fd , 0 );
-    ::close( fd );
-    mySystem( cmds.chars() , 1 );
-    ::dup2( savefd0 , 0 );
-    ::close( savefd0 );
-    ::unlink( tempfn.chars() );
+    myPclose( fd() , pid );
 }
 
 FileWriter::FileWriter( const char *fn , const char *mode )

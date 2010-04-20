@@ -1,7 +1,8 @@
 #ifndef WRITER_H
 #define WRITER_H
-#include "nnstring.h"
 #include <stdio.h>
+#include "nnstring.h"
+#include "mysystem.h"
 
 class Writer : public NnObject {
 public:
@@ -65,14 +66,15 @@ public:
     NnObject *clone() const { return 0; }
 };
 
+
 class PipeWriter : public RawWriter {
     NnString cmds;
-    NnString tempfn;
     void open( const NnString &cmds );
+    phandle_t pid;
 public:
     ~PipeWriter();
     PipeWriter( const char *cmds );
-    PipeWriter( const NnString &cmds ){ open(cmds); }
+    PipeWriter( const NnString &cmds ){ pid=0;open(cmds); }
     NnObject *clone() const { return 0; }
 };
 

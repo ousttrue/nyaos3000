@@ -16,6 +16,7 @@
 #include "shell.h"
 #include "getline.h"
 #include "nua.h"
+#include "mysystem.h"
 
 // #define TRACE 1
 
@@ -33,7 +34,6 @@ public:
 };
 
 int preprocessHistory( History &hisObj , const NnString &src , NnString &dst );
-int mySystem( const char *cmdline , int wait=1 );
 int which( const char *nm, NnString &which );
 void brace_expand( NnString &s );
 
@@ -353,7 +353,7 @@ int sub_brace_start( NyadosShell &bshell ,
  * (interpret1 から呼び出されます)
  *	replace - コマンド
  *	wait != 0 コマンド終了を待つ
- *	          コマンドをバックグラウンドで実行させる
+ *	     == 0 コマンドをバックグラウンドで実行させる
  * return
  *      0
  */
@@ -427,6 +427,9 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 		goto exit;
 
 	    exitStatus_ = mySystem( cmdline2.chars() , wait );
+            if( wait == 0 ){
+                conErr << '<' << exitStatus_ << ">\n";
+            }
 	}
     }
   exit:
