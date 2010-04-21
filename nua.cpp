@@ -22,7 +22,6 @@
 #define TRACE(X)
 
 extern int open_luautil( lua_State *L );
-static lua_State *nua=NULL;
 
 static void lstop (lua_State *L, lua_Debug *ar) {
   (void)ar;  /* unused arg. */
@@ -33,14 +32,16 @@ static void lstop (lua_State *L, lua_Debug *ar) {
 #ifdef OS2EMX
 static void handle_ctrl_c(int sig)
 {
-    lua_sethook(nua, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+    NnLua L;
+    lua_sethook(L, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
     signal(sig,SIG_ACK);
 }
 #else
 static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
 {
     if( CTRL_C_EVENT == ctrlChar){
-        lua_sethook(nua, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+        NnLua L;
+        lua_sethook(L, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
         return TRUE;
     }else{
         return FALSE;
