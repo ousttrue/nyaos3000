@@ -40,15 +40,17 @@ typedef enum mysystem_process_e {
     MYP_PIPE ,
 } mysystem_process_t;
 
-#ifdef EMXOS2
-typedef int mysystem_result_t;
-#else
 typedef union mysystem_result_u {
+#ifdef OS2EMX
+    int rc;
+    int phandle;
+    int pid;
+#else
     DWORD     rc;
     phandle_t phandle;
     DWORD     pid;
-} mysystem_result_t ; 
 #endif
+} mysystem_result_t ; 
 
 /* 代替spawn。spawnのインターフェイスを NNライブラリに適した形で提供する。
  *      args - パラメータ
@@ -75,15 +77,19 @@ static int mySpawn(
         argv[i] = ((NnString*)args.const_at(i))->chars();
     argv[ args.size() ] = NULL;
 
+    int wait_;
     if( wait == MYP_WAIT ){
         unsigned long type=0;
         int rc= DosQueryAppType( (unsigned char *)cmdname.chars() , &type );
         if( rc ==0  &&  (type & 7 )== FAPPTYP_WINDOWAPI){
-            wait = P_PM;
+            wait_ = P_PM;
+        }else{
+            wait_ = P_WAIT;
         }
+    }else{
+        wait_ = P_NOWAIT;
     }
-    result.rc = spawnvp(
-            wait == MYP_WAIT ? P_WAIT : P_NOWAIT ,
+    result.rc = result.pid = spawnvp( wait_ ,
             (char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
     free( argv );
 #else
@@ -385,6 +391,10 @@ int myPopen(const char *cmdline , const char *mode , phandle_t *phandle )
 #endif
         return -1;
     }
+#ifdef OS2EMX
+    fcntl( pipefd[0], F_SETFD, FD_CLOEXEC );
+    fcntl( pipefd[1], F_SETFD, FD_CLOEXEC );
+#endif 
 
     backfd = dup(d);
     ::_dup2( pipefd[d] , d );
@@ -405,14 +415,14 @@ void myPclose(int fd, phandle_t phandle )
 {
     if( fd >= 0 ){
         ::_close(fd);
-#ifdef OS2EMX
-        ::waitpid(pid,NULL,WNOHANG|WUNTRACED);
-#else
         if( phandle ){
+#ifdef OS2EMX
+            ::waitpid(phandle,NULL,0);
+#else
             WaitForSingleObject( phandle , INFINITE); 
             CloseHandle( phandle );
+#endif
             phandle = 0;
         }
-#endif
     }
 }

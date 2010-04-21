@@ -1,11 +1,10 @@
 #ifndef MYSYSTEM_H
 #define MYSYSTEM_H
 
-#include <windows.h>
-
-#ifdef EMXOS2
+#ifdef OS2EMX
     typedef int phandle_t;
 #else
+#   include <windows.h>
     typedef HANDLE phandle_t;
 #endif
 
