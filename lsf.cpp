@@ -518,6 +518,9 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
     
     /* ’ˆÓFdirs.size ‚Í“®“I‚É•Ï‚í‚é(ŠÖ”“à•”‚Å‘‚¦‚é)ê‡‚ª‚ ‚é */
     for( i=0 ; i < dirs.size() ; ++i ){
+        if( ! conOut.ok() ){
+            break;
+        }
 	if( ctrl_c ){
 	    conErr << "^C\n";
 	    break;

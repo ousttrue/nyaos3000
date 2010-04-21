@@ -264,15 +264,23 @@ int StreamWriter::isatty() const
 
 RawWriter::~RawWriter(){}
 
+int RawWriter::ok() const
+{
+    return fd_ >= 0 && failed==0 ;
+}
+
 Writer &RawWriter::write( char c )
 {
-    ::write( fd_ , &c , 1 );
+    if( ::write( fd_ , &c , 1 ) < 1 )
+        ++failed;
     return *this;
 }
 
 Writer &RawWriter::write( const char *s )
 {
-    ::write( fd_ , s , strlen(s) );
+    int len=strlen(s);
+    if( ::write( fd_ , s , len  ) < len )
+        ++failed;
     return *this;
 }
 

@@ -10,6 +10,7 @@ public:
     virtual Writer &write( char c )=0;
     virtual Writer &write( const char *s)=0;
     virtual int isatty() const;
+    virtual int ok() const=0;
 
     Writer &operator << ( char c ){ return write(c); }
     Writer &operator << ( const char *s ){ return write(s); }
@@ -47,12 +48,13 @@ public:
  */
 class RawWriter : public Writer {
     int fd_;
+    int failed;
 public:
     ~RawWriter();
-    RawWriter(int fd=-1) : fd_(fd){}
+    RawWriter(int fd=-1) : fd_(fd) , failed(0){}
     Writer &write( char c );
     Writer &write( const char *s );
-    int ok() const { return fd_ >= 0 ; }
+    int ok() const;
     int fd() const { return fd_; }
     void setFd(int fd){ fd_ = fd; }
     int isatty() const;
@@ -116,6 +118,7 @@ public:
     ~WriterClone(){}
     Writer &write( char c ){ return rep->write( c ); }
     Writer &write( const char *s ){ return rep->write( s ); }
+    int ok() const { return rep->ok(); }
     int isatty() const { return rep->isatty(); }
 };
 
@@ -126,6 +129,7 @@ public:
     ~NullWriter(){}
     Writer &write( char c ){ return *this; }
     Writer &write( const char *s ){ return *this; }
+    int ok() const { return 1; }
 };
 
 /* 標準出力・入力をリダイレクトしたり、元に戻したりするクラス */
