@@ -96,7 +96,7 @@ nua.$(O) : nua.cpp nua.h nnlua.h
 luautil.$(O) : luautil.cpp
 
 # ÉäÉ\Å[ÉX
-nyacusrc.$(O)  : nyacus.rc redcat.ico
+nyacusrc.$(O)  : nyacus.rc luacat.ico
 	windres --output-format=coff -o $@ $<
 
 clean : 
