@@ -1203,31 +1203,57 @@ NYAOS 終了時に呼び出されます。
 拡張補完
 --------
 
-nyaos.complete という関数を定義しておくと、ファイル名以外の文字列を
-補完候補に含めることができます。
+nyaos.complete で、NYAOS の補完機能を自由に再定義できます。
 
-    例：
-        function nyaos.complete( basestring , pos )
-                :
-            return {c1,c2,c3}
+    function nyaos.complete( BASESTRING , POS )
+            :
+        return LIST
+    end
+
+BASESTRING : 被補完文字列
+    TAB がタイプされた時に NYAOS が補完すべきと判断した範囲の
+    文字列です。これを元に補完候補を作成してください。
+
+POS : 被補完文字列の画面上での開始位置
+    コマンドライン上での basestring の位置です。0 の時は、
+    ファイル名だけでなく、コマンド名も候補に入れるなど
+    挙動を変える場合に使います。
+
+LIST : 追加する補完候補が入ったテーブル
+
+    LIST の各要素 LIST[n] は、テーブルあるいは文字列を格納します。
+    テーブルの場合は:
+        LIST[n][1] には、実際に補完するための文字列を
+        LIST[n][2] には、リスト表示のための文字列
+        とします。
+    文字列の場合は:
+        LIST[n] に直接、実際に補完するための文字列を格納してください。
+
+例：
+    lua_e "
+        function nyaos.complete(basestring,n)
+            local list = nyaos.default_complete(basestring,n)
+            table.insert( list , '127.0.0.1' )
+            table.insert( list , 'localhost' ) 
+            return list
         end
+    "
 
-    basestring : 被補完文字列
-    pos        : 被補完文字列の画面上での開始位置
-    {c1,c2,c3} : 追加する補完候補
+    nyaos.default_complete は、NYAOS のデフォルトの補完処理を行う
+    組込み関数です。これの返す補完候補に「127.0.0.1」「localhost」
+    といったホスト名を追加しています。
 
-逆に NYAOS の補完機能を Lua から呼び出すこともできます。
-default_complete という関数を使います。
+    nyaos.default_complete の返す値は、必ず
 
-    例：
-        lua_e "
-            function nyaos.command.t(argv)
-                L=nyaos.default_complete(argv,1)
-                for i=1,#L do
-                    print( string.format('(%d) %-20s %-20s',i,L[i][2],L[i][1]) )
-                end
-            end
-        "
+        {
+            { "パス全体1","ディレクトリ部分を除いたファイル名1" } ,
+            { "パス全体2","ディレクトリ部分を除いたファイル名2" } ,
+            { "パス全体2","ディレクトリ部分を除いたファイル名3" } ,
+                :
+        }
+
+    となります。
+
 
 ツール関数
 ----------
@@ -1336,8 +1362,10 @@ dir/w がエラーになります
 変更履歴
 ========
 
-TEST-VERSOIN (2010/04/24)
+TEST-VERSION (2010/04/24)
     - nyaos.default_complete の設置
+    - nyaos.complete の戻り値を任意の個数の文字列から、
+      テーブルへ変更した。
 
 2.93_0 (2010/04/24)
     - Lua 関数で、ファイル名以外の文字列を補完候補に含められるようにした。

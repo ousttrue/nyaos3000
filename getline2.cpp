@@ -226,7 +226,7 @@ struct Completion {
     int at , size , n ;
     NnVector list ;
 
-    /* ディレクトリ名等を含まないファイル名(リスト表示のために使う */
+    /* ディレクトリ名等を含まないファイル名(リスト表示のために使う) */
     NnString &name_of(int n){
 	return *(NnString*)((NnPair*)list.at(n))->second_or_first();
     }
@@ -265,43 +265,67 @@ int GetLine::read_complete_list( Completion &r )
     r.n = 0;
 #ifdef LUA_ENABLE
     NyaosLua L("complete");
-    if( L != NULL ){
-        if( lua_isfunction(L,-1) ){
-            int bottom = lua_gettop(L)-1;
-            /* 第一引数：ベース文字列 */
-            NnString word( r.word );
-            word.dequote();
-            lua_pushstring( L , word.chars() );
+    if( L.ok() && lua_isfunction(L,-1) ){
+        /* 第一引数：ベース文字列 */
+        NnString word( r.word );
+        word.dequote();
+        lua_pushstring( L , word.chars() );
 
-            /* 第二引数：文字列開始位置 */
-            lua_pushinteger( L , r.at );
+        /* 第二引数：文字列開始位置 */
+        lua_pushinteger( L , r.at );
 
-            if( lua_pcall(L,2,LUA_MULTRET,0) == 0 ){
-                for( int n=lua_gettop(L) ; n >= bottom ; n-- ){
+        if( lua_pcall(L,2,1,0) == 0 ){
+            if( lua_istable(L,-1) ){
+                lua_pushnil(L);
+                while( lua_next(L,-2) != 0 ){
                     const char *s=lua_tostring(L,-1);
                     if( s != NULL ){
-                        if( strnicmp( word.chars() , s , word.length() ) == 0 ){
+                        if( strnicmp(word.chars(),s,word.length())==0 ){
                             r.list.append( new NnPair(new NnStringIC(s)) );
                         }
+                    }else if( lua_istable(L,-1) ){
+                        /* Full Path */
+                        lua_pushinteger(L,1); /* +1 */
+                        lua_gettable(L,-2);
+                        lua_pushinteger(L,2); /* +2 */
+                        lua_gettable(L,-3);
+                        const char *fullpath = lua_tostring(L,-2);
+                        const char *purename = lua_tostring(L,-1);
+                        if( purename == NULL ){
+                            purename = fullpath;
+                        }
+                        if( fullpath != NULL ){
+                            if( strnicmp( word.chars() , fullpath , word.length()) == 0 ){
+                                r.list.append( new NnPair(
+                                            new NnStringIC(fullpath) ,
+                                            new NnStringIC(purename) ) );
+                            }
+                        }
+                        lua_pop(L,2);
                     }
-                    lua_pop(L,1);
+                    lua_pop(L,1); /* drop each value(nextを使う時の約束事) */
                 }
-            }else{
-                r.list.append( new NnPair(new NnString(lua_tostring(L,-1))) );
-                lua_pop(L,1);
+            }else if( ! lua_isnil(L,-1) ){
+                r.list.append( new NnPair( new NnString(
+                                "<nyaos.complete was requires "
+                                "returning one table>")));
             }
+            lua_pop(L,1); /* drop returned table */
         }else{
-            lua_pop(L,1);
+            r.list.append( new NnPair(new NnString(lua_tostring(L,-1))) );
+            lua_pop(L,1); /* drop error message */
         }
+    }else{
+#endif
+        // 補完リスト作成
+        if( r.at == 0 ){
+            makeTopCompletionList( r.word , r.list );
+        }else{
+            makeCompletionList( r.word , r.list );
+        }
+#ifdef LUA_ENABLE
     }
 #endif
-
-    // 補完リスト作成
-    if( r.at == 0 ){
-        makeTopCompletionList( r.word , r.list );
-    }else{
-        makeCompletionList( r.word , r.list );
-    }
     return r.n = r.list.size();
 }
 
