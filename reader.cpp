@@ -15,9 +15,16 @@ int Reader::readLine( NnString &line )
 	return -1;
 
     int ch;
-    while( (ch=this->getchr()) != '\n' && ch != EOF )
+    while( (ch=this->getchr()) != '\n' ){
+        if( ch == EOF ){
+            if( line.length() <= 0 )
+                return -1;
+            else
+                return line.length();
+        }
 	line += char(ch);
-    
+    }
+
     return line.length();
 }
 
