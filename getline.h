@@ -212,6 +212,8 @@ public:
 
     int operator() ( NnString &result );
     const char *operator() ( const char *defaultString=0 );
+
+    static int makeCompletionListCore( const NnString &s , NnVector & );
 };
 
 class NnHash;
@@ -235,6 +237,8 @@ public:
     void clear();
 
     void setPrompt( const NnString &p ){ prompt_ = p; }
+
+    static int makeTopCompletionListCore( const NnString &s , NnVector & );
 };
 
 class NnPair : public NnSortable {

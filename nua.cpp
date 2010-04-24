@@ -301,6 +301,45 @@ int nua_getkey(lua_State *lua)
     return 1;
 }
 
+int nua_default_complete(lua_State *L)
+{
+    const char *basestring = lua_tostring(L,1);
+    int pos=lua_tointeger(L,2);
+    if( basestring == NULL ){
+        return 0;
+    }
+
+    NnString basestring1(basestring);
+    NnVector list;
+    if( pos > 0 ){
+        GetLine::makeCompletionListCore( basestring1 , list);
+    }else{
+        DosShell::makeTopCompletionListCore( basestring1 , list );
+    }
+    int count=0;
+    lua_newtable(L);
+    for(int i=0;i<list.size();i++){
+        NnPair *pair=dynamic_cast<NnPair*>( list.at(i) );
+        if( pair == NULL ) continue;
+
+        lua_pushinteger( L , ++count );
+
+        lua_newtable( L );
+        /* フルパス */
+        lua_pushinteger( L , 1 );
+        lua_pushstring( L, pair->first()->repr() );
+        lua_settable( L , -3 ) ;
+
+        /* ファイル名部分のみ */
+        lua_pushinteger( L , 2 );
+        lua_pushstring( L, pair->second_or_first()->repr() );
+        lua_settable( L , -3 ) ;
+
+        lua_settable( L , -3 );
+    }
+    return 1;
+}
+
 int NyaosLua::initialized=0;
 
 /* NYAOS 向け Lua 環境初期化
@@ -378,6 +417,8 @@ int NyaosLua::init()
         lua_setfield(L,-2,"access");
         lua_pushcfunction(L,nua_getkey);
         lua_setfield(L,-2,"getkey");
+        lua_pushcfunction(L,nua_default_complete);
+        lua_setfield(L,-2,"default_complete");
 
         /* close nyaos table */
         lua_setglobal(L,"nyaos");

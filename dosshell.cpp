@@ -154,6 +154,11 @@ void eval_dollars_sequence( const char *sp , NnString &result )
  */
 int DosShell::makeTopCompletionList( const NnString &region , NnVector &array )
 {
+    return makeTopCompletionListCore( region , array );
+}
+
+int DosShell::makeTopCompletionListCore( const NnString &region , NnVector &array )
+{
     NnString pathcore;
 
     /* æ“ª‚Ìˆø—p•„‚ğœ‚­ */
@@ -163,7 +168,7 @@ int DosShell::makeTopCompletionList( const NnString &region , NnVector &array )
         pathcore = region;
     }
 
-    makeCompletionList( region , array );
+    GetLine::makeCompletionListCore( region , array );
     for(int i=0 ; i<array.size() ; ){
         NnString *fname=(NnString *)((NnPair*)array.at(i))->first();
         if( isExecutable( fname->chars())  ||  isDirectory( fname->chars() )){

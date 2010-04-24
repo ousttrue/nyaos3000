@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -73,6 +74,10 @@ static int expand_environemnt_variable(
  *      Œó•â”
  */
 int GetLine::makeCompletionList( const NnString &region, NnVector &array )
+{
+    return makeCompletionListCore( region , array );
+}
+int GetLine::makeCompletionListCore( const NnString &region, NnVector &array )
 {
     int i;
     NnString path;
@@ -187,7 +192,7 @@ int GetLine::makeCompletionList( const NnString &region, NnVector &array )
  */
 int GetLine::makeTopCompletionList( const NnString &region , NnVector &array )
 {
-    return makeCompletionList( region , array );
+    return makeCompletionListCore( region , array );
 }
 
 /* •¶š—ñ s1 ‚Æ •¶š—ñ s2 ‚Æ‚Ì‹¤’Ê•”•ª‚Ì’·‚³‚ğ“¾‚é */

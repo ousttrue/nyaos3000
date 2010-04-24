@@ -1209,13 +1209,25 @@ nyaos.complete という関数を定義しておくと、ファイル名以外の文字列を
     例：
         function nyaos.complete( basestring , pos )
                 :
-            return c1,c2,c3
+            return {c1,c2,c3}
         end
 
     basestring : 被補完文字列
     pos        : 被補完文字列の画面上での開始位置
-    c1,c2,c3   : 追加する補完候補
+    {c1,c2,c3} : 追加する補完候補
 
+逆に NYAOS の補完機能を Lua から呼び出すこともできます。
+default_complete という関数を使います。
+
+    例：
+        lua_e "
+            function nyaos.command.t(argv)
+                L=nyaos.default_complete(argv,1)
+                for i=1,#L do
+                    print( string.format('(%d) %-20s %-20s',i,L[i][2],L[i][1]) )
+                end
+            end
+        "
 
 ツール関数
 ----------
@@ -1324,7 +1336,10 @@ dir/w がエラーになります
 変更履歴
 ========
 
-2.93_0 (2010/04/16)
+TEST-VERSOIN (2010/04/24)
+    - nyaos.default_complete の設置
+
+2.93_0 (2010/04/24)
     - Lua 関数で、ファイル名以外の文字列を補完候補に含められるようにした。
     - カラー ls での色の付け方を HIDDEN,SYSTEM を DIRECTORY より優先する
       ようにした
