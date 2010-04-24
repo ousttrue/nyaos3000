@@ -1273,6 +1273,25 @@ NYAOS の直接の動作には影響しませんが、ツールとして次のような関数を提供しています
 
     lua_e "nyaos.exec('ls -l')"
 
+NYAOS のコマンドラインを実行します。
+戻り値として、実行ステータスを返します。
+(CMD.EXE で言うところの errorlevel 相当)
+
+* nyaos.eval - NYAOS コマンドの呼び出しと出力結果の引用
+
+    lua_e "
+        local quote=nyaos.eval('ls -1')
+        for fn in string.gmatch(quote,'[^\n]+') do 
+            print(fn) 
+        end
+    "
+
+NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
+返します。NYAOS 本体の逆クォートと同じですが、空白を縮めるなどの処理は
+行ないません。
+
+何らかのエラーが発生した時は、nil とエラーメッセージを返します。
+
 * nyaos.access - ファイルの存在チェック
 
     lua_e "print( nyaos.access('_nya',0) )"
