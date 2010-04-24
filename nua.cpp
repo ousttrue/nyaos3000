@@ -282,6 +282,25 @@ int nua_exec(lua_State *lua)
     return 1;
 }
 
+int nua_eval(lua_State *lua)
+{
+    extern int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink );
+
+    const char *statement = lua_tostring(lua,-1);
+    if( statement == NULL )
+        return luaL_argerror(lua,1,"invalid nyaos-statement");
+
+    NnString buffer;
+    if( eval_cmdline( statement , buffer , 4096 , false ) == 0 ){
+        lua_pushstring( lua , buffer.chars() );
+        return 1;
+    }else{
+        lua_pushnil( lua );
+        lua_pushstring( lua , strerror(errno) );
+        return 2;
+    }
+}
+
 int nua_access(lua_State *lua)
 {
     const char *fname = lua_tostring(lua,1);
@@ -413,6 +432,8 @@ int NyaosLua::init()
         
         lua_pushcfunction(L,nua_exec);
         lua_setfield(L,-2,"exec");
+        lua_pushcfunction(L,nua_eval);
+        lua_setfield(L,-2,"eval");
         lua_pushcfunction(L,nua_access);
         lua_setfield(L,-2,"access");
         lua_pushcfunction(L,nua_getkey);

@@ -16,6 +16,41 @@ static int getQuoteMax()
     return max == NULL ? 0 : 1024 ;
 }
 
+int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
+{
+    /* テンポラリファイルを使って実現 */
+    NnString tempfn=NnDir::tempfn();
+    FILE *fp=fopen( tempfn.chars() , "w" );
+    int tmpfd = dup(1);
+    dup2( fileno(fp) , 1 );
+
+    OneLineShell shell( cmdline );
+    shell.mainloop();
+
+    dup2( tmpfd , 1 );
+    ::close( tmpfd );
+    fclose(fp);
+
+    FileReader pp( tempfn.chars() );
+    
+    int lastchar=' ';
+    int ch;
+    while( !pp.eof() && (ch=pp.getchr()) != EOF ){
+        if( shrink && isSpace(ch) ){
+            if( ! isSpace(lastchar) )
+                dst += ' ';
+        }else{
+            dst += (char)ch;
+        }
+        lastchar = ch;
+        if( dst.length() >= max )
+            return -1;
+    }
+    dst.trim();
+    ::remove( tempfn.chars() );
+    return 0;
+}
+
 /* 逆クォート処理
  *      sp  元文字列(`の次を指していること)
  *      dst 先文字列
@@ -24,7 +59,7 @@ static int getQuoteMax()
  *      0  成功
  *      -1 オーバーフロー
  */
-static int doQuote( const char *&sp , NnString &dst , int max , NyadosShell &sh )
+static int doQuote( const char *&sp , NnString &dst , int max )
 {
     NnString q;
     while( *sp != '\0' ){
@@ -42,36 +77,7 @@ static int doQuote( const char *&sp , NnString &dst , int max , NyadosShell &sh 
         dst += '`';
         return 0;
     }
-
-    /* テンポラリファイルを使って実現…ださださ */
-    NnString tempfn=NnDir::tempfn();
-    FILE *fp=fopen( tempfn.chars() , "w" );
-    int tmpfd = dup(1);
-    dup2( fileno(fp) , 1 );
-    sh.interpret( q );
-    dup2( tmpfd , 1 );
-    ::close( tmpfd );
-    fclose(fp);
-
-    FileReader pp( tempfn.chars() );
-    
-    // PipeReader pp( q.chars() );
-    int lastchar=' ';
-    int ch;
-    while( !pp.eof() && (ch=pp.getchr()) != EOF ){
-        if( isSpace(ch) ){
-            if( ! isSpace(lastchar) )
-                dst += ' ';
-        }else{
-            dst += (char)ch;
-        }
-        lastchar = ch;
-        if( dst.length() >= max )
-            return -1;
-    }
-    dst.trim();
-    ::remove( tempfn.chars() );
-    return 0;
+    return eval_cmdline( q.chars() , dst , max , true );
 }
 
 
@@ -258,7 +264,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    }
         }else if( *sp == '`' && backquotemax > 0 ){
 	    ++sp;
-            if( doQuote( sp , dst , backquotemax , *this ) == -1 ){
+            if( doQuote( sp , dst , backquotemax ) == -1 ){
                 conErr << "over flow commandline.\n";
                 return -1;
             }
@@ -356,7 +362,7 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
 	    --sp;
         }else if( *sp == '`'  && backquotemax > 0 ){
 	    ++sp;
-            if( doQuote( sp , dst , backquotemax , *this ) == -1 ){
+            if( doQuote( sp , dst , backquotemax ) == -1 ){
                 conErr << "Over flow commandline.\n";
                 return -1;
             }
