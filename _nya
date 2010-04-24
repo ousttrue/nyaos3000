@@ -25,9 +25,9 @@ suffix cmd %COMSPEC% /c
 suffix bat %COMSPEC% /c
 
 option uncompletechar ,;=
-option tilde   on
-option history on
-option backquote  4000
+option +tilde
+option +history
+option +backquote
 option +keep_bottom_line
 option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
 
@@ -35,8 +35,6 @@ foreach i (dir mkdir rmdir copy move rename ren type md rd start del echo)
     alias $i $COMSPEC /c $i
 end
 alias dir\w %COMSPEC% /c dir /w
-alias start cmd /c start 
-alias kill  taskkill /pid
 
 bindkey CTRL_P vzlike-previous-history
 bindkey CTRL_N vzlike-next-history

@@ -807,12 +807,12 @@ UNIX/Linux系の & に動作が近くなっていますので、別のコマンドプロンプト画面を
 逆クォートによる、外部コマンド出力の引用機能
 =============================================
 
-option backquote on 等と設定しておくと、逆クォート(`～`)で囲まれた
+option +backquote 等と設定しておくと、逆クォート(`～`)で囲まれた
 文字列を「外部コマンド」とみなし、その実行したときの標準出力の内容を
 その位置に置換させることができます。
 
     例：カレントディレクトリ以下の全てのファイルのバックアップをとる
-        option backquote on
+        option +backquote
         foreach i `dir /b /s`
             copy %i% %i%-backup
         end
@@ -821,7 +821,7 @@ option backquote on 等と設定しておくと、逆クォート(`～`)で囲まれた
 逆クォートを二つ並べます。
 
     例：「`」１文字を表示する。
-        option backquote on
+        option +backquote
         echo ``
 
     この機能を off にするには、unoption backquote を実行します。
@@ -1381,10 +1381,14 @@ dir/w がエラーになります
 変更履歴
 ========
 
-TEST-VERSION (2010/04/24)
+
+2.94 (2010/04/25)
     - nyaos.default_complete の設置
-    - nyaos.complete の戻り値を任意の個数の文字列から、
-      テーブルへ変更した。
+    - nyaos.complete の戻り値を任意の個数の文字列から、テーブルへ変更した。
+    - nyaos.eval の設置
+    [蟲繕]
+    - savehist 定義時に Ctrl-Z で終了すると、空行がヒストリに入ってしまう
+      問題を修正。
 
 2.93_0 (2010/04/24)
     - Lua 関数で、ファイル名以外の文字列を補完候補に含められるようにした。
