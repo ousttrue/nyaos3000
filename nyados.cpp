@@ -336,10 +336,12 @@ int main( int argc, char **argv )
 		histfrom = 0;
         }
         FileWriter fw( histfn->chars() , "w" );
-        NnString his1;
-        for(int i=histfrom ; i<hisObj->size() ; i++ ){
-	    if( hisObj->get(i,his1) == 0 )
-                (Writer&)fw << his1 << '\n';
+        if( fw.ok() ){
+            NnString his1;
+            for(int i=histfrom ; i<hisObj->size() ; i++ ){
+                if( hisObj->get(i,his1) == 0 )
+                    fw << his1 << '\n';
+            }
         }
     }
     goodbye();

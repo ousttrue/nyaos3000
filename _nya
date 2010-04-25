@@ -28,7 +28,6 @@ option uncompletechar ,;=
 option +tilde
 option +history
 option +backquote
-option +keep_bottom_line
 option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
 
 foreach i (dir mkdir rmdir copy move rename ren type md rd start del echo)
