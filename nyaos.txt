@@ -1386,6 +1386,7 @@ dir/w がエラーになります
     - nyaos.default_complete の設置
     - nyaos.complete の戻り値を任意の個数の文字列から、テーブルへ変更した。
     - nyaos.eval の設置
+    - %nyatype% の内容を NYAOS3K とした
     [蟲繕]
     - savehist 定義時に Ctrl-Z で終了すると、空行がヒストリに入ってしまう
       問題を修正。
