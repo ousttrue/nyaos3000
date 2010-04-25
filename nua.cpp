@@ -291,7 +291,7 @@ int nua_eval(lua_State *lua)
         return luaL_argerror(lua,1,"invalid nyaos-statement");
 
     NnString buffer;
-    if( eval_cmdline( statement , buffer , 4096 , false ) == 0 ){
+    if( eval_cmdline( statement , buffer , 0 , false ) == 0 ){
         lua_pushstring( lua , buffer.chars() );
         return 1;
     }else{

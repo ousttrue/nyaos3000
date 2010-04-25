@@ -16,6 +16,15 @@ static int getQuoteMax()
     return max == NULL ? 0 : 1024 ;
 }
 
+/* コマンドの標準出力の内容を文字列に取り込む. 
+ *   cmdline - 実行するコマンド
+ *   dst - 標準出力の内容
+ *   max - 引用の上限. 0 の時は上限無し
+ *   shrink - 二つ以上の空白文字を一つにする時は true とする
+ * return
+ *   0  : 成功
+ *   -1 : オーバーフロー(max までは dst に取り込んでいる)
+ */
 int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
 {
     /* テンポラリファイルを使って実現 */
@@ -43,7 +52,7 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
             dst += (char)ch;
         }
         lastchar = ch;
-        if( dst.length() >= max )
+        if( max && dst.length() >= max )
             return -1;
     }
     dst.trim();
