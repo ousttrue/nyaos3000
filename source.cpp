@@ -27,6 +27,17 @@ static int do_source( const NnString &cmdname , const NnVector &argv )
     if( properties.get("debug") != NULL ){
         conErr << cmdname << " reading ....\n";
     }
+    if( cmdname.endsWith(".lua") || cmdname.endsWith(".luac") ){
+        NnLua L;
+        if( luaL_loadfile(L,cmdname.chars()) != 0 ||
+            lua_pcall( L , 0 , 0 , 0 ) != 0 )
+        {
+            conErr << cmdname.chars() << ": " << lua_tostring(L,-1) << '\n';
+            return -1;
+        }
+        return 0;
+    }
+
     /* 「source …」：コマンド読みこみ */
     FileReader *fr=new FileReader(cmdname.chars());
     if( fr == 0 || fr->eof() ){
