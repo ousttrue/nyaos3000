@@ -10,8 +10,6 @@
 #    - そのユーザで定義する設定は (2) へ
 # 配置してください.
 
-echo %0 reading ...
-
 suffix ny  %nyatype% -f
 suffix pl  perl
 suffix py  python
@@ -122,6 +120,4 @@ lua_e "
             end
         end
     end
-
-    print('done')
 "
