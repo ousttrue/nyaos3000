@@ -24,6 +24,9 @@ static const char *reader_for_lua(lua_State *L , void *data , size_t *size )
 /* 通常ソース・Luaソース共通読み込み処理 */
 static int do_source( const NnString &cmdname , const NnVector &argv )
 {
+    if( properties.get("debug") != NULL ){
+        conErr << cmdname << " reading ....\n";
+    }
     /* 「source …」：コマンド読みこみ */
     FileReader *fr=new FileReader(cmdname.chars());
     if( fr == 0 || fr->eof() ){
@@ -61,6 +64,9 @@ static int do_source( const NnString &cmdname , const NnVector &argv )
             }
             scrShell.mainloop();
         }
+    }
+    if( properties.get("debug") != NULL ){
+        conErr << "done\n";
     }
     return 0;
 }
