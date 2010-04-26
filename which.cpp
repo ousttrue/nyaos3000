@@ -26,6 +26,12 @@ static int exists( const char *nm , NnString &which )
         which = path ;
         return 0;
     }
+    path.chop( path.length()-4 );
+    path << ".com";
+    if( NnDir::access(path.chars()) == 0 ){
+        which = path ;
+        return 0;
+    }
     return -1;
 }
 
