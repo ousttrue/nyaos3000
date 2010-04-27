@@ -64,6 +64,7 @@ static struct vkmap extra_keymap_msvc[] = {
  { VK_TAB, 0x0f, 0x09, 0x09, 0x94|EXTRA_00 , 0x94, 0x0f|EXTRA_00 }, /* IBM_16 */
  { VK_RETURN, 0x1c, 0x0d, 0x0d, 0x0a, 0x0a, 0x1c|EXTRA_00 }, /* IBM_43 */
  { VK_RETURN, 0x1c|SCAN_ENH, 0x0d, 0x0d, 0x0a, 0x0a, 0xa6|EXTRA_00 }, /* IBM_108 (numpad) */
+ { VK_SPACE,0x29 ,0x20,0x20  , 0x02|EXTRA_00 , 0x20 , 0x02|EXTRA_00 } ,
 
  /* enhanced keys */
  { VK_INSERT, 0x52|SCAN_ENH, 0x52|EXTRA_E0, 0x52|EXTRA_E0, 0x52|EXTRA_E0, 0xa2|EXTRA_00, 0xa2|EXTRA_00 }, /* IBM_75 */
@@ -207,7 +208,7 @@ getch_replacement_with_flags_for_msvc (int flags)
 #endif
     vk = (int)(unsigned)(ir.Event.KeyEvent.wVirtualKeyCode);
     ks = ir.Event.KeyEvent.dwControlKeyState;
-    if (ch == 0 || vk == VK_RETURN || vk == VK_BACK || vk == VK_TAB) {
+    if (ch == 0 || vk == VK_RETURN || vk == VK_BACK || vk == VK_TAB || vk == VK_SPACE ) {
       ch = lookup_keycode(vk, 0 /* ir.Event.KeyEvent.wVirtualScanCode */,
                           ks & SHIFT_PRESSED,
                           ks & (LEFT_CTRL_PRESSED|RIGHT_CTRL_PRESSED),

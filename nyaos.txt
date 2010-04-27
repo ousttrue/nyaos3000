@@ -249,7 +249,7 @@ bindkey
 
 キー名称には次のようなものがあります。
 
-    BACKSPACE       BACKTAB
+    BACKSPACE       BACKTAB         CTRL_SPACE
     CENTER          CTRL_A          CTRL_AT         CTRL_B
     CTRL_C          CTRL_CENTER     CTRL_D          CTRL_DEL
     CTRL_DOWN       CTRL_E          CTRL_END        CTRL_F
@@ -1388,12 +1388,13 @@ dir/w がエラーになります
 2.94 (2010/04/27)
     - nyaos.default_complete の設置
     - nyaos.complete の戻り値を任意の個数の文字列から、テーブルへ変更した。
-    - nyaos.eval の設置
+    - nyaos.eval を設置した。
     - %nyatype% の内容を NYAOS3K とした
     - source文で、拡張子が.lua,.luacのファイルは強制的に Lua とみなす
-      ようにした。
+      ようにした (コンパイルバイナリも読み込み可能)
     - _nya 内の読み込みメッセージを削除。かわりに、-D オプションで、
       nyaos.exe 本体が読み込み中のスクリプト名を表示するようにした。
+    - CTRL_SPACE をキーとして認識できるようにした (Windows)
     [蟲繕]
     - savehist 定義時に Ctrl-Z で終了すると、空行がヒストリに入ってしまう
       問題を修正。

@@ -158,7 +158,7 @@ static struct {
   { "CTRL_R", 0x12  },
   { "CTRL_RIGHT",            0x174    /* <Ctrl>+<Right arrow> */ },
   { "CTRL_S", 0x13  },
-  { "CTRL_SPACE",            0x102    /* <Ctrl>+<Space> [OS2]*/ },
+  { "CTRL_SPACE",            0x102    /* <Ctrl>+<Space> */ },
   { "CTRL_T", 0x14  },
   { "CTRL_TAB",              0x194    /* <Ctrl>+<Tab> */ },
   { "CTRL_U", 0x15  },
