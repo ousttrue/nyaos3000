@@ -37,8 +37,10 @@ static int chdir_( const NnString &dir )
     
     if( (rc=NnDir::chdir( dir.chars() )) == 0 ){
         prevdir = currdir;
+        NnString title("NYAOS - ");
         NnDir::getcwd( currdir );
-	Console::setConsoleTitle( currdir.chars() );
+        title << currdir ;
+	Console::setConsoleTitle( title.chars() );
     }
     return rc;
 }
