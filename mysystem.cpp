@@ -15,6 +15,7 @@
 #  define INCL_DOSSESMGR
 #  define INCL_DOSERRORS
 #  define INCL_DOSFILEMGR
+#  define INCL_DOSPROCESS
 #  include <os2.h>
 #else
 #  include <fcntl.h>
@@ -52,6 +53,8 @@ typedef union mysystem_result_u {
 #endif
 } mysystem_result_t ; 
 
+extern int which( const char *nm, NnString &which );
+
 /* 代替spawn。spawnのインターフェイスを NNライブラリに適した形で提供する。
  *      args - パラメータ
  *      wait - MYP_WAIT   : プロセス終了を待つ
@@ -70,37 +73,7 @@ static int mySpawn(
     NnString cmdname(args.const_at(0)->repr());
     cmdname.dequote();
 
-#ifdef OS2EMX
-    const char **argv
-        =(const char**)malloc( sizeof(const char *)*(args.size() + 1) );
-    for(int i=0 ; i<args.size() ; i++)
-        argv[i] = ((NnString*)args.const_at(i))->chars();
-    argv[ args.size() ] = NULL;
-
-    int wait_;
-    if( wait == MYP_WAIT ){
-        unsigned long type=0;
-        int rc= DosQueryAppType( (unsigned char *)cmdname.chars() , &type );
-        if( rc ==0  &&  (type & 7 )== FAPPTYP_WINDOWAPI){
-            wait_ = P_PM;
-        }else{
-            wait_ = P_WAIT;
-        }
-    }else{
-        wait_ = P_NOWAIT;
-    }
-    result.rc = result.pid = spawnvp( wait_ ,
-            (char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
-    free( argv );
-#else
-    extern int which( const char *nm, NnString &which );
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
     NnString fullpath_cmdname;
-
-    memset(&si,0,sizeof(si));
-    memset(&pi,0,sizeof(pi));
-
     if( NnDir::access(cmdname.chars())==0 ){
         fullpath_cmdname = cmdname;
     }else if( which( cmdname.chars() , fullpath_cmdname ) != 0 ){
@@ -113,7 +86,51 @@ static int mySpawn(
         cmdline << args.const_at(i)->repr() << ' ';
     }
     cmdline.chop();
-        
+#ifdef OS2EMX
+    unsigned long type=0;
+    int rc=DosQueryAppType( (unsigned char *)cmdname.chars() , &type );
+    if( wait == MYP_WAIT && rc ==0  &&  (type & 7 )== FAPPTYP_WINDOWAPI){
+        const char **argv
+            =(const char**)malloc( sizeof(const char *)*(args.size() + 1) );
+        for(int i=0 ; i<args.size() ; i++)
+            argv[i] = ((NnString*)args.const_at(i))->chars();
+        argv[ args.size() ] = NULL;
+
+        result.rc = result.pid = spawnvp( P_PM ,
+                (char*)NnDir::long2short(cmdname.chars()) , (char**)argv );
+        free( argv );
+    }else{
+        char errbuffer[ 256 ];
+        cmdline[ dynamic_cast<const NnString*>( args.const_at(0) )->length() ] = '\0';
+        RESULTCODES resultcodes;
+
+        if( DosExecPgm(
+                    errbuffer ,
+                    sizeof(errbuffer) ,
+                    wait == MYP_WAIT ? EXEC_SYNC : wait == MYP_NOWAIT ? EXEC_ASYNC : EXEC_ASYNCRESULT ,
+                    (const unsigned char *)cmdline.chars() ,
+                    0 ,
+                    &resultcodes ,
+                    (const unsigned char *)fullpath_cmdname.chars() ) )
+        {
+            errno = ENOEXEC;
+            return -1;
+        }
+        if( wait == MYP_WAIT ){
+            result.rc = resultcodes.codeResult ;
+            return resultcodes.codeTerminate != 0 ;
+        }else{
+            result.pid = resultcodes.codeTerminate;
+            return 0;
+        }
+    }
+#else
+    STARTUPINFO si;
+    PROCESS_INFORMATION pi;
+
+    memset(&si,0,sizeof(si));
+    memset(&pi,0,sizeof(pi));
+
     if( ! CreateProcess(const_cast<CHAR*>(fullpath_cmdname.chars()) ,
                         const_cast<CHAR*>(cmdline.chars()) ,
                         NULL, 
@@ -401,7 +418,20 @@ void myPclose(int fd, phandle_t phandle )
         ::_close(fd);
         if( phandle ){
 #ifdef OS2EMX
-            ::waitpid(phandle,NULL,0);
+            // ::waitpid(phandle,NULL,0);
+            RESULTCODES resultcodes;
+            PID pidChild;
+
+            int rc=DosWaitChild(
+                    DCWA_PROCESSTREE , 
+                    DCWW_WAIT ,
+                    &resultcodes ,
+                    &pidChild ,
+                    phandle  );
+            if( rc ) {
+                // printf("DosKillProcess(%d)\n",rc);
+                DosKillProcess( 0 , phandle );
+            }
 #else
             WaitForSingleObject( phandle , INFINITE); 
             CloseHandle( phandle );

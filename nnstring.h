@@ -111,6 +111,7 @@ public:
     int         length() const { return rep->length; }
     /** nƒoƒCƒg–Ú‚Ì•¶Žš‚ð“¾‚é */
     char        at(int n) const { return rep->buffer[n]; }
+    char        &operator[]( int n ) { return rep->buffer[n]; }
     /** •¶Žš—ñ‚ð‹ó‚É‚·‚é */
     void        erase(){ reset(rep); }
 
