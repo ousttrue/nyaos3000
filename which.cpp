@@ -17,10 +17,6 @@
 static int exists( const char *nm , NnString &which )
 {
     NnString path(nm);
-    if( NnDir::access(path.chars()) == 0 ){
-        which = path ;
-        return 0;
-    }
     path << ".exe";
     if( NnDir::access(path.chars()) == 0 ){
         which = path ;
@@ -30,6 +26,10 @@ static int exists( const char *nm , NnString &which )
     path << ".com";
     if( NnDir::access(path.chars()) == 0 ){
         which = path ;
+        return 0;
+    }
+    if( NnDir::access(nm) == 0 ){
+        which = nm ;
         return 0;
     }
     return -1;
@@ -59,10 +59,6 @@ int which( const char *nm, NnString &which )
 	if( path.empty() )
 	    continue;
         path << '\\' << nm;
-        if( NnDir::access(path.chars())==0 ){
-            which = path;
-            return 0;
-        }
         if( exists(path.chars(),which)==0 )
             return 0;
     }
