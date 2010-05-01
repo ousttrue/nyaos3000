@@ -133,7 +133,7 @@ Status GetLine::operator() ( NnString &result )
     
     for(;;){
         int key=getkey();
-        Status rc=CONTINUE;
+        Status rc=NEXTCHAR;
 #ifdef LUA_ENABLE
         NyaosLua L(NULL); /* stacked [nyaos] */
         if( L.ok() ){
@@ -155,14 +155,14 @@ Status GetLine::operator() ( NnString &result )
                     if( n < start ){ /* ˆø” 0 ŒÂ */
                         rc = interpret( key );
                     }else{
-                        for(int i=start ; i<=n && rc==CONTINUE ;i++){
+                        for(int i=start ; i<=n && rc==NEXTCHAR ;i++){
                             switch( lua_type(L,i) ){
                             default:
                             case LUA_TNIL:
                                 rc = interpret( key );
                                 break;
                             case LUA_TBOOLEAN:
-                                rc = lua_toboolean(L,i) ? ENTER : CANCEL;
+                                rc = lua_toboolean(L,i) ? NEXTLINE : CANCEL;
                                 break;
                             case LUA_TNUMBER:
                                 rc = interpret( lua_tointeger(L,i) );
@@ -197,7 +197,7 @@ Status GetLine::operator() ( NnString &result )
 #endif
 	int len;
         switch( rc ){
-        case CONTINUE:
+        case NEXTCHAR:
             break;
 
         case TERMINATE:
@@ -208,7 +208,7 @@ Status GetLine::operator() ( NnString &result )
             history.drop();
             return rc;
           
-        case ENTER:
+        case NEXTLINE:
             if( buffer.length() > 0 ){
 		len = buffer.decode( result );
 		NnString *r=history.top();

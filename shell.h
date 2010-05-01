@@ -34,7 +34,7 @@ public:
 
     virtual Status readline(NnString &line)=0;
     virtual History *getHistoryObject(){ return NULL; }
-    int readcommand(NnString &cmd);
+    Status readcommand(NnString &cmd);
 
     int interpret( const NnString &statement );
     int mainloop();
@@ -68,7 +68,7 @@ class ScriptShell : public NyadosShell {
     NnVector  argv_;
 public:
     Status readline(NnString &line)
-    { return fr->readLine(line) < 0 ? TERMINATE : CONTINUE ; }
+    { return fr->readLine(line) < 0 ? TERMINATE : NEXTLINE ; }
     ScriptShell() : fr(0){}
     ScriptShell( StreamReader *reader ) : fr(reader){}
     ScriptShell( const char *fname ) : fr(new FileReader(fname)){}

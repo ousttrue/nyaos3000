@@ -317,7 +317,7 @@ Status OneLineShell::readline( NnString &buffer )
 	return TERMINATE;
     buffer = cmdline;
     cmdline.erase();
-    return CONTINUE;
+    return NEXTLINE;
 }
 
 int OneLineShell::operator !() const
@@ -468,7 +468,7 @@ static int countQuote( const char *p )
  * 切り出した内容は基本的にヒストリ置換されるだけで、他の加工はない。
  *    buffer - 取り出したコマンドを入れるバッファ。
  */
-int NyadosShell::readcommand( NnString &buffer )
+Status NyadosShell::readcommand( NnString &buffer )
 {
     if( current.empty() ){
 	NnString temp;
@@ -477,10 +477,8 @@ int NyadosShell::readcommand( NnString &buffer )
 	/* 最初の１行取得 */
 	for(;;){
 	    rc=readline( current );
-	    if( rc == TERMINATE )
-		return -1;
-            if( rc == CANCEL )
-                return 0;
+	    if( rc == TERMINATE || rc == CANCEL )
+		return rc;
 	    current.trim();
 	    if( current.length() > 0 && ! current.startsWith("#") )
 		break;
@@ -490,9 +488,9 @@ int NyadosShell::readcommand( NnString &buffer )
 	for(;;){
 	    if( rc == CANCEL ){
                 current.erase();
-		return 0;
+		return CANCEL;
 	    }else if( rc == TERMINATE ){
-                return -1;
+                return TERMINATE;
             }
 	    if( properties.get("history") != NULL ){
 		History *hisObj =this->getHistoryObject();
@@ -510,7 +508,7 @@ int NyadosShell::readcommand( NnString &buffer )
 			fputs( result.chars() , stderr );
 			if( isReplaceHistory )
 			    hisObj->drop(); // 入力自体を削除する.
-			return 0;
+			return NEXTLINE;
 		    }
 		    if( isReplaceHistory ){
 			hisObj->set(-1,result);
@@ -581,7 +579,7 @@ int NyadosShell::readcommand( NnString &buffer )
 	    buffer << (char)(prevchar = current.at(i++));
 	}
     }
-    return 0;
+    return NEXTLINE;
 }
 
 /* which のラッパー：パスに空白文字が含まれている場合、引用符で囲む。
@@ -778,7 +776,7 @@ int NyadosShell::mainloop()
 	NnString cmdline;
 	do{
 	    cmdline.erase();
-	}while( readcommand(cmdline) >= 0 && interpret(cmdline) != -1 );
+	}while( readcommand(cmdline) != TERMINATE && interpret(cmdline) != -1 );
     --nesting;
     return 0;
 }

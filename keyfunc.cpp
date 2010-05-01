@@ -18,7 +18,7 @@ Status GetLine::goto_head(int)
     putbs( pos-offset );
     pos = offset = 0;
     repaint_after();
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 void GetLine::backward_( int n )
@@ -37,7 +37,7 @@ Status GetLine::backward(int)
 {
     if( pos > 0 )
 	backward_( buffer.preSizeAt(pos) );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 Status GetLine::backward_word(int)
@@ -64,7 +64,7 @@ Status GetLine::backward_word(int)
   exit:
     if( pos > top )
 	backward_( pos - top );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 
@@ -111,7 +111,7 @@ Status GetLine::goto_tail(int)
         puts_between( pos , buffer.length() );
     }
     pos = buffer.length() ;
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* n 桁分カーソルを進める */
@@ -137,7 +137,7 @@ Status GetLine::foreward(int)
 {
     if( pos < buffer.length() )
 	foreward_( buffer.sizeAt(pos) );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 Status GetLine::foreward_word(int)
@@ -148,7 +148,7 @@ Status GetLine::foreward_word(int)
     while( pos+i < buffer.length() && isspace(buffer[pos+i]) )
 	++i;
     foreward_( i );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 
@@ -156,12 +156,12 @@ Status GetLine::foreward_word(int)
 Status GetLine::backspace(int key)
 {
     if( pos <= 0 )
-        return CONTINUE;
+        return NEXTCHAR;
     
     backward(key);
     erase(key);
 
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 void GetLine::savekillring( int from , int to )
@@ -178,7 +178,7 @@ Status GetLine::erase_line(int)
     savekillring( pos , buffer.length() );
     putbs( putspc( tail() - pos ) );
     buffer.erase_line( pos );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* コマンド：CTRL-L：画面をクリアする */
@@ -190,20 +190,20 @@ Status GetLine::cls(int)
     puts_between( offset , pos );
     repaint_after();
 
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* コマンド：CTRL-M：入力 */
 Status GetLine::enter(int)
 {
-    return ENTER;
+    return NEXTLINE;
 }
 
 /* コマンド：CTRL_N：ヒストリ参照（未来方向）*/
 Status GetLine::next(int)
 {
     if( history.size() <= 0 )
-        return CONTINUE;
+        return NEXTCHAR;
 
     if( history_pointor == history.size()-1 )
 	buffer.decode( *history[ history_pointor ] );
@@ -213,7 +213,7 @@ Status GetLine::next(int)
 
     replace_all_repaint( history[ history_pointor ]->chars() );
 
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 
@@ -221,7 +221,7 @@ Status GetLine::next(int)
 Status GetLine::previous(int)
 {
     if( history.size() <= 0 )
-        return CONTINUE;
+        return NEXTCHAR;
 
     if( history_pointor == history.size()-1 )
 	buffer.decode( *history[ history_pointor ] );
@@ -231,7 +231,7 @@ Status GetLine::previous(int)
 
     replace_all_repaint( history[ history_pointor ]->chars() );
 
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* コマンド：Vz ライクなヒストリ参照（未来）*/
@@ -250,7 +250,7 @@ Status GetLine::vz_previous(int key)
 
     int m=history.size()-1;
     if( m < 0 )
-        return CONTINUE;
+        return NEXTCHAR;
 
     int n=0;
     int sealsize=0;
@@ -262,7 +262,7 @@ Status GetLine::vz_previous(int key)
         if( ( which_command(key) == &GetLine::vz_previous
             ? seekLineForward(m,temp.chars() )
             : seekLineBackward(m,temp.chars() ) ) < 0 )
-            return CONTINUE;
+            return NEXTCHAR;
         for(;;){
             sealsize = printSeal( history[m]->chars()+buffer.length() , sealsize );
             key=getkey();
@@ -283,7 +283,7 @@ Status GetLine::vz_previous(int key)
             }
         }
 	eraseSeal( sealsize );
-        return CONTINUE;
+        return NEXTCHAR;
     }
     
     /*** 単語単位の検索 ***/
@@ -292,7 +292,7 @@ Status GetLine::vz_previous(int key)
         : seekWordBackward(m,n,curword,found) ) < 0 )
     {
 	/* 一つもマッチしない場合は何もせずに終了する */
-        return CONTINUE;
+        return NEXTCHAR;
     }
 
     for(;;){
@@ -315,7 +315,7 @@ Status GetLine::vz_previous(int key)
         }
     }
     eraseSeal( sealsize );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* コマンド：CTRL-T：直前の文字を入れ替える。*/
@@ -325,7 +325,7 @@ Status GetLine::swap_char(int)
     int  i;
 
     if( pos == 0 )
-	return CONTINUE;
+	return NEXTCHAR;
 
     if( pos >= buffer.length() )
 	backward(0);
@@ -341,7 +341,7 @@ Status GetLine::swap_char(int)
     foreward(0);
     foreward(0);
 
-    return CONTINUE;
+    return NEXTCHAR;
 }
 /* コマンド：CTRL-U：先頭からカーソル直前までを削除 */
 Status GetLine::erase_before(int)
@@ -352,7 +352,7 @@ Status GetLine::erase_before(int)
     int bs=pos;
     offset = pos = 0;
     repaint_after( bs );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* コマンド：CTRL-V：コントロールキーを挿入する */
@@ -365,7 +365,7 @@ Status GetLine::insert_ctrl(int)
 Status GetLine::erase_word(int)
 {
     if( pos <= 0 )
-        return CONTINUE;
+        return NEXTCHAR;
     
     int at=0,bs;
 
@@ -387,7 +387,7 @@ Status GetLine::erase_word(int)
     buffer.delroom( at , pos - at );
     pos -= bs;
     repaint_after( bs );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* コマンド：CTRL-Y：ペースト */
@@ -398,7 +398,7 @@ Status GetLine::yank(int)
     Console::readClipBoard( killbuffer );
     insertHere( killbuffer.chars() );
     
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 
@@ -419,14 +419,14 @@ Status GetLine::erase_all(int)
     
     offset = pos = 0;
     buffer.erase_line( 0 );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 
 /* コマンド：入力無視 */
 Status GetLine::do_nothing(int)
 {
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* コマンド：表示可能文字を挿入する */
@@ -435,7 +435,7 @@ Status GetLine::insert(int key)
     int oldpos = pos;
     int size1=buffer.insert1(key,pos);
     if( size1 <= 0 ){ // memory allocation error.
-        return CONTINUE;
+        return NEXTCHAR;
     }
     pos += size1;
     int nxtpos = pos + buffer.sizeAt(pos);
@@ -450,14 +450,14 @@ Status GetLine::insert(int key)
         puts_between( oldpos , pos );
     }
     repaint_after();
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* コマンド：DEL：カーソル上の文字を削除 */
 Status GetLine::erase(int)
 {
     repaint_after( buffer.erase1(pos) );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 Status GetLine::ime_toggle(int)
@@ -473,5 +473,5 @@ Status GetLine::ime_toggle(int)
   keybd_event(VK_KANJI, 0 /* 0x29 */, KEYEVENTF_KEYUP, 0);  /* up Kanji */
   Sleep(dwYieldMSecForKey);  /* wait for a proof */
 #endif
-  return CONTINUE;
+  return NEXTCHAR;
 }

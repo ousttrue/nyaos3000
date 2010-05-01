@@ -368,7 +368,7 @@ Status GetLine::complete(int)
     int i,n,hasSpace=0;
 
     if( (n=read_complete_list(comp)) <= 0 )
-	return CONTINUE;
+	return NEXTCHAR;
     
     if( comp.word.findOf(" \t\r\n!") != -1 )
 	hasSpace = 1;
@@ -389,12 +389,12 @@ Status GetLine::complete(int)
     // (基本的にありえないが)、補完候補の方が、元文字列より短い場合は
     // 何もせず終了する。
     if( match.length() <= comp.size && ! hasSpace )
-	return CONTINUE;
+	return NEXTCHAR;
     
     // ワイルドカード補完したときに、候補の共通部が全くない場合、
     // 引用符だけになるのを防ぐ…
     if( match.length() == 0 )
-	return CONTINUE;
+	return NEXTCHAR;
     
     /* ショートカット展開 */
     if( n==1 && comp.path_of(0).iendsWith(".lnk") && properties.get("lnkexp") != NULL )
@@ -438,7 +438,7 @@ Status GetLine::complete(int)
 	}
     }
     replace_repaint_here( comp.size , match );
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 void GetLine::listing_( Completion &comp )
@@ -492,12 +492,12 @@ Status GetLine::listing(int)
     Completion comp;
 
     if( read_complete_list(comp) <= 0 )
-	return CONTINUE;
+	return NEXTCHAR;
   
     comp.list.sort();
     listing_( comp );
   
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 Status GetLine::complete_prev(int)
@@ -521,7 +521,7 @@ Status GetLine::complete_vzlike(int direct)
 {
     Completion comp;
     if( read_complete_list( comp ) <= 0 )
-	return CONTINUE;
+	return NEXTCHAR;
     
     int i=0,key=0,bs=0;
     if( comp.list.size() >= 2 ){
@@ -579,7 +579,7 @@ Status GetLine::complete_vzlike(int direct)
 		/* カーソル位置を戻す */
 		while( bs-- > 0 )
 		   putchr( buffer[pos++] );
-		return CONTINUE;
+		return NEXTCHAR;
 	    }else if(   which_command(key) == &GetLine::erase_or_listing
 		     || which_command(key) == &GetLine::listing 
 		     || which_command(key) == &GetLine::complete_or_listing ){
@@ -609,7 +609,7 @@ Status GetLine::complete_vzlike(int direct)
     if( which_command(key) != &GetLine::enter )
 	return interpret(key);
 
-    return CONTINUE;
+    return NEXTCHAR;
 }
 
 /* タブキーの処理。補完するか、リストを出す。

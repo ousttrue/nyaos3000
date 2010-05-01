@@ -10,7 +10,7 @@ Status BufferedShell::readline( NnString &line )
     if( count >= buffers.size() )
         return TERMINATE;
     line = *(NnString*)buffers.at(count++);
-    return CONTINUE;
+    return NEXTLINE;
 }
 
 extern NnHash properties;
@@ -36,8 +36,11 @@ static int end_with_unmatched_closing_brace( const NnString &s )
  *	prompt - プロンプト
  *	startKeyword - ブロック開始キーワード(ネスト用)
  *	endKeyword - ブロック終了キーワード
+ * return
+ *       0 - 実施
+ *      -1 - キャンセル
  */
-static void loadToBufferedShell( NyadosShell   &shell ,
+static int loadToBufferedShell( NyadosShell   &shell ,
 				 BufferedShell &bShell ,
 				 const char *prompt ,
 				 const char *startKeyword ,
@@ -45,9 +48,10 @@ static void loadToBufferedShell( NyadosShell   &shell ,
 {
     NnString cmdline;
     int nest = 1;
+    Status rc=TERMINATE;
 
     shell.nesting.append(new NnString(prompt));
-    while( shell.readcommand(cmdline) >= 0 ){
+    while( (rc=shell.readcommand(cmdline)) == NEXTLINE ){
         NnString arg1,left;
         cmdline.splitTo( arg1 , left );
 	if( strcmp(startKeyword,"{") == 0 ){
@@ -72,6 +76,7 @@ static void loadToBufferedShell( NyadosShell   &shell ,
         cmdline.erase();
     }
     delete shell.nesting.pop();
+    return rc==CANCEL ? -1 : 0;
 }
 
 extern NnHash functions;
@@ -105,8 +110,9 @@ int sub_brace_start( NyadosShell &shell ,
 	/* 引数部分があれば、関数内構文の一部とみなす */
 	bShell->append( (NnString*)argv.clone() );
     }
-    loadToBufferedShell( shell, *bShell , "brace>" , "{" , "}" );
-    functions.put( funcname , new NnExecutable_BufferedShell(bShell) );
+    if( loadToBufferedShell( shell, *bShell , "brace>" , "{" , "}" ) == 0 ){
+        functions.put( funcname , new NnExecutable_BufferedShell(bShell) );
+    }
     return 0;
 }
 
@@ -123,7 +129,8 @@ int cmd_foreach( NyadosShell &shell , const NnString &argv )
 
     /* バッファに foreach ～ end までの文字列をためる */
     BufferedShell bshell;
-    loadToBufferedShell( shell , bshell , "foreach>" , "foreach" , "end" );
+    if( loadToBufferedShell( shell , bshell , "foreach>" , "foreach" , "end" ) != 0 )
+        return 0;
 
     NnString *orgstr=(NnString*)properties.get( varname );
     NnString *savevar=(NnString*)( orgstr != NULL ? orgstr->clone() : NULL );

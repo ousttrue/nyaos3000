@@ -13,7 +13,7 @@
  * */
 Status GetLine::xscript(int)
 {
-    return CONTINUE;
+    return NEXTCHAR;
 }
 #else
 
@@ -500,7 +500,7 @@ Status GetLine::xscript(int)
 {
     XScript xscript;
     xscript.loop();
-    return CONTINUE;
+    return NEXTCHAR;
 }
 #endif
 /* vim:set sw=4 ts=8 et: */

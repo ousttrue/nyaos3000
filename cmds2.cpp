@@ -113,7 +113,7 @@ int cmd_else( NyadosShell &shell , const NnString & )
 
     for(;;){
         line.erase();
-        if( shell.readcommand(line) < 0 ){
+        if( shell.readcommand(line) != NEXTLINE ){
 	    delete shell.nesting.pop();
             return -1;
 	}
@@ -233,7 +233,7 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
             shell.nesting.append( new NnString("skip:then>") );
             for(;;){
                 line.erase();
-                if( shell.readcommand( line ) < 0 ){
+                if( shell.readcommand( line ) != NEXTLINE ){
                     delete shell.nesting.pop();
                     return -1;
                 }
