@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include "config.h"
+#include "const.h"
 #include "nnstring.h"
 #include "nnvector.h"
 #include "history.h"
@@ -12,13 +13,6 @@
 
 #undef PROMPT_SHIFT
 #undef max
-
-// コマンドの戻り値
-typedef enum {
-    CONTINUE ,	// 入力継続 … そのまま、編集を続ける。
-    ENTER ,	// 入力終結 … 編集を終了し、入力文字列をユーザーへ渡す。
-    CANCEL ,	// 入力破棄 … 編集を終了するが、入力文字列は破棄する。
-} Status ;
 
 class TwinBuffer {
     char    *strbuf;    // 入力文字列 ASCII/ShiftJISコード
@@ -210,7 +204,7 @@ public:
     GetLine(){ bindinit(); }
     virtual ~GetLine();
 
-    int operator() ( NnString &result );
+    Status operator() ( NnString &result );
     const char *operator() ( const char *defaultString=0 );
 
     static int makeCompletionListCore( const NnString &s , NnVector & );

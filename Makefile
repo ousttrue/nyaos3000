@@ -106,5 +106,7 @@ clean :
 cleanobj :
 	-cmd /c del *.obj
 	-cmd /c del *.o
+cleanorig :
+	-cmd /c del *.orig
 
 # vim:set noet ts=8 sw=8 nobk:

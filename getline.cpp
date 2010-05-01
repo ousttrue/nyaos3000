@@ -104,10 +104,10 @@ int GetLine::insertHere( const char *s )
  *	-1    - キャンセルされた
  *	-2    - その他のエラー
  */
-int GetLine::operator() ( NnString &result )
+Status GetLine::operator() ( NnString &result )
 {
     if( buffer.init() )
-        return -2;
+        return TERMINATE;
 
     pos = offset = 0;
     width = DEFAULT_WIDTH ;
@@ -133,7 +133,7 @@ int GetLine::operator() ( NnString &result )
     
     for(;;){
         int key=getkey();
-        int rc=CONTINUE;
+        Status rc=CONTINUE;
 #ifdef LUA_ENABLE
         NyaosLua L(NULL); /* stacked [nyaos] */
         if( L.ok() ){
@@ -200,12 +200,13 @@ int GetLine::operator() ( NnString &result )
         case CONTINUE:
             break;
 
+        case TERMINATE:
         case CANCEL:
             buffer.term();
             end();
             result.erase();
             history.drop();
-            return -1;
+            return rc;
           
         case ENTER:
             if( buffer.length() > 0 ){
@@ -221,7 +222,7 @@ int GetLine::operator() ( NnString &result )
             }
             end();
             buffer.term();
-            return len;
+            return rc;
         }
         lastKey = key;
     }

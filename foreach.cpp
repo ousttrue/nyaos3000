@@ -5,12 +5,12 @@
 #include "shell.h"
 #include "nndir.h"
 
-int BufferedShell::readline( NnString &line )
+Status BufferedShell::readline( NnString &line )
 {
     if( count >= buffers.size() )
-        return -1;
+        return TERMINATE;
     line = *(NnString*)buffers.at(count++);
-    return line.length();
+    return CONTINUE;
 }
 
 extern NnHash properties;

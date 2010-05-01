@@ -2,6 +2,7 @@
 #define SHELL_H
 
 #include <stdio.h>
+#include "const.h"
 #include "nnhash.h"
 #include "nnvector.h"
 #include "reader.h"
@@ -31,7 +32,7 @@ public:
     int exitStatus(){ return exitStatus_; }
     void setExitStatus(int n){ exitStatus_=n; }
 
-    virtual int readline(NnString &line)=0;
+    virtual Status readline(NnString &line)=0;
     virtual History *getHistoryObject(){ return NULL; }
     int readcommand(NnString &cmd);
 
@@ -66,7 +67,8 @@ class ScriptShell : public NyadosShell {
     NnHash labels;
     NnVector  argv_;
 public:
-    int readline(NnString &line){ return fr->readLine(line); }
+    Status readline(NnString &line)
+    { return fr->readLine(line) < 0 ? TERMINATE : CONTINUE ; }
     ScriptShell() : fr(0){}
     ScriptShell( StreamReader *reader ) : fr(reader){}
     ScriptShell( const char *fname ) : fr(new FileReader(fname)){}
@@ -90,7 +92,7 @@ class OneLineShell : public NyadosShell {
 public:
     OneLineShell( NyadosShell *p , NnString &s ) : NyadosShell(p) , cmdline(s) {}
     OneLineShell( const char *s ) : cmdline(s){}
-    int readline( NnString &buffer );
+    Status readline( NnString &buffer );
     int operator !() const;
     const char *className() const { return "OneLineShell"; }
 };
@@ -100,7 +102,7 @@ class BufferedShell : public NyadosShell {
     NnVector *params;
     int count;
 protected:
-    virtual int readline( NnString &line );
+    virtual Status readline( NnString &line );
 public:
     BufferedShell() : params(0), count(0){}
     ~BufferedShell()

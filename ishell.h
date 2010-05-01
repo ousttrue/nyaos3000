@@ -7,7 +7,7 @@
 class InteractiveShell : public NyadosShell {
     DosShell dosShell;
 protected:
-    int readline(NnString &line);
+    Status readline(NnString &line);
 public:
     virtual History *getHistoryObject(){ return &dosShell.history; }
     InteractiveShell(){}

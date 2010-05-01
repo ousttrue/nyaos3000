@@ -20,7 +20,7 @@ int History::set(int at,NnString &str)
     return 0;
 }
 
-int InteractiveShell::readline( NnString &line )
+Status InteractiveShell::readline( NnString &line )
 {
     NnObject *val;
 
@@ -32,8 +32,5 @@ int InteractiveShell::readline( NnString &line )
         NnString prompt( getEnv("PROMPT") );
         dosShell.setPrompt( prompt );
     }
-    // if( (val=properties.get("title1")) != NULL ){
-    //	  Console::setTitle( ((NnString*)val)->chars() );
-    // }
     return dosShell(line);
 }

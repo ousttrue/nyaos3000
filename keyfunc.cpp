@@ -72,7 +72,7 @@ Status GetLine::backward_word(int)
 Status GetLine::abort(int)
 {
     buffer.erase_line(0);
-    return ENTER;
+    return CANCEL;
 }
 
 /* コマンド：CTRL-D：カーソル上の文字を削除するか、補完対象一覧を出す */
@@ -405,7 +405,7 @@ Status GetLine::yank(int)
 /* コマンド：CTRL-Z：NYA*OS終了 */
 Status GetLine::bye(int)
 {
-    return CANCEL;
+    return TERMINATE;
 }
 
 /* コマンド：Ctrl-[：全文字を削除する */

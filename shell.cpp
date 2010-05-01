@@ -311,13 +311,13 @@ static void dollar( const char *&p , NnVector &param ,
     }
 }
 
-int OneLineShell::readline( NnString &buffer )
+Status OneLineShell::readline( NnString &buffer )
 {
     if( cmdline.empty() )
-	return -1;
+	return TERMINATE;
     buffer = cmdline;
     cmdline.erase();
-    return buffer.length();
+    return CONTINUE;
 }
 
 int OneLineShell::operator !() const
@@ -472,13 +472,15 @@ int NyadosShell::readcommand( NnString &buffer )
 {
     if( current.empty() ){
 	NnString temp;
-	int rc;
+	Status rc;
 
 	/* ç≈èâÇÃÇPçséÊìæ */
 	for(;;){
 	    rc=readline( current );
-	    if( rc < 0 )
-		return rc;
+	    if( rc == TERMINATE )
+		return -1;
+            if( rc == CANCEL )
+                return 0;
 	    current.trim();
 	    if( current.length() > 0 && ! current.startsWith("#") )
 		break;
@@ -486,9 +488,12 @@ int NyadosShell::readcommand( NnString &buffer )
 	    current.erase();
 	}
 	for(;;){
-	    if( rc < 0 ){
-		return rc;
-	    }
+	    if( rc == CANCEL ){
+                current.erase();
+		return 0;
+	    }else if( rc == TERMINATE ){
+                return -1;
+            }
 	    if( properties.get("history") != NULL ){
 		History *hisObj =this->getHistoryObject();
 		int isReplaceHistory=1;
