@@ -402,11 +402,32 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
             if( lua_istable(lua,-1) ){
                 lua_getfield(lua,-1,arg0low.chars());
                 if( lua_isfunction(lua,-1) ){
-                    lua_pushstring(lua,argv.chars());
-                    if( lua_pcall(lua,1,0,0) != 0 ){
+                    NnString argv2;
+                    NnVector argv3;
+                    int back_out , back_err;
+
+                    if( explode4internal( argv , argv2 ) != 0 )
+                        goto exit;
+
+                    argv2.splitTo(argv3);
+                    if( lua_checkstack( lua , argv3.size()) == 0 ){
+                        conErr << "Too many parameter for lua stack.\n";
+                        goto exit;
+                    }
+
+                    for(int i=0 ; i<argv3.size() ; i++){
+                        ((NnString*)argv3.at(i))->dequote();
+                        lua_pushstring( lua , argv3.at(i)->repr() );
+                    }
+
+                    redirect_emu_to_real( back_out , back_err );
+
+                    if( lua_pcall(lua,argv3.size(),0,0) != 0 ){
                         const char *msg = lua_tostring( lua , -1 );
                         conErr << msg << '\n';
                     }
+                    redirect_rewind( back_out , back_err );
+
                     goto exit;
                 }
             }

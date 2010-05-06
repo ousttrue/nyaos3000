@@ -450,19 +450,8 @@ int NyaosLua::init()
 }
 #endif /* defined(LUA_ENABLED) */
 
-int cmd_lua_e( NyadosShell &shell , const NnString &argv )
+void redirect_emu_to_real(int &back_out,int &back_err)
 {
-#ifdef LUA_ENABLE
-    NnString arg1,left;
-    argv.splitTo( arg1 , left );
-    NyadosShell::dequote( arg1 );
-
-    if( arg1.empty() ){
-        conErr << "lua_e \"lua-code\"\n" ;
-        return 0;
-    }
-    NyaosLua nua;
-
     /* 標準出力のリダイレクト・パイプ出力に対応 */
     int cur_out=+1;
     StreamWriter *sw=dynamic_cast<StreamWriter*>( conOut_  );
@@ -477,7 +466,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         }
     }
     fflush(stdout);
-    int back_out=-1;
+    back_out=-1;
     if( cur_out != 1 ){
         back_out = ::dup(1);
         ::dup2( cur_out , 1 );
@@ -496,12 +485,44 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         }
     }
     fflush(stderr);
-    int back_err=-1;
+    back_err=-1;
     if( cur_err != 2 ){
         back_err = ::dup(2);
         ::dup2( cur_err , 2 );
     }
+}
 
+void redirect_rewind(int back_out,int back_err)
+{
+    /* 標準エラー出力を元に戻す */
+    if( back_err >= 0 ){
+        ::dup2( back_err , 2 );
+        ::close( back_err );
+    }
+    /* 標準出力を元に戻す */
+    if( back_out >= 0 ){
+        ::dup2( back_out , 1 );
+        ::close( back_out );
+    }
+}
+
+
+int cmd_lua_e( NyadosShell &shell , const NnString &argv )
+{
+#ifdef LUA_ENABLE
+    int back_out , back_err;
+
+    NnString arg1,left;
+    argv.splitTo( arg1 , left );
+    NyadosShell::dequote( arg1 );
+
+    if( arg1.empty() ){
+        conErr << "lua_e \"lua-code\"\n" ;
+        return 0;
+    }
+    NyaosLua nua;
+
+    redirect_emu_to_real( back_out , back_err );
 #ifdef OS2EMX
     signal( SIGINT , handle_ctrl_c );
 #else
@@ -524,17 +545,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     SetConsoleCtrlHandler( handle_ctrl_c , FALSE );
     Console::disable_ctrl_c();
 #endif
-
-    /* 標準エラー出力を元に戻す */
-    if( back_err >= 0 ){
-        ::dup2( back_err , 2 );
-        ::close( back_err );
-    }
-    /* 標準出力を元に戻す */
-    if( back_out >= 0 ){
-        ::dup2( back_out , 1 );
-        ::close( back_out );
-    }
+    redirect_rewind( back_out , back_err );
 #else
     conErr << "require: built-in lua disabled.\n";
 #endif /* defined(LUA_ENABLED) */

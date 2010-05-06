@@ -1123,13 +1123,12 @@ alias/option/suffix の定義、nyaos起動時のパラメータを格納している
 -----------------------------------------
 
 lua_e "
-   nyaos.command['say'] = function(cmdline)
-       print(cmdline)
+   nyaos.command['say'] = function(...)
+       print( table.concat({...},' ') )
    end
 "
 
 このように定義すると、say は echo のように動作します。
-ただし、リダイレクトは動作しません。
 
 
 コマンドラインフィルター
@@ -1385,7 +1384,12 @@ dir/w がエラーになります
 変更履歴
 ========
 
-2.94 (2010/04/29)
+2.95_0 (2010/05/06)
+    - nyaos.command で出力リダイレクト・パイプラインが効くようにした。
+    - 関数定義・foreach・「"」「^」による行継続を Ctrl-C で中断できるようにした。
+    - foo というファイルがあると、foo.exe が実行できない問題を修正。
+
+2.94_0 (2010/04/29)
     - nyaos.default_complete の設置
     - nyaos.complete の戻り値を任意の個数の文字列から、テーブルへ変更した。
     - nyaos.eval を設置した。
