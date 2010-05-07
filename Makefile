@@ -1,4 +1,7 @@
 LUAPATH=../lua-5.1.4
+CC=gcc
+RM=cmd /c del
+CCC=
 
 .SUFFIXES : .cpp .obj .exe .h .res .rc .cpp .h .o
 .cpp.obj :
@@ -6,31 +9,17 @@ LUAPATH=../lua-5.1.4
 .cpp.o :
 	$(CC) $(CFLAGS) -c $<
 
-CCC=
-
 all :
 ifeq ($(OS),Windows_NT)
-	$(MAKE) CC=gcc CFLAGS="-Wall -O3 $(CCC) -I/usr/local/include -I$(LUAPATH)/src -mno-cygwin -D_MSC_VER=1000 -DLUA_ENABLE" O=o \
-		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L$(LUAPATH)/src -L/usr/lib/mingw/" \
-		nyaos.exe
+	$(MAKE) CFLAGS="$(CCC) -O3 -D_MSC_VER=1000 -Wall -DLUA_ENABLE -I$(LUAPATH)/src" O=o \
+		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L$(LUAPATH)/src" nyaos.exe
 else
-	$(MAKE) CC=gcc NAME=NYAOS2 CFLAGS="-O2 -DOS2EMX $(CCC) -I$(LUAPATH)/src -DLUA_ENABLE" O=o \
+	$(MAKE) CFLAGS="$(CCC) -O2 -DOS2EMX" O=o \
 		LDFLAGS="-lstdcpp -lliblua -L$(LUAPATH)/src" nyaos.exe
 endif
 
 lua :
-ifeq ($(OS),Windows_NT)
-	$(MAKE) -C $(LUAPATH) CC="gcc -mno-cygwin" generic
-else
-	$(MAKE) -C $(LUAPATH) generic 
-	# ranlib liblua.a == ar -s liblua.a
-	cd $(LUAPATH)/src && emxomf -s -l -q -o lua.lib liblua.a 
-endif
-
-omflib :
-
-clean-lua :
-	$(MAKE) -C $(LUAPATH) clean
+	$(MAKE) -C $(LUAPATH) generic
 
 OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O) \
 	getline.$(O) getline2.$(O) keybound.$(O) dosshell.$(O) nnhash.$(O) \
@@ -42,12 +31,10 @@ OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O
 
 ifeq ($(OS),Windows_NT)
 nyaos.exe : $(OBJS) nyacusrc.$(O)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
-	objdump -x $@ | findstr "DLL Name"
 else
 nyaos.exe : $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 endif
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # ƒƒCƒ“ƒ‹[ƒ`ƒ“
 nyados.$(O)   : nyados.cpp   nnstring.h getline.h
@@ -100,13 +87,16 @@ nyacusrc.$(O)  : nyacus.rc luacat.ico
 	windres --output-format=coff -o $@ $<
 
 clean : 
-	-cmd /c del *.obj
-	-cmd /c del *.o
-	-cmd /c del *.exe
+	-$(RM) *.obj
+	-$(RM) *.o
+	-$(RM) *.exe
 cleanobj :
-	-cmd /c del *.obj
-	-cmd /c del *.o
+	-$(RM) *.obj
+	-$(RM) *.o
 cleanorig :
-	-cmd /c del *.orig
+	-$(RM) *.orig
+	-$(RM) *.rej
+cleanlua :
+	$(MAKE) -C $(LUAPATH) clean
 
 # vim:set noet ts=8 sw=8 nobk:
