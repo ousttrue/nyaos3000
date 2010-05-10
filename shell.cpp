@@ -450,6 +450,10 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 	    exitStatus_ = mySystem( cmdline2.chars() , wait );
             if( wait == 0 ){
                 conErr << '<' << exitStatus_ << ">\n";
+            }else{
+                NnString *errorlevel=new NnString();
+                errorlevel->addValueOf( exitStatus_ );
+                properties.put( "errorlevel" , errorlevel );
             }
 	}
     }
