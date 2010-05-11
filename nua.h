@@ -15,8 +15,8 @@ class NyaosLua : public NnLua {
         operator lua_State*() { return L; }
 };
 
-void redirect_emu_to_real(int &back_out,int &back_err);
-void redirect_rewind(int back_out,int back_err);
+void redirect_emu_to_real(int &back_in, int &back_out,int &back_err);
+void redirect_rewind(int back_in, int back_out,int back_err);
 
 #endif
 /* vim:set ft=cpp textmode: */

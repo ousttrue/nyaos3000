@@ -404,7 +404,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
                 if( lua_isfunction(lua,-1) ){
                     NnString argv2;
                     NnVector argv3;
-                    int back_out , back_err;
+                    int back_in , back_out , back_err;
 
                     if( explode4internal( argv , argv2 ) != 0 )
                         goto exit;
@@ -420,13 +420,13 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
                         lua_pushstring( lua , argv3.at(i)->repr() );
                     }
 
-                    redirect_emu_to_real( back_out , back_err );
+                    redirect_emu_to_real( back_in , back_out , back_err );
 
                     if( lua_pcall(lua,argv3.size(),0,0) != 0 ){
                         const char *msg = lua_tostring( lua , -1 );
                         conErr << msg << '\n';
                     }
-                    redirect_rewind( back_out , back_err );
+                    redirect_rewind( back_in , back_out , back_err );
 
                     goto exit;
                 }

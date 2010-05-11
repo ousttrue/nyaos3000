@@ -450,8 +450,21 @@ int NyaosLua::init()
 }
 #endif /* defined(LUA_ENABLED) */
 
-void redirect_emu_to_real(int &back_out,int &back_err)
+void redirect_emu_to_real(int &back_in, int &back_out,int &back_err)
 {
+    /* 標準入力のリダイレクトに対応 */
+    int cur_in=0;
+    StreamReader *sr=dynamic_cast<StreamReader*>( conIn_ );
+    if( sr != NULL ){
+        cur_in = sr->fd();
+    }else{
+        conErr << "CAN NOT GET HANDLE(STDIN)\n";
+    }
+    back_in = -1;
+    if( cur_in != 0 ){
+        back_in = ::dup(0);
+        ::dup2( cur_in , 0 );
+    }
     /* 標準出力のリダイレクト・パイプ出力に対応 */
     int cur_out=+1;
     StreamWriter *sw=dynamic_cast<StreamWriter*>( conOut_  );
@@ -492,7 +505,7 @@ void redirect_emu_to_real(int &back_out,int &back_err)
     }
 }
 
-void redirect_rewind(int back_out,int back_err)
+void redirect_rewind(int back_in, int back_out,int back_err)
 {
     /* 標準エラー出力を元に戻す */
     if( back_err >= 0 ){
@@ -504,13 +517,18 @@ void redirect_rewind(int back_out,int back_err)
         ::dup2( back_out , 1 );
         ::close( back_out );
     }
+    /* 標準入力を元に戻す */
+    if( back_in >= 0 ){
+        ::dup2( back_in , 0 );
+        ::close( back_in );
+    }
 }
 
 
 int cmd_lua_e( NyadosShell &shell , const NnString &argv )
 {
 #ifdef LUA_ENABLE
-    int back_out , back_err;
+    int back_in, back_out , back_err;
 
     NnString arg1,left;
     argv.splitTo( arg1 , left );
@@ -522,7 +540,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     }
     NyaosLua nua;
 
-    redirect_emu_to_real( back_out , back_err );
+    redirect_emu_to_real( back_in , back_out , back_err );
 #ifdef OS2EMX
     signal( SIGINT , handle_ctrl_c );
 #else
@@ -545,7 +563,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     SetConsoleCtrlHandler( handle_ctrl_c , FALSE );
     Console::disable_ctrl_c();
 #endif
-    redirect_rewind( back_out , back_err );
+    redirect_rewind( back_in , back_out , back_err );
 #else
     conErr << "require: built-in lua disabled.\n";
 #endif /* defined(LUA_ENABLED) */

@@ -223,6 +223,21 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	int prevchar1=(*sp & 255);
 	if( (len=isFolder(sp,quote,isSpace(prevchar))) != 0 ){
 	    doFolder( sp , len , dst , quote );
+        }else if( *sp == '<' && !quote ){
+            ++sp;
+            NnString fn;
+            NyadosShell::readNextWord(sp,fn);
+            if( fn.empty() ){
+                conErr << "syntax error near unexpected token `newline'\n";
+                return -1;
+            }
+            FileReader *fr=new FileReader(fn.chars());
+            if( fr != NULL && !fr->eof() ){
+                conIn_ = fr;
+            }else{
+                conErr << "can't redirect stdin.\n";
+                return -1;
+            }
         }else if( *sp == '>' && !quote ){
 	    ++sp;
 	    FileWriter *fw=readWriteRedirect( sp );
