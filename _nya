@@ -28,7 +28,7 @@ option +history
 option +backquote
 option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
 
-foreach i (dir mkdir rmdir copy move rename ren type md rd start del echo)
+foreach i (dir mkdir rmdir copy move rename ren type md rd start del)
     alias $i $COMSPEC /c $i
 end
 alias dir\w %COMSPEC% /c dir /w
@@ -55,26 +55,28 @@ lua_e "
         print('Good bye !!')
     end
 
---    -- キーフックサンプル
---    function nyaos.keyhook(t)
---        if t.key == nyaos.key.F1 and t.text == '' then
---            return os.getenv('EDITOR') or 'notepad',true
---        end
---        return nil
---    end
+    -- キーフックサンプル --
+    -- (「nyaos.keyhook = sample_keyhook」で利用可能)
+    function sample_keyhook(t)
+        if t.key == nyaos.key.F1 and t.text == '' then
+            return os.getenv('EDITOR') or 'notepad',true
+        end
+        return nil
+    end
 
---    -- コマンドラインフィルター:「%(Lua式)」を処理)
---    function nyaos.filter(cmdline)
---        return cmdline:gsub('%%(%b())',function(m)
---            local status,result=pcall( loadstring('return '..m) )
---            if status then
---                return result
---            else
---                print('Ignore invalid Lua expression: '..m)
---                return false;
---            end
---        end)
---    end
+    -- コマンドラインフィルターサンプル:「$lua(…)」(括弧内はLua式) --
+    -- (「nyaos.filter = sample_filter」で利用可能になる)
+    function sample_filter(cmdline)
+        return cmdline:gsub('$lua(%b())',function(m)
+            local status,result=pcall( loadstring('return '..m) )
+            if status then
+                return result
+            else
+                print('Ignore invalid Lua expression: '..m)
+                return false;
+            end
+        end)
+    end
 
     --- which コマンド ---
     function nyaos.command.which(cmd)

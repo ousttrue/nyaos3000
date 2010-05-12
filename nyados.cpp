@@ -264,6 +264,9 @@ int main( int argc, char **argv )
 "\x1B[2J" << 
 #endif
 	"Nihongo Yet Another OSes Shell 3000 v."VER" (C) 2001-10 by NYAOS.ORG\n";
+    if( properties.get("debug") != NULL ){
+        conOut << "This version is built on " __DATE__ " " __TIME__ "\n";
+    }
 
     NnDir::set_default_special_folder();
 
