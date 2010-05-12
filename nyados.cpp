@@ -179,25 +179,6 @@ static int opt_f( int argc , char **argv , int &i )
 	scrShell.mainloop();
     return 1;
 }
-/* -a デフォルトエイリアスを有効にする
- *	argc , argv : main の引数
- *	i : 現在読み取り中の argv の添字
- * return
- *	0 : 継続 
- *	not 0 : NYA*S を終了させる(mainの戻り値+1を返す)
- */
-static int opt_a( int , char ** , int & )
-{
-    extern NnHash aliases;
-
-    aliases.put("ls"    , new NnString("list") );
-    aliases.put("mv"    , new NnString("move /-Y $@") );
-    aliases.put("cp"    , new NnString("copy /-Y /B /V $@") );
-    aliases.put("rmdir" , new NnString("rmdir $@") );
-    aliases.put("rm"    , new NnString("del $@") );
-
-    return 0;
-}
 
 #ifdef NYACUS
 /* -t コンソールの直接のコントロールを抑制し、
@@ -252,7 +233,6 @@ int main( int argc, char **argv )
             case 'r': rv=opt_r(argc,argv,i); break;
             case 'f': rv=opt_f(argc,argv,i); break;
             case 'e': rv=opt_e(argc,argv,i); break;
-            case 'a': rv=opt_a(argc,argv,i); break;
             case 'F':
             case 'E': rv=opt_EF(argc,argv,i); break;
 #ifdef NYACUS
