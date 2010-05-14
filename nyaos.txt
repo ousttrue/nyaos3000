@@ -1085,13 +1085,12 @@ Lua 拡張
     - nyaos.argv
 
 alias/option/suffix の定義、nyaos起動時のパラメータを格納している
-オブジェクトです。追加・変更・削除が可能ですが、pair/ipair だけは
-使えないので、全要素走査は、関数呼び出し演算子で代用します。
+オブジェクトです。追加・変更・削除が可能です。
 
     lua_e "
         nyaos.alias['cp'] = 'cmd /c copy'
         print('cp='..nyaos.alias['cp'])
-        for key,val in nyaos.alias() do
+        for key,val in pairs(nyaos.alias) do
             print(key..'='..val)
         end
     "
