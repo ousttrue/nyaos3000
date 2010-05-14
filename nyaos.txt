@@ -546,7 +546,7 @@ mineditwidth
 nullcomplete
     1文字も入力していない状態での補完を許可します。
 nyatype
-    起動時に自動的に設定します。NYACUS , NYAOS2 のいずれかが設定されます。
+    "NYAOS3K" が設定されます。
 history
     設定すると、「!」によるヒストリをサポートします。
 histfilesize

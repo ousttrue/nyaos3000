@@ -22,11 +22,12 @@ suffix js  cscript
 suffix cmd %COMSPEC% /c
 suffix bat %COMSPEC% /c
 
-option uncompletechar ,;=
-option +tilde
-option +history
 option +backquote
+option +history
+option +nullcomplete
+option +tilde
 option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
+option uncompletechar ,;=
 
 foreach i (dir mkdir rmdir copy move rename ren type md rd start del)
     alias $i $COMSPEC /c $i
