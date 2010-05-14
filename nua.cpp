@@ -71,6 +71,25 @@ static int extended_pairs(lua_State *L)
     return 3;
 }
 
+static int extended_ipairs(lua_State *L)
+{
+    if( lua_getmetatable(L,-1) ){
+        lua_getfield(L,-1,"__ipairs");
+        if( lua_isfunction(L,-1) ){
+            /* stack: TABLE,METATABLE,FUNCTION */
+            lua_pushvalue(L,-3);
+            lua_call(L,1,3);
+            return 3;
+        }else{
+            lua_pop(L,2); /* drop METATABLE,!FUNCTION */
+        }
+    }
+    lua_getglobal(L,"__rawipair__");
+    lua_pushvalue(L,-2);
+    lua_call(L,1,3);
+    return 3;
+}
+
 /* Lua を(必要であれば)初期化すると同時に、
  * NYAOS テーブル上のオブジェクトをスタックに積む
  *    field - nyaos 上のフィールド名。NULL の時は nyaos 自体を積む
@@ -447,6 +466,8 @@ int NyaosLua::init()
         lua_setfield(L,-2,"__len");
         lua_pushcfunction(L,nua_history_iter_factory);
         lua_setfield(L,-2,"__pairs");
+        lua_pushcfunction(L,nua_history_iter_factory);
+        lua_setfield(L,-2,"__ipairs");
         lua_pushcfunction(L,nua_history_set);
         lua_setfield(L,-2,"__newindex");
         lua_setmetatable(L,-2);
@@ -469,6 +490,12 @@ int NyaosLua::init()
         /* extended pairs function */
         lua_pushcfunction(L,extended_pairs);
         lua_setglobal(L,"pairs");
+
+        /* extended ipairs function */
+        lua_getglobal(L,"ipairs");
+        lua_setglobal(L,"__rawipair__");
+        lua_pushcfunction(L,extended_ipairs);
+        lua_setglobal(L,"ipairs");
 
         initialized = 1;
     }
