@@ -5,7 +5,7 @@
 #include "nndir.h"
 #include "shell.h"
 
-static NnVector  dirstack;
+NnVector dirstack;
 static NnString  prevdir , currdir ;
 
 /* スタックの内容を ~n に反映する */

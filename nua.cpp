@@ -309,6 +309,83 @@ int nua_history_iter_factory(lua_State *lua)
     return 3;
 }
 
+int nua_vector_len(lua_State *lua)
+{
+    NnVector **vec=(NnVector**)luaL_checkudata(lua,-1,"nyaos_nnvector");
+    lua_pushinteger( lua , (*vec)->size() );
+    return 1;
+}
+
+int nua_vector_add(lua_State *lua)
+{
+    NnVector **vec=(NnVector**)luaL_checkudata(lua,-2,"nyaos_nnvector");
+    const char *str=luaL_checkstring(lua,-1);
+    (*vec)->append( new NnString(str) );
+    return 0;
+}
+
+int nua_vector_pop(lua_State *lua)
+{
+    NnVector **vec=(NnVector**)luaL_checkudata(lua,-1,"nyaos_nnvector");
+    NnObject *object=(*vec)->pop();
+    lua_pushstring( lua , object->repr() );
+    delete object;
+    return 1;
+}
+
+int nua_vector_shift(lua_State *lua)
+{
+    NnVector **vec=(NnVector**)luaL_checkudata(lua,-1,"nyaos_nnvector");
+    NnObject *object=(*vec)->shift();
+    lua_pushstring( lua , object->repr() );
+    delete object;
+    return 1;
+}
+
+int nua_vector_get(lua_State *lua)
+{
+    NnVector **vec=(NnVector**)luaL_checkudata(lua,-2,"nyaos_nnvector");
+    if( lua_isnumber(lua,-1) ){
+        int n=luaL_checkint(lua,-1);
+        lua_pushstring( lua , (*vec)->at(n)->repr() );
+        return 1;
+    }else{
+        const char *method=luaL_checkstring(lua,-1);
+        if( strcmp(method,"add")==0 ){
+            lua_pushcfunction( lua , nua_vector_add );
+        }else if( strcmp(method,"len")==0 ){
+            lua_pushcfunction( lua , nua_vector_len );
+        }else if( strcmp(method,"pop")==0 ){
+            lua_pushcfunction( lua , nua_vector_pop );
+        }else if( strcmp(method,"shift")==0 ){
+            lua_pushcfunction( lua , nua_vector_shift );
+        }else{
+            lua_pushnil(lua);
+        }
+        return 1;
+    }
+}
+
+int nua_vector_iter(lua_State *lua)
+{
+    NnVector **vec=(NnVector**)luaL_checkudata(lua,-2,"nyaos_nnvector");
+    int n=luaL_checkint(lua,-1);
+    if( n >= (*vec)->size() )
+        return 0;
+    lua_pushinteger( lua , n+1 );
+    lua_pushstring( lua , (*vec)->at(n)->repr() );
+    return 2;
+}
+
+int nua_vector_iter_factory(lua_State *lua)
+{
+    NnVector **vec=(NnVector**)luaL_checkudata(lua,-1,"nyaos_nnvector");
+    lua_pushcfunction(lua,nua_vector_iter);
+    lua_insert(lua,-2);
+    lua_pushinteger(lua,0);
+    return 3;
+}
+
 int nua_exec(lua_State *lua)
 {
     const char *statement = lua_tostring(lua,-1);
@@ -412,6 +489,7 @@ int NyaosLua::init()
     if( ! initialized ){
         extern NnHash aliases;
         extern NnHash properties;
+        extern NnVector dirstack;
 
         static struct {
             const char *name;
@@ -455,10 +533,10 @@ int NyaosLua::init()
             lua_setfield(L,-2,p->name);
             p++;
         }
+        /* history object */
         History **h=(History**)lua_newuserdata(L,sizeof(History*));
         *h = &GetLine::history;
 
-        /* history object */
         lua_newtable(L);
         lua_pushcfunction(L,nua_history_get);
         lua_setfield(L,-2,"__index");
@@ -472,7 +550,24 @@ int NyaosLua::init()
         lua_setfield(L,-2,"__newindex");
         lua_setmetatable(L,-2);
         lua_setfield(L,-2,"history");
+
+        /* dirstack */
+        NnVector **vec=(NnVector**)lua_newuserdata(L,sizeof(NnVector*));
+        *vec = &dirstack ;
+
+        luaL_newmetatable(L,"nyaos_nnvector");
+        lua_pushcfunction(L,nua_vector_get);
+        lua_setfield(L,-2,"__index");
+        lua_pushcfunction(L,nua_vector_len);
+        lua_setfield(L,-2,"__len");
+        lua_pushcfunction(L,nua_vector_iter_factory);
+        lua_setfield(L,-2,"__pairs");
+        lua_pushcfunction(L,nua_vector_iter_factory);
+        lua_setfield(L,-2,"__ipairs");
+        lua_setmetatable(L,-2);
+        lua_setfield(L,-2,"dirstack");
         
+        /* tool functions */
         lua_pushcfunction(L,nua_exec);
         lua_setfield(L,-2,"exec");
         lua_pushcfunction(L,nua_eval);
