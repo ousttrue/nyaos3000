@@ -250,12 +250,6 @@ int main( int argc, char **argv )
             nnargv.append( new NnString(argv[i]) );
         }
     }
-    /* nyaos.argv() == pairs( nyaos.argv ) と等価にする */
-    lua_newtable(L);
-    lua_getglobal(L,"pairs");
-    lua_setfield(L,-2,"__call");
-    lua_setmetatable(L,-2);
-    assert( L.ok() );
     /* argv を nyaos のフィールドに登録する */
     lua_setfield(L,-2,"argv");
 

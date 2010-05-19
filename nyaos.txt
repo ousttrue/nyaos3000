@@ -1076,16 +1076,16 @@ Lua 拡張
 内蔵コマンド lua_e の中では、通常の lua ライブラリの他に
 次のようなオブジェクト・関数を利用することができます。
 
-テーブル系オブジェクト
-----------------------
+テーブル系オブジェクト(連想配列系)
+----------------------------------
 
     - nyaos.alias
     - nyaos.option
     - nyaos.suffix
     - nyaos.argv
 
-alias/option/suffix の定義、nyaos起動時のパラメータを格納している
-オブジェクトです。追加・変更・削除が可能です。
+alias/option/suffix の定義、argv(nyaos起動時のパラメータ)を格納している
+テーブルオブジェクトです。追加・変更・削除が可能です。
 
     lua_e "
         nyaos.alias['cp'] = 'cmd /c copy'
@@ -1095,27 +1095,26 @@ alias/option/suffix の定義、nyaos起動時のパラメータを格納している
         end
     "
 
-ヒストリオブジェクト
---------------------
+テーブルオブジェクト(数値配列系)
+--------------------------------
 
-    lua_e "
-      local h=nyaos.history
-      for i=1,#h do
-        print(i,h[i])
-      end
-    "
+    - nyaos.history
+    - nyaos.dirstack
 
-テーブル系オブジェクトとほぼ同じですが、
+ヒストリーの内容、ディレクトリスタックを保持している配列的なテーブルです。
+他のテーブル系オブジェクトとほぼ同じですが、
     - 数値しか、引数にとれない。
     - 次のようなメソッドがある
 などの違いがあります。
 
-    ヒストリの走査
-        lua_e "for i,e in nyaos.history() do print(i,e) end"
-    ヒストリへの追加
-        nyaos.history.add('hogehoge')
-    ヒストリの削除
-        nyaos.history.drop()
+    全体の走査
+        for i,e in ipairs(nyaos.history) do print(i,e) end
+    末尾への追加
+        nyaos.history:add('hogehoge')
+    末尾の要素の削除
+        nyaos.history:drop()
+    要素数確認
+        #nyaos.history
 
 
 コマンドラインからの Lua 関数の直接コール

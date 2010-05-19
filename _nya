@@ -98,7 +98,7 @@ lua_e "
             [ cmdl .. '.bat' ] = true ,
             [ cmdl .. '.com' ] = true
         }
-        for key,val in nyaos.suffix() do
+        for key,val in pairs(nyaos.suffix) do
             variation[ cmdl .. '.' .. key:lower() ] = true
         end
 
@@ -112,7 +112,7 @@ lua_e "
     end
 
     -- 「-t」オプション付きで起動された時：
-    for i,e in nyaos.argv() do
+    for i,e in pairs(nyaos.argv) do
         if e == '-t' then
             -- ls にカラーオプションを付ける --
             nyaos.alias.ls = (nyaos.alias.ls or 'ls')..' --color'
