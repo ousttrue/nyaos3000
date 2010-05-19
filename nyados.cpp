@@ -108,36 +108,36 @@ static int opt_EF( int argc , char **argv , int &i )
 	conErr << "option needs commandline.\n";
 	return 2;
     }
-    NyaosLua lua;
+    NyaosLua L;
     int n=0;
 
     if( argv[i][1] == 'E' ){
-        if( luaL_loadstring( lua , argv[++i] ) )
+        if( luaL_loadstring( L , argv[++i] ) )
             goto errpt;
     }else{
-        if( luaL_loadfile( lua , argv[++i] ) )
+        if( luaL_loadfile( L , argv[++i] ) )
             goto errpt;
     }
 
-    lua_newtable(lua);
+    lua_newtable(L);
     while( ++i < argc ){
-        lua_pushinteger(lua,++n);
-        lua_pushstring(lua,argv[i]);
-        lua_settable(lua,-3);
+        lua_pushinteger(L,++n);
+        lua_pushstring(L,argv[i]);
+        lua_settable(L,-3);
     }
-    lua_setglobal(lua,"arg");
+    lua_setglobal(L,"arg");
 
-    if( lua_pcall( lua , 0 , 0 , 0 ) )
+    if( lua_pcall( L , 0 , 0 , 0 ) )
         goto errpt;
 
-    lua_settop(lua,0);
+    lua_settop(L,0);
 #else
     shell.err() << "require: built-in lua disabled.\n";
 #endif /* defined(LUA_ENABLE) */
     return 1;
 #ifdef LUA_ENABLE
   errpt:
-    const char *msg = lua_tostring( lua , -1 );
+    const char *msg = lua_tostring( L , -1 );
     fputs(msg,stderr);
     putc('\n',stderr);
     return 2;
@@ -219,13 +219,13 @@ int main( int argc, char **argv )
 
     NnVector nnargv;
 
-    NyaosLua lua(NULL);
-    assert( lua.ok() );
-    lua_newtable(lua);
+    NyaosLua L(NULL);
+    assert( L.ok() );
+    lua_newtable(L);
     for(int i=1;i<argc;i++){
-        lua_pushinteger(lua,i); /* [3] */
-        lua_pushstring(lua,argv[i]); /* [4] */
-        lua_settable(lua,-3);
+        lua_pushinteger(L,i); /* [3] */
+        lua_pushstring(L,argv[i]); /* [4] */
+        lua_settable(L,-3);
         if( argv[i][0] == '-' ){
             int rv;
             switch( argv[i][1] ){
@@ -251,13 +251,13 @@ int main( int argc, char **argv )
         }
     }
     /* nyaos.argv() == pairs( nyaos.argv ) ‚Æ“™‰¿‚É‚·‚é */
-    lua_newtable(lua);
-    lua_getglobal(lua,"pairs");
-    lua_setfield(lua,-2,"__call");
-    lua_setmetatable(lua,-2);
-    assert( lua.ok() );
+    lua_newtable(L);
+    lua_getglobal(L,"pairs");
+    lua_setfield(L,-2,"__call");
+    lua_setmetatable(L,-2);
+    assert( L.ok() );
     /* argv ‚ð nyaos ‚ÌƒtƒB[ƒ‹ƒh‚É“o˜^‚·‚é */
-    lua_setfield(lua,-2,"argv");
+    lua_setfield(L,-2,"argv");
 
     conOut << 
 #ifdef ESCAPE_SEQUENCE_OK

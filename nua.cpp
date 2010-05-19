@@ -114,28 +114,28 @@ NyaosLua::NyaosLua( const char *field ) : NnLua()
     ready = 1;
 }
 
-int nua_get(lua_State *lua)
+int nua_get(lua_State *L)
 {
-    NnHash **dict=(NnHash**)lua_touserdata(lua,-2);
-    const char *key=lua_tostring(lua,-1);
+    NnHash **dict=(NnHash**)lua_touserdata(L,-2);
+    const char *key=lua_tostring(L,-1);
 
     if( dict == NULL || key == NULL ){
         return 0;
     }
     NnObject *result=(*dict)->get( NnString(key) );
     if( result != NULL ){
-        lua_pushstring( lua , result->repr() );
+        lua_pushstring( L , result->repr() );
         return 1;
     }else{
         return 0;
     }
 }
 
-int nua_put(lua_State *lua)
+int nua_put(lua_State *L)
 {
-    NnHash **dict=(NnHash**)lua_touserdata(lua,-3);
-    const char *key=lua_tostring(lua,-2);
-    const char *val=lua_tostring(lua,-1);
+    NnHash **dict=(NnHash**)lua_touserdata(L,-3);
+    const char *key=lua_tostring(L,-2);
+    const char *val=lua_tostring(L,-1);
 
     if( dict && key ){
         if( val ){
@@ -147,20 +147,20 @@ int nua_put(lua_State *lua)
     return 0;
 }
 
-int nua_history_len(lua_State *lua)
+int nua_history_len(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(lua,-2);
+    History **history=(History**)lua_touserdata(L,-2);
     if( history == NULL ){
         return 0;
     }
-    lua_pushinteger(lua,(*history)->size());
+    lua_pushinteger(L,(*history)->size());
     return 1;
 }
 
-int nua_history_add(lua_State *lua)
+int nua_history_add(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(lua,-2);
-    const char *val=lua_tostring(lua,-1);
+    History **history=(History**)lua_touserdata(L,-2);
+    const char *val=lua_tostring(L,-1);
     if( history == NULL || val == NULL ){
         return 0;
     }
@@ -168,9 +168,9 @@ int nua_history_add(lua_State *lua)
     return 0;
 }
 
-int nua_history_drop(lua_State *lua)
+int nua_history_drop(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(lua,-1);
+    History **history=(History**)lua_touserdata(L,-1);
     if( history == NULL )
         return 0;
 
@@ -178,22 +178,22 @@ int nua_history_drop(lua_State *lua)
     return 0;
 }
 
-int nua_history_get(lua_State *lua)
+int nua_history_get(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(lua,-2);
-    int key=lua_tointeger(lua,-1);
+    History **history=(History**)lua_touserdata(L,-2);
+    int key=lua_tointeger(L,-1);
 
     if( history == NULL )
         return 0;
 
-    if( !lua_isnumber(lua,-1) ){
-        const char *key=lua_tostring(lua,-1);
+    if( !lua_isnumber(L,-1) ){
+        const char *key=lua_tostring(L,-1);
         if( key != NULL ){
             if( strcmp(key,"add") == 0 ){
-                lua_pushcfunction(lua,nua_history_add);
+                lua_pushcfunction(L,nua_history_add);
                 return 1;
             }else if( strcmp(key,"drop") == 0 ){
-                lua_pushcfunction(lua,nua_history_drop);
+                lua_pushcfunction(L,nua_history_drop);
                 return 1;
             }
         }
@@ -201,21 +201,21 @@ int nua_history_get(lua_State *lua)
     }
     NnObject *result=(**history)[key-1];
     if( result != NULL ){
-        lua_pushstring( lua , result->repr() );
+        lua_pushstring( L , result->repr() );
         return 1;
     }else{
         return 0;
     }
 }
 
-int nua_history_set(lua_State *lua)
+int nua_history_set(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(lua,-3);
-    int key=lua_tointeger(lua,-2);
-    const char *val=lua_tostring(lua,-1);
-    if( history == NULL || !lua_isnumber(lua,-2) ){
-        lua_pushstring(lua,"invalid key index");
-        lua_error(lua);
+    History **history=(History**)lua_touserdata(L,-3);
+    int key=lua_tointeger(L,-2);
+    const char *val=lua_tostring(L,-1);
+    if( history == NULL || !lua_isnumber(L,-2) ){
+        lua_pushstring(L,"invalid key index");
+        lua_error(L);
         return 0;
     }
     NnString rightvalue(val != NULL ? val : "" );
@@ -224,14 +224,14 @@ int nua_history_set(lua_State *lua)
     return 0;
 }
 
-int nua_iter(lua_State *lua)
+int nua_iter(lua_State *L)
 {
     TRACE(puts("Enter: nua_iter") );
-    NnHash::Each **ptr=(NnHash::Each**)lua_touserdata(lua,1);
+    NnHash::Each **ptr=(NnHash::Each**)lua_touserdata(L,1);
 
     if( ptr != NULL && ***ptr != NULL ){
-        lua_pushstring(lua,(**ptr)->key().chars());
-        lua_pushstring(lua,(**ptr)->value()->repr());
+        lua_pushstring(L,(**ptr)->key().chars());
+        lua_pushstring(L,(**ptr)->value()->repr());
         ++(**ptr);
         TRACE(puts("Leave: nua_iter: next") );
         return 2;
@@ -241,10 +241,10 @@ int nua_iter(lua_State *lua)
     }
 }
 
-int nua_iter_gc(lua_State *lua)
+int nua_iter_gc(lua_State *L)
 {
     TRACE(puts("Enter: nua_iter_gc") );
-    NnHash::Each **ptr=(NnHash::Each**)lua_touserdata(lua,1);
+    NnHash::Each **ptr=(NnHash::Each**)lua_touserdata(L,1);
     if( ptr != NULL && *ptr !=NULL ){
         delete *ptr;
         *ptr = NULL;
@@ -253,10 +253,10 @@ int nua_iter_gc(lua_State *lua)
     return 0;
 }
 
-int nua_iter_factory(lua_State *lua)
+int nua_iter_factory(lua_State *L)
 {
     TRACE(puts("Enter: nua_iter_factory"));
-    NnHash **dict=(NnHash**)lua_touserdata(lua,1);
+    NnHash **dict=(NnHash**)lua_touserdata(L,1);
     if( dict == NULL ){
         TRACE(puts("Leave: nua_iter_factory: dict==NULL"));
         return 0;
@@ -267,174 +267,174 @@ int nua_iter_factory(lua_State *lua)
         return 0;
     }
 
-    lua_pushcfunction(lua,nua_iter);
-    void *state = lua_newuserdata(lua,sizeof(NnHash::Each*));
+    lua_pushcfunction(L,nua_iter);
+    void *state = lua_newuserdata(L,sizeof(NnHash::Each*));
     memcpy(state,&ptr,sizeof(NnHash::Each*));
 
-    lua_newtable(lua);
-    lua_pushstring(lua,"__gc");
-    lua_pushcfunction(lua,nua_iter_gc);
-    lua_settable(lua,-3);
-    lua_setmetatable(lua,-2);
+    lua_newtable(L);
+    lua_pushstring(L,"__gc");
+    lua_pushcfunction(L,nua_iter_gc);
+    lua_settable(L,-3);
+    lua_setmetatable(L,-2);
 
     TRACE(puts("Leave: nua_iter_factory: success") );
     return 2;
 }
 
-int nua_history_iter(lua_State *lua)
+int nua_history_iter(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(lua,-2);
-    if( history == NULL || !lua_isnumber(lua,-1) ){
+    History **history=(History**)lua_touserdata(L,-2);
+    if( history == NULL || !lua_isnumber(L,-1) ){
         return 0;
     }
-    int n=lua_tointeger(lua,-1);
+    int n=lua_tointeger(L,-1);
     if( n >= (*history)->size() ){
         return 0;
     }
-    lua_pushinteger(lua,n+1);
-    lua_pushstring(lua,(**history)[n]->repr());
+    lua_pushinteger(L,n+1);
+    lua_pushstring(L,(**history)[n]->repr());
 
     return 2;
 }
 
-int nua_history_iter_factory(lua_State *lua)
+int nua_history_iter_factory(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(lua,-1);
+    History **history=(History**)lua_touserdata(L,-1);
     if( history == NULL ){
         return 0;
     }
-    lua_pushcfunction(lua,nua_history_iter);
-    lua_insert(lua,-2);
-    lua_pushinteger(lua,0);
+    lua_pushcfunction(L,nua_history_iter);
+    lua_insert(L,-2);
+    lua_pushinteger(L,0);
     return 3;
 }
 
-int nua_vector_len(lua_State *lua)
+int nua_vector_len(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(lua,-1,"nyaos_nnvector");
-    lua_pushinteger( lua , (*vec)->size() );
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,"nyaos_nnvector");
+    lua_pushinteger( L , (*vec)->size() );
     return 1;
 }
 
-int nua_vector_add(lua_State *lua)
+int nua_vector_add(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(lua,-2,"nyaos_nnvector");
-    const char *str=luaL_checkstring(lua,-1);
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,"nyaos_nnvector");
+    const char *str=luaL_checkstring(L,-1);
     (*vec)->append( new NnString(str) );
     return 0;
 }
 
-int nua_vector_pop(lua_State *lua)
+int nua_vector_pop(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(lua,-1,"nyaos_nnvector");
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,"nyaos_nnvector");
     NnObject *object=(*vec)->pop();
-    lua_pushstring( lua , object->repr() );
+    lua_pushstring( L , object->repr() );
     delete object;
     return 1;
 }
 
-int nua_vector_shift(lua_State *lua)
+int nua_vector_shift(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(lua,-1,"nyaos_nnvector");
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,"nyaos_nnvector");
     NnObject *object=(*vec)->shift();
-    lua_pushstring( lua , object->repr() );
+    lua_pushstring( L , object->repr() );
     delete object;
     return 1;
 }
 
-int nua_vector_get(lua_State *lua)
+int nua_vector_get(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(lua,-2,"nyaos_nnvector");
-    if( lua_isnumber(lua,-1) ){
-        int n=luaL_checkint(lua,-1);
-        lua_pushstring( lua , (*vec)->at(n)->repr() );
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,"nyaos_nnvector");
+    if( lua_isnumber(L,-1) ){
+        int n=luaL_checkint(L,-1);
+        lua_pushstring( L , (*vec)->at(n)->repr() );
         return 1;
     }else{
-        const char *method=luaL_checkstring(lua,-1);
+        const char *method=luaL_checkstring(L,-1);
         if( strcmp(method,"add")==0 ){
-            lua_pushcfunction( lua , nua_vector_add );
+            lua_pushcfunction( L , nua_vector_add );
         }else if( strcmp(method,"len")==0 ){
-            lua_pushcfunction( lua , nua_vector_len );
+            lua_pushcfunction( L , nua_vector_len );
         }else if( strcmp(method,"pop")==0 ){
-            lua_pushcfunction( lua , nua_vector_pop );
+            lua_pushcfunction( L , nua_vector_pop );
         }else if( strcmp(method,"shift")==0 ){
-            lua_pushcfunction( lua , nua_vector_shift );
+            lua_pushcfunction( L , nua_vector_shift );
         }else{
-            lua_pushnil(lua);
+            lua_pushnil(L);
         }
         return 1;
     }
 }
 
-int nua_vector_iter(lua_State *lua)
+int nua_vector_iter(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(lua,-2,"nyaos_nnvector");
-    int n=luaL_checkint(lua,-1);
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,"nyaos_nnvector");
+    int n=luaL_checkint(L,-1);
     if( n >= (*vec)->size() )
         return 0;
-    lua_pushinteger( lua , n+1 );
-    lua_pushstring( lua , (*vec)->at(n)->repr() );
+    lua_pushinteger( L , n+1 );
+    lua_pushstring( L , (*vec)->at(n)->repr() );
     return 2;
 }
 
-int nua_vector_iter_factory(lua_State *lua)
+int nua_vector_iter_factory(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(lua,-1,"nyaos_nnvector");
-    lua_pushcfunction(lua,nua_vector_iter);
-    lua_insert(lua,-2);
-    lua_pushinteger(lua,0);
+    (void)luaL_checkudata(L,-1,"nyaos_nnvector");
+    lua_pushcfunction(L,nua_vector_iter);
+    lua_insert(L,-2);
+    lua_pushinteger(L,0);
     return 3;
 }
 
-int nua_exec(lua_State *lua)
+int nua_exec(lua_State *L)
 {
-    const char *statement = lua_tostring(lua,-1);
+    const char *statement = lua_tostring(L,-1);
     if( statement == NULL )
-        return luaL_argerror(lua,1,"invalid nyaos-statement");
+        return luaL_argerror(L,1,"invalid nyaos-statement");
     
     OneLineShell shell( statement );
 
     shell.mainloop();
 
-    lua_pushinteger(lua,shell.exitStatus());
+    lua_pushinteger(L,shell.exitStatus());
     return 1;
 }
 
-int nua_eval(lua_State *lua)
+int nua_eval(lua_State *L)
 {
     extern int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink );
 
-    const char *statement = lua_tostring(lua,-1);
+    const char *statement = lua_tostring(L,-1);
     if( statement == NULL )
-        return luaL_argerror(lua,1,"invalid nyaos-statement");
+        return luaL_argerror(L,1,"invalid nyaos-statement");
 
     NnString buffer;
     if( eval_cmdline( statement , buffer , 0 , false ) == 0 ){
-        lua_pushstring( lua , buffer.chars() );
+        lua_pushstring( L , buffer.chars() );
         return 1;
     }else{
-        lua_pushnil( lua );
-        lua_pushstring( lua , strerror(errno) );
+        lua_pushnil( L );
+        lua_pushstring( L , strerror(errno) );
         return 2;
     }
 }
 
-int nua_access(lua_State *lua)
+int nua_access(lua_State *L)
 {
-    const char *fname = lua_tostring(lua,1);
-    int amode = lua_tointeger(lua,2);
+    const char *fname = lua_tostring(L,1);
+    int amode = lua_tointeger(L,2);
 
     if( fname == NULL )
-        return luaL_argerror(lua,2,"invalid filename");
+        return luaL_argerror(L,2,"invalid filename");
     
-    lua_pushboolean(lua, access(fname,amode)==0 );
+    lua_pushboolean(L, access(fname,amode)==0 );
     return 1;
 }
 
-int nua_getkey(lua_State *lua)
+int nua_getkey(lua_State *L)
 {
     char key=Console::getkey();
-    lua_pushlstring(lua,&key,1);
+    lua_pushlstring(L,&key,1);
     return 1;
 }
 
@@ -686,7 +686,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
         conErr << "lua_e \"lua-code\"\n" ;
         return 0;
     }
-    NyaosLua nua;
+    NyaosLua L;
 
     redirect_emu_to_real( back_in , back_out , back_err );
 #ifdef OS2EMX
@@ -697,13 +697,13 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
 #endif
 
     /* Lua インタプリタコール */
-    if( luaL_loadstring(nua,luaL_gsub( nua, arg1.chars(), "$T", "\n") ) ||
-        lua_pcall( nua , 0 , 0 , 0 ) )
+    if( luaL_loadstring(L,luaL_gsub( L, arg1.chars(), "$T", "\n") ) ||
+        lua_pcall( L , 0 , 0 , 0 ) )
     {
-        const char *msg = lua_tostring( nua , -1 );
+        const char *msg = lua_tostring( L , -1 );
         conErr << msg << '\n';
     }
-    lua_settop(nua,0);
+    lua_settop(L,0);
 
 #ifdef OS2EMX
     signal( SIGINT , SIG_IGN );

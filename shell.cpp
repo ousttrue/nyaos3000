@@ -397,11 +397,11 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
         }
     }else{
 #ifdef LUA_ENABLE
-        NyaosLua lua("command");
-        if( lua.ok() ){
-            if( lua_istable(lua,-1) ){
-                lua_getfield(lua,-1,arg0low.chars());
-                if( lua_isfunction(lua,-1) ){
+        NyaosLua L("command");
+        if( L.ok() ){
+            if( lua_istable(L,-1) ){
+                lua_getfield(L,-1,arg0low.chars());
+                if( lua_isfunction(L,-1) ){
                     NnString argv2;
                     NnVector argv3;
                     int back_in , back_out , back_err;
@@ -410,20 +410,20 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
                         goto exit;
 
                     argv2.splitTo(argv3);
-                    if( lua_checkstack( lua , argv3.size()) == 0 ){
-                        conErr << "Too many parameter for lua stack.\n";
+                    if( lua_checkstack( L , argv3.size()) == 0 ){
+                        conErr << "Too many parameter for Lua stack.\n";
                         goto exit;
                     }
 
                     for(int i=0 ; i<argv3.size() ; i++){
                         ((NnString*)argv3.at(i))->dequote();
-                        lua_pushstring( lua , argv3.at(i)->repr() );
+                        lua_pushstring( L , argv3.at(i)->repr() );
                     }
 
                     redirect_emu_to_real( back_in , back_out , back_err );
 
-                    if( lua_pcall(lua,argv3.size(),0,0) != 0 ){
-                        const char *msg = lua_tostring( lua , -1 );
+                    if( lua_pcall(L,argv3.size(),0,0) != 0 ){
+                        const char *msg = lua_tostring( L , -1 );
                         conErr << msg << '\n';
                     }
                     redirect_rewind( back_in , back_out , back_err );
@@ -665,23 +665,23 @@ int NyadosShell::interpret1( const NnString &statement )
 {
     NnString cmdline(statement);
 #ifdef LUA_ENABLE
-    NyaosLua lua("filter");
+    NyaosLua L("filter");
 
-    if( lua != NULL ){
-        if( lua_isfunction(lua,-1) ){
-            lua_pushstring(lua,statement.chars());
-            if( lua_pcall(lua,1,1,0) == 0 ){
-                switch( lua_type(lua,-1) ){
+    if( L != NULL ){
+        if( lua_isfunction(L,-1) ){
+            lua_pushstring(L,statement.chars());
+            if( lua_pcall(L,1,1,0) == 0 ){
+                switch( lua_type(L,-1) ){
                 case LUA_TSTRING:
-                    cmdline = lua_tostring(lua,-1); 
+                    cmdline = lua_tostring(L,-1); 
                     break;
                 }
             }else{
-                const char *msg = lua_tostring( lua , -1 );
+                const char *msg = lua_tostring( L , -1 );
                 conErr << msg << '\n';
             }
         }else{
-            lua_pop(lua,1);
+            lua_pop(L,1);
         }
     }
 #endif

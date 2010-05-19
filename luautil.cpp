@@ -11,82 +11,82 @@ extern "C" {
 #include <sys/types.h>
 #include <dirent.h>
 
-static int luaone_chdir(lua_State *lua)
+static int luaone_chdir(lua_State *L)
 {
-    const char *newdir = lua_tostring(lua,1);
+    const char *newdir = lua_tostring(L,1);
     if( newdir != NULL ){
         chdir( newdir );
     }
     return 0;
 }
 
-static int luaone_bitand(lua_State *lua)
+static int luaone_bitand(lua_State *L)
 {
-    int left=lua_tointeger(lua,1);
-    int right=lua_tointeger(lua,2);
-    if( !lua_isnumber(lua,1) || ! lua_isnumber(lua,1) ){
-        lua_pushstring(lua,"not number");
-        lua_error(lua);
+    int left=lua_tointeger(L,1);
+    int right=lua_tointeger(L,2);
+    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
+        lua_pushstring(L,"not number");
+        lua_error(L);
     }
-    lua_pushinteger(lua,left & right);
+    lua_pushinteger(L,left & right);
     return 1;
 }
 
-static int luaone_bitor(lua_State *lua)
+static int luaone_bitor(lua_State *L)
 {
-    int left=lua_tointeger(lua,1);
-    int right=lua_tointeger(lua,2);
-    if( !lua_isnumber(lua,1) || ! lua_isnumber(lua,1) ){
-        lua_pushstring(lua,"not number");
-        lua_error(lua);
+    int left=lua_tointeger(L,1);
+    int right=lua_tointeger(L,2);
+    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
+        lua_pushstring(L,"not number");
+        lua_error(L);
     }
-    lua_pushinteger(lua,left | right);
+    lua_pushinteger(L,left | right);
     return 1;
 }
 
-static int luaone_bitxor(lua_State *lua)
+static int luaone_bitxor(lua_State *L)
 {
-    int left=lua_tointeger(lua,1);
-    int right=lua_tointeger(lua,2);
-    if( !lua_isnumber(lua,1) || ! lua_isnumber(lua,1) ){
-        lua_pushstring(lua,"not number");
-        lua_error(lua);
+    int left=lua_tointeger(L,1);
+    int right=lua_tointeger(L,2);
+    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
+        lua_pushstring(L,"not number");
+        lua_error(L);
     }
-    lua_pushinteger(lua,left ^ right);
+    lua_pushinteger(L,left ^ right);
     return 1;
 }
 
-static int luaone_rshift(lua_State *lua)
+static int luaone_rshift(lua_State *L)
 {
-    int left=lua_tointeger(lua,1);
-    int right=lua_tointeger(lua,2);
-    if( !lua_isnumber(lua,1) || ! lua_isnumber(lua,1) ){
-        lua_pushstring(lua,"not number");
-        lua_error(lua);
+    int left=lua_tointeger(L,1);
+    int right=lua_tointeger(L,2);
+    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
+        lua_pushstring(L,"not number");
+        lua_error(L);
     }
-    lua_pushinteger(lua,left >> right);
+    lua_pushinteger(L,left >> right);
     return 1;
 }
 
-static int luaone_lshift(lua_State *lua)
+static int luaone_lshift(lua_State *L)
 {
-    int left=lua_tointeger(lua,1);
-    int right=lua_tointeger(lua,2);
-    if( !lua_isnumber(lua,1) || ! lua_isnumber(lua,1) ){
-        lua_pushstring(lua,"not number");
-        lua_error(lua);
+    int left=lua_tointeger(L,1);
+    int right=lua_tointeger(L,2);
+    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
+        lua_pushstring(L,"not number");
+        lua_error(L);
     }
-    lua_pushinteger(lua,left << right);
+    lua_pushinteger(L,left << right);
     return 1;
 }
 
-static int luaone_readdir(lua_State *lua)
+static int luaone_readdir(lua_State *L)
 {
     void *userdata;
     DIR  *dirhandle;
     struct dirent *dirent;
 
-    if( (userdata  = lua_touserdata(lua,1)) == NULL ||
+    if( (userdata  = lua_touserdata(L,1)) == NULL ||
         (dirhandle = *(DIR**)userdata)      == NULL ){
         return 0;
     }
@@ -95,17 +95,17 @@ static int luaone_readdir(lua_State *lua)
         *(DIR**)userdata = NULL;
         return 0;
     }
-    lua_pop(lua,1);
-    lua_pushstring(lua,dirent->d_name);
+    lua_pop(L,1);
+    lua_pushstring(L,dirent->d_name);
     return 1;
 }
 
-static int luaone_closedir(lua_State *lua)
+static int luaone_closedir(lua_State *L)
 {
     void *userdata;
     DIR *dirhandle;
 
-    if( (userdata=lua_touserdata(lua,1)) != NULL &&
+    if( (userdata=lua_touserdata(L,1)) != NULL &&
         (dirhandle = *(DIR**)userdata)   != NULL )
     {
         closedir(dirhandle);
@@ -113,9 +113,9 @@ static int luaone_closedir(lua_State *lua)
     return 0;
 }
 
-static int luaone_opendir(lua_State *lua)
+static int luaone_opendir(lua_State *L)
 {
-    const char *dir = lua_tostring(lua,1);
+    const char *dir = lua_tostring(L,1);
     DIR *dirhandle;
     void *userdata=NULL;
 
@@ -123,27 +123,27 @@ static int luaone_opendir(lua_State *lua)
         return 0;
 
     dirhandle=opendir(dir);
-    lua_pop(lua,1);
+    lua_pop(L,1);
 
-    lua_pushcfunction(lua,luaone_readdir); /* stack:1 */
-    userdata = lua_newuserdata(lua,sizeof(dirhandle)); /* stack:2 */
+    lua_pushcfunction(L,luaone_readdir); /* stack:1 */
+    userdata = lua_newuserdata(L,sizeof(dirhandle)); /* stack:2 */
     if( userdata == NULL )
         return 0;
     memcpy( userdata , &dirhandle , sizeof(dirhandle) );
 
     /* create metatable for closedir */
-    lua_newtable(lua); /* stack:3 */
-    lua_pushstring(lua,"__gc");
-    lua_pushcfunction(lua,luaone_closedir);
-    lua_settable(lua,3);
-    lua_setmetatable(lua,2);
+    lua_newtable(L); /* stack:3 */
+    lua_pushstring(L,"__gc");
+    lua_pushcfunction(L,luaone_closedir);
+    lua_settable(L,3);
+    lua_setmetatable(L,2);
 
     return 2;
 }
 
 static struct luaone_s {
     const char *name;
-    int (*func)(lua_State *lua);
+    int (*func)(lua_State *);
 } luaone[] = {
     { "chdir" , luaone_chdir } ,
     { "dir"   , luaone_opendir },
