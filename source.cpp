@@ -109,7 +109,8 @@ int cmd_source( NyadosShell &shell , const NnString &argv )
             argv.append( t.clone() );
             left.splitTo( t , left );
         }
-        return do_source( arg1 , argv );
+        do_source( arg1 , argv );
+        return 0;
     }
     return 0;
 }
