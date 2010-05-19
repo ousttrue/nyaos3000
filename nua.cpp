@@ -21,6 +21,12 @@
 //#define TRACE(X) ((X),fflush(stdout))
 #define TRACE(X)
 
+const static char 
+    NYAOS_NNHASH[]      = "nyaos_nnhash" ,
+    NYAOS_NNHASH_EACH[] = "nyaos_nnhash_each" ,
+    NYAOS_NNVECTOR[]    = "nyaos_nnvector" ,
+    NYAOS_HISTORY[]     = "nyaos_history" ;
+
 extern int open_luautil( lua_State *L );
 
 static void lstop (lua_State *L, lua_Debug *ar) {
@@ -116,12 +122,9 @@ NyaosLua::NyaosLua( const char *field ) : NnLua()
 
 int nua_get(lua_State *L)
 {
-    NnHash **dict=(NnHash**)lua_touserdata(L,-2);
-    const char *key=lua_tostring(L,-1);
+    NnHash **dict=(NnHash**)luaL_checkudata(L,-2,NYAOS_NNHASH);
+    const char *key=luaL_checkstring(L,-1);
 
-    if( dict == NULL || key == NULL ){
-        return 0;
-    }
     NnObject *result=(*dict)->get( NnString(key) );
     if( result != NULL ){
         lua_pushstring( L , result->repr() );
@@ -133,58 +136,44 @@ int nua_get(lua_State *L)
 
 int nua_put(lua_State *L)
 {
-    NnHash **dict=(NnHash**)lua_touserdata(L,-3);
-    const char *key=lua_tostring(L,-2);
+    NnHash **dict=(NnHash**)luaL_checkudata(L,-3,NYAOS_NNHASH);
+    const char *key=luaL_checkstring(L,-2);
     const char *val=lua_tostring(L,-1);
 
-    if( dict && key ){
-        if( val ){
-            (*dict)->put( NnString(key) , new NnString(val) );
-        }else{
-            (*dict)->remove( NnString(key) );
-        }
+    if( val ){
+        (*dict)->put( NnString(key) , new NnString(val) );
+    }else{
+        (*dict)->remove( NnString(key) );
     }
     return 0;
 }
 
 int nua_history_len(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(L,-2);
-    if( history == NULL ){
-        return 0;
-    }
+    History **history=(History**)luaL_checkudata(L,-2,NYAOS_HISTORY);
     lua_pushinteger(L,(*history)->size());
     return 1;
 }
 
 int nua_history_add(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(L,-2);
-    const char *val=lua_tostring(L,-1);
-    if( history == NULL || val == NULL ){
-        return 0;
-    }
+    History **history=(History**)luaL_checkudata(L,-2,NYAOS_HISTORY);
+    const char *val=luaL_checkstring(L,-1);
     **history << val;
     return 0;
 }
 
 int nua_history_drop(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(L,-1);
-    if( history == NULL )
-        return 0;
-
+    History **history=(History**)luaL_checkudata(L,-1,NYAOS_HISTORY);
     (*history)->drop();
     return 0;
 }
 
 int nua_history_get(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(L,-2);
+    History **history=(History**)luaL_checkudata(L,-2,NYAOS_HISTORY);
     int key=lua_tointeger(L,-1);
-
-    if( history == NULL )
-        return 0;
 
     if( !lua_isnumber(L,-1) ){
         const char *key=lua_tostring(L,-1);
@@ -210,24 +199,19 @@ int nua_history_get(lua_State *L)
 
 int nua_history_set(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(L,-3);
-    int key=lua_tointeger(L,-2);
+    History **history=(History**)luaL_checkudata(L,-3,NYAOS_HISTORY);
+    int key=luaL_checkint(L,-2);
     const char *val=lua_tostring(L,-1);
-    if( history == NULL || !lua_isnumber(L,-2) ){
-        lua_pushstring(L,"invalid key index");
-        lua_error(L);
-        return 0;
-    }
+
     NnString rightvalue(val != NULL ? val : "" );
     (*history)->set(key-1,rightvalue);
-    /* printf("[%d]='%s'\n",key-1,rightvalue.chars()); */
     return 0;
 }
 
 int nua_iter(lua_State *L)
 {
     TRACE(puts("Enter: nua_iter") );
-    NnHash::Each **ptr=(NnHash::Each**)lua_touserdata(L,1);
+    NnHash::Each **ptr=(NnHash::Each**)luaL_checkudata(L,1,NYAOS_NNHASH_EACH);
 
     if( ptr != NULL && ***ptr != NULL ){
         lua_pushstring(L,(**ptr)->key().chars());
@@ -244,7 +228,7 @@ int nua_iter(lua_State *L)
 int nua_iter_gc(lua_State *L)
 {
     TRACE(puts("Enter: nua_iter_gc") );
-    NnHash::Each **ptr=(NnHash::Each**)lua_touserdata(L,1);
+    NnHash::Each **ptr=(NnHash::Each**)luaL_checkudata(L,1,NYAOS_NNHASH_EACH);
     if( ptr != NULL && *ptr !=NULL ){
         delete *ptr;
         *ptr = NULL;
@@ -256,11 +240,7 @@ int nua_iter_gc(lua_State *L)
 int nua_iter_factory(lua_State *L)
 {
     TRACE(puts("Enter: nua_iter_factory"));
-    NnHash **dict=(NnHash**)lua_touserdata(L,1);
-    if( dict == NULL ){
-        TRACE(puts("Leave: nua_iter_factory: dict==NULL"));
-        return 0;
-    }
+    NnHash **dict=(NnHash**)luaL_checkudata(L,1,NYAOS_NNHASH);
     NnHash::Each *ptr=new NnHash::Each(**dict);
     if( ptr == NULL ){
         TRACE(puts("Leave: nua_iter_factory: ptr==NULL"));
@@ -271,7 +251,7 @@ int nua_iter_factory(lua_State *L)
     void *state = lua_newuserdata(L,sizeof(NnHash::Each*));
     memcpy(state,&ptr,sizeof(NnHash::Each*));
 
-    lua_newtable(L);
+    luaL_newmetatable(L,NYAOS_NNHASH_EACH);
     lua_pushstring(L,"__gc");
     lua_pushcfunction(L,nua_iter_gc);
     lua_settable(L,-3);
@@ -283,7 +263,7 @@ int nua_iter_factory(lua_State *L)
 
 int nua_history_iter(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(L,-2);
+    History **history=(History**)luaL_checkudata(L,-2,NYAOS_HISTORY);
     if( history == NULL || !lua_isnumber(L,-1) ){
         return 0;
     }
@@ -299,10 +279,7 @@ int nua_history_iter(lua_State *L)
 
 int nua_history_iter_factory(lua_State *L)
 {
-    History **history=(History**)lua_touserdata(L,-1);
-    if( history == NULL ){
-        return 0;
-    }
+    (void)luaL_checkudata(L,-1,NYAOS_HISTORY);
     lua_pushcfunction(L,nua_history_iter);
     lua_insert(L,-2);
     lua_pushinteger(L,0);
@@ -311,14 +288,14 @@ int nua_history_iter_factory(lua_State *L)
 
 int nua_vector_len(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,"nyaos_nnvector");
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,NYAOS_NNVECTOR);
     lua_pushinteger( L , (*vec)->size() );
     return 1;
 }
 
 int nua_vector_add(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,"nyaos_nnvector");
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,NYAOS_NNVECTOR);
     const char *str=luaL_checkstring(L,-1);
     (*vec)->append( new NnString(str) );
     return 0;
@@ -326,7 +303,7 @@ int nua_vector_add(lua_State *L)
 
 int nua_vector_pop(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,"nyaos_nnvector");
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,NYAOS_NNVECTOR);
     NnObject *object=(*vec)->pop();
     lua_pushstring( L , object->repr() );
     delete object;
@@ -335,7 +312,7 @@ int nua_vector_pop(lua_State *L)
 
 int nua_vector_shift(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,"nyaos_nnvector");
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,NYAOS_NNVECTOR);
     NnObject *object=(*vec)->shift();
     lua_pushstring( L , object->repr() );
     delete object;
@@ -344,7 +321,7 @@ int nua_vector_shift(lua_State *L)
 
 int nua_vector_get(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,"nyaos_nnvector");
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,NYAOS_NNVECTOR);
     if( lua_isnumber(L,-1) ){
         int n=luaL_checkint(L,-1);
         lua_pushstring( L , (*vec)->at(n)->repr() );
@@ -368,7 +345,7 @@ int nua_vector_get(lua_State *L)
 
 int nua_vector_iter(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,"nyaos_nnvector");
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-2,NYAOS_NNVECTOR);
     int n=luaL_checkint(L,-1);
     if( n >= (*vec)->size() )
         return 0;
@@ -379,7 +356,7 @@ int nua_vector_iter(lua_State *L)
 
 int nua_vector_iter_factory(lua_State *L)
 {
-    (void)luaL_checkudata(L,-1,"nyaos_nnvector");
+    (void)luaL_checkudata(L,-1,NYAOS_NNVECTOR);
     lua_pushcfunction(L,nua_vector_iter);
     lua_insert(L,-2);
     lua_pushinteger(L,0);
@@ -515,7 +492,7 @@ int NyaosLua::init()
             NnHash **u=(NnHash**)lua_newuserdata(L,sizeof(NnHash *));
             *u = p->dict;
 
-            lua_newtable(L); /* metatable */
+            luaL_newmetatable(L,NYAOS_NNHASH);
             if( p->index != NULL ){
                 lua_pushcfunction(L,p->index);
                 lua_setfield(L,-2,"__index");
@@ -537,7 +514,7 @@ int NyaosLua::init()
         History **h=(History**)lua_newuserdata(L,sizeof(History*));
         *h = &GetLine::history;
 
-        lua_newtable(L);
+        luaL_newmetatable(L,NYAOS_HISTORY);
         lua_pushcfunction(L,nua_history_get);
         lua_setfield(L,-2,"__index");
         lua_pushcfunction(L,nua_history_len);
@@ -555,7 +532,7 @@ int NyaosLua::init()
         NnVector **vec=(NnVector**)lua_newuserdata(L,sizeof(NnVector*));
         *vec = &dirstack ;
 
-        luaL_newmetatable(L,"nyaos_nnvector");
+        luaL_newmetatable(L,NYAOS_NNVECTOR);
         lua_pushcfunction(L,nua_vector_get);
         lua_setfield(L,-2,"__index");
         lua_pushcfunction(L,nua_vector_len);
