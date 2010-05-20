@@ -349,6 +349,40 @@ int sub_brace_start( NyadosShell &bshell ,
 		     const NnString &arg1 ,
 		     const NnString &argv );
 
+/* コマンドラインフィルター(フック箇所が複数あるので関数化)
+ *    hookname - フック名 "filter" "filter2" 
+ *    source - フィルター前文字列
+ *    result - フィルター結果格納先
+ */
+static void filter_with_lua(
+        const char *hookname,
+        const NnString &source,
+        NnString &result)
+{
+#ifdef LUA_ENABLE
+    NyaosLua L(hookname);
+
+    if( L != NULL ){
+        if( lua_isfunction(L,-1) ){
+            lua_pushstring(L,source.chars());
+            if( lua_pcall(L,1,1,0) == 0 ){
+                switch( lua_type(L,-1) ){
+                case LUA_TSTRING:
+                    result = lua_tostring(L,-1); 
+                    return;
+                }
+            }else{
+                const char *msg = lua_tostring( L , -1 );
+                conErr << msg << '\n';
+            }
+        }else{
+            lua_pop(L,1);
+        }
+    }
+#endif
+    result = source;
+}
+
 /* 「 ;」等で区切られた後の１コマンドを実行する。
  * (interpret1 から呼び出されます)
  *	replace - コマンド
@@ -361,7 +395,10 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 {
     int rv=0;
 
-    NnString replace(replace_);
+    NnString replace;
+
+    filter_with_lua( "filter2" , replace_ , replace );
+
     VariableFilter variable_filter( *this );
     NyadosCommand *cmdp = NULL;
 
@@ -663,28 +700,9 @@ static int insertInterpreter( const char *start ,
  */
 int NyadosShell::interpret1( const NnString &statement )
 {
-    NnString cmdline(statement);
-#ifdef LUA_ENABLE
-    NyaosLua L("filter");
+    NnString cmdline;
 
-    if( L != NULL ){
-        if( lua_isfunction(L,-1) ){
-            lua_pushstring(L,statement.chars());
-            if( lua_pcall(L,1,1,0) == 0 ){
-                switch( lua_type(L,-1) ){
-                case LUA_TSTRING:
-                    cmdline = lua_tostring(L,-1); 
-                    break;
-                }
-            }else{
-                const char *msg = lua_tostring( L , -1 );
-                conErr << msg << '\n';
-            }
-        }else{
-            lua_pop(L,1);
-        }
-    }
-#endif
+    filter_with_lua( "filter" , statement , cmdline );
 
     errno = 0;
     cmdline.trim();
