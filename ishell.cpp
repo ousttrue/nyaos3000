@@ -1,25 +1,6 @@
 #include "ishell.h"
 #include "nnhash.h"
 
-int History::get(int at,NnString &dst)
-{
-    NnString *src=(*this)[at];
-    if( src == NULL )
-        return -1;
-    
-    dst = *src;
-    return 0;
-}
-int History::set(int at,NnString &str)
-{ 
-    NnString *dst=(*this)[at];
-    if( dst == NULL )
-        return -1;
-    
-    *dst = str;
-    return 0;
-}
-
 Status InteractiveShell::readline( NnString &line )
 {
     NnObject *val;

@@ -3,16 +3,14 @@
 
 class Reader;
 
-class History {
-    NnVector history;
+class History : public NnVector {
 public:
     History &operator << ( const NnString & );
     NnString *operator[](int at);
     NnString *top(){
-	return history.size() >= 1 ? (NnString*)history.top() : NULL ; 
+	return this->size() >= 1 ? (NnString*)NnVector::top() : NULL ; 
     }
-    void drop(){ delete (NnString*)history.pop(); }
-    int size();
+    void drop(){ delete (NnString*)this->pop(); }
     void pack();
     int set(int at,NnString &value);
     int get(int at,NnString &value);

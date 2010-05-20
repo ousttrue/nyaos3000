@@ -155,18 +155,14 @@ int preprocessHistory( History &hisObj , const NnString &src , NnString &dst )
 
 NnString *History::operator[](int at)
 {
-    if( at >= history.size() )
+    if( at >= size() )
 	return NULL;
     if( at >= 0 )
-        return (NnString *)history.at(at);
-    at += history.size();
-    if( at < 0 || at >= history.size() )
+        return (NnString *)this->at(at);
+    at += size();
+    if( at < 0 || at >= this->size() )
 	return NULL;
-    return (NnString *)history.at( at );
-}
-int History::size()
-{
-    return history.size();
+    return (NnString *)this->at( at );
 }
 
 void History::pack()
@@ -174,12 +170,12 @@ void History::pack()
     NnString *r1=(*this)[-1];
     NnString *r2=(*this)[-2];
     if( size() >= 2 && r1 != NULL && r2 != NULL && r1->compare( *r2 ) == 0 )
-	delete history.pop();
+	delete pop();
 }
 
 History &History::operator << ( const NnString &str )
 {
-    history.append( str.clone() );
+    this->append( str.clone() );
     return *this;
 }
 
@@ -187,8 +183,26 @@ void History::read( Reader &reader )
 {
     NnString buffer;
     while( reader.readLine(buffer) >= 0 ){
-	history.append( buffer.clone() );
+	this->append( buffer.clone() );
     }
 }
 
+int History::get(int at,NnString &dst)
+{
+    NnString *src=(*this)[at];
+    if( src == NULL )
+        return -1;
+    
+    dst = *src;
+    return 0;
+}
+int History::set(int at,NnString &str)
+{ 
+    NnString *dst=(*this)[at];
+    if( dst == NULL )
+        return -1;
+    
+    *dst = str;
+    return 0;
+}
 

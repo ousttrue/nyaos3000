@@ -24,8 +24,7 @@
 const static char 
     NYAOS_NNHASH[]      = "nyaos_nnhash" ,
     NYAOS_NNHASH_EACH[] = "nyaos_nnhash_each" ,
-    NYAOS_NNVECTOR[]    = "nyaos_nnvector" ,
-    NYAOS_HISTORY[]     = "nyaos_history" ;
+    NYAOS_NNVECTOR[]    = "nyaos_nnvector" ;
 
 extern int open_luautil( lua_State *L );
 
@@ -148,63 +147,23 @@ int nua_put(lua_State *L)
     return 0;
 }
 
-int nua_history_len(lua_State *L)
+int nua_vector_set(lua_State *L)
 {
-    History **history=(History**)luaL_checkudata(L,-2,NYAOS_HISTORY);
-    lua_pushinteger(L,(*history)->size());
-    return 1;
-}
-
-int nua_history_add(lua_State *L)
-{
-    History **history=(History**)luaL_checkudata(L,-2,NYAOS_HISTORY);
-    const char *val=luaL_checkstring(L,-1);
-    **history << val;
-    return 0;
-}
-
-int nua_history_drop(lua_State *L)
-{
-    History **history=(History**)luaL_checkudata(L,-1,NYAOS_HISTORY);
-    (*history)->drop();
-    return 0;
-}
-
-int nua_history_get(lua_State *L)
-{
-    History **history=(History**)luaL_checkudata(L,-2,NYAOS_HISTORY);
-    int key=lua_tointeger(L,-1);
-
-    if( !lua_isnumber(L,-1) ){
-        const char *key=lua_tostring(L,-1);
-        if( key != NULL ){
-            if( strcmp(key,"add") == 0 ){
-                lua_pushcfunction(L,nua_history_add);
-                return 1;
-            }else if( strcmp(key,"drop") == 0 ){
-                lua_pushcfunction(L,nua_history_drop);
-                return 1;
-            }
-        }
-        return 0;
-    }
-    NnObject *result=(**history)[key-1];
-    if( result != NULL ){
-        lua_pushstring( L , result->repr() );
-        return 1;
-    }else{
-        return 0;
-    }
-}
-
-int nua_history_set(lua_State *L)
-{
-    History **history=(History**)luaL_checkudata(L,-3,NYAOS_HISTORY);
+    NnVector **vec=(NnVector**)luaL_checkudata(L,-3,NYAOS_NNVECTOR);
     int key=luaL_checkint(L,-2);
     const char *val=lua_tostring(L,-1);
+    if( key < 1 || (*vec)->size() < key ){
+        lua_pushstring(L,"Index Error on nyaos_vector_set");
+        return lua_error(L);
+    }
 
     NnString rightvalue(val != NULL ? val : "" );
-    (*history)->set(key-1,rightvalue);
+    NnString *leftvalue = dynamic_cast<NnString*>( (*vec)->at( key-1 ) );
+    if(leftvalue == NULL ){
+        lua_pushstring(L,"Internal Error on nua_vector_set");
+        return lua_error(L);
+    }
+    *leftvalue = rightvalue ;
     return 0;
 }
 
@@ -261,34 +220,13 @@ int nua_iter_factory(lua_State *L)
     return 2;
 }
 
-int nua_history_iter(lua_State *L)
-{
-    History **history=(History**)luaL_checkudata(L,-2,NYAOS_HISTORY);
-    if( history == NULL || !lua_isnumber(L,-1) ){
-        return 0;
-    }
-    int n=lua_tointeger(L,-1);
-    if( n >= (*history)->size() ){
-        return 0;
-    }
-    lua_pushinteger(L,n+1);
-    lua_pushstring(L,(**history)[n]->repr());
-
-    return 2;
-}
-
-int nua_history_iter_factory(lua_State *L)
-{
-    (void)luaL_checkudata(L,-1,NYAOS_HISTORY);
-    lua_pushcfunction(L,nua_history_iter);
-    lua_insert(L,-2);
-    lua_pushinteger(L,0);
-    return 3;
-}
-
+/* #演算子に限っては、何故か、スタックに
+ *   [ユーザオジェクト] [NIL]
+ * と入ってくるので、スタック位置に注意が必要
+ * */
 int nua_vector_len(lua_State *L)
 {
-    NnVector **vec=(NnVector**)luaL_checkudata(L,-1,NYAOS_NNVECTOR);
+    NnVector **vec=(NnVector**)luaL_checkudata(L,1,NYAOS_NNVECTOR);
     lua_pushinteger( L , (*vec)->size() );
     return 1;
 }
@@ -324,15 +262,19 @@ int nua_vector_get(lua_State *L)
     NnVector **vec=(NnVector**)luaL_checkudata(L,-2,NYAOS_NNVECTOR);
     if( lua_isnumber(L,-1) ){
         int n=luaL_checkint(L,-1);
-        lua_pushstring( L , (*vec)->at(n)->repr() );
+        if( n < 1 || (*vec)->size() < n ){
+            lua_pushnil( L );
+        }else{
+            lua_pushstring( L , (*vec)->at(n-1)->repr() );
+        }
         return 1;
     }else{
         const char *method=luaL_checkstring(L,-1);
-        if( strcmp(method,"add")==0 ){
+        if( strcmp(method,"add")==0  || strcmp(method,"push")==0 ){
             lua_pushcfunction( L , nua_vector_add );
         }else if( strcmp(method,"len")==0 ){
             lua_pushcfunction( L , nua_vector_len );
-        }else if( strcmp(method,"pop")==0 ){
+        }else if( strcmp(method,"pop")==0 || strcmp(method,"drop")==0 ){
             lua_pushcfunction( L , nua_vector_pop );
         }else if( strcmp(method,"shift")==0 ){
             lua_pushcfunction( L , nua_vector_shift );
@@ -483,10 +425,6 @@ int NyaosLua::init()
 
         open_luautil(L); 
 
-        /* nyaos.command[] */
-        lua_newtable(L);
-        lua_setfield(L,-2,"command");
-
         /* table-like objects */
         while( p->name != NULL ){
             NnHash **u=(NnHash**)lua_newuserdata(L,sizeof(NnHash *));
@@ -510,40 +448,54 @@ int NyaosLua::init()
             lua_setfield(L,-2,p->name);
             p++;
         }
-        /* history object */
-        History **h=(History**)lua_newuserdata(L,sizeof(History*));
-        *h = &GetLine::history;
 
-        luaL_newmetatable(L,NYAOS_HISTORY);
-        lua_pushcfunction(L,nua_history_get);
-        lua_setfield(L,-2,"__index");
-        lua_pushcfunction(L,nua_history_len);
-        lua_setfield(L,-2,"__len");
-        lua_pushcfunction(L,nua_history_iter_factory);
-        lua_setfield(L,-2,"__pairs");
-        lua_pushcfunction(L,nua_history_iter_factory);
-        lua_setfield(L,-2,"__ipairs");
-        lua_pushcfunction(L,nua_history_set);
-        lua_setfield(L,-2,"__newindex");
-        lua_setmetatable(L,-2);
-        lua_setfield(L,-2,"history");
+        static struct {
+            const char *name;
+            NnVector *vec;
+            int (*index)(lua_State *);
+            int (*newindex)(lua_State *);
+            int (*ipair)(lua_State *);
+            int (*len)(lua_State *);
+        } list2[]={
+            { "history"  , &GetLine::history ,
+                nua_vector_get          , nua_vector_set ,
+                nua_vector_iter_factory , nua_vector_len },
+            { "dirstack" , &dirstack ,
+                nua_vector_get          , nua_vector_set ,
+                nua_vector_iter_factory , nua_vector_len },
+            { NULL } ,
+        }, *q = list2;
 
-        /* dirstack */
-        NnVector **vec=(NnVector**)lua_newuserdata(L,sizeof(NnVector*));
-        *vec = &dirstack ;
+        while( q->name != NULL ){
+            /* history object */
+            NnVector **h=(NnVector**)lua_newuserdata(L,sizeof(NnVector*));
+            *h = q->vec;
 
-        luaL_newmetatable(L,NYAOS_NNVECTOR);
-        lua_pushcfunction(L,nua_vector_get);
-        lua_setfield(L,-2,"__index");
-        lua_pushcfunction(L,nua_vector_len);
-        lua_setfield(L,-2,"__len");
-        lua_pushcfunction(L,nua_vector_iter_factory);
-        lua_setfield(L,-2,"__pairs");
-        lua_pushcfunction(L,nua_vector_iter_factory);
-        lua_setfield(L,-2,"__ipairs");
-        lua_setmetatable(L,-2);
-        lua_setfield(L,-2,"dirstack");
-        
+            luaL_newmetatable(L,NYAOS_NNVECTOR);
+            if( q->index != NULL ){
+                lua_pushcfunction(L,q->index);
+                lua_setfield(L,-2,"__index");
+            }
+            if( q->newindex != NULL ){
+                lua_pushcfunction(L,q->newindex);
+                lua_setfield(L,-2,"__newindex");
+            }
+            if( q->ipair != NULL ){
+                lua_pushcfunction(L,q->ipair);
+                lua_setfield(L,-2,"__pairs");
+                lua_pushcfunction(L,q->ipair);
+                lua_setfield(L,-2,"__ipairs");
+            }
+            if( q->len != NULL ){
+                lua_pushcfunction(L,q->len);
+                lua_setfield(L,-2,"__len");
+            }
+            lua_setmetatable(L,-2);
+            lua_setfield(L,-2,q->name);
+
+            q++;
+        }
+
         /* tool functions */
         lua_pushcfunction(L,nua_exec);
         lua_setfield(L,-2,"exec");
@@ -555,6 +507,10 @@ int NyaosLua::init()
         lua_setfield(L,-2,"getkey");
         lua_pushcfunction(L,nua_default_complete);
         lua_setfield(L,-2,"default_complete");
+
+        /* nyaos.command[] */
+        lua_newtable(L);
+        lua_setfield(L,-2,"command");
 
         /* close nyaos table */
         lua_setglobal(L,"nyaos");
