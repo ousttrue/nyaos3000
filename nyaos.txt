@@ -1109,12 +1109,18 @@ alias/option/suffix の定義、argv(nyaos起動時のパラメータ)を格納している
 
     全体の走査
         for i,e in ipairs(nyaos.history) do print(i,e) end
+        for i=1,#nyaos.history do print(i,nyaos.history[i]) end
     末尾への追加
         nyaos.history:add('hogehoge')
-    末尾の要素の削除
+        nyaos.history:push('hogehoge')
+    末尾の要素の削除(と取り出し)
         nyaos.history:drop()
+        print( nyaos.history:pop() )
+    先頭要素の取り出し
+        print( nyaos.history:shift() )
     要素数確認
-        #nyaos.history
+        print( #nyaos.history )
+        print( nyaos.history:len() )
 
 
 コマンドラインからの Lua 関数の直接コール
