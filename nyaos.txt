@@ -1126,13 +1126,25 @@ alias/option/suffix の定義、argv(nyaos起動時のパラメータ)を格納している
 コマンドラインからの Lua 関数の直接コール
 -----------------------------------------
 
-lua_e "
-   nyaos.command['say'] = function(...)
-       print( table.concat({...},' ') )
-   end
-"
+テーブル nyaos.command , nyaos.command2 に定義した関数は、
+コマンドラインからコマンドとして呼び出すことができます。
 
-このように定義すると、say は echo のように動作します。
+(1) nyaos.command.COMMANDNAME
+        COMMANDNAME X Y Z > foo.txt
+    と実行されたコマンドは
+        nyaos.command.COMMANDNAME('X','Y','Z')
+    と呼び出され、標準出力は foo.txt へリダイレクトされます。
+
+(2) nyaos.command2.COMMANDNAME
+        COMMANDNAME X Y Z > foo.txt
+    と実行されたコマンドは
+        nyaos.command2.COMMANDNAME('X Y Z > foo.txt')
+    と呼び出されます。標準出力の出力先は変わりません。
+
+関数の戻り値は、次のルールでコマンドの戻り値(%errorlevel%)に置き換わります。
+    数値  ⇒ そのまま、戻り値になります。
+    false ⇒ 1
+    true,nil,その他 ⇒ 0
 
 
 コマンドラインフィルター
@@ -1351,6 +1363,15 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
 
 ＦＡＱ
 ======
+
+バッチファイルが実行できません
+    拡張子.BAT/.CMD のファイルは、他のスクリプトと扱いが同じになります。
+    つまり、拡張子まで入力する必要があります。
+
+    また、それには _nya 内で
+        suffix cmd %COMSPEC% /c
+        suffix bat %COMSPEC% /c
+    と定義されている必要があります(デフォルト _nya では定義されています)
 
 アイコンへドロップしたフォルダーから起動させたい
     _nyaに一行「if not "%1" == "" cd --basedir "%1"」を追加し、

@@ -30,7 +30,7 @@ public:
     NnString tempfilename;
 
     int exitStatus(){ return exitStatus_; }
-    void setExitStatus(int n){ exitStatus_=n; }
+    void setExitStatus(int n);
 
     virtual Status readline(NnString &line)=0;
     virtual History *getHistoryObject(){ return NULL; }

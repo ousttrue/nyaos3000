@@ -383,6 +383,35 @@ static void filter_with_lua(
     result = source;
 }
 
+/* Lua関数の戻り値を適当に、整数戻り値にする。
+ *     nil   ⇒ 0 (成功扱い)
+ *     true  ⇒ 0 (成功扱い)
+ *     false ⇒ 1 (エラー扱い)
+ *     整数       (そのまま)
+ *     その他 ⇒  (成功扱い)
+ */
+static int lua2exitStatus( lua_State *L )
+{
+    if( lua_isnumber(L,-1) ){
+        return lua_tointeger(L,-1);
+    }else if( lua_isnil(L,-1) ){
+        return 0;
+    }else if( lua_isboolean(L,-1) ){
+        return !lua_toboolean(L,-1);
+    }else{
+        return 0;
+    }
+}
+
+void NyadosShell::setExitStatus(int n)
+{
+    exitStatus_ = n;
+
+    NnString *errorlevel=new NnString();
+    errorlevel->addValueOf( exitStatus_ );
+    properties.put( "errorlevel" , errorlevel );
+}
+
 /* 「 ;」等で区切られた後の１コマンドを実行する。
  * (interpret1 から呼び出されます)
  *	replace - コマンド
@@ -434,39 +463,53 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
         }
     }else{
 #ifdef LUA_ENABLE
-        NyaosLua L("command");
-        if( L.ok() ){
-            if( lua_istable(L,-1) ){
+        {
+            NyaosLua L("command2");
+            if( L.ok() && lua_istable(L,-1) ){
                 lua_getfield(L,-1,arg0low.chars());
                 if( lua_isfunction(L,-1) ){
-                    NnString argv2;
-                    NnVector argv3;
-                    int back_in , back_out , back_err;
-
-                    if( explode4internal( argv , argv2 ) != 0 )
-                        goto exit;
-
-                    argv2.splitTo(argv3);
-                    if( lua_checkstack( L , argv3.size()) == 0 ){
-                        conErr << "Too many parameter for Lua stack.\n";
-                        goto exit;
-                    }
-
-                    for(int i=0 ; i<argv3.size() ; i++){
-                        ((NnString*)argv3.at(i))->dequote();
-                        lua_pushstring( L , argv3.at(i)->repr() );
-                    }
-
-                    redirect_emu_to_real( back_in , back_out , back_err );
-
-                    if( lua_pcall(L,argv3.size(),0,0) != 0 ){
+                    lua_pushstring(L,argv.chars() );
+                    if( lua_pcall(L,1,1,0) != 0 ){
                         const char *msg = lua_tostring( L , -1 );
                         conErr << msg << '\n';
                     }
-                    redirect_rewind( back_in , back_out , back_err );
-
+                    setExitStatus( lua2exitStatus(L) );
                     goto exit;
                 }
+            }
+        }
+        NyaosLua L("command");
+        if( L.ok() && lua_istable(L,-1) ){
+            lua_getfield(L,-1,arg0low.chars());
+            if( lua_isfunction(L,-1) ){
+                NnString argv2;
+                NnVector argv3;
+                int back_in , back_out , back_err;
+
+                if( explode4internal( argv , argv2 ) != 0 )
+                    goto exit;
+
+                argv2.splitTo(argv3);
+                if( lua_checkstack( L , argv3.size()) == 0 ){
+                    conErr << "Too many parameter for Lua stack.\n";
+                    goto exit;
+                }
+
+                for(int i=0 ; i<argv3.size() ; i++){
+                    ((NnString*)argv3.at(i))->dequote();
+                    lua_pushstring( L , argv3.at(i)->repr() );
+                }
+
+                redirect_emu_to_real( back_in , back_out , back_err );
+
+                if( lua_pcall(L,argv3.size(),1,0) != 0 ){
+                    const char *msg = lua_tostring( L , -1 );
+                    conErr << msg << '\n';
+                }
+                setExitStatus( lua2exitStatus(L) );
+                redirect_rewind( back_in , back_out , back_err );
+
+                goto exit;
             }
         }
 #endif
@@ -484,13 +527,11 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 	    if( explode4external( replace , cmdline2 ) != 0 )
 		goto exit;
 
-	    exitStatus_ = mySystem( cmdline2.chars() , wait );
+	    int rc = mySystem( cmdline2.chars() , wait );
             if( wait == 0 ){
-                conErr << '<' << exitStatus_ << ">\n";
+                conErr << '<' << rc << ">\n";
             }else{
-                NnString *errorlevel=new NnString();
-                errorlevel->addValueOf( exitStatus_ );
-                properties.put( "errorlevel" , errorlevel );
+                setExitStatus( rc );
             }
 	}
     }
