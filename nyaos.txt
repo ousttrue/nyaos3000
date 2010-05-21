@@ -1413,6 +1413,21 @@ dir/w がエラーになります
 変更履歴
 ========
 
+2.96_0 (2010/05/22)
+    - nyaos.command2 の設置
+    - nyaos.filter2 の設置
+    - nyaos.command/command2 の戻り値を errorlevel へ反映させるようにした。
+    - nyaos.dirstack の設置
+    - nyaos.alias/suffix/option を pairs関数で扱えるようにした。
+    - nyaos.history/dirstack を ipairs関数で扱えるようにした。
+    - 起動オプション「-D」で、コンパイル日時、_nya のロードタイミングを
+      表示するようにした。
+    - 起動オプション「-a」廃止
+    - lua_e コマンドでの入力リダイレクトのサポート
+    - %errorlevel% で、エラー値を参照できるようにした
+    [蟲繕]
+    - source 実行中にエラーが発生すると、NYAOS 本体が終了する問題を修正.
+
 2.95_0 (2010/05/06)
     - nyaos.command で出力リダイレクト・パイプラインが効くようにした。
     - 関数定義・foreach・「"」「^」による行継続を Ctrl-C で中断できるようにした。
