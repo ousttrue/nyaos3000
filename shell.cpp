@@ -349,6 +349,10 @@ int sub_brace_start( NyadosShell &bshell ,
 		     const NnString &arg1 ,
 		     const NnString &argv );
 
+static void call_filter_func()
+{
+}
+
 /* コマンドラインフィルター(フック箇所が複数あるので関数化)
  *    hookname - フック名 "filter" "filter2" 
  *    source - フィルター前文字列
@@ -359,28 +363,41 @@ static void filter_with_lua(
         const NnString &source,
         NnString &result)
 {
+    result = source;
 #ifdef LUA_ENABLE
     NyaosLua L(hookname);
 
     if( L != NULL ){
         if( lua_isfunction(L,-1) ){
-            lua_pushstring(L,source.chars());
-            if( lua_pcall(L,1,1,0) == 0 ){
-                switch( lua_type(L,-1) ){
-                case LUA_TSTRING:
-                    result = lua_tostring(L,-1); 
-                    return;
+            lua_pushstring(L,result.chars());
+            if( lua_pcall(L,1,1,0) != 0 )
+                goto errpt;
+            if( lua_isstring(L,-1) )
+                result = lua_tostring(L,-1); 
+        }else if( lua_istable(L,-1) ){
+            result = source;
+            lua_pushnil(L); /* start key */
+            while( lua_next(L,-2) != 0 ){
+                if( lua_isfunction(L,-1) ){
+                    lua_pushstring(L,result.chars());
+                    if( lua_pcall(L,1,1,0) != 0 )
+                        goto errpt;
+                    if( lua_isstring(L,-1))
+                        result = lua_tostring(L,-1); 
+                    lua_pop(L,1);
+                }else{
+                    lua_pop(L,1); /* drop value */
                 }
-            }else{
-                const char *msg = lua_tostring( L , -1 );
-                conErr << msg << '\n';
             }
         }else{
             lua_pop(L,1);
         }
     }
+    return;
+errpt:
+    const char *msg = lua_tostring(L,-1);
+    conErr << msg << '\n';
 #endif
-    result = source;
 }
 
 /* Lua関数の戻り値を適当に、整数戻り値にする。

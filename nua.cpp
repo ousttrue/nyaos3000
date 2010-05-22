@@ -513,6 +513,10 @@ int NyaosLua::init()
         lua_setfield(L,-2,"command");
         lua_newtable(L);
         lua_setfield(L,-2,"command2");
+        lua_newtable(L);
+        lua_setfield(L,-2,"filter");
+        lua_newtable(L);
+        lua_setfield(L,-2,"filter2");
 
         /* close nyaos table */
         lua_setglobal(L,"nyaos");
