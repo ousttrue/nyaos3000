@@ -66,7 +66,7 @@ lua_e "
     end
 
     -- コマンドラインフィルターサンプル:「$lua(…)」(括弧内はLua式) --
-    -- (「nyaos.filter = sample_filter」で利用可能になる)
+    -- (「nyaos.filter.sample = sample_filter」で利用可能になる)
     function sample_filter(cmdline)
         return cmdline:gsub('$lua(%b())',function(m)
             local status,result=pcall( loadstring('return '..m) )

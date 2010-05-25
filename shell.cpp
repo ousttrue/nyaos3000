@@ -349,10 +349,6 @@ int sub_brace_start( NyadosShell &bshell ,
 		     const NnString &arg1 ,
 		     const NnString &argv );
 
-static void call_filter_func()
-{
-}
-
 /* コマンドラインフィルター(フック箇所が複数あるので関数化)
  *    hookname - フック名 "filter" "filter2" 
  *    source - フィルター前文字列

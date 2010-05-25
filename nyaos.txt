@@ -1153,15 +1153,16 @@ alias/option/suffix の定義、argv(nyaos起動時のパラメータ)を格納している
 ユーザの入力を NYAOS が解釈する前に、Lua で加工することができます。
 
     lua_e "
-        function nyaos.filter(cmdline)
+        function nyaos.filter.foo(cmdline)
             return cmdline:gsub('%%(%b())',function(m)
                 return loadstring('return '..m)()
             end)
         end
     "
 
-このように定義すると、%(数式) を結果にコンバートするといったことが
-できるようになります。
+このようにテーブル nyaos.filter の中に関数を定義すると、%(数式) を
+結果にコンバートするといったことができるようになります。
+(なお、互換性のため、nyaos.filter 自体に関数を代入しても動作します)
 
     [c:nyaos3k]
     $ echo %(1+2+3)
@@ -1412,6 +1413,10 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+2.97_0 (2010/05/25)
+    - nyaos.filter/nyaos.filter2 のテーブル対応
+    - VimShell 上で実行時にカーソルONのシーケンスを出力しないようにした(_nya)
 
 2.96_0 (2010/05/22)
     - nyaos.command2 の設置
