@@ -1082,9 +1082,10 @@ Lua 拡張
     - nyaos.alias
     - nyaos.option
     - nyaos.suffix
+    - nyaos.folder
     - nyaos.argv
 
-alias/option/suffix の定義、argv(nyaos起動時のパラメータ)を格納している
+alias/option/suffix/folder の定義、argv(nyaos起動時のパラメータ)を格納している
 テーブルオブジェクトです。追加・変更・削除が可能です。
 
     lua_e "

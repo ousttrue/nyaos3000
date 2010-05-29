@@ -420,6 +420,7 @@ int NyaosLua::init()
             { "alias"  , &aliases   , nua_get , nua_put , nua_iter_factory },
             { "suffix" , &DosShell::executableSuffix , nua_get , nua_put , nua_iter_factory },
             { "option" , &properties , nua_get , nua_put , nua_iter_factory } ,
+            { "folder" , &NnDir::specialFolder , nua_get , nua_put , nua_iter_factory } ,
             { NULL , NULL , 0 } ,
         }, *p = list;
 
