@@ -64,11 +64,13 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
  *      sp  元文字列(`の次を指していること)
  *      dst 先文字列
  *      max 上限
+ *      quote 引用符に囲まれているなら 非0 にセットする。
+ *           (0 の時、& や > といった文字をクォートする)
  * return
  *      0  成功
  *      -1 オーバーフロー
  */
-static int doQuote( const char *&sp , NnString &dst , int max )
+static int doQuote( const char *&sp , NnString &dst , int max , int quote )
 {
     NnString q;
     while( *sp != '\0' ){
@@ -86,7 +88,21 @@ static int doQuote( const char *&sp , NnString &dst , int max )
         dst += '`';
         return 0;
     }
-    return eval_cmdline( q.chars() , dst , max , true );
+    if( quote )
+        return eval_cmdline( q.chars() , dst , max , true );
+
+    NnString buffer;
+    int rc=eval_cmdline( q.chars() , buffer , max , true );
+    for(const char *p = buffer.chars() ; *p != '\0' ; ++p ){
+        if( *p == '&' || *p == '|' || *p == '<' || *p=='>' ){
+            dst << '"' << *p << '"';
+        }else if( *p == '"' ){
+            dst << "\"\"";
+        }else{
+            dst << *p;
+        }
+    }
+    return rc;
 }
 
 
@@ -288,7 +304,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    }
         }else if( *sp == '`' && backquotemax > 0 ){
 	    ++sp;
-            if( doQuote( sp , dst , backquotemax ) == -1 ){
+            if( doQuote( sp , dst , backquotemax , quote ) == -1 ){
                 conErr << "over flow commandline.\n";
                 return -1;
             }
@@ -386,7 +402,7 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
 	    --sp;
         }else if( *sp == '`'  && backquotemax > 0 ){
 	    ++sp;
-            if( doQuote( sp , dst , backquotemax ) == -1 ){
+            if( doQuote( sp , dst , backquotemax , quote ) == -1 ){
                 conErr << "Over flow commandline.\n";
                 return -1;
             }
