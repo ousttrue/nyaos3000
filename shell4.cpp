@@ -97,7 +97,7 @@ static int doQuote( const char *&sp , NnString &dst , int max , int quote )
         if( *p == '&' || *p == '|' || *p == '<' || *p=='>' ){
             dst << '"' << *p << '"';
         }else if( *p == '"' ){
-            dst << "\"\"";
+            dst << "\"\"\"\"";
         }else{
             dst << *p;
         }
