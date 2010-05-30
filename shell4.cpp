@@ -88,18 +88,26 @@ static int doQuote( const char *&sp , NnString &dst , int max , int quote )
         dst += '`';
         return 0;
     }
-    if( quote )
-        return eval_cmdline( q.chars() , dst , max , true );
 
     NnString buffer;
     int rc=eval_cmdline( q.chars() , buffer , max , true );
-    for(const char *p = buffer.chars() ; *p != '\0' ; ++p ){
-        if( *p == '&' || *p == '|' || *p == '<' || *p=='>' ){
-            dst << '"' << *p << '"';
-        }else if( *p == '"' ){
-            dst << "\"\"\"\"";
-        }else{
-            dst << *p;
+    if( quote ){
+        for(const char *p = buffer.chars() ; *p != '\0' ; ++p ){
+            if( *p == '"' ){
+                dst << "\"\"";
+            }else{
+                dst << *p;
+            }
+        }
+    }else{
+        for(const char *p = buffer.chars() ; *p != '\0' ; ++p ){
+            if( *p == '&' || *p == '|' || *p == '<' || *p=='>' ){
+                dst << '"' << *p << '"';
+            }else if( *p == '"' ){
+                dst << "\"\"\"\"";
+            }else{
+                dst << *p;
+            }
         }
     }
     return rc;
