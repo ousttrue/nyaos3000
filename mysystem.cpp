@@ -82,6 +82,16 @@ static int mySpawn(
     }
 
     NnString cmdline;
+    const char *comspec = getenv("COMSPEC");
+
+    if( comspec != NULL && (
+                fullpath_cmdname.iendsWith(".cmd") ||
+                fullpath_cmdname.iendsWith(".bat") ) )
+    {
+        cmdline << "/c " << fullpath_cmdname << ' ';
+        fullpath_cmdname = comspec;
+    }
+
     for(int i=0 ; i < args.size() ; ++i ){
         cmdline << args.const_at(i)->repr() << ' ';
     }

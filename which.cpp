@@ -16,17 +16,18 @@
  */
 static int exists( const char *nm , NnString &which )
 {
+    static const char *suffix_list[]={
+        ".exe" , ".com" , ".bat" , ".cmd" , NULL 
+    };
     NnString path(nm);
-    path << ".exe";
-    if( NnDir::access(path.chars()) == 0 ){
-        which = path ;
-        return 0;
-    }
-    path.chop( path.length()-4 );
-    path << ".com";
-    if( NnDir::access(path.chars()) == 0 ){
-        which = path ;
-        return 0;
+
+    for( const char **p=suffix_list ; *p != NULL ; ++p ){
+        path << *p;
+        if( NnDir::access(path.chars()) == 0 ){
+            which = path ;
+            return 0;
+        }
+        path.chop( path.length()-4 );
     }
     if( NnDir::access(nm) == 0 ){
         which = nm ;

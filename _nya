@@ -19,8 +19,6 @@ suffix lua lua
 suffix awk awk -f
 suffix vbs cscript
 suffix js  cscript
-suffix cmd %COMSPEC% /c
-suffix bat %COMSPEC% /c
 
 option +backquote
 option +history
