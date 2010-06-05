@@ -151,7 +151,7 @@ public:
 
     /** •¶š—ñ‚ğ‹ó”’‚Å•ªŠ„‚·‚é */
     void splitTo( NnString &first , NnString &rest ) const ;
-    int splitTo( NnString &first , NnString &rest , const char *dem ) const;
+    int splitTo( NnString &first , NnString &rest , const char *dem , const char *quote="\"" ) const;
     int splitTo( NnVector &vec ) const;
 
     /** ––”ö‚Ì‚P•¶š(DBCSˆÓ¯)‚ÌãˆÊ‚Wƒrƒbƒg‚ğ•Ô‚· */

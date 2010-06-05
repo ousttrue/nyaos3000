@@ -790,7 +790,7 @@ int NyadosShell::interpret1( const NnString &statement )
     NnString rest(cmdline);
     while( ! rest.empty() ){
 	NnString cmds;
-	int dem=rest.splitTo(cmds,rest,"|");
+	int dem=rest.splitTo(cmds,rest,"|","\"`");
 	if( rest.at(0) == '&' ){
 	    /* |& ‚É‘Î‚·‚é‘Î‰ž */
 	    rest.shift();

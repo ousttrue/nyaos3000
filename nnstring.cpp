@@ -372,13 +372,15 @@ void NnString::splitTo( NnString &first , NnString &rest ) const
         rest.erase();
     }
 }
-int NnString::splitTo( NnString &first , NnString &rest , const char *dem ) const
+int NnString::splitTo( NnString &first , NnString &rest , const char *dem , const char *quotechars ) const
 {
     NnString rest1;
     int i=0 , quote=0 ;
     while( i < length() ){
-	if( at(i) == '"' )
-	    quote ^= 1;
+        const char *q=strchr(quotechars,at(i));
+        if( q != NULL && *q != '\0' ){
+            quote ^= (1<<(q-quotechars));
+        }
 	if( quote==0 && strchr(dem,at(i)) != NULL ){
 	    rest1 = chars()+i+1 ;
 	    break;
@@ -561,4 +563,3 @@ NnString &NnString::addValueOf( int x )
     }
     return *this << "0123456789"[x];
 }
-

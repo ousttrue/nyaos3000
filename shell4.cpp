@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <process.h>
 #include <io.h>
 #include "shell.h"
 #include "nnstring.h"
@@ -22,7 +23,27 @@ static void glob( NnString &line )
 static int getQuoteMax()
 {
     NnString *max=(NnString*)properties.get("backquote");
-    return max == NULL ? 0 : 1024 ;
+    return max == NULL ? 0 : 8192 ;
+}
+
+struct BufferingInfo {
+    NnString buffer;
+    int fd;
+    int max;
+    BufferingInfo(int f,int m) : fd(f),max(m){}
+};
+
+static void buffering_thread( void *b_ )
+{
+    BufferingInfo *b= static_cast<BufferingInfo*>( b_ );
+    char c;
+
+    while( _read(b->fd,&c,1) > 0 ){
+        if( b->buffer.length()+1 < b->max ){
+            b->buffer << c;
+        }
+    }
+    _close( b->fd );
 }
 
 /* コマンドの標準出力の内容を文字列に取り込む. 
@@ -36,36 +57,38 @@ static int getQuoteMax()
  */
 int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
 {
-    /* テンポラリファイルを使って実現 */
-    NnString tempfn=NnDir::tempfn();
-    FILE *fp=fopen( tempfn.chars() , "w" );
-    int tmpfd = dup(1);
-    dup2( fileno(fp) , 1 );
+    extern int mkpipeline( int pipefd[] );
+    int pipefd[2];
+
+    if( mkpipeline( pipefd ) != 0 )
+        return -1;
+
+    /* 出力を受け止めるスレッドを先行して走らせておく */
+    BufferingInfo buffer(pipefd[0],max);
+    if( _beginthread( buffering_thread , 0 , &buffer ) == (uintptr_t)-1L)
+        return -1;
+
+    int savefd = dup(1);
+    dup2( pipefd[1] , 1 );
+    ::close(pipefd[1]);
 
     OneLineShell shell( cmdline );
     shell.mainloop();
 
-    dup2( tmpfd , 1 );
-    ::close( tmpfd );
-    fclose(fp);
+    dup2( savefd , 1 );
+    _commit(1);
 
-    FileReader pp( tempfn.chars() );
-    
     int lastchar=' ';
-    int ch;
-    while( !pp.eof() && (ch=pp.getchr()) != EOF ){
-        if( shrink && isSpace(ch) ){
+    for( const char *p=buffer.buffer.chars() ; *p != '\0' ; ++p ){
+        if( shrink && isSpace(*p) ){
             if( ! isSpace(lastchar) )
                 dst += ' ';
         }else{
-            dst += (char)ch;
+            dst += (char)*p;
         }
-        lastchar = ch;
-        if( max && dst.length() >= max )
-            return -1;
+        lastchar = *p;
     }
     dst.trim();
-    ::remove( tempfn.chars() );
     return 0;
 }
 
@@ -99,7 +122,7 @@ static int doQuote( const char *&sp , NnString &dst , int max , int quote )
     }
 
     NnString buffer;
-    int rc=eval_cmdline( q.chars() , buffer , max , true );
+    int rc=eval_cmdline( q.chars() , buffer , max , !quote );
     if( quote ){
         for(const char *p = buffer.chars() ; *p != '\0' ; ++p ){
             if( *p == '"' ){
@@ -216,7 +239,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
     /* パイプまわりの処理を先に実行する */
     NnString firstcmd; /* 最初のパイプ文字までのコマンド */
     NnString restcmd;  /* それ移行のコマンド */
-    src.splitTo( firstcmd , restcmd , "|" );
+    src.splitTo( firstcmd , restcmd , "|" , "\"`" );
     if( ! restcmd.empty() ){
 	if( restcmd.at(0) == '&' ){ /* 標準出力+エラー出力 */
 	    NnString pipecmds( restcmd.chars()+1 );

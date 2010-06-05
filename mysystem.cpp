@@ -55,6 +55,22 @@ typedef union mysystem_result_u {
 
 extern int which( const char *nm, NnString &which );
 
+int mkpipeline( int pipefd[] )
+{
+#ifdef OS2EMX
+    if( _pipe(pipefd) != 0 ){
+#else
+    if( _pipe(pipefd,1024,_O_TEXT | _O_NOINHERIT ) != 0 ){
+#endif
+        return -1;
+    }
+#ifdef OS2EMX
+    fcntl( pipefd[0], F_SETFD, FD_CLOEXEC );
+    fcntl( pipefd[1], F_SETFD, FD_CLOEXEC );
+#endif 
+    return 0;
+}
+
 /* 代替spawn。spawnのインターフェイスを NNライブラリに適した形で提供する。
  *      args - パラメータ
  *      wait - MYP_WAIT   : プロセス終了を待つ
@@ -328,13 +344,8 @@ static int do_pipeline(
             int handles[2];
 
             int save1=dup(1);
-#ifdef NYAOS2
-            _pipe( handles );
-            fcntl( handles[0], F_SETFD, FD_CLOEXEC );
-            fcntl( handles[1], F_SETFD, FD_CLOEXEC );
-#else
-            _pipe( handles , 0 , O_BINARY | O_NOINHERIT );
-#endif
+            if( mkpipeline( handles ) != 0 )
+                return -1;
             dup2( handles[1] , 1 );
 	    ::close( handles[1] );
             pipefd0 = handles[0];
@@ -395,17 +406,8 @@ int myPopen(const char *cmdline , const char *mode , phandle_t *phandle )
     int d=(mode[0]=='r' ? 1 : 0 );
     mysystem_result_t result;
 
-#ifdef OS2EMX
-    if( _pipe(pipefd) != 0 ){
-#else
-    if( _pipe(pipefd,1024,_O_TEXT | _O_NOINHERIT ) != 0 ){
-#endif
+    if( mkpipeline( pipefd ) != 0 )
         return -1;
-    }
-#ifdef OS2EMX
-    fcntl( pipefd[0], F_SETFD, FD_CLOEXEC );
-    fcntl( pipefd[1], F_SETFD, FD_CLOEXEC );
-#endif 
 
     backfd = dup(d);
     ::_dup2( pipefd[d] , d );
