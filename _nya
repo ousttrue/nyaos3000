@@ -26,7 +26,7 @@ option +nullcomplete
 option +tilde
 option +glob
 option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
-option uncompletechar ,;=
+option uncompletechar ,;=``
 
 foreach i (dir mkdir rmdir copy move rename ren type md rd start del)
     alias $i $COMSPEC /c $i
