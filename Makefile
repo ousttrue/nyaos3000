@@ -1,5 +1,5 @@
 LUAPATH=../lua-5.1.4
-CC=gcc -D_MT
+CC=gcc
 RM=cmd /c del
 CCC=
 
@@ -11,15 +11,19 @@ CCC=
 
 all :
 ifeq ($(OS),Windows_NT)
-	$(MAKE) CFLAGS="$(CCC) -O3 -D_MSC_VER=1000 -Wall -DLUA_ENABLE -I$(LUAPATH)/src" O=o \
+	$(MAKE) CFLAGS="$(CCC) -D_MT -O3 -D_MSC_VER=1000 -Wall -DLUA_ENABLE -I$(LUAPATH)/src" O=o \
 		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L$(LUAPATH)/src -mthread" nyaos.exe
 else
-	$(MAKE) CFLAGS="$(CCC) -O2 -DOS2EMX -DLUA_ENABLE -I$(LUAPATH)/src" O=o \
+	$(MAKE) CFLAGS="$(CCC) -Zmt -O2 -DOS2EMX -DLUA_ENABLE -I$(LUAPATH)/src" O=o \
 		LDFLAGS="-lstdcpp -lliblua -L$(LUAPATH)/src" nyaos.exe
 endif
 
 lua :
+ifeq ($(OS),Windows_NT)
 	$(MAKE) -C $(LUAPATH) CC="$(CC)" generic
+else
+	$(MAKE) -C $(LUAPATH) CC="$(CC) -Zmt" generic
+endif
 
 OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O) \
 	getline.$(O) getline2.$(O) keybound.$(O) dosshell.$(O) nnhash.$(O) \

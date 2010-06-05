@@ -38,12 +38,12 @@ static void buffering_thread( void *b_ )
     BufferingInfo *b= static_cast<BufferingInfo*>( b_ );
     char c;
 
-    while( _read(b->fd,&c,1) > 0 ){
+    while( ::read(b->fd,&c,1) > 0 ){
         if( b->buffer.length()+1 < b->max ){
             b->buffer << c;
         }
     }
-    _close( b->fd );
+    ::close( b->fd );
 }
 
 /* コマンドの標準出力の内容を文字列に取り込む. 
@@ -65,8 +65,13 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
 
     /* 出力を受け止めるスレッドを先行して走らせておく */
     BufferingInfo buffer(pipefd[0],max);
+#ifdef OS2EMX
+    if( _beginthread( buffering_thread , NULL , 655350u , &buffer ) == -1 )
+        return -1;
+#else
     if( _beginthread( buffering_thread , 0 , &buffer ) == (uintptr_t)-1L)
         return -1;
+#endif
 
     int savefd = dup(1);
     dup2( pipefd[1] , 1 );
@@ -76,7 +81,6 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
     shell.mainloop();
 
     dup2( savefd , 1 );
-    _commit(1);
 
     int lastchar=' ';
     for( const char *p=buffer.buffer.chars() ; *p != '\0' ; ++p ){
