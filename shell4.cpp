@@ -26,6 +26,8 @@ static int getQuoteMax()
     return max == NULL ? 0 : 8192 ;
 }
 
+#ifdef THREAD
+
 struct BufferingInfo {
     NnString buffer;
     int fd;
@@ -46,6 +48,8 @@ static void buffering_thread( void *b_ )
     ::close( b->fd );
 }
 
+#endif
+
 /* コマンドの標準出力の内容を文字列に取り込む. 
  *   cmdline - 実行するコマンド
  *   dst - 標準出力の内容
@@ -57,6 +61,7 @@ static void buffering_thread( void *b_ )
  */
 int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
 {
+#ifdef THREAD
     extern int mkpipeline( int pipefd[] );
     int pipefd[2];
 
@@ -76,13 +81,18 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
     int savefd = dup(1);
     dup2( pipefd[1] , 1 );
     ::close(pipefd[1]);
+#else
+    FILE *fp=tmpfile();
+    int savefd = dup(1);
+    dup2( fileno(fp) , 1 );
+#endif
 
     OneLineShell shell( cmdline );
     shell.mainloop();
 
     dup2( savefd , 1 );
-
     int lastchar=' ';
+#ifdef THREAD
     for( const char *p=buffer.buffer.chars() ; *p != '\0' ; ++p ){
         if( shrink && isSpace(*p) ){
             if( ! isSpace(lastchar) )
@@ -92,6 +102,22 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
         }
         lastchar = *p;
     }
+#else
+    rewind( fp );
+    int ch;
+    while( !feof(fp) && (ch=getc(fp)) != EOF ){
+        if( shrink && isSpace(ch) ){
+            if( ! isSpace(lastchar) )
+                dst += ' ';
+        }else{
+            dst += (char)ch;
+        }
+        lastchar = ch;
+        if( max && dst.length() >= max )
+            return -1;
+    }
+    fclose(fp);
+#endif
     dst.trim();
     return 0;
 }
