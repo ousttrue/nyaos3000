@@ -9,6 +9,15 @@
 #include "getline.h"
 #include "reader.h"
 
+static void glob( NnString &line )
+{
+    if( properties.get("glob") ){
+        NnString result;
+        glob_all( line.chars() , result );
+        line = result;
+    }
+}
+
 /* 逆クォートで読みこめる文字列量を戻す */
 static int getQuoteMax()
 {
@@ -324,6 +333,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	}
 	prevchar = prevchar1;
     }
+    glob( dst );
     return 0;
 }
 
@@ -429,5 +439,6 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
         }
         spc = isSpace( *sp );
     }
+    glob( dst );
     return 0;
 }

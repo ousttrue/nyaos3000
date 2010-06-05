@@ -13,6 +13,7 @@
 #include "nnvector.h"
 #include "nnstring.h"
 #include "nnhash.h"
+#include "nndir.h"
 #include "shell.h"
 #include "getline.h"
 #include "nua.h"

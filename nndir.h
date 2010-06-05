@@ -71,6 +71,7 @@ public:
 
 int fnexplode( const char *path , NnVector &list );
 int fnexplode_( const char *path , NnVector &list );
+NnString &glob_all( const char *line , NnString &result );
 
 class NnDir : public NnEnum {
     int 	status , hasHandle;

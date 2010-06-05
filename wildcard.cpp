@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stddef.h>
 #include "nnstring.h"
 #include "nnvector.h"
@@ -77,3 +78,29 @@ int fnexplode( const char *path , NnVector &list )
     return rc;
 }
 
+NnString &glob_all( const char *source_ , NnString &result )
+{
+    NnString left(source_) , frag ;
+    while( left.splitTo( frag , left ) , !frag.empty() ){
+        NnVector temp;
+        NnString frag_ = frag; frag_.dequote();
+
+        if( fnexplode( frag_.chars() , temp ) == 0 && temp.size() > 0 ){
+            for(int i=0;i<temp.size();++i){
+                NnFileStat *file=dynamic_cast<NnFileStat*>( temp.at(i) );
+                assert( file != NULL );
+                const NnString &fn=file->name();
+
+                if( fn.findOf(" ") >= 0 ){
+                    result << '"' << fn << "\" ";
+                }else{
+                    result << fn << ' ';
+                }
+            }
+        }else{
+            result << frag << ' ';
+        }
+    }
+    result.chop();
+    return result;
+}
