@@ -9,6 +9,7 @@
 #include "getline.h"
 #include "nndir.h"
 #include "writer.h"
+#include "nua.h"
 
 /* このハッシュテーブルに、拡張子が登録されていると、
  * その拡張子のファイル名は、実行可能と見なされる。
@@ -204,15 +205,34 @@ int DosShell::makeTopCompletionListCore( const NnString &region , NnVector &arra
                     break;
             }
         }
-        /* エイリアスを見にゆく : (注意)グローバル変数を参照している */
-        extern NnHash aliases;
-        for( NnHash::Each p(aliases) ; p.more() ; p.next() ){
-            if( p->key().istartsWith(pathcore) ){
-                if( array.append( new NnPair(new NnStringIC(p->key()) )) )
-                    break;
+    }
+    /* エイリアスを見にゆく : (注意)グローバル変数を参照している */
+    extern NnHash aliases;
+    for( NnHash::Each p(aliases) ; p.more() ; p.next() ){
+        if( p->key().istartsWith(pathcore) ){
+            if( array.append( new NnPair(new NnStringIC(p->key()) )) )
+                break;
+        }
+    }
+    /* nyaos.command を見にゆく */
+    const static char *commands[]={ "command" , "command2" , NULL };
+    for( const char **p=commands ; *p != NULL ; ++p ){
+        NyaosLua L(*p);
+        if( L.ok() ){
+            lua_pushnil(L);
+            while( lua_next(L,-2) != 0 ){
+                lua_pushvalue(L,-2);
+                const char *cmdname = lua_tostring(L,-1);
+                if( cmdname != NULL && 
+                        strnicmp(cmdname,pathcore.chars(),pathcore.length())==0 )
+                {
+                    array.append( new NnPair(new NnString( cmdname )) );
+                }
+                lua_pop(L,2);
             }
         }
     }
+
     array.sort();
     array.uniq();
     return array.size();
