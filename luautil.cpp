@@ -11,6 +11,8 @@ extern "C" {
 #include <sys/types.h>
 #include <dirent.h>
 
+const static char NYAOS_OPENDIR[] = "nyaos_opendir";
+
 static int luaone_chdir(lua_State *L)
 {
     const char *newdir = lua_tostring(L,1);
@@ -22,75 +24,54 @@ static int luaone_chdir(lua_State *L)
 
 static int luaone_bitand(lua_State *L)
 {
-    int left=lua_tointeger(L,1);
-    int right=lua_tointeger(L,2);
-    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
-        lua_pushstring(L,"not number");
-        lua_error(L);
-    }
+    int left=luaL_checkint(L,1);
+    int right=luaL_checkint(L,2);
     lua_pushinteger(L,left & right);
     return 1;
 }
 
 static int luaone_bitor(lua_State *L)
 {
-    int left=lua_tointeger(L,1);
-    int right=lua_tointeger(L,2);
-    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
-        lua_pushstring(L,"not number");
-        lua_error(L);
-    }
+    int left=luaL_checkint(L,1);
+    int right=luaL_checkint(L,2);
     lua_pushinteger(L,left | right);
     return 1;
 }
 
 static int luaone_bitxor(lua_State *L)
 {
-    int left=lua_tointeger(L,1);
-    int right=lua_tointeger(L,2);
-    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
-        lua_pushstring(L,"not number");
-        lua_error(L);
-    }
+    int left=luaL_checkint(L,1);
+    int right=luaL_checkint(L,2);
     lua_pushinteger(L,left ^ right);
     return 1;
 }
 
 static int luaone_rshift(lua_State *L)
 {
-    int left=lua_tointeger(L,1);
-    int right=lua_tointeger(L,2);
-    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
-        lua_pushstring(L,"not number");
-        lua_error(L);
-    }
+    int left=luaL_checkint(L,1);
+    int right=luaL_checkint(L,2);
     lua_pushinteger(L,left >> right);
     return 1;
 }
 
 static int luaone_lshift(lua_State *L)
 {
-    int left=lua_tointeger(L,1);
-    int right=lua_tointeger(L,2);
-    if( !lua_isnumber(L,1) || ! lua_isnumber(L,1) ){
-        lua_pushstring(L,"not number");
-        lua_error(L);
-    }
+    int left=luaL_checkint(L,1);
+    int right=luaL_checkint(L,2);
     lua_pushinteger(L,left << right);
     return 1;
 }
 
 static int luaone_readdir(lua_State *L)
 {
-    void *userdata;
-    DIR  *dirhandle;
+    void *userdata  = luaL_checkudata(L,1,NYAOS_OPENDIR);
+    DIR  *dirhandle = *static_cast<DIR**>( userdata );
     struct dirent *dirent;
 
-    if( (userdata  = lua_touserdata(L,1)) == NULL ||
-        (dirhandle = *(DIR**)userdata)      == NULL ){
+    if( dirhandle == NULL )
         return 0;
-    }
-    if( (dirent    = readdir(dirhandle)) == NULL ){
+    
+    if( (dirent = readdir(dirhandle)) == NULL ){
         closedir(dirhandle);
         *(DIR**)userdata = NULL;
         return 0;
@@ -102,25 +83,20 @@ static int luaone_readdir(lua_State *L)
 
 static int luaone_closedir(lua_State *L)
 {
-    void *userdata;
-    DIR *dirhandle;
+    void *userdata = luaL_checkudata(L,1,NYAOS_OPENDIR);
+    DIR *dirhandle = *static_cast<DIR**>(userdata) ;
 
-    if( (userdata=lua_touserdata(L,1)) != NULL &&
-        (dirhandle = *(DIR**)userdata)   != NULL )
-    {
+    if( dirhandle != NULL )
         closedir(dirhandle);
-    }
+    
     return 0;
 }
 
 static int luaone_opendir(lua_State *L)
 {
-    const char *dir = lua_tostring(L,1);
+    const char *dir = luaL_checkstring(L,1);
     DIR *dirhandle;
     void *userdata=NULL;
-
-    if( dir == NULL )
-        return 0;
 
     dirhandle=opendir(dir);
     lua_pop(L,1);
@@ -132,7 +108,7 @@ static int luaone_opendir(lua_State *L)
     memcpy( userdata , &dirhandle , sizeof(dirhandle) );
 
     /* create metatable for closedir */
-    lua_newtable(L); /* stack:3 */
+    luaL_newmetatable(L,NYAOS_OPENDIR); /* stack:3 */
     lua_pushstring(L,"__gc");
     lua_pushcfunction(L,luaone_closedir);
     lua_settable(L,3);
@@ -155,15 +131,12 @@ static struct luaone_s {
     { NULL    , NULL } ,
 };
 
-/*  nyaos.util = require("lueutil")
- */
 int open_luautil( lua_State *L )
 {
     lua_newtable(L);
     for(struct luaone_s *p=luaone ; p->name != NULL ; p++ ){
-        lua_pushstring(L,p->name);
         lua_pushcfunction(L,p->func);
-        lua_settable(L,-3);
+        lua_setfield(L,-2,p->name);
     }
     return 1;
 }
