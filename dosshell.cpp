@@ -206,12 +206,15 @@ int DosShell::makeTopCompletionListCore( const NnString &region , NnVector &arra
             }
         }
     }
-    /* エイリアスを見にゆく : (注意)グローバル変数を参照している */
-    extern NnHash aliases;
-    for( NnHash::Each p(aliases) ; p.more() ; p.next() ){
-        if( p->key().istartsWith(pathcore) ){
-            if( array.append( new NnPair(new NnStringIC(p->key()) )) )
-                break;
+    /* エイリアス・関数名を見にゆく : (注意)グローバル変数を参照している */
+    extern NnHash aliases,functions;
+    static NnHash *hash_list[]={ &aliases , &functions , NULL };
+    for( NnHash **hash=hash_list ; *hash != NULL ; ++hash ){
+        for( NnHash::Each p(**hash) ; p.more() ; p.next() ){
+            if( p->key().istartsWith(pathcore) ){
+                if( array.append( new NnPair(new NnStringIC(p->key()) )) )
+                    break;
+            }
         }
     }
     /* nyaos.command を見にゆく */
