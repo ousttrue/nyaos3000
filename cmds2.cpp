@@ -193,22 +193,22 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
             if( lhs.compare(rhs) != 0 )
                 flag = !flag;
         }else if( arg1.icompare("-ne")==0 ){
-            if( atoi(arg1.chars()) != atoi(rhs.chars()))
+            if( atoi(lhs.chars()) != atoi(rhs.chars()))
                 flag = !flag;
         }else if( arg1.icompare("-eq")==0 ){
-            if( atoi(arg1.chars()) == atoi(rhs.chars()))
+            if( atoi(lhs.chars()) == atoi(rhs.chars()))
                 flag = !flag;
         }else if( arg1.icompare("-lt")==0 ){
-            if( atoi(arg1.chars()) < atoi(rhs.chars()))
+            if( atoi(lhs.chars()) < atoi(rhs.chars()))
                 flag = !flag;
         }else if( arg1.icompare("-gt")==0 ){
-            if( atoi(arg1.chars()) > atoi(rhs.chars()))
+            if( atoi(lhs.chars()) > atoi(rhs.chars()))
                 flag = !flag;
         }else if( arg1.icompare("-le")==0 ){
-            if( atoi(arg1.chars()) <= atoi(rhs.chars()))
+            if( atoi(lhs.chars()) <= atoi(rhs.chars()))
                 flag = !flag;
         }else if( arg1.icompare("-ge")==0 ){
-            if( atoi(arg1.chars()) >= atoi(rhs.chars()))
+            if( atoi(lhs.chars()) >= atoi(rhs.chars()))
                 flag = !flag;
         }else{
             conErr << arg1 << ": Syntax Error\n";
