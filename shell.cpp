@@ -906,6 +906,7 @@ int cmd_foreach ( NyadosShell & , const NnString & );
 int cmd_pwd     ( NyadosShell & , const NnString & );
 int cmd_folder  ( NyadosShell & , const NnString & );
 int cmd_lua_e   ( NyadosShell & , const NnString & );
+int cmd_function_list( NyadosShell & , const NnString & );
 
 int cmd_eval( NyadosShell &shell , const NnString &argv )
 {
@@ -950,6 +951,7 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "unalias" , &cmd_unalias  },
 	{ "unoption", &cmd_unoption },
 	{ "unsuffix", &cmd_unsuffix },
+	{ "{}"      , &cmd_function_list },
 	{ 0 , 0 },
     };
     /* Ã“Iƒƒ“ƒo•Ï”‚ğˆê“x‚¾‚¯‰Šú‰»‚·‚é */

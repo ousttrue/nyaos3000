@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 #include "nnstring.h"
 #include "nnvector.h"
@@ -87,6 +88,7 @@ public:
     NnExecutable_BufferedShell( BufferedShell *shell ) : shell_(shell){}
     ~NnExecutable_BufferedShell(){ delete shell_; }
 
+    BufferedShell *shell(){ return shell_; }
     int operator()( const NnVector &args );
 };
 
@@ -94,6 +96,22 @@ int NnExecutable_BufferedShell::operator()( const NnVector &args )
 {
     shell_->setArgv((NnVector*)args.clone());
     return shell_->mainloop();
+}
+
+/* ŠÖ”‚Ìˆê——”­su{}v */
+int cmd_function_list( NyadosShell &shell , const NnString &argv )
+{
+    for( NnHash::Each e(functions) ; e.more() ; ++e ){
+        conOut << e->key() << "{\n";
+        NnExecutable_BufferedShell *bShell
+            = dynamic_cast<NnExecutable_BufferedShell*>( e->value() );
+        assert( bShell != NULL );
+        for(int i=0 ; i<bShell->shell()->size() ; ++i ){
+            conOut << "\t" << bShell->shell()->statement(i) << "\n";
+        }
+        conOut << "}\n";
+    }
+    return 0;
 }
 
 /* ’†Š‡ŒÊ‚É‚æ‚éŠÖ”éŒ¾ */
