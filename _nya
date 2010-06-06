@@ -28,10 +28,21 @@ option +glob
 option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
 option uncompletechar ,;=``
 
-foreach i (dir mkdir rmdir copy move rename ren type md rd start del)
+foreach i (mkdir rmdir type md rd start )
     alias $i $COMSPEC /c $i
 end
-alias dir\w %COMSPEC% /c dir /w
+
+foreach cmd (dir copy move del rename ren del)
+    $cmd{
+        if %glob.defined% -ne 0 then
+            option -glob
+            $COMSPEC /c $0 $*
+            option +glob
+        else
+            $COMSPEC /c $0 $*
+        endif
+    }
+end
 
 bindkey CTRL_P vzlike-previous-history
 bindkey CTRL_N vzlike-next-history
