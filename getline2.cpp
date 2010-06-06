@@ -274,7 +274,10 @@ int GetLine::read_complete_list( Completion &r )
         /* 第二引数：文字列開始位置 */
         lua_pushinteger( L , r.at );
 
-        if( lua_pcall(L,2,1,0) == 0 ){
+        /* 第三引数：コマンドライン全部 */
+        lua_pushstring( L , buffer.chars() ); 
+
+        if( lua_pcall(L,3,1,0) == 0 ){
             if( lua_istable(L,-1) ){
                 lua_pushnil(L);
                 while( lua_next(L,-2) != 0 ){
