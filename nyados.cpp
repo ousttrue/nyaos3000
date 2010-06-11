@@ -19,7 +19,7 @@
 #include "source.h"
 
 #ifndef VER
-#define VER "2.97_0"
+#define VER "2.98_0"
 #endif
 
 #ifdef _MSC_VER
