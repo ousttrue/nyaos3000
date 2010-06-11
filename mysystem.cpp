@@ -104,7 +104,7 @@ static int mySpawn(
                 fullpath_cmdname.iendsWith(".cmd") ||
                 fullpath_cmdname.iendsWith(".bat") ) )
     {
-        cmdline << "/c " << fullpath_cmdname << ' ';
+        cmdline << "/c ";
         fullpath_cmdname = comspec;
     }
 
