@@ -104,8 +104,8 @@ static int mySpawn(
                 fullpath_cmdname.iendsWith(".cmd") ||
                 fullpath_cmdname.iendsWith(".bat") ) )
     {
-        cmdline << "/c ";
-        fullpath_cmdname = comspec;
+        cmdline << comspec << " /C ";
+        fullpath_cmdname = cmdname = comspec;
     }
 
     for(int i=0 ; i < args.size() ; ++i ){
@@ -127,7 +127,11 @@ static int mySpawn(
         free( argv );
     }else{
         char errbuffer[ 256 ];
-        cmdline[ dynamic_cast<const NnString*>( args.const_at(0) )->length() ] = '\0';
+
+        char *zero=strchr(cmdline.chars(),' ');
+        if( zero != NULL )
+            *zero = '\0';
+
         RESULTCODES resultcodes;
 
         if( DosExecPgm(
