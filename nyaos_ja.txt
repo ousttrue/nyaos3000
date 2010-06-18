@@ -1166,6 +1166,7 @@ alias/option/suffix/folder の定義、argv(nyaos起動時のパラメータ)を格納している
 
 このようにテーブル nyaos.filter の中に関数を定義すると、%(数式) を
 結果にコンバートするといったことができるようになります。
+関数は辞書順に呼び出されます。
 (なお、互換性のため、nyaos.filter 自体に関数を代入しても動作します)
 
     [c:nyaos3k]
@@ -1302,6 +1303,8 @@ NYAOS の直接の動作には影響しませんが、ツールとして次のような関数を提供しています
 
     print('Loading ' .. nyaos.rcfname)
 
+* nyaos.pid - 現在実行中の NYAOS のプロセスID
+
 * nyaos.exec - NYAOS コマンドの呼び出し
 
     lua_e "nyaos.exec('ls -l')"
@@ -1419,6 +1422,10 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+2.99_0 (2010/06/19)
+    - nyaos.filter.XXXXXX を XXXXXX の辞書順で呼び出すようにした。
+    - nyaos.pid で自分のプロセスIDを参照できるようにした。
 
 2.98_0 (2010/06/11)
     - option +glob でワイルドカード展開をシェル側でするようにした。

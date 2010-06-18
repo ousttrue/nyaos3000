@@ -995,6 +995,8 @@ you can do:
 $ echo %(1+2+3)
 6
 
+nyaos.filter.xxxxx are called order by xxxxx's ascii-code.
+
 nyaos.filter2 is like nyaos.filter but its parameter is the commandline after
 alias and suffix are extracted.
 
@@ -1114,6 +1116,8 @@ Tools
 
     In _nya :
         print('Loading ' .. nyaos.rcfname)
+
+- nyaos.pid - current runnning nyaos's process-id
 
 Execute NYAOS-command in Lua-code
 ----------------------------------
