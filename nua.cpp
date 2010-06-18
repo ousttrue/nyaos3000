@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
+#include <sys/types.h>
+#include <unistd.h>
 #include "nnhash.h"
 #include "getline.h"
 #include "nua.h"
@@ -508,6 +510,9 @@ int NyaosLua::init()
         lua_setfield(L,-2,"getkey");
         lua_pushcfunction(L,nua_default_complete);
         lua_setfield(L,-2,"default_complete");
+
+        lua_pushinteger(L, getpid() );
+        lua_setfield(L,-2,"pid");
 
         /* nyaos.command[] */
         lua_newtable(L);
