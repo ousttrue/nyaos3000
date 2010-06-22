@@ -280,8 +280,8 @@ static void cnv_sla_opt( const NnString &src , NnString &dst )
  *      argv    - 引数を全て連結したもの
  *      replace - 結果
  */
-static void dollar( const char *&p , NnVector &param ,
-                    NnString &argv , NnString &replace )
+static void dollar( const char *&p , const NnVector &param ,
+                    const NnString &argv , NnString &replace )
 {
     switch( p[1] ){
     default:           replace << '$';  ++p;    break;
@@ -299,13 +299,13 @@ static void dollar( const char *&p , NnVector &param ,
     case '5':case '6':case '7':case '8':case '9':
 	/* $1,$2 など */
 	int n=(int)strtol(p+1,(char**)&p,10); 
-	NnString *s=(NnString*)param.at(n);
+	const NnString *s=(const NnString*)param.const_at(n);
 	if( s != NULL )
 	    replace << *s;
 	if( *p == '*' ){
 	    /* 「$1*」など */
 	    while( ++n < param.size() )
-		replace << ' ' << *(NnString*)param.at(n);
+		replace << ' ' << *(const NnString*)param.const_at(n);
 	    ++p ;
 	}
 	break;
@@ -328,9 +328,18 @@ int OneLineShell::operator !() const
     return 0;
 }
 
-static void replaceDollars( const NnString *aliasValue ,
-			    NnVector &param ,
-			    NnString &argv ,
+/* エイリアス用に $ 引数を置換する
+ *    aliasValue - エイリアスの定義文字列
+ *    param   - コマンドラインのパラメータ配列
+ *    argv    - 分割前の param
+ *    replace - 置換結果を格納するバッファ
+ * return
+ *    1 - $ による置換があった
+ *    0 - $ による置換はなかった
+ */
+static int replaceDollars( const NnString *aliasValue ,
+			    const NnVector &param ,
+			    const NnString &argv ,
 			    NnString &replace )
 {
     int dollarflag=0;
@@ -342,8 +351,7 @@ static void replaceDollars( const NnString *aliasValue ,
 	    replace << *p++ ;
 	}
     }
-    if( ! dollarflag )
-       replace << ' ' << argv;
+    return dollarflag;
 }
 
 int sub_brace_start( NyadosShell &bshell , 
@@ -728,15 +736,13 @@ static int which_pathquote( const char *fn , NnString &fullpath )
 }
 
 /* インタープリタ名挿入
- *	 start - "" or "start " 等
  *	 script - スクリプト名
- *	 argv - 引数
+ *	 argv   - 引数(スクリプト名より後のパラメータ)
  *       buffer - 挿入先バッファ
  * return
  *       0 - 成功 , !0 - 失敗(replace 変更なし)
  */
-static int insertInterpreter( const char *start ,
-			      const char *script ,
+static int insertInterpreter( const char *script ,
 			      const NnString &argv ,
 			      NnString &buffer )
 {
@@ -744,16 +750,19 @@ static int insertInterpreter( const char *start ,
     if( intnm == NULL )
 	return 1; /* 拡張子該当なし */
 
-    buffer << start << *intnm << ' ';
-
     /* スクリプトのフルパスを取得する */
-    NnString fullpath;
-    if( which_pathquote(script,fullpath) != 0 ){
-	buffer << script;
-    }else{
-	buffer << fullpath;
+    NnString path;
+    if( which_pathquote(script,path) != 0 ){
+        path = script;
     }
-    buffer << ' ' << argv ;
+    /* $0 ～ $9 を作っておく */
+    NnVector param;
+    param.append( path.clone() );
+    argv.splitTo( param );
+
+    if( replaceDollars( intnm , param , argv , buffer ) == 0 ){
+	buffer << ' ' << path << ' ' << argv;
+    }
     return 0;
 }
 
@@ -818,9 +827,11 @@ int NyadosShell::interpret1( const NnString &statement )
             NnVector param;
             param.append( arg0.clone() );
 	    argv.splitTo( param );
-	    replaceDollars( aliasValue , param , argv , replace );
+	    if( replaceDollars( aliasValue , param , argv , replace ) == 0 ){
+	       replace << ' ' << argv;
+	    }
 	}else{
-	    if( insertInterpreter("",arg0low.chars(),argv,replace) != 0 )
+	    if( insertInterpreter(arg0low.chars(),argv,replace) != 0 )
 		replace << arg0 << ' ' << argv ;
 	}
 	
