@@ -575,13 +575,17 @@ suffix
 
 Associate SUFFIX with INTERPRETOR.
 
-    [C:\] suffix pl perl
-    [C:\] hoge.pl
-=> equals to 'perl hoge.pl'
+        [C:\] suffix pl perl
+        [C:\] hoge.pl
+    => equals to 'perl hoge.pl'
 
   * SUFFIX must not have period.
   * Files whose name has .SUFFIX are put into list for the command name
     completion.
+  * Instead of INTERPRETOR, we can write sentence using macros like alias.
+
+        [C:\] suffix lua "lua $0"
+    
 
 unalias
 -------
