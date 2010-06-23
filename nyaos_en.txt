@@ -584,7 +584,7 @@ Associate SUFFIX with INTERPRETOR.
     completion.
   * Instead of INTERPRETOR, we can write sentence using macros like alias.
 
-        [C:\] suffix lua "lua $0"
+        [C:\] suffix lua "lua $0 $*"
     
 
 unalias

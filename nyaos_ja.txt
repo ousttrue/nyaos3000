@@ -712,7 +712,7 @@ suffix
       ‘‚­‚±‚Æ‚à‚Å‚«‚Ü‚·B
 
     —á:
-        [c:\usr] suffix lua "lua $0"
+        [c:\usr] suffix lua "lua $0 $*"
 
 unalias
 -------
