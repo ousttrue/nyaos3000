@@ -242,7 +242,7 @@ static int getkey_()
     int86( 0x21 , &in , &out );
     return out.h.al & 255;
 #endif
-#elif defined(NYAOS2)
+#elif defined(__EMX__)
     return _read_kbd(0,1,0);
 #elif defined(NYACUS)
     int c;
@@ -298,7 +298,7 @@ void Console::writeClipBoard( const char *ptr , int size )
         SetClipboardData(CF_TEXT, hText);
         CloseClipboard();
     }
-#elif defined(NYAOS2)
+#elif defined(__EMX__)
     char *pText = NULL;
     DosAllocSharedMem( (void**)(&pText)
 			, NULL

@@ -38,7 +38,7 @@ static NnString ls_end_code ;
 volatile int ctrl_c=0;
 
 /* CTRL-C ‚ª‰Ÿ‚³‚ê‚½Žž‚Ìƒnƒ“ƒhƒ‹ */
-#ifdef NYAOS2
+#ifdef __EMX__
 static void handle_ctrl_c(int sig)
 {
     ctrl_c = 1;
