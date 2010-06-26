@@ -1,8 +1,6 @@
 #ifndef NUA_H
 #define NUA_H
 
-#ifdef LUA_ENABLE
-
 #include "nnlua.h"
 
 class NyaosLua : public NnLua {
@@ -21,6 +19,5 @@ class NyaosLua : public NnLua {
 void redirect_emu_to_real(int &back_in, int &back_out,int &back_err);
 void redirect_rewind(int back_in, int back_out,int back_err);
 
-#endif
 #endif
 /* vim:set ft=cpp textmode: */

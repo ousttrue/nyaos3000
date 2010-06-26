@@ -134,7 +134,6 @@ Status GetLine::operator() ( NnString &result )
     for(;;){
         int key=getkey();
         Status rc=NEXTCHAR;
-#ifdef LUA_ENABLE
         NyaosLua L(NULL); /* stacked [nyaos] */
         if( L.ok() ){
             lua_getfield(L,-1,"keyhook"); /* [nyaos,keyhook] */
@@ -190,11 +189,8 @@ Status GetLine::operator() ( NnString &result )
                 rc = interpret(key);
             }
         }else{
-#endif
             rc = interpret(key);
-#ifdef LUA_ENABLE
         }
-#endif
 	int len;
         switch( rc ){
         case NEXTCHAR:

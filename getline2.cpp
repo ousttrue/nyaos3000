@@ -263,7 +263,6 @@ int GetLine::read_complete_list( Completion &r )
 	return -1;
 
     r.n = 0;
-#ifdef LUA_ENABLE
     NyaosLua L("complete");
     if( L.ok() && lua_isfunction(L,-1) ){
         /* 第一引数：ベース文字列 */
@@ -323,16 +322,13 @@ int GetLine::read_complete_list( Completion &r )
             lua_pop(L,1); /* drop error message */
         }
     }else{
-#endif
         // 補完リスト作成
         if( r.at == 0 ){
             makeTopCompletionList( r.word , r.list );
         }else{
             makeCompletionList( r.word , r.list );
         }
-#ifdef LUA_ENABLE
     }
-#endif
     return r.n = r.list.size();
 }
 

@@ -369,7 +369,6 @@ static void filter_with_lua(
         NnString &result)
 {
     result = source;
-#ifdef LUA_ENABLE
     NyaosLua L(hookname);
 
     if( L != NULL ){
@@ -412,7 +411,6 @@ static void filter_with_lua(
 errpt:
     const char *msg = lua_tostring(L,-1);
     conErr << msg << '\n';
-#endif
 }
 
 /* Lua関数の戻り値を適当に、整数戻り値にする。
@@ -494,7 +492,6 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
             goto exit;
         }
     }else{
-#ifdef LUA_ENABLE
         {
             NyaosLua L("command2");
             if( L.ok() && lua_istable(L,-1) ){
@@ -544,7 +541,6 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
                 goto exit;
             }
         }
-#endif
         NnExecutable *func = (NnExecutable*)functions.get(arg0low);
 	// BufferedShell *bShell = (BufferedShell*)
 	if( func != NULL ){

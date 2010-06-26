@@ -103,7 +103,6 @@ static int opt_e( int argc , char **argv , int &i )
  */
 static int opt_EF( int argc , char **argv , int &i )
 {
-#ifdef LUA_ENABLE
     if( i+1 >= argc ){
 	conErr << "option needs commandline.\n";
 	return 2;
@@ -131,17 +130,12 @@ static int opt_EF( int argc , char **argv , int &i )
         goto errpt;
 
     lua_settop(L,0);
-#else
-    shell.err() << "require: built-in lua disabled.\n";
-#endif /* defined(LUA_ENABLE) */
     return 1;
-#ifdef LUA_ENABLE
   errpt:
     const char *msg = lua_tostring( L , -1 );
     fputs(msg,stderr);
     putc('\n',stderr);
     return 2;
-#endif
 }
 
 /* -f スクリプト実行用オプション処理

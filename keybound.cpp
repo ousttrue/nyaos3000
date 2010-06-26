@@ -409,7 +409,6 @@ void GetLine::bindinit()
     bindmap[ KEY_CTRL_UP ]    = &GetLine::xscript;
     KeyFunctionXScript::init();
 #endif
-#ifdef LUA_ENABLE
     NyaosLua L(NULL);
     if( L != NULL ){
         lua_newtable(L);
@@ -420,6 +419,5 @@ void GetLine::bindinit()
         }
         lua_setfield(L,-2,"key");
     }
-#endif
 }
 

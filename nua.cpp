@@ -1,8 +1,6 @@
 #include <assert.h>
 #include "shell.h"
 
-#ifdef LUA_ENABLE
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
@@ -541,7 +539,6 @@ int NyaosLua::init()
     }
     return initialized ? 0 : -1;
 }
-#endif /* defined(LUA_ENABLED) */
 
 void redirect_emu_to_real(int &back_in, int &back_out,int &back_err)
 {
@@ -620,7 +617,6 @@ void redirect_rewind(int back_in, int back_out,int back_err)
 
 int cmd_lua_e( NyadosShell &shell , const NnString &argv )
 {
-#ifdef LUA_ENABLE
     int back_in, back_out , back_err;
 
     NnString arg1,left;
@@ -657,8 +653,5 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     Console::disable_ctrl_c();
 #endif
     redirect_rewind( back_in , back_out , back_err );
-#else
-    conErr << "require: built-in lua disabled.\n";
-#endif /* defined(LUA_ENABLED) */
     return 0;
 }
