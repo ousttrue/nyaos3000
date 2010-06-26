@@ -14,7 +14,7 @@ ifeq ($(OS),Windows_NT)
 	$(MAKE) CFLAGS="$(CCC) -O3 -Wall -I$(LUAPATH)/src" O=o \
 		LDFLAGS="-s -lole32 -luuid -llua -lstdc++ -L$(LUAPATH)/src" nyaos.exe
 else
-	$(MAKE) CFLAGS="$(CCC) -O2 -DOS2EMX -I$(LUAPATH)/src" O=o \
+	$(MAKE) CFLAGS="$(CCC) -O2 -I$(LUAPATH)/src" O=o \
 		LDFLAGS="-lstdcpp -lliblua -L$(LUAPATH)/src" nyaos.exe
 endif
 

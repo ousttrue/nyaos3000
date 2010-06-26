@@ -276,7 +276,7 @@ int main( int argc, char **argv )
     }
 
     signal( SIGINT , SIG_IGN );
-#ifdef OS2EMX
+#ifdef __EMX__
     signal( SIGPIPE , SIG_IGN );
 #endif
 

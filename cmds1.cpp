@@ -4,7 +4,7 @@
 #if defined(NYADOS)
 #  include <dos.h>
 #endif
-#ifndef OS2EMX
+#ifndef __EMX__
 #  include <dir.h>
 #endif
 #include <errno.h>

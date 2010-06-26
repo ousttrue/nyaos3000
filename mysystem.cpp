@@ -10,7 +10,7 @@
 
 #if defined(NYADOS)
 #  include <dos.h>
-#elif defined(OS2EMX)
+#elif defined(__EMX__)
 #  include <fcntl.h>
 #  define INCL_DOSSESMGR
 #  define INCL_DOSERRORS
@@ -42,7 +42,7 @@ typedef enum mysystem_process_e {
 } mysystem_process_t;
 
 typedef union mysystem_result_u {
-#ifdef OS2EMX
+#ifdef __EMX__
     int rc;
     int phandle;
     int pid;
@@ -57,14 +57,14 @@ extern int which( const char *nm, NnString &which );
 
 int mkpipeline( int pipefd[] )
 {
-#ifdef OS2EMX
+#ifdef __EMX__
     if( _pipe(pipefd) != 0 ){
 #else
     if( _pipe(pipefd,1024,_O_TEXT | _O_NOINHERIT ) != 0 ){
 #endif
         return -1;
     }
-#ifdef OS2EMX
+#ifdef __EMX__
     fcntl( pipefd[0], F_SETFD, FD_CLOEXEC );
     fcntl( pipefd[1], F_SETFD, FD_CLOEXEC );
 #endif 
@@ -112,7 +112,7 @@ static int mySpawn(
         cmdline << args.const_at(i)->repr() << ' ';
     }
     cmdline.chop();
-#ifdef OS2EMX
+#ifdef __EMX__
     unsigned long type=0;
     int rc=DosQueryAppType( (unsigned char *)cmdname.chars() , &type );
     if( wait == MYP_WAIT && rc ==0  &&  (type & 7 )== FAPPTYP_WINDOWAPI){
@@ -433,7 +433,7 @@ void myPclose(int fd, phandle_t phandle )
     if( fd >= 0 ){
         ::_close(fd);
         if( phandle ){
-#ifdef OS2EMX
+#ifdef __EMX__
             // ::waitpid(phandle,NULL,0);
             RESULTCODES resultcodes;
             PID pidChild;

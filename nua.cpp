@@ -34,7 +34,7 @@ static void lstop (lua_State *L, lua_Debug *ar) {
   luaL_error(L, "interrupted!");
 }
 
-#ifdef OS2EMX
+#ifdef __EMX__
 static void handle_ctrl_c(int sig)
 {
     NnLua L;
@@ -630,7 +630,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     NyaosLua L;
 
     redirect_emu_to_real( back_in , back_out , back_err );
-#ifdef OS2EMX
+#ifdef __EMX__
     signal( SIGINT , handle_ctrl_c );
 #else
     Console::enable_ctrl_c();
@@ -646,7 +646,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     }
     lua_settop(L,0);
 
-#ifdef OS2EMX
+#ifdef __EMX__
     signal( SIGINT , SIG_IGN );
 #else
     SetConsoleCtrlHandler( handle_ctrl_c , FALSE );

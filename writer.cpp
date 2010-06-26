@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#ifdef OS2EMX
+#ifdef __EMX__
 #  include <sys/wait.h>
 #endif
 #include <sys/stat.h>

@@ -1,7 +1,7 @@
 #ifndef MYSYSTEM_H
 #define MYSYSTEM_H
 
-#ifdef OS2EMX
+#ifdef __EMX__
     typedef unsigned long phandle_t;
 #else
 #   include <windows.h>

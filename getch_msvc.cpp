@@ -9,7 +9,7 @@
   
 */
 
-#ifndef OS2EMX
+#ifndef __EMX__
 
 #include <windows.h>
 #ifdef BUILD_FOR_WCHAR

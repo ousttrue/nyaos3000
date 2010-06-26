@@ -70,7 +70,7 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
 
     /* 出力を受け止めるスレッドを先行して走らせておく */
     BufferingInfo buffer(pipefd[0],max);
-#ifdef OS2EMX
+#ifdef __EMX__
     if( _beginthread( buffering_thread , NULL , 655350u , &buffer ) == -1 )
         return -1;
 #else

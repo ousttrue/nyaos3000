@@ -5,7 +5,7 @@
 #  include <dos.h>
 #endif
 #include <string.h>
-#ifndef OS2EMX
+#ifndef __EMX__
 #  include <dir.h>
 #endif
 #include <errno.h>

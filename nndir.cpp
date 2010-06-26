@@ -17,7 +17,7 @@
 #  include <io.h>
 #endif
 
-#if defined(OS2EMX)
+#if defined(__EMX__)
 #  define INCL_DOSFILEMGR
 #  include <os2.h>
 #else
@@ -226,7 +226,7 @@ unsigned NnDir::findcore( union REGS &in , union REGS &out )
 #endif
 
 /* Short FN しか使えない場合のファイルバッファ:固定 */
-#if defined(OS2EMX)
+#if defined(__EMX__)
     static _FILEFINDBUF4 findbuf;
     static ULONG findcount;
 #elif defined(__DMC__)
@@ -313,7 +313,7 @@ unsigned NnDir::findfirst(  const NnString &p_path , unsigned attr )
 #endif
     hasHandle = 0;
     handle = 0;
-#if defined(OS2EMX)
+#if defined(__EMX__)
     /***  emx/gcc code for NYAOS-II ***/
     handle = 0xFFFFFFFF;
     findcount = 1 ;
@@ -390,7 +390,7 @@ unsigned NnDir::findnext()
 #endif
     }
 #endif
-#if defined(OS2EMX)
+#if defined(__EMX__)
     /*** emx/gcc code for NYAOS-II(OS/2) ***/
     int result=DosFindNext(handle,&findbuf,sizeof(findbuf),&findcount);
     if( result == 0 ){
@@ -452,7 +452,7 @@ void NnDir::findclose()
 	in.x.ax = 0x71A1;
 	in.x.bx = handle;
 	intdos(&in, &out);
-#elif defined(OS2EMX)
+#elif defined(__EMX__)
         DosFindClose( handle );
 #elif defined(__MINGW32__)
 	::findclose();
@@ -475,7 +475,7 @@ int NnDir::getcwd( NnString &pwd )
     if( ! isLfnOk() ){
 #endif
 	char buffer[256];
-#ifdef OS2EMX
+#ifdef __EMX__
 	if( ::_getcwd2(buffer,sizeof(buffer)) != NULL ){
 #else
 	if( ::getcwd(buffer,sizeof(buffer)) != NULL ){
@@ -616,7 +616,7 @@ int NnDir::chdir( const char *argv )
     }
 #endif
     if( isAlpha(newdir.at(0)) && newdir.at(1)==':' ){
-#ifdef OS2EMX
+#ifdef __EMX__
         _chdrive( newdir.at(0) );
 #else
         setdisk( (newdir.at(0) & 0x1F)-1 );
@@ -827,7 +827,7 @@ int NnDir::access( const char *path )
 int  NnDir::chdrive( int driveletter )
 {
     return 
-#ifdef OS2EMX
+#ifdef __EMX__
 	_chdrive( driveletter );
 #else
 	setdisk( (driveletter & 0x1F )- 1 );
@@ -840,7 +840,7 @@ int  NnDir::chdrive( int driveletter )
 int NnDir::getcwdrive()
 {
     return 
-#ifdef OS2EMX
+#ifdef __EMX__
 	_getdrive();
 #elif defined(__TURBOC__)
 	'A'+getdisk();

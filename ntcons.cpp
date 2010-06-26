@@ -16,7 +16,7 @@
 #include "ntcons.h"
 #include "nnstring.h"
 
-#if defined(OS2EMX) /*** OS/2 ê—p static •Ï”/ŠÖ”ŒQ ***/
+#if defined(__EMX__) /*** OS/2 ê—p static •Ï”/ŠÖ”ŒQ ***/
 
 #include <sys/kbdscan.h>
 #define INCL_WIN
