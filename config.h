@@ -28,7 +28,7 @@
 #   endif
 #   undef   ARRAY_DELETE_NEED_SIZE      /* 配列のdeleteに要素数は不要 */
 #   define  TEMPLATE_OK
-#elif defined(_MSC_VER)					/* VC */
+#elif defined(__MINGW32__)					/* VC */
 #    define NYACUS                      /* NYACUS を作成する */
 #    undef  ESCAPE_SEQUENCE_OK          /* エスケープシーケンスが解釈不能 */
 #    undef  ARRAY_DELETE_NEED_SIZE      /* 配列のdeleteに要素数は不要 */

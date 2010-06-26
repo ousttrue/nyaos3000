@@ -50,7 +50,7 @@ int NnTimeStamp::compare( const NnTimeStamp &o ) const
 	                      :  o.second - second ;
 }
 
-#ifdef _MSC_VER
+#ifdef __MINGW32__
 static void stamp_conv( const FILETIME *p , NnTimeStamp &stamp_)
 {
     FILETIME local;
@@ -231,7 +231,7 @@ unsigned NnDir::findcore( union REGS &in , union REGS &out )
     static ULONG findcount;
 #elif defined(__DMC__)
     static struct find_t findbuf;
-#elif defined(_MSC_VER)
+#elif defined(__MINGW32__)
 	#include <windows.h>
 	static WIN32_FIND_DATA wfd;
 	static HANDLE hfind = INVALID_HANDLE_VALUE;
@@ -240,7 +240,7 @@ unsigned NnDir::findcore( union REGS &in , union REGS &out )
     static struct ffblk findbuf;
 #endif
 
-#ifdef _MSC_VER
+#ifdef __MINGW32__
 static int findfirst( const char* path, DWORD attr)
 {
     attributes = attr;
@@ -348,7 +348,7 @@ unsigned NnDir::findfirst(  const NnString &p_path , unsigned attr )
 	stamp_conv( findbuf.wr_date , findbuf.wr_time , stamp_ );
     }
 #endif
-#elif defined(_MSC_VER)
+#elif defined(__MINGW32__)
     /**** VC++ code for NYACUS but not maintenanced by hayama ****/
     result = ::findfirst( path.chars(), attr);
     if( result==0){
@@ -419,7 +419,7 @@ unsigned NnDir::findnext()
 	stamp_conv( findbuf.wr_date , findbuf.wr_time , stamp_ );
     }
 #endif
-#elif defined(_MSC_VER)
+#elif defined(__MINGW32__)
     /*** Visual C++ ***/
     int result = ::findnext();
     if( result==0){
@@ -454,7 +454,7 @@ void NnDir::findclose()
 	intdos(&in, &out);
 #elif defined(OS2EMX)
         DosFindClose( handle );
-#elif defined(_MSC_VER)
+#elif defined(__MINGW32__)
 	::findclose();
 #elif !defined(__DMC__)
 	::findclose( &findbuf );
@@ -906,7 +906,7 @@ NnHash NnDir::specialFolder;
 NnFileStat *NnFileStat::stat(const NnString &name)
 {
     NnTimeStamp stamp1;
-#ifdef _MSC_VER
+#ifdef __MINGW32__
     struct _stati64 stat1;
 #else
     struct stat stat1;
@@ -920,7 +920,7 @@ NnFileStat *NnFileStat::stat(const NnString &name)
     if( name_.endsWith(":") || name_.endsWith("\\") || name_.endsWith("/") )
 	name_ << ".";
 
-#ifdef _MSC_VER
+#ifdef __MINGW32__
     if( ::_stati64( name_.chars() , &stat1 ) != 0 )
 #else
     if( ::stat( name_.chars() , &stat1 ) != 0 )

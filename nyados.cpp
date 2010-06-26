@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>
-#if defined(HAVE_NOT_OLD_NEW_H) || defined(_MSC_VER)
+#if defined(HAVE_NOT_OLD_NEW_H) || defined(__MINGW32__)
 #  include <new>
 #else
 #  include <new.h>
@@ -22,11 +22,11 @@
 #define VER "2.98_0"
 #endif
 
-#ifdef _MSC_VER
+#ifdef __MINGW32__
 #  include <windows.h>
 #endif
 
-#ifdef _MSC_VER
+#ifdef __MINGW32__
 int  nya_new_handler(size_t size)
 #else
 void nya_new_handler()
@@ -34,7 +34,7 @@ void nya_new_handler()
 {
     fputs("memory allocation error.\n",stderr);
     abort();
-#ifdef _MSC_VER
+#ifdef __MINGW32__
     return 0;
 #endif
 }
@@ -266,7 +266,7 @@ int main( int argc, char **argv )
 
     /* _nya ‚ðŽÀs‚·‚é */
     if( rcfname.empty() ){
-#ifdef _MSC_VER
+#ifdef __MINGW32__
         char execname[ FILENAME_MAX ];
 
         if( GetModuleFileName( NULL , execname , sizeof(execname)-1 ) > 0 ){
@@ -274,7 +274,7 @@ int main( int argc, char **argv )
         }else{
 #endif
             seek_and_call_rc(argv[0],nnargv);
-#ifdef _MSC_VER
+#ifdef __MINGW32__
         }
 #endif
     }else{
