@@ -324,10 +324,11 @@ void GetLine::bindinit()
 	{ "forward-char"        , &GetLine::foreward },   // bash.
 	{ "forward-word"	, &GetLine::foreward_word },
 	{ "head"		, &GetLine::goto_head },
-        { "ime-toggle"          , &GetLine::ime_toggle },
 	{ "insert-self"         , &GetLine::insert },
 	{ "kill-line"           , &GetLine::erase_line }, // bash.
 	{ "kill-whole-line"     , &GetLine::erase_all },  // bash.
+        { "i-search"            , &GetLine::i_search },
+        { "ime-toggle"          , &GetLine::ime_toggle },
 	{ "next"		, &GetLine::next },
 	{ "next-history"        , &GetLine::next },       // bash.
 	{ "none"                , &GetLine::do_nothing }, 
