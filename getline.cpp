@@ -521,7 +521,8 @@ Status GetLine::i_search(int key)
        }
        else if( which_command(key) == &GetLine::complete_prev
              || which_command(key) == &GetLine::previous
-             || which_command(key) == &GetLine::vz_previous )
+             || which_command(key) == &GetLine::vz_previous
+             || which_command(key) == &GetLine::i_search )
        {
            // ‘O‚ÌŒó•â
            new_hint = hint;
@@ -541,11 +542,20 @@ Status GetLine::i_search(int key)
            new_hint = hint;
            new_hint.chop();
        }
-       else if( isgraph((char)key) )
+       else if( which_command(key) == &GetLine::insert )
        {
            // •¶Žš“ü—Í
            new_hint = hint;
-           new_hint << (char)key;
+           if( key > 255 ){
+               new_hint << (char)(key>>8) << (char)(key & 0xFF);
+           }else{
+               new_hint << (char)key;
+           }
+       }
+       else if( which_command(key) == &GetLine::ime_toggle )
+       {
+           ime_toggle(key);
+           continue;
        }
        else
        {
