@@ -141,6 +141,7 @@ SHELL のキーバインドは次のとおりです。基本的に tcsh のそれを踏襲しています。
     ^M Enter    入力を終結する                       (accept-line)
     ^N ↓       ヒストリを戻す                       (next-history)
     ^P ↑       ヒストリを呼び出す                   (previous-history)
+    ^R          ヒストリのインクリメンタルサーチ     (i-search)
     ^T          カーソル直前の2文字を入れ替えます    (swap-char)
     ^U          先頭からカーソル直前まで削除する[*]  (unix-line-discard)
     ^V	        続く制御文字を入力する               (quote)
@@ -1430,9 +1431,13 @@ dir/w がエラーになります
 変更履歴
 ========
 
-2.99_0 (2010/06/19)
+2.99_0 (2010/06/28)
     - nyaos.filter.XXXXXX を XXXXXX の辞書順で呼び出すようにした。
     - nyaos.pid で自分のプロセスIDを参照できるようにした。
+    - suffix 文でも alias 文同様のマクロを使えるようにした。
+    - -f の引数が .lua / .luac の時、Luaインタプリタで実行するようにした。
+    - nyaos.goodbye をテーブルとしても解釈するようにした。
+    - インクリメンタルサーチ サポート(craftware さんパッチ取り込み)
 
 2.98_0 (2010/06/11)
     - option +glob でワイルドカード展開をシェル側でするようにした。
@@ -2282,7 +2287,7 @@ Nihongo Yet Another OSes Shell (NYAOS) はフリーソフトウェアです。
     横林 武 様        Christoph Brendes様
     TEM 様            hideden 様       lukewarm(sava)様
     林 雅之 様        thinca 様        Shougo 様
-    齊藤 様
+    齊藤 様           craftware 様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
 

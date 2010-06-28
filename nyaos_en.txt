@@ -94,6 +94,8 @@ Key-binding
         rewind the history                   
     ^P UP (previous-history)
         quote the previous line on the history                    
+    ^R (i-search)
+        search history incrementally.
     ^T (swap-char)
         swap two charactors till cursor      
     ^U (unix-line-discard)
@@ -1204,4 +1206,4 @@ Thanks to...
     Takeshi Yokobayashi, Christoph Brendes , 
     Mr.TEM , Mr.Hideden , Mr.Lukewarm(sava)
     Masayuki Hayashi , Mr.thinca , Mr.Shougo ,
-    Mr.Saitou
+    Mr.Saitou , Mr.craftware
