@@ -190,7 +190,7 @@ public:
     Status complete_next(int) , complete_prev(int) ;
     Status foreward_word(int) , backward_word(int) ;
     Status erase_listing_or_bye(int) , swap_char(int) ;
-    Status xscript(int) , ime_toggle(int) ;
+    Status xscript(int) , ime_toggle(int) , i_search(int) ;
 private:
     int lastKey;				/* ‘O‰ñ‰Ÿ‚³‚ê‚½ƒL[ */
 

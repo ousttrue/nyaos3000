@@ -394,6 +394,7 @@ void GetLine::bindinit()
     bindmap[ CTRL('W') ] = &GetLine::erase_word;
     bindmap[ CTRL('V') ] = &GetLine::insert_ctrl;
     bindmap[ CTRL('\\') ] = &GetLine::ime_toggle;
+    bindmap[ CTRL('R') ] = &GetLine::i_search;
 
     /* bindmap[ KEY_ALT_RETURN ] = * ©ALT_RETURN ‚ÍDOS‘‹‚Å‚Íg‚¦‚È‚¢ */
     bindmap[ CTRL('O') ]      =

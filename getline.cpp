@@ -479,3 +479,123 @@ NnString GetLine::current_word(int &at,int &size)
     return result;
 }
 
+// 履歴のインクリメンタルサーチ
+Status GetLine::i_search(int key)
+{
+   NnString hint;
+   int history_pos = history.size()-2;
+   NnString history_found;
+
+   for(;;)
+   {
+       NnString line;
+       line << "(i-search)[" << hint << "]: " << history_found;
+       replace_all_repaint( line );
+
+       int key=getkey();
+
+       NnString new_hint;
+       int search_offset = 0;
+       int search_step = -1;
+
+       if( which_command(key) == &GetLine::enter )
+       {
+           // 決定
+           replace_all_repaint( history_found );
+           return interpret(key);
+       }
+       else if( which_command(key) == &GetLine::erase_all
+             || which_command(key) == &GetLine::abort )
+       {
+           // キャンセル
+           return CANCEL;
+       }
+       else if( which_command(key) == &GetLine::complete_next
+             || which_command(key) == &GetLine::next
+             || which_command(key) == &GetLine::vz_next )
+       {
+           // 次の候補
+           new_hint = hint;
+           search_offset = 1;
+           search_step = 1;
+       }
+       else if( which_command(key) == &GetLine::complete_prev
+             || which_command(key) == &GetLine::previous
+             || which_command(key) == &GetLine::vz_previous )
+       {
+           // 前の候補
+           new_hint = hint;
+           search_offset = -1;
+           search_step = -1;
+       }
+       else if( which_command(key) == &GetLine::foreward
+             || which_command(key) == &GetLine::backward )
+       {
+           // 採用して編集
+           replace_all_repaint( history_found );
+           return interpret(key);
+       }
+       else if( which_command(key) == &GetLine::backspace )
+       {
+           // バックスペース
+           new_hint = hint;
+           new_hint.chop();
+       }
+       else if( isgraph((char)key) )
+       {
+           // 文字入力
+           new_hint = hint;
+           new_hint << (char)key;
+       }
+       else
+       {
+           continue;
+       }
+
+       if(!new_hint.empty())
+       {
+           bool found = false;
+           int search_start = history_pos + search_offset;
+           if( search_start < 0 ){ search_start = history.size()-2; }
+           if( search_start > history.size()-2 ){ search_start = 0; }
+           int pos = search_start;
+
+           NnString new_hint_upper = new_hint;
+           new_hint_upper.upcase();
+
+           for(;;)
+           {
+               NnString history_upper = *history[pos];
+               history_upper.upcase();
+
+               if( strstr( history_upper.chars(), new_hint_upper.chars() )!=NULL )
+               {
+                   found = true;
+                   break;
+               }
+
+               pos += search_step;
+
+               if( pos < 0 ){ pos = history.size()-2; }
+               if( pos > history.size()-2 ){ pos = 0; }
+               if( pos == search_start ){ break; }
+           }
+
+           if( !found )
+           {
+               continue;
+           }
+
+           hint = new_hint;
+           history_pos = pos;
+           history_found = history[pos]->chars();
+       }
+       else
+       {
+           hint = "";
+           history_pos = history.size()-2;
+           history_found = "";;
+       }
+   }
+   return CANCEL;
+}
