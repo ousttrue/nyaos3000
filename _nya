@@ -62,7 +62,7 @@ vzbind{
 
 lua_e "
     --- NYAOS 終了時のフック ---
-    function nyaos.goodbye()
+    function nyaos.goodbye.message()
         print('Good bye !!')
     end
 

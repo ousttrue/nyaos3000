@@ -199,13 +199,32 @@ static void goodbye()
 {
     NyaosLua L("goodbye");
     if( L != NULL ){
-        if( lua_isfunction(L,-1) && lua_pcall(L,0,0,0) != 0 ){
-            const char *msg = lua_tostring(L,-1);
-            conErr << "logoff code nyaos.goodbye() raise error.\n"
-                   << msg << "\n[Hit any key]\n";
-            (void)Console::getkey();
+        if( lua_isfunction(L,-1) ){
+            if( lua_pcall(L,0,0,0) != 0 )
+                goto errpt;
+        }else if( lua_istable(L,-1) ){
+            NnVector list;
+            lua_pushnil(L);
+            while( lua_next(L,-2) ){
+                lua_pushvalue(L,-2);
+                list.append( new NnString( lua_tostring(L,-1) ) );
+                lua_pop(L,2);
+            }
+            list.sort();
+
+            for(int i=0;i<list.size();++i){
+                lua_getfield(L,-1,list.const_at(i)->repr() );
+                if( lua_pcall(L,0,0,0) != 0 )
+                    goto errpt;
+            }
         }
     }
+    return;
+errpt:
+    const char *msg = lua_tostring(L,-1);
+    conErr << "logoff code nyaos.goodbye() raise error.\n"
+           << msg << "\n[Hit any key]\n";
+    (void)Console::getkey();
 }
 
 int main( int argc, char **argv )

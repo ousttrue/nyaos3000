@@ -1051,11 +1051,11 @@ lua_e "
 Hook at exit
 ------------
 
-Defined nyaos.goodbye, NYAOS calls it at exit.
+Defined function in the table nyaos.goodbye, NYAOS calls it at exit.
 
 for instance:
 
-    lua_e "nyaos.goodbye = function() print 'GOOD-BYE' end"
+    lua_e "nyaos.goodbye.message = function() print 'GOOD-BYE' end"
 
 Completion Hook
 ---------------

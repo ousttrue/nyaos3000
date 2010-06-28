@@ -1230,10 +1230,10 @@ nyaos.keyhook のために nyaos.key という定数テーブルを用意しています。
 終了時フック
 ------------
 
-nyaos.goodbye という関数を定義しておくと、
+nyaos.goodbye というテーブルの中に関数を定義しておくと、
 NYAOS 終了時に呼び出されます。
 
-    lua_e "nyaos.goodbye = function() print 'SAYONARA' end"
+    lua_e "nyaos.goodbye.message = function() print 'SAYONARA' end"
 
 
 拡張補完
