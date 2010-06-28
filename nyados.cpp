@@ -156,6 +156,10 @@ static int opt_f( int argc , char **argv , int &i )
 	return 2;
     }
     NnString path(argv[i+1]);
+    if( path.endsWith( ".lua" ) || path.endsWith(".luac") ){
+        return opt_EF(argc,argv,i);
+    }
+
     ScriptShell scrShell( path.chars() );
 
     for( int j=i+1 ; j < argc ; j++ )

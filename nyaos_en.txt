@@ -37,6 +37,8 @@ nyaos.exe's option
 -f SCRIPTFILENAME ARG(s)
     load SCRIPTFILENAME and execute it.
     After executing, nyaos.exe shutdown.
+    When SCRIPTFILENAME ends with .lua or .luac ,
+    execute with Lua-interpretor.
 
 -D
     Debug flag. It equals to statement 'option +debug'.
