@@ -1,15 +1,15 @@
-      日本語拡張コマンドラインシェル
-┏┓┳┳　┳┏━┓┏━┓┏━┓ ┏┓┏┓┏┓┏┓
-┃┃┃┗━┫┣━┫┃　┃┗━┓-　┫┃┃┃┃┃┃
-┻┗┛┗━┛┻　┻┗━┛┗━┛ ┗┛┗┛┗┛┗┛
-              The Free Software
-      Nihongo Yet Another OSes Shell 3000
+     日本語拡張コマンドラインシェル
+     ┏┓┳┳　┳┏━┓┏━┓┏━┓ 
+     ┃┃┃┗━┫┣━┫┃　┃┗━┓
+     ┻┗┛┗━┛┻　┻┗━┛┗━┛
+           The Free Software
+     Nihongo Yet Another Open Shell
   Copyright (C) 2001-2010 HAYAMA,Kaoru
 
 目次
 ====
 
-    - Nihongo Yet Another OSes Shell 3000 とは
+    - Nihongo Yet Another Open Shell とは
     - 実行方法
     - キーバインド
     - 内蔵コマンド
@@ -33,10 +33,10 @@
     - 連絡先
 
 
-Nihongo Yet Another OSes Shell 3000 とは
-========================================
+Nihongo Yet Another Open Shell とは
+====================================
 
-NYAOS-3000 --- Nihongo Yet Another OS Shell 3000 は、
+NYAOS --- Nihongo Yet Another Open Shell は、
 32bit系Windows,OS/2 で動作するコマンドラインシェルです。
 
 特徴として次のようなものがあります。
@@ -1431,13 +1431,14 @@ dir/w がエラーになります
 変更履歴
 ========
 
-2.99_0 (2010/06/28)
+2.99_0 (2010/07/02)
     - nyaos.filter.XXXXXX を XXXXXX の辞書順で呼び出すようにした。
     - nyaos.pid で自分のプロセスIDを参照できるようにした。
     - suffix 文でも alias 文同様のマクロを使えるようにした。
     - -f の引数が .lua / .luac の時、Luaインタプリタで実行するようにした。
     - nyaos.goodbye をテーブルとしても解釈するようにした。
     - インクリメンタルサーチ サポート(craftware さんパッチ取り込み)
+    - アプリ名を OSes Shell から Open Shell にし「3000」を除いた。
 
 2.98_0 (2010/06/11)
     - option +glob でワイルドカード展開をシェル側でするようにした。
@@ -2259,7 +2260,7 @@ TEST-VERSION (2009/02/22)
 連絡先
 ======
 
-Nihongo Yet Another OSes Shell (NYAOS) はフリーソフトウェアです。
+Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
 ユーザは、GNU General Public License に従う限り、本ソフトウェアを
 使用・複製・改変・配布・改変版の配布をすることができます。
 作者 葉山 薫は、本ソフトウェアによって生じた現象・障害に関して
@@ -2276,19 +2277,17 @@ Nihongo Yet Another OSes Shell (NYAOS) はフリーソフトウェアです。
 
 本ソフトウェア開発にあたり、次の方々にご協力いただきました。
 
-    山地 治 様        ＳＮＳＦ 様      濱村 隆史 様
-    白畑 裕充 様      Average 様       神奈川の武藤 様
-    我澤 賢之 様      諏訪 拓也 様     古舘 未来彦 様
-    blueday  様       今井 優 様       森 和貴 様
-    森下 和典 様      清原 智和 様     FUJI Goro 様
-    諏訪 拓也 様      UK-taniyama 様   夜刀の守 様
-    Susumu Chida 様   Nogue 様         斎藤 研一 様
-    T.Uchida 様       ギス(gis_dur)様  そいつ！ 様
-    横林 武 様        Christoph Brendes様
-    TEM 様            hideden 様       lukewarm(sava)様
-    林 雅之 様        thinca 様        Shougo 様
-    齊藤 様           craftware 様
+    山地 治 様        ＳＮＳＦ 様          濱村 隆史 様
+    白畑 裕充 様      Average 様           神奈川の武藤 様
+    我澤 賢之 様      諏訪 拓也 様         古舘 未来彦 様
+    blueday  様       今井 優 様           森 和貴 様
+    森下 和典 様      清原 智和 様         FUJI Goro 様
+    諏訪 拓也 様      UK-taniyama 様       夜刀の守 様
+    Susumu Chida 様   Nogue 様             斎藤 研一 様
+    T.Uchida 様       ギス(gis_dur)様      そいつ！ 様
+    横林 武 様        Christoph Brendes様  TEM 様 
+    hideden 様        lukewarm(sava)様     林 雅之 様
+    thinca 様         Shougo 様            齊藤 様
+    craftware 様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
-
-// vim:set sw=4 ts=8 et textmode:

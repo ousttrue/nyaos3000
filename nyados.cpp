@@ -274,7 +274,7 @@ int main( int argc, char **argv )
 #ifdef ESCAPE_SEQUENCE_OK
 "\x1B[2J" << 
 #endif
-	"Nihongo Yet Another OSes Shell 3000 v."VER" (C) 2001-10 by NYAOS.ORG\n";
+	"Nihongo Yet Another Open Shell "VER" (c) 2001-10 by HAYAMA,Kaoru\n";
     if( properties.get("debug") != NULL ){
         conOut << "This version is built on " __DATE__ " " __TIME__ "\n";
     }

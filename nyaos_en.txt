@@ -1,5 +1,6 @@
-The Free Software : Nihongo Yet Another OSes Shell 3000
-Copyright (c) 2001-2010 HAYAMA,Kaoru
+           The Free Software 
+     Nihongo Yet Another Open Shell
+       2001-2010 (c) HAYAMA,Kaoru
 
 Feature
 =======
@@ -1185,7 +1186,7 @@ lua_e "
 Distribution
 ============
 
-Nihongo Yet Another OSes Shell (NYAOS) is the free software.
+Nihongo Yet Another Open Shell (NYAOS) is the free software.
 You can distribute with GNU General Publice License.
 
     Download-site:
@@ -1196,14 +1197,14 @@ You can distribute with GNU General Publice License.
 
 Thanks to...
 
-    Osamu Yamaji , SNSF , Takashi Hamamura ,
-    Hiromitsu Shirahata ,  Mr.'AVERAGE' , Mutoh in KANAGAWA ,
-    Takayuki Ganaha , Takuya Suwa , Mikihiko Furutate ,
-    Mr.'BLUEDAY' , Yu Imai , Kazutaka Mori
-    Kazunori Morishita , Tomokazu Kiyohara , Goro Fuji ,
-    Susumu Chida , UK-Taniyama , Mr.YATO-NO-MORI ,
-    T.Uchida , Mr.gis_dur , Mr.Soitsu
-    Takeshi Yokobayashi, Christoph Brendes , 
-    Mr.TEM , Mr.Hideden , Mr.Lukewarm(sava)
-    Masayuki Hayashi , Mr.thinca , Mr.Shougo ,
-    Mr.Saitou , Mr.craftware
+    Osamu Yamaji        , SNSF              , Takashi Hamamura  ,
+    Hiromitsu Shirahata , AVERAGE           , Mutoh in KANAGAWA ,
+    Takayuki Ganaha     , Takuya Suwa       , Mikihiko Furutate ,
+    BLUEDAY             , Yu Imai           , Kazutaka Mori     ,
+    Kazunori Morishita  , Tomokazu Kiyohara , Goro Fuji         ,
+    Susumu Chida        , UK-Taniyama       , YATO-NO-MORI      ,
+    T.Uchida            , gis_dur           , Soitsu            ,
+    Takeshi Yokobayashi , Christoph Brendes , TEM               ,
+    Hideden             , Lukewarm(sava)    , Masayuki Hayashi  ,
+    thinca              , Shougo            , Saitou            ,
+    craftware
