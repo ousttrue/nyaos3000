@@ -408,6 +408,7 @@ int NyaosLua::init()
     if( ! initialized ){
         extern NnHash aliases;
         extern NnHash properties;
+        extern NnHash functions;
         extern NnVector dirstack;
 
         static struct {
@@ -421,6 +422,7 @@ int NyaosLua::init()
             { "suffix" , &DosShell::executableSuffix , nua_get , nua_put , nua_iter_factory },
             { "option" , &properties , nua_get , nua_put , nua_iter_factory } ,
             { "folder" , &NnDir::specialFolder , nua_get , nua_put , nua_iter_factory } ,
+            { "functions" , &functions , nua_get , NULL , nua_iter_factory },
             { NULL , NULL , 0 } ,
         }, *p = list;
 
