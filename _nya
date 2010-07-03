@@ -100,7 +100,15 @@ lua_e "
             end
             return
         end
+
         local cmdl=cmd:lower()
+
+        --- エイリアスを検索 ---
+        local a=nyaos.alias[ cmdl ]
+        if a then
+            print('aliased as '..a)
+        end
+
         local variation={
             [ cmdl ] = true ,
             [ cmdl .. '.exe' ] = true ,
