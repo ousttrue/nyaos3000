@@ -108,6 +108,11 @@ lua_e "
         if a then
             print('aliased as '..a)
         end
+        --- ŠÖ”‚ğŒŸõ ---
+        local f=nyaos.functions[ cmdl ]
+        if f then
+            print('defined as function')
+        end
 
         local variation={
             [ cmdl ] = true ,
