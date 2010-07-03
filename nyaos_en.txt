@@ -913,9 +913,11 @@ Table-like objects
   * nyaos.option
   * nyaos.suffix
   * nyaos.folder
+  * nyaos.functions
   * nyaos.argv
 
 nyaos.XXXXX is the interface of ''XXXXX'.
+Except for nyaos.functions, we can change its value.
 
 lua_e "
     nyaos.alias['cp'] = 'cmd /c copy'
@@ -1185,7 +1187,7 @@ lua_e "
 History
 =======
 
-2.99_0 (2010/07/02)
+2.99_0 (2010/07/03)
     - When call nyaos.filter.XXXXX, do order by XXXXX
     - `nyaos.pid' means NYAOS.EXE's process id
     - On suffix command, can use macros like alias
@@ -1193,6 +1195,7 @@ History
     - `nyaos.goodbye' can be table who has functions.
     - Incremental search with Ctrl-R (patch by Mr.craftware)
     - Application name is changed from OSes Shell to Open Shell.
+    - add: nyaos.functions as Lua table(readonly)
 
 2.98_0 (2010/06/11)
     - option +glob: wildcard expansion

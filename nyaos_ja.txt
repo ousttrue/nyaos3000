@@ -1094,10 +1094,12 @@ Lua 拡張
     - nyaos.option
     - nyaos.suffix
     - nyaos.folder
+    - nyaos.functions
     - nyaos.argv
 
-alias/option/suffix/folder の定義、argv(nyaos起動時のパラメータ)を格納している
-テーブルオブジェクトです。追加・変更・削除が可能です。
+alias/option/suffix/folder/関数 の定義、argv(nyaos起動時のパラメータ)を
+格納しているテーブルオブジェクトです。functions 以外は追加・変更・削除が
+可能です。
 
     lua_e "
         nyaos.alias['cp'] = 'cmd /c copy'
@@ -1423,7 +1425,7 @@ dir/w がエラーになります
 変更履歴
 ========
 
-2.99_0 (2010/07/02)
+2.99_0 (2010/07/03)
     - nyaos.filter.XXXXXX を XXXXXX の辞書順で呼び出すようにした。
     - nyaos.pid で自分のプロセスIDを参照できるようにした。
     - suffix 文でも alias 文同様のマクロを使えるようにした。
@@ -1431,6 +1433,7 @@ dir/w がエラーになります
     - nyaos.goodbye をテーブルとしても解釈するようにした。
     - インクリメンタルサーチ サポート(craftware さんパッチ取り込み)
     - アプリ名を OSes Shell から Open Shell にし「3000」を除いた。
+    - nyaos.functions を読み取り専用の Lua テーブルとして追加
 
 2.98_0 (2010/06/11)
     - option +glob でワイルドカード展開をシェル側でするようにした。
