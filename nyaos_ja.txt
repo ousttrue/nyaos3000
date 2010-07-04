@@ -1342,13 +1342,25 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
 
     lua_e "print( nyaos.access('_nya',0) )"
 
-* nyaos.dir - ディレクトリ読み取り
+* nyaos.dir - ディレクトリ情報読み取り
 
     lua_e "
-      for filename in nyaos.dir('c:/') do
-        print(filename)
+      for fname,info in nyaos.dir('c:/') do
+        print( ('%s%s%s%s %12d %04d/%02d/%02d %02d:%02d:%02d %s'):format(
+                    info.directory and 'D' or '-' ,
+                    info.hidden    and 'H' or '-' ,
+                    info.system    and 'S' or '-' ,
+                    info.readonly  and 'R' or '-' ,
+                    info.size ,
+                    info.year , info.month , info.day ,
+                    info.hour , info.minute , info.second ,
+                    fname ) )
       end
     "
+
+* nyaos.stat - ファイル情報読み取り
+
+    lua_e "stat=nyaos.stat('_nya') ; print( stat.size )"
 
 * nyaos.chdir - ディレクトリ異動
 
@@ -1424,6 +1436,10 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.00_0 (2010/07/04)
+    - nyaos.dir() で、ファイル名以外の情報を得られるようにした。
+    - 追加：nyaos.stat 
 
 2.99_0 (2010/07/03)
     - nyaos.filter.XXXXXX を XXXXXX の辞書順で呼び出すようにした。

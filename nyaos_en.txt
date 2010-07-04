@@ -1160,11 +1160,24 @@ lua_e "print( nyaos.access('_nya',0) )"
 Reading directory
 -----------------
 
-lua_e "
-  for filename in nyaos.dir('c:/') do
-    print(filename)
-  end
-"
+    lua_e "
+      for fname,info in nyaos.dir('c:/') do
+        print( ('%s%s%s%s %12d %04d/%02d/%02d %02d:%02d:%02d %s'):format(
+                    info.directory and 'D' or '-' ,
+                    info.hidden    and 'H' or '-' ,
+                    info.system    and 'S' or '-' ,
+                    info.readonly  and 'R' or '-' ,
+                    info.size ,
+                    info.year , info.month , info.day ,
+                    info.hour , info.minute , info.second ,
+                    fname ) )
+      end
+    "
+
+Reading File information
+------------------------
+
+    lua_e "stat=nyaos.stat('_nya') ; print( stat.size )"
 
 Change the current working directory
 -------------------------------------
@@ -1186,6 +1199,10 @@ lua_e "
 
 History
 =======
+
+3.00_0 (2010/07/04)
+    - nyaos.dir() returns attributes as the second values.
+    - add nyaos.stat() on Lua
 
 2.99_0 (2010/07/03)
     - When call nyaos.filter.XXXXX, do order by XXXXX

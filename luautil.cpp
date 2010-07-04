@@ -8,8 +8,7 @@ extern "C" {
 #include "lualib.h"
 #include "lauxlib.h"
 }
-#include <sys/types.h>
-#include <dirent.h>
+#include "nndir.h"
 
 const static char NYAOS_OPENDIR[] = "nyaos_opendir";
 
@@ -62,32 +61,72 @@ static int luaone_lshift(lua_State *L)
     return 1;
 }
 
+static void NnDir2Lua(lua_State *L,NnDir &stat)
+{
+    lua_newtable(L);
+
+    lua_pushstring(L,stat.name());
+    lua_setfield(L,-2,"name");
+
+    lua_pushboolean(L,stat.isReadOnly() );
+    lua_setfield(L,-2,"readonly");
+    
+    lua_pushboolean(L,stat.isHidden() );
+    lua_setfield(L,-2,"hidden");
+
+    lua_pushboolean(L,stat.isSystem() );
+    lua_setfield(L,-2,"system");
+
+    lua_pushboolean(L,stat.isLabel() );
+    lua_setfield(L,-2,"label");
+
+    lua_pushboolean(L,stat.isDir() );
+    lua_setfield(L,-2,"directory");
+
+    lua_pushinteger(L,stat.size() );
+    lua_setfield(L,-2,"size");
+
+    const NnTimeStamp &stamp=stat.stamp();
+    lua_pushinteger(L,stamp.second);
+    lua_setfield(L,-2,"second");
+    lua_pushinteger(L,stamp.minute);
+    lua_setfield(L,-2,"minute");
+    lua_pushinteger(L,stamp.hour);
+    lua_setfield(L,-2,"hour");
+    lua_pushinteger(L,stamp.day);
+    lua_setfield(L,-2,"day");
+    lua_pushinteger(L,stamp.month);
+    lua_setfield(L,-2,"month");
+    lua_pushinteger(L,stamp.year);
+    lua_setfield(L,-2,"year");
+}
+
 static int luaone_readdir(lua_State *L)
 {
     void *userdata  = luaL_checkudata(L,1,NYAOS_OPENDIR);
-    DIR  *dirhandle = *static_cast<DIR**>( userdata );
-    struct dirent *dirent;
+    NnDir *dirhandle = *static_cast<NnDir**>( userdata );
 
     if( dirhandle == NULL )
         return 0;
     
-    if( (dirent = readdir(dirhandle)) == NULL ){
-        closedir(dirhandle);
-        *(DIR**)userdata = NULL;
+    if( ! dirhandle->more() ){
+        delete dirhandle;
+        *(NnDir**)userdata = NULL;
         return 0;
     }
-    lua_pop(L,1);
-    lua_pushstring(L,dirent->d_name);
-    return 1;
+    lua_pushstring( L,dirhandle->name() );
+    NnDir2Lua(L,*dirhandle);
+    dirhandle->next();
+    return 2;
 }
 
 static int luaone_closedir(lua_State *L)
 {
     void *userdata = luaL_checkudata(L,1,NYAOS_OPENDIR);
-    DIR *dirhandle = *static_cast<DIR**>(userdata) ;
+    NnDir *dirhandle = *static_cast<NnDir**>(userdata) ;
 
     if( dirhandle != NULL )
-        closedir(dirhandle);
+        delete dirhandle;
     
     return 0;
 }
@@ -95,11 +134,11 @@ static int luaone_closedir(lua_State *L)
 static int luaone_opendir(lua_State *L)
 {
     const char *dir = luaL_checkstring(L,1);
-    DIR *dirhandle;
+    NnDir *dirhandle;
     void *userdata=NULL;
+    NnString dir_; dir_ << dir << "\\*";
 
-    dirhandle=opendir(dir);
-    lua_pop(L,1);
+    dirhandle=new NnDir(dir_);
 
     lua_pushcfunction(L,luaone_readdir); /* stack:1 */
     userdata = lua_newuserdata(L,sizeof(dirhandle)); /* stack:2 */
@@ -109,12 +148,20 @@ static int luaone_opendir(lua_State *L)
 
     /* create metatable for closedir */
     luaL_newmetatable(L,NYAOS_OPENDIR); /* stack:3 */
-    lua_pushstring(L,"__gc");
     lua_pushcfunction(L,luaone_closedir);
-    lua_settable(L,3);
-    lua_setmetatable(L,2);
+    lua_setfield(L,-2,"__gc");
+    lua_setmetatable(L,-2);
 
     return 2;
+}
+
+static int luaone_stat(lua_State *L)
+{
+    const char *fname = luaL_checkstring(L,-1);
+    NnDir stat(fname);
+    NnDir2Lua(L,stat);
+
+    return 1;
 }
 
 static struct luaone_s {
@@ -128,6 +175,7 @@ static struct luaone_s {
     { "bitxor", luaone_bitxor },
     { "rshift", luaone_rshift },
     { "lshift", luaone_lshift },
+    { "stat"  , luaone_stat },
     { NULL    , NULL } ,
 };
 
