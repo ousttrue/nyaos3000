@@ -1160,7 +1160,7 @@ lua_e "print( nyaos.access('_nya',0) )"
 Reading directory
 -----------------
 
-* nyaos.findfile (full-version)
+* nyaos.filefind (full-version)
 
     lua_e "
       for info in nyaos.filefind('c:/*') do
@@ -1210,8 +1210,7 @@ History
 =======
 
 3.00_0 (2010/07/04)
-    - nyaos.dir() returns attributes as the second values.
-    - add nyaos.stat() on Lua
+    - add nyaos.stat and nyaos.filefind
 
 2.99_0 (2010/07/03)
     - When call nyaos.filter.XXXXX, do order by XXXXX

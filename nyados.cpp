@@ -19,7 +19,7 @@
 #include "source.h"
 
 #ifndef VER
-#define VER "2.99_0"
+#define VER "3.00_0"
 #endif
 
 #ifdef __MINGW32__
