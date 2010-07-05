@@ -1,8 +1,5 @@
 #include "config.h"
 
-#if defined(NYADOS)
-#  include <dos.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -12,10 +9,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#ifndef NYADOS
-#  include <fcntl.h>
-#  include <io.h>
-#endif
+#include <fcntl.h>
+#include <io.h>
 
 #if defined(__EMX__)
 #  define INCL_DOSFILEMGR
@@ -26,15 +21,8 @@
 
 #include "nndir.h"
 
-#if defined(__DMC__) && !defined(__OS2__)
-#    undef FP_SEG
-#    define FP_SEG(x) ((unsigned short)(((unsigned long)(x))>>16))
-#    undef FP_OFF
-#    define FP_OFF(x) ((unsigned short)(x))
-#endif
-
 /* Default Special Folder 設定のため */
-#if defined(NYACUS)
+#ifdef __MINGW32__ 
 #    include <windows.h>
 #    include <shlobj.h>
 #    include <stdio.h>
@@ -51,34 +39,7 @@ int NnTimeStamp::compare( const NnTimeStamp &o ) const
 }
 
 #ifdef __MINGW32__
-static void stamp_conv( const FILETIME *p , NnTimeStamp &stamp_)
-{
-    FILETIME local;
-    SYSTEMTIME s;
-
-    FileTimeToLocalFileTime( p , &local );
-    FileTimeToSystemTime( &local , &s );
-    stamp_.second = s.wSecond ;
-    stamp_.minute = s.wMinute ;
-    stamp_.hour   = s.wHour ;
-    stamp_.day    = s.wDay ;
-    stamp_.month  = s.wMonth ;
-    stamp_.year   = s.wYear ;
-}
 #else
-
-static void stamp_conv( unsigned fdate , unsigned ftime , NnTimeStamp &stamp_ )
-{
-    /* 時刻 */
-    stamp_.second = ( ftime & 0x1F) * 2 ;      /* 秒:5bit(0..31) */
-    stamp_.minute = ( (ftime >> 5 ) & 0x3F );  /* 分:6bit(0..63) */
-    stamp_.hour   =  ftime >> 11;              /* 時:5bit */
-
-    /* 日付 */
-    stamp_.day    = (fdate & 0x1F);            /* 日:5bit(0..31) */
-    stamp_.month = ( (fdate >> 5 ) & 0x0F );   /* 月:4bit(0..16) */
-    stamp_.year   =  (fdate >> 9 ) + 1980;     /* 年:7bit */
-}
 #endif
 
 static void stamp_conv( time_t time1 , NnTimeStamp &stamp_ )
@@ -128,120 +89,36 @@ NnObject *NnDir::operator * ()
     return status ? 0 : &name_;
 }
 
-#ifdef NYADOS
-/* ドライブが LFN をサポートしているかを調査をする。
- * return
- *	非0 : サポートしている.
- *      0 : サポートしていない.
- */
-int isLfnOk()
-{
-    static int  result=-1;
-    static char	rootdir[] = "?:\\";
-    static char filesys[10];
-
-    union REGS in, out;
-#ifdef USE_FAR_PTR
-    struct SREGS segs;
-#endif
-
-    if( result != -1 )
-	return result;
-
-    /* カレントドライブを取得する。*/
-#ifdef ASM_OK
-    _asm {
-	mov ah,19h
-	int 21h
-	add ah,'a'
-	mov rootdir[0],ah
-    }
-#else
-    in.h.ah = 0x19;
-    intdos(&in, &out);
-    rootdir[0] = 'a' + out.h.al ;
-#endif
-
-    /* ドライブ情報を得る */
-    in.x.ax   = 0x71A0;
-    segs.ds   = FP_SEG(rootdir);
-    segs.es   = FP_SEG(filesys);
-    in.x.si   = FP_OFF(rootdir);
-    in.x.di   = FP_OFF(filesys);
-    in.x.cx   = sizeof(filesys);
-    intdosx(&in,&out,&segs);
-
-    return result=(out.x.ax != 0x7100 ? 1 : 0);
-}
-
-/* findfirst/findnext を呼ぶ際の共通部分.
- *	in -> 入力レジスタ情報
- *     out <- 出力レジスタ情報
- * return
- *	0 ... 成功
- *	1 ... 失敗(最後のファイルだった等)
- *	-1 .. 失敗(LFNがサポートされていない)
- */
-#ifdef USE_FAR_PTR
-unsigned NnDir::findcore( union REGS &in , union REGS &out , struct SREGS &segs )
-#else
-unsigned NnDir::findcore( union REGS &in , union REGS &out )
-#endif
-{
-    struct { 
-	unsigned long	attrib;
-	unsigned short  ctime , cdate , dummy1 , dummy2 ;
-	unsigned short  atime , adate , dummy3 , dummy4 ;
-	unsigned short  mtime , mdate , dummy5 , dummy6 ;
-	unsigned long	hsize, lsize;
-	char	 	reserved[8];
-	char	 	lname[260], name[14];
-    } findbuf;
-
-    memset( &findbuf , '\0' , sizeof(findbuf) );
-
-#ifdef USE_FAR_PTR
-    segs.es = FP_SEG( &findbuf );
-#endif
-    in.x.di = FP_OFF( &findbuf );
-
-#ifdef USE_FAR_PTR
-    unsigned result = intdosx(&in,&out,&segs);
-#else
-    unsigned result = intdos(&in,&out);
-#endif
-    if( result==0x7100 && isLfnOk()==0 )
-	return -1;// AXに変化がなく、LFNがサポートされていない場合、エラー.
-
-    if( out.x.cflag )
-	return 1;// キャリーフラグが立っていた場合、終了マークと見なす。
-    
-    name_ = findbuf.lname ;
-    attr_ = (unsigned)findbuf.attrib;
-    size_ = (filesize_t)(findbuf.hsize << 32) | findbuf.lsize;
-    stamp_conv( findbuf.mdate,  findbuf.mtime , stamp_ );
-    
-    return 0;
-}
-#endif
-
-/* Short FN しか使えない場合のファイルバッファ:固定 */
+struct NnDir::Core {
 #if defined(__EMX__)
-    static _FILEFINDBUF4 findbuf;
-    static ULONG findcount;
-#elif defined(__DMC__)
-    static struct find_t findbuf;
-#elif defined(__MINGW32__)
-	#include <windows.h>
-	static WIN32_FIND_DATA wfd;
-	static HANDLE hfind = INVALID_HANDLE_VALUE;
-	static DWORD attributes;
+    _FILEFINDBUF4 findbuf;
+    ULONG findcount;
+    unsigned handle;
+
+    Core() : findcount(1),handle(0xFFFFFFFF){}
+    const char *name() const { return findbuf.achName; }
+    unsigned long attr() const { return findbuf.attrFile; }
+    filesize_t size() const { return findbuf.cbFile; }
 #else
-    static struct ffblk findbuf;
+    WIN32_FIND_DATA wfd;
+    HANDLE hfind;
+    DWORD attributes;
+
+    Core() : hfind(INVALID_HANDLE_VALUE){} 
+    const char *name() const { return wfd.cFileName; }
+    unsigned long attr() const { return wfd.dwFileAttributes; }
+    filesize_t size() const 
+    { return (((filesize_t)wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ; }
 #endif
+    int findfirst( const char* path, unsigned attr);
+    int findnext();
+    int findclose();
+
+    void stamp( NnTimeStamp &stamp );
+};
 
 #ifdef __MINGW32__
-static int findfirst( const char* path, DWORD attr)
+int NnDir::Core::findfirst( const char* path, unsigned attr)
 {
     attributes = attr;
     hfind = ::FindFirstFile( path, &wfd);
@@ -250,17 +127,68 @@ static int findfirst( const char* path, DWORD attr)
     }
     return 0;
 }
-static int findnext()
+int NnDir::Core::findnext()
 {
     if( ::FindNextFile( hfind, &wfd)==FALSE){
 	return -1;
     }
     return 0;
 }
-static int findclose()
+int NnDir::Core::findclose()
 {
     return ::FindClose( hfind );
 }
+void NnDir::Core::stamp(  NnTimeStamp &stamp_)
+{
+    FILETIME local;
+    SYSTEMTIME s;
+    const FILETIME *p = &wfd.ftLastWriteTime ;
+
+    FileTimeToLocalFileTime( p , &local );
+    FileTimeToSystemTime( &local , &s );
+    stamp_.second = s.wSecond ;
+    stamp_.minute = s.wMinute ;
+    stamp_.hour   = s.wHour ;
+    stamp_.day    = s.wDay ;
+    stamp_.month  = s.wMonth ;
+    stamp_.year   = s.wYear ;
+}
+#else
+int NnDir::Core::findfirst( const char* path, unsigned attr)
+{
+    return DosFindFirst( (PUCHAR)path 
+			  , (PULONG)&handle 
+			  , attr 
+			  , &findbuf
+			  , sizeof(_FILEFINDBUF4) 
+			  , &findcount 
+			  , (ULONG)FIL_QUERYEASIZE );
+}
+int NnDir::Core::findnext()
+{
+    return DosFindNext(handle,&findbuf,sizeof(findbuf),&findcount);
+}
+int NnDir::Core::findclose()
+{
+    return DosFindClose( handle );
+}
+
+void NnDir::Core::stamp( NnTimeStamp &stamp_ )
+{
+    unsigned fdate = *(unsigned short*)&findbuf.fdateLastWrite;
+    unsigned ftime = *(unsigned short*)&findbuf.ftimeLastWrite;
+
+    /* 時刻 */
+    stamp_.second = ( ftime & 0x1F) * 2 ;      /* 秒:5bit(0..31) */
+    stamp_.minute = ( (ftime >> 5 ) & 0x3F );  /* 分:6bit(0..63) */
+    stamp_.hour   =  ftime >> 11;              /* 時:5bit */
+
+    /* 日付 */
+    stamp_.day    = (fdate & 0x1F);            /* 日:5bit(0..31) */
+    stamp_.month = ( (fdate >> 5 ) & 0x0F );   /* 月:4bit(0..16) */
+    stamp_.year   =  (fdate >> 9 ) + 1980;     /* 年:7bit */
+}
+
 #endif
 
 /* いわゆる _dos_findfirst
@@ -283,183 +211,35 @@ unsigned NnDir::findfirst(  const NnString &p_path , unsigned attr )
     NnString path;
     filter( p_path.chars() , path );
 
-#ifdef NYADOS
-    union REGS in,out;
-#ifdef USE_FAR_PTR
-    struct SREGS segs;
-#endif
-    if( isLfnOk() ){
-	in.h.cl = attr;
-#ifdef USE_FAR_PTR
-        segs.ds = FP_SEG(path.chars());
-#endif
-	in.x.dx = FP_OFF(path.chars());
-	in.h.ch = 0 ;
-	in.x.ax = 0x714E;
-	in.x.si = DOS_DATE_FORMAT;
-
-#ifdef USE_FAR_PTR
-	if( (result = findcore(in,out ,segs))==0 ){
-#else
-	if( (result = findcore(in,out))==0 ){
-#endif
-	    handle = out.x.ax;
-	    hasHandle = 1;
-	}else{
-	    hasHandle = 0;
-	}
-	return result;
-    }
-#endif
-    hasHandle = 0;
-    handle = 0;
-#if defined(__EMX__)
-    /***  emx/gcc code for NYAOS-II ***/
-    handle = 0xFFFFFFFF;
-    findcount = 1 ;
-    result = DosFindFirst(    (PUCHAR)path.chars() 
-			    , (PULONG)&handle 
-			    , attr 
-			    , &findbuf
-			    , sizeof(_FILEFINDBUF4) 
-			    , &findcount 
-			    , (ULONG)FIL_QUERYEASIZE );
+    core = new NnDir::Core();
+    result = core->findfirst( path.chars() , attr );
     if( result == 0 ){
-        name_ = findbuf.achName ;
-	attr_ = findbuf.attrFile ;
-	size_ = findbuf.cbFile ;
-	stamp_conv( *(unsigned short*)&findbuf.fdateLastWrite ,
-		    *(unsigned short*)&findbuf.ftimeLastWrite , stamp_ );
-	hasHandle = 1;
+        name_ = core->name();
+	attr_ = core->attr();
+	size_ = core->size();
+        core->stamp( stamp_ );
     }
-#elif defined(__DMC__) 
-#if defined(__OS2__)
-    FIND *findbuf=::findfirst( path.chars() , attr );
-    if( findbuf != NULL ){
-        name_ = findbuf->name;
-        attr_ = findbuf->attribute;
-    }
-#else
-    /*** Digitalmars C++ for NYADOS ***/
-    result = ::_dos_findfirst( path.chars() , attr , &findbuf );
-    if( result == 0 ){
-        name_ = findbuf.name ;
-	attr_ = findbuf.attrib;
-	stamp_conv( findbuf.wr_date , findbuf.wr_time , stamp_ );
-    }
-#endif
-#elif defined(__MINGW32__)
-    /**** VC++ code for NYACUS but not maintenanced by hayama ****/
-    result = ::findfirst( path.chars(), attr);
-    if( result==0){
-	name_ = wfd.cFileName;
-	attr_ = wfd.dwFileAttributes;
-        size_ = (((filesize_t)wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ;
-        stamp_conv( &wfd.ftLastWriteTime , stamp_ );
-	hasHandle = 1;
-    }
-#else /*** Borland-C++ code for NYACUS ***/
-    result = ::findfirst( path.chars() , &findbuf , (int)attr );
-    if( result == 0 ){
-	name_ = findbuf.ff_name;
-	attr_ = findbuf.ff_attrib;
-	size_ = findbuf.ff_fsize;
-	stamp_conv( findbuf.ff_fdate , findbuf.ff_ftime , stamp_ );
-
-	hasHandle = 1;
-    }
-#endif
     return result;
 }
 
 unsigned NnDir::findnext()
 {
-#ifdef NYADOS
-    if( isLfnOk() ){
-	union REGS in,out;
-#ifdef USE_FAR_PTR
-        struct SREGS segs;
-#endif
-	in.x.ax = 0x714F;
-	in.x.bx = handle;
-	in.x.si = DOS_DATE_FORMAT;
-#ifdef USE_FAR_PTR
-	return findcore(in,out,segs);
-#else
-	return findcore(in,out);
-#endif
-    }
-#endif
-#if defined(__EMX__)
-    /*** emx/gcc code for NYAOS-II(OS/2) ***/
-    int result=DosFindNext(handle,&findbuf,sizeof(findbuf),&findcount);
-    if( result == 0 ){
-	name_ = findbuf.achName;
-	attr_ = findbuf.attrFile;
-	size_ = findbuf.cbFile ;
-	stamp_conv( *(unsigned short*)&findbuf.fdateLastWrite ,
-		    *(unsigned short*)&findbuf.ftimeLastWrite , stamp_ );
-    }
-#elif defined(__DMC__)
-#  if defined(__OS2__)
-    /*** DigitalMars C++ for NYAOS-II ***/
-    int result=-1;
-    struct FIND *entry=::findnext();
-    if( entry != NULL ){
-        result = 0;
-        name_ = entry->name;
-        attr_ = entry->attribute;
-    }
-#else
-    /*** DigitalMars C++ for NYADOS ***/
-    int result=::_dos_findnext( &findbuf );
-    if( result == 0 ){
-	name_ = findbuf.name;
-	attr_ = findbuf.attrib;
-	stamp_conv( findbuf.wr_date , findbuf.wr_time , stamp_ );
-    }
-#endif
-#elif defined(__MINGW32__)
-    /*** Visual C++ ***/
-    int result = ::findnext();
+    int result = core->findnext();
     if( result==0){
-	name_ = wfd.cFileName;
-	attr_ = wfd.dwFileAttributes;
-        size_ = (((filesize_t)wfd.nFileSizeHigh << 32) | wfd.nFileSizeLow) ;
-        stamp_conv( &wfd.ftLastWriteTime , stamp_ );
+	name_ = core->name();
+	attr_ = core->attr();
+        size_ = core->size();
+        core->stamp( stamp_ );
     }
-#else /*** Borland-C++ for NYACUS ***/
-    int result=::findnext( &findbuf );
-    if( result == 0 ){
-	name_ = findbuf.ff_name ;
-	attr_ = findbuf.ff_attrib;
-	size_ = findbuf.ff_fsize;
-	stamp_conv( findbuf.ff_fdate , findbuf.ff_ftime , stamp_ );
-
-    }
-#endif
     return result;
 }
 
 void NnDir::findclose()
 {
-#ifdef NYADOS
-    union	REGS	in, out;
-#endif
-
-    if( hasHandle ){
-#if defined(NYADOS)
-	in.x.ax = 0x71A1;
-	in.x.bx = handle;
-	intdos(&in, &out);
-#elif defined(__EMX__)
-        DosFindClose( handle );
-#elif defined(__MINGW32__)
-	::findclose();
-#elif !defined(__DMC__)
-	::findclose( &findbuf );
-#endif
-	hasHandle = 0;
+    if( core != NULL ){
+	core->findclose();
+        delete core;
+        core = NULL;
     }
 }
 
@@ -471,48 +251,17 @@ void NnDir::findclose()
  */
 int NnDir::getcwd( NnString &pwd )
 {
-#ifdef NYADOS
-    if( ! isLfnOk() ){
-#endif
-	char buffer[256];
+    char buffer[256];
 #ifdef __EMX__
-	if( ::_getcwd2(buffer,sizeof(buffer)) != NULL ){
+    if( ::_getcwd2(buffer,sizeof(buffer)) != NULL ){
 #else
-	if( ::getcwd(buffer,sizeof(buffer)) != NULL ){
+    if( ::getcwd(buffer,sizeof(buffer)) != NULL ){
 #endif
-	    pwd = buffer;
-	}else{
-            pwd.erase();
-        }
-	return 0;
-#ifdef NYADOS
-    }
-    union  REGS	 in, out;
-    static char	tmpcur[] = ".";
-    char   tmpbuf[256];
-
-    in.x.cx = 0x8002;
-    in.x.ax = 0x7160;
-    in.x.si = FP_OFF(tmpcur);
-    in.x.di = FP_OFF(tmpbuf);
-
-#ifdef USE_FAR_PTR
-    struct SREGS segs;
-    segs.ds = FP_SEG(tmpcur);
-    segs.es = FP_SEG(tmpbuf);
-    intdosx(&in,&out,&segs);
-#else
-    intdos(&in, &out );
-#endif
-
-    // エラーの場合、何もせず、終了.
-    if( out.x.cflag ){
+        pwd = buffer;
+    }else{
         pwd.erase();
-	return 1;
     }
-    pwd = tmpbuf;
     return 0;
-#endif
 }
 
 /* スラッシュをバックスラッシュへ変換する
@@ -585,7 +334,7 @@ void NnDir::filter( const char *sp , NnString &dst_ )
     // dst.slash2yen();
 }
 
-/* LFN対応 chdir.
+/* chdir.
  *	argv - ディレクトリ名
  * return
  *	 0 - 成功
@@ -595,26 +344,6 @@ int NnDir::chdir( const char *argv )
 {
     NnString newdir;
     filter( argv , newdir );
-#ifdef NYADOS
-    if( isLfnOk() ){
-	union REGS in,out;
-	if( isAlpha(newdir.at(0)) && newdir.at(1)==':' ){
-	    in.h.ah = 0x0E;
-	    in.h.dl = (newdir.at(0) & 0x1F ) - 1;
-	    intdos( &in , &out );
-	}
-	in.x.ax = 0x713B;
-	in.x.dx = FP_OFF( newdir.chars() );
-#ifdef USE_FAR_PTR
-        struct SREGS segs;
-        segs.ds = FP_SEG( newdir.chars() );
-	intdosx(&in,&out,&segs);
-#else
-	intdos(&in,&out);
-#endif
-	return out.x.cflag ? -1 : 0;
-    }
-#endif
     if( isAlpha(newdir.at(0)) && newdir.at(1)==':' ){
 #ifdef __EMX__
         _chdrive( newdir.at(0) );
@@ -636,21 +365,11 @@ int NnDir::chdir( const char *argv )
 }
 
 /* ファイルクローズ
- * (特にLFN対応というわけではないが、コンパイラ依存コードを
- *  避けるため作成)
- *      fd - ハンドル
+ *  fd - ハンドル
  */
 void NnDir::close( int fd )
 {
-#ifdef NYADOS
-    union REGS in,out;
-
-    in.h.ah = 0x3e;
-    in.x.bx = fd;
-    intdos(&in,&out);
-#else
     ::close(fd);
-#endif
 }
 /* ファイル出力
  * (特にLFN対応というわけではないが、コンパイラ依存コードを
@@ -663,72 +382,8 @@ void NnDir::close( int fd )
  */
 int NnDir::write( int fd , const void *ptr , size_t size )
 {
-#ifdef NYADOS
-    union REGS in,out;
-    struct SREGS sregs;
-
-    in.h.ah  = 0x40;
-    in.x.bx  = fd;
-    in.x.cx  = size;
-    in.x.dx  = FP_OFF(ptr);
-    sregs.ds = FP_SEG(ptr);
-    intdosx(&in,&out,&sregs);
-    return out.x.cflag ? -1 : out.x.ax;
-#else
     return ::write(fd,ptr,size);
-#endif
 }
-
-#ifdef NYADOS
-/* パス名をショートファイル名へ変換する。
- *     src - ロングファイル名
- * return
- *     dst - ショートファイル名(static領域)
- */
-const char *NnDir::long2short( const char *src )
-{
-    static char dst[ 67 ];
-    
-    dst[0] = '\0';
-
-    union REGS in,out;
-    struct SREGS sregs;
-
-    in.x.ax = 0x7160;
-    in.h.cl = 0x01;
-    in.h.ch = 0x80;
-
-    sregs.ds = FP_SEG(src);
-    in.x.si  = FP_OFF(src);
-
-    sregs.es = FP_SEG(dst);
-    in.x.di  = FP_OFF(dst);
-    intdosx(&in,&out,&sregs);
-    if( out.x.cflag || dst[0] == '\0' )
-	return src;
-    
-    return dst;
-}
-
-
-#endif
-
-#ifdef NYADOS
-/* ファイルの書きこみ位置を末尾へ移動させる. */
-int NnDir::seekEnd( int handle )
-{
-    union REGS in,out;
-
-    // アペンドの場合、ファイルの書きこみ位置を末尾に移動させる.
-    in.x.ax = 0x4202;
-    in.x.bx = handle;
-    in.x.cx = 0;
-    in.x.dx = 0;
-    intdos(&in,&out);
-
-    return out.x.cflag ? -1 : 0 ;
-}
-#endif
 
 /* LFN 対応 OPEN
  *      fname - ファイル名
@@ -738,42 +393,6 @@ int NnDir::seekEnd( int handle )
  */
 int NnDir::open( const char *fname , const char *mode )
 {
-#ifdef NYADOS
-    if( mode == NULL )
-        return -1;
-    
-    union REGS in,out;
-    struct SREGS sregs;
-
-    in.x.ax  = ( isLfnOk() ? 0x716C : 0x6C00 );
-
-    // BXの値を間違えると、オープンは出来るが,
-    // １バイトも書きこめないので注意が必要.
-    if( *mode == 'r' ){
-        in.x.bx = 0x2000;
-        in.x.dx = 0x01;
-    }else{
-        in.x.bx = 0x2001;                    // アクセス/シェアリングモード.
-        in.x.dx  = ( *mode == 'a' ? 0x11 : 0x12 );  // 動作フラグ.
-    }
-    in.x.cx  = 0x0000;                    // 属性.
-    in.x.si  = FP_OFF( fname );           // ファイル名.
-    sregs.ds = FP_SEG( fname );           // ファイル名.
-    intdosx( &in , &out , &sregs );
-
-    if( out.x.cflag )
-        return -1;
-
-    int fd=out.x.ax;
-
-    if( *mode == 'a' ){
-	if( NnDir::seekEnd( fd ) != 0 ){
-            NnDir::close(fd);
-            return -1;
-        }
-    }
-    return fd;
-#else
     switch( *mode ){
     case 'w':
         return ::open(fname ,
@@ -790,7 +409,6 @@ int NnDir::open( const char *fname , const char *mode )
     default:
         return -1;
     }
-#endif
 }
 
 /* テンポラリファイル名を作る.  */
@@ -912,11 +530,7 @@ NnFileStat *NnFileStat::stat(const NnString &name)
     struct stat stat1;
 #endif
     unsigned attr=0 ;
-#ifdef __DMC__
-    NnString name_( NnDir::long2short(name.chars()) );
-#else
     NnString name_(name);
-#endif
     if( name_.endsWith(":") || name_.endsWith("\\") || name_.endsWith("/") )
 	name_ << ".";
 
@@ -930,11 +544,7 @@ NnFileStat *NnFileStat::stat(const NnString &name)
     }
     if( stat1.st_mode & S_IFDIR )
 	attr |= ATTR_DIRECTORY ;
-#ifdef __DMC__
-    if( (stat1.st_mode & S_IWRITE) == 0 )
-#else
     if( (stat1.st_mode & S_IWUSR) == 0 )
-#endif
 	attr |= ATTR_READONLY ;
     
     stamp_conv( stat1.st_mtime , stamp1 );

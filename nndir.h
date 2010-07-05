@@ -1,20 +1,11 @@
 #ifndef LFN_H
 #define LFN_H
 
-#if defined(__DMC__) && defined(__OS2__)
-#  include <sys/dirent.h>
-#endif
-
 #include "config.h"
 #include "nnstring.h"
 #include "nnhash.h"
 
 typedef unsigned long long filesize_t;
-
-#ifdef NYADOS
-    union  REGS;
-    struct SREGS;
-#endif
 
 struct NnTimeStamp {
     int second;
@@ -74,24 +65,23 @@ int fnexplode_( const char *path , NnVector &list );
 NnString &glob_all( const char *line , NnString &result );
 
 class NnDir : public NnEnum {
-    int 	status , hasHandle;
-    unsigned	handle , attr_ ;
+    struct Core;
+    Core       *core;
+    int 	status;
+    unsigned	attr_ ;
     filesize_t  size_ ;
     NnString    name_;
     NnTimeStamp stamp_;
-#ifdef NYADOS
-    unsigned findcore( union REGS &in , union REGS &out , struct SREGS &segs );
-#endif
     unsigned findfirst( const NnString &path , unsigned attr );
     unsigned findfirst( const char *path     , unsigned attr );
     unsigned findnext ( );
     void findclose();
 public:
-    NnDir( const NnString &path , int attr=0x37 )
+    NnDir( const NnString &path , int attr=0x37 ) : core(0)
 	{ status = NnDir::findfirst( path , attr ); }
-    NnDir( const char *path , int attr=0x37 )
+    NnDir( const char *path , int attr=0x37 ) : core(0)
 	{ status = NnDir::findfirst( path , attr ); }
-    NnDir()
+    NnDir() : core(0)
         { status = NnDir::findfirst( "." , 0x37 ); }
     ~NnDir();
     virtual NnObject *operator *();
