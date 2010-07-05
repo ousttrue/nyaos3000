@@ -1160,8 +1160,10 @@ lua_e "print( nyaos.access('_nya',0) )"
 Reading directory
 -----------------
 
+* nyaos.findfile (full-version)
+
     lua_e "
-      for fname,info in nyaos.dir('c:/') do
+      for info in nyaos.filefind('c:/*') do
         print( ('%s%s%s%s %12d %04d/%02d/%02d %02d:%02d:%02d %s'):format(
                     info.directory and 'D' or '-' ,
                     info.hidden    and 'H' or '-' ,
@@ -1170,12 +1172,19 @@ Reading directory
                     info.size ,
                     info.year , info.month , info.day ,
                     info.hour , info.minute , info.second ,
-                    fname ) )
+                    info.name ) )
       end
     "
 
-Reading File information
-------------------------
+* nyaos.dir (tiny-version)
+
+    lua_e "
+        for fn in nyaos.dir('.') do
+            print(fn)
+        end
+    "
+
+* nyaos.stat (1-file only)
 
     lua_e "stat=nyaos.stat('_nya') ; print( stat.size )"
 

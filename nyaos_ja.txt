@@ -1342,10 +1342,10 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
 
     lua_e "print( nyaos.access('_nya',0) )"
 
-* nyaos.dir - ディレクトリ情報読み取り
+* nyaos.filefind - ディレクトリ情報読み取り
 
     lua_e "
-      for fname,info in nyaos.dir('c:/') do
+      for info in nyaos.filefind('c:/*') do
         print( ('%s%s%s%s %12d %04d/%02d/%02d %02d:%02d:%02d %s'):format(
                     info.directory and 'D' or '-' ,
                     info.hidden    and 'H' or '-' ,
@@ -1354,8 +1354,16 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
                     info.size ,
                     info.year , info.month , info.day ,
                     info.hour , info.minute , info.second ,
-                    fname ) )
+                    info.name ) )
       end
+    "
+
+* nyaos.dir - ディレクトリ情報読み取り(簡易版)
+
+    lua_e "
+        for fn in nyaos.dir('.') do
+            print(fn)
+        end
     "
 
 * nyaos.stat - ファイル情報読み取り

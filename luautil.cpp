@@ -101,51 +101,68 @@ static void NnDir2Lua(lua_State *L,NnDir &stat)
     lua_setfield(L,-2,"year");
 }
 
+struct dirinfo_s {
+    NnDir *info;
+    enum dirinfo_e { FILEFIND , OPENDIR } mode;
+};
+
 static int luaone_readdir(lua_State *L)
 {
-    void *userdata  = luaL_checkudata(L,1,NYAOS_OPENDIR);
-    NnDir *dirhandle = *static_cast<NnDir**>( userdata );
+    struct dirinfo_s *dirinfo=static_cast<struct dirinfo_s *>(
+            luaL_checkudata(L,1,NYAOS_OPENDIR)
+            );
 
-    if( dirhandle == NULL )
+    if( dirinfo == NULL || dirinfo->info == NULL )
         return 0;
     
-    if( ! dirhandle->more() ){
-        delete dirhandle;
-        *(NnDir**)userdata = NULL;
+    if( ! dirinfo->info->more() ){
+        delete dirinfo->info;
+        dirinfo->info = NULL ;
         return 0;
     }
-    lua_pushstring( L,dirhandle->name() );
-    NnDir2Lua(L,*dirhandle);
-    dirhandle->next();
-    return 2;
+    if( dirinfo->mode == dirinfo_s::OPENDIR ){
+        lua_pushstring( L,dirinfo->info->name() );
+    }else{
+        NnDir2Lua(L,*dirinfo->info);
+    }
+    dirinfo->info->next();
+    return 1;
 }
 
 static int luaone_closedir(lua_State *L)
 {
-    void *userdata = luaL_checkudata(L,1,NYAOS_OPENDIR);
-    NnDir *dirhandle = *static_cast<NnDir**>(userdata) ;
+    struct dirinfo_s *dirinfo = static_cast<struct dirinfo_s *>(
+            luaL_checkudata(L,1,NYAOS_OPENDIR) 
+            );
 
-    if( dirhandle != NULL )
-        delete dirhandle;
-    
+    if( dirinfo != NULL && dirinfo->info != NULL ){
+        delete dirinfo->info;
+        dirinfo->info = NULL;
+    }
     return 0;
 }
 
-static int luaone_opendir(lua_State *L)
+static int luaone_opendir_core(lua_State *L,dirinfo_s::dirinfo_e mode)
 {
     const char *dir = luaL_checkstring(L,1);
-    NnDir *dirhandle;
-    void *userdata=NULL;
-    NnString dir_; dir_ << dir << "\\*";
-
-    dirhandle=new NnDir(dir_);
 
     lua_pushcfunction(L,luaone_readdir); /* stack:1 */
-    userdata = lua_newuserdata(L,sizeof(dirhandle)); /* stack:2 */
+    struct dirinfo_s *userdata = static_cast<struct dirinfo_s *>(
+            lua_newuserdata(L,sizeof(struct dirinfo_s))
+            ); /* stack:2 */
+
     if( userdata == NULL )
         return 0;
-    memcpy( userdata , &dirhandle , sizeof(dirhandle) );
 
+    if( mode == dirinfo_s::OPENDIR ){
+        NnString dir_; dir_ << dir << "\\*";
+
+        userdata->info = new NnDir(dir_);
+        userdata->mode = mode;
+    }else{
+        userdata->info = new NnDir(dir);
+        userdata->mode = mode;
+    }
     /* create metatable for closedir */
     luaL_newmetatable(L,NYAOS_OPENDIR); /* stack:3 */
     lua_pushcfunction(L,luaone_closedir);
@@ -154,6 +171,11 @@ static int luaone_opendir(lua_State *L)
 
     return 2;
 }
+
+static int luaone_findfirst(lua_State *L)
+{ return luaone_opendir_core(L,dirinfo_s::FILEFIND); }
+static int luaone_opendir(lua_State *L)
+{ return luaone_opendir_core(L,dirinfo_s::OPENDIR); }
 
 static int luaone_stat(lua_State *L)
 {
@@ -170,6 +192,7 @@ static struct luaone_s {
 } luaone[] = {
     { "chdir" , luaone_chdir } ,
     { "dir"   , luaone_opendir },
+    { "filefind" , luaone_findfirst },
     { "bitand", luaone_bitand },
     { "bitor" , luaone_bitor },
     { "bitxor", luaone_bitxor },
