@@ -149,6 +149,9 @@ At completing the filename with ^O or ^TAB
 Built-in commands
 =================
 
+These command are available on nyaos.exe only. All build-in commands 
+has an alias such as `__foo__' instead of `foo'.
+
 alias
 -----
 
