@@ -114,7 +114,17 @@ int cmd_function_list( NyadosShell &shell , const NnString &argv )
     return 0;
 }
 
-/* ’†Š‡ŒÊ‚É‚æ‚éŠÖ”éŒ¾ */
+/* ŠÖ”íœ */
+int sub_brace_erase( NyadosShell &shell , const NnString &arg1 )
+{
+    NnString funcname(arg1);
+    funcname.chop(); /* remove } */
+    funcname.chop(); /* remove { */
+
+    functions.remove( funcname );
+}
+
+/* ŠÖ”éŒ¾ */
 int sub_brace_start( NyadosShell &shell , 
 		     const NnString &arg1 ,
 		     const NnString &argv )

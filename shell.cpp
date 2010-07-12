@@ -357,6 +357,9 @@ static int replaceDollars( const NnString *aliasValue ,
 int sub_brace_start( NyadosShell &bshell , 
 		     const NnString &arg1 ,
 		     const NnString &argv );
+int sub_brace_erase( NyadosShell &bshell , 
+		     const NnString &arg1 );
+
 
 /* コマンドラインフィルター(フック箇所が複数あるので関数化)
  *    hookname - フック名 "filter" "filter2" 
@@ -476,6 +479,11 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 	sub_brace_start( *this , arg0 , argv );
         goto exit;
     }
+    if( arg0.endsWith("{}") && arg0.length() >=3 ){ /* 関数削除 */
+        sub_brace_erase( *this , arg0 );
+        goto exit;
+    }
+
     arg0low = arg0;
     arg0low.downcase();
 
