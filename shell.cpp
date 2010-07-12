@@ -445,6 +445,84 @@ void NyadosShell::setExitStatus(int n)
     properties.put( "errorlevel" , errorlevel );
 }
 
+/* nyaos.command2 に定義された Lua コマンドに合致すれば呼び出す
+ *    cmdname - コマンド名
+ *    params  - パラメータ文字列
+ *    status  - 戻り値を格納する変数
+ * return
+ *    1 - 呼び出した
+ *    0 - 合致するコマンドなし
+ */
+static int call_nyaos_command2( const char *cmdname , const char *params , int &status )
+{
+    NyaosLua L("command2");
+    if( L.ok() && lua_istable(L,-1) ){
+        lua_getfield(L,-1,cmdname );
+        if( ! lua_isfunction(L,-1) )
+            return 0;
+
+        lua_pushstring(L,params);
+        if( lua_pcall(L,1,1,0) != 0 ){
+            const char *msg = lua_tostring( L , -1 );
+            conErr << msg << '\n';
+        }
+        status = lua2exitStatus(L);
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+/* nyaos.command に定義された Lua コマンドに合致すれば呼び出す
+ *    cmdname - コマンド名
+ *    params  - パラメータ文字列
+ *    status  - 戻り値を格納する変数
+ * return
+ *    1 - 呼び出した
+ *    0 - 合致するコマンドなし
+ *   -1 - エラー
+ */
+static int call_nyaos_command( const char *cmdname , const char *params , int &status )
+{
+    NyaosLua L("command");
+    if( L.ok() && lua_istable(L,-1) ){
+        lua_getfield(L,-1,cmdname);
+        if( ! lua_isfunction(L,-1) ){
+            return 0;
+        }
+        NnString argv2;
+        NnVector argv3;
+        int back_in , back_out , back_err;
+
+        if( NyadosShell::explode4internal( params , argv2 ) != 0 )
+            return -1;
+
+        argv2.splitTo(argv3);
+        if( lua_checkstack( L , argv3.size()) == 0 ){
+            conErr << "Too many parameter for Lua stack.\n";
+            return -1;
+        }
+
+        for(int i=0 ; i<argv3.size() ; i++){
+            ((NnString*)argv3.at(i))->dequote();
+            lua_pushstring( L , argv3.at(i)->repr() );
+        }
+
+        redirect_emu_to_real( back_in , back_out , back_err );
+
+        if( lua_pcall(L,argv3.size(),1,0) != 0 ){
+            const char *msg = lua_tostring( L , -1 );
+            conErr << msg << '\n';
+        }
+        status = lua2exitStatus(L);
+        redirect_rewind( back_in , back_out , back_err );
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+
 /* 「 ;」等で区切られた後の１コマンドを実行する。
  * (interpret1 から呼び出されます)
  *	replace - コマンド
@@ -486,9 +564,19 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 
     arg0low = arg0;
     arg0low.downcase();
-
-    if( (cmdp=(NyadosCommand*)command.get( arg0low )) != NULL ){
-	/* 内蔵コマンドを実行する */
+    NnExecutable *func = (NnExecutable*)functions.get(arg0low);
+    if( func != NULL ){
+        /* サブシェルを実行する */
+        NnVector param;
+        param.append( arg0.clone() );
+        argv.splitTo( param );
+        (*func)( param );
+    }else if( call_nyaos_command2( arg0low.chars() , argv.chars() , rv )){
+        setExitStatus( rv );
+    }else if( call_nyaos_command( arg0low.chars() , argv.chars() , rv )){
+        setExitStatus( rv );
+    }else if( (cmdp=(NyadosCommand*)command.get( arg0low )) != NULL ){
+    /* 内蔵コマンドを実行する */
         NnString argv2;
         if( explode4internal( argv , argv2 ) != 0 )
             goto exit;
@@ -500,76 +588,17 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
             goto exit;
         }
     }else{
-        {
-            NyaosLua L("command2");
-            if( L.ok() && lua_istable(L,-1) ){
-                lua_getfield(L,-1,arg0low.chars());
-                if( lua_isfunction(L,-1) ){
-                    lua_pushstring(L,argv.chars() );
-                    if( lua_pcall(L,1,1,0) != 0 ){
-                        const char *msg = lua_tostring( L , -1 );
-                        conErr << msg << '\n';
-                    }
-                    setExitStatus( lua2exitStatus(L) );
-                    goto exit;
-                }
-            }
+        /* 外部コマンドを実行する */
+        NnString cmdline2;
+        if( explode4external( replace , cmdline2 ) != 0 )
+            goto exit;
+
+        int rc = mySystem( cmdline2.chars() , wait );
+        if( wait == 0 ){
+            conErr << '<' << rc << ">\n";
+        }else{
+            setExitStatus( rc );
         }
-        NyaosLua L("command");
-        if( L.ok() && lua_istable(L,-1) ){
-            lua_getfield(L,-1,arg0low.chars());
-            if( lua_isfunction(L,-1) ){
-                NnString argv2;
-                NnVector argv3;
-                int back_in , back_out , back_err;
-
-                if( explode4internal( argv , argv2 ) != 0 )
-                    goto exit;
-
-                argv2.splitTo(argv3);
-                if( lua_checkstack( L , argv3.size()) == 0 ){
-                    conErr << "Too many parameter for Lua stack.\n";
-                    goto exit;
-                }
-
-                for(int i=0 ; i<argv3.size() ; i++){
-                    ((NnString*)argv3.at(i))->dequote();
-                    lua_pushstring( L , argv3.at(i)->repr() );
-                }
-
-                redirect_emu_to_real( back_in , back_out , back_err );
-
-                if( lua_pcall(L,argv3.size(),1,0) != 0 ){
-                    const char *msg = lua_tostring( L , -1 );
-                    conErr << msg << '\n';
-                }
-                setExitStatus( lua2exitStatus(L) );
-                redirect_rewind( back_in , back_out , back_err );
-
-                goto exit;
-            }
-        }
-        NnExecutable *func = (NnExecutable*)functions.get(arg0low);
-	// BufferedShell *bShell = (BufferedShell*)
-	if( func != NULL ){
-	    /* サブシェルを実行する */
-	    NnVector param;
-	    param.append( arg0.clone() );
-	    argv.splitTo( param );
-            (*func)( param );
-	}else{
-	    /* 外部コマンドを実行する */
-	    NnString cmdline2;
-	    if( explode4external( replace , cmdline2 ) != 0 )
-		goto exit;
-
-	    int rc = mySystem( cmdline2.chars() , wait );
-            if( wait == 0 ){
-                conErr << '<' << rc << ">\n";
-            }else{
-                setExitStatus( rc );
-            }
-	}
     }
   exit:
     if( ! heredocfn.empty() ){

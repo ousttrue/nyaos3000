@@ -1215,6 +1215,12 @@ History
 =======
 
 3.00_0 (2010/07/12)
+    - Change command-name search-path from
+            alias -> built-in command -> nyaos.command2(Lua)
+            -> nyaos.command(Lua) -> function -> external command
+      to
+            alias -> function -> nyaos.command2(Lua)
+            -> nyaos.command(Lua) -> built-in command -> external command
     - able to remove function with 'FUNCTIONNAME{}'
     - add nyaos.stat and nyaos.filefind
 

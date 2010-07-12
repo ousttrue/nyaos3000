@@ -122,6 +122,8 @@ int sub_brace_erase( NyadosShell &shell , const NnString &arg1 )
     funcname.chop(); /* remove { */
 
     functions.remove( funcname );
+
+    return 0;
 }
 
 /* ŠÖ”éŒ¾ */

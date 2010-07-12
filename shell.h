@@ -20,12 +20,13 @@ class NyadosShell : public NnObject {
     void doHereDocument( const char *&sp , NnString &dst , char prefix );
     void transPercent( const char *&sp , NnString &dst , int level );
     int explode4external( const NnString &src , NnString &dst );
-    int explode4internal( const NnString &src , NnString &dst );
     int interpret1( const NnString &statement ); /* && || */
     int interpret2( const NnString &statement , int wait ); /* pipeline */
 protected:
     NyadosShell *parent_;
 public:
+    static int explode4internal( const NnString &src , NnString &dst );
+
     NnVector nesting;
     NnString tempfilename;
 
