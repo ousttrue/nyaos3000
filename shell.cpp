@@ -961,6 +961,8 @@ int cmd_pwd     ( NyadosShell & , const NnString & );
 int cmd_folder  ( NyadosShell & , const NnString & );
 int cmd_lua_e   ( NyadosShell & , const NnString & );
 int cmd_function_list( NyadosShell & , const NnString & );
+int cmd_mkdir   ( NyadosShell & , const NnString & );
+int cmd_rmdir   ( NyadosShell & , const NnString & );
 
 int cmd_eval( NyadosShell &shell , const NnString &argv )
 {
@@ -992,8 +994,12 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "if"      , &cmd_if       },
 	{ "ls"      , &cmd_ls       },
         { "lua_e"   , &cmd_lua_e    },
+        { "md"      , &cmd_mkdir    },
+        { "mkdir"   , &cmd_mkdir    },
 	{ "open"    , &cmd_open     },
 	{ "option"  , &cmd_option   },
+        { "rd"      , &cmd_rmdir    },
+        { "rmdir"   , &cmd_rmdir    },
 	{ "popd"    , &cmd_popd     },
 	{ "echo"    , &cmd_echoOut  },
 	{ "pushd"   , &cmd_pushd    },

@@ -408,3 +408,35 @@ int cmd_echoOut( NyadosShell & , const NnString &argv )
     conOut << argv << '\n';
     return 0;
 }
+
+int cmd_mkdir( NyadosShell &shell , const NnString &argv )
+{
+    NnString argv1,left(argv);
+
+    shell.setExitStatus( 0 );
+    while( left.splitTo(argv1,left) , !argv1.empty() ){
+        argv1.dequote();
+        errno = 0;
+        if( mkdir(argv1.chars()) != 0 ){
+            conErr << strerror(errno) << '\n';
+            shell.setExitStatus( 1 );
+        }
+    }
+    return 0;
+}
+
+int cmd_rmdir( NyadosShell &shell , const NnString &argv )
+{
+    NnString argv1,left(argv);
+
+    shell.setExitStatus( 0 );
+    while( left.splitTo(argv1,left) , !argv1.empty() ){
+        argv1.dequote();
+        errno = 0;
+        if( rmdir(argv1.chars()) != 0 ){
+            conErr << strerror(errno) << '\n';
+            shell.setExitStatus( 1 );
+        }
+    }
+    return 0;
+}
