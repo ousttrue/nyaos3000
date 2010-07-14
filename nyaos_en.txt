@@ -1215,7 +1215,6 @@ History
 =======
 
 3.00_0 (2010/07/12)
-    - make built-in command: mkdir , md , rmdir and rd.
     - Change command-name search-path from
             alias -> built-in command -> nyaos.command2(Lua)
             -> nyaos.command(Lua) -> function -> external command
