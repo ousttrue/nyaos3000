@@ -1162,10 +1162,10 @@ Test file existance.
 lua_e "print( nyaos.access('_nya',0) )"
 
 
-Reading directory
------------------
+File/Directory Operation
+------------------------
 
-* nyaos.filefind (full-version)
+* nyaos.filefind - read files' information matching a wildcard.
 
     lua_e "
       for info in nyaos.filefind('c:/*') do
@@ -1181,7 +1181,7 @@ Reading directory
       end
     "
 
-* nyaos.dir (tiny-version)
+* nyaos.dir - read filelist of a directory
 
     lua_e "
         for fn in nyaos.dir('.') do
@@ -1189,16 +1189,21 @@ Reading directory
         end
     "
 
-* nyaos.stat (1-file only)
+* nyaos.stat - get information about a file.
 
     lua_e "stat=nyaos.stat('_nya') ; print( stat.size )"
 
-Change the current working directory
--------------------------------------
+* nyaos.chdir - change the current working directory
 
-lua_e "
-  nyaos.chdir('..')
-"
+    lua_e "nyaos.chdir('..')"
+
+* nyaos.mkdir - make a directory
+
+    lua_e "nyaos.mkdir('HOGE')"
+
+* nyaos.rmdir - remove a directory
+
+    lua_e "nyaos.rmdir('HOGE')"
 
 Bit operation.
 --------------
@@ -1222,7 +1227,7 @@ History
             alias -> function -> nyaos.command2(Lua)
             -> nyaos.command(Lua) -> built-in command -> external command
     - able to remove function with 'FUNCTIONNAME{}'
-    - add nyaos.stat and nyaos.filefind
+    - add nyaos.stat , nyaos.filefind , nyaos.mkdir and nyaos.rmdir
 
 2.99_0 (2010/07/03)
     - When call nyaos.filter.XXXXX, do order by XXXXX

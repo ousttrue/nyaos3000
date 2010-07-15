@@ -1371,11 +1371,17 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
 
     lua_e "stat=nyaos.stat('_nya') ; print( stat.size )"
 
-* nyaos.chdir - ディレクトリ異動
+* nyaos.chdir - ディレクトリ移動
 
-    lua_e "
-      nyaos.chdir('..')
-    "
+    lua_e "nyaos.chdir('..')"
+
+* nyaos.mkdir - ディレクトリ作成
+
+    lua_e "nyaos.mkdir('HOGE')"
+
+* nyaos.rmdir - ディレクトリ削除
+
+    lua_e "nyaos.rmdir('HOGE')"
 
 * ビットオペレーション
 
@@ -1446,7 +1452,7 @@ dir/w がエラーになります
 変更履歴
 ========
 
-3.00_0 (2010/07/12)
+3.00_0 (2010/07/15)
     - コマンド解釈の優先度を
             エイリアス→内蔵コマンド→Luaコマンド2(nyaos.command2)
             →Luaコマンド1(nyaos.command)→関数→外部コマンド
@@ -1455,7 +1461,7 @@ dir/w がエラーになります
             →Luaコマンド1(nyaos.command)→内蔵コマンド→外部コマンド
       に変更した。
     - 関数を削除できるようにした。
-    - 追加：nyaos.stat , nyaos.filefind
+    - 追加：nyaos.stat , nyaos.filefind , nyaos.mkdir , nyaos.rmdir
 
 2.99_0 (2010/07/03)
     - nyaos.filter.XXXXXX を XXXXXX の辞書順で呼び出すようにした。

@@ -186,6 +186,23 @@ static int luaone_stat(lua_State *L)
     return 1;
 }
 
+static int luaone_mkdir(lua_State *L)
+{
+    const char *dirname = luaL_checkstring(L,-1);
+    lua_pushinteger( L,mkdir( dirname ) );
+
+    return 1;
+}
+
+static int luaone_rmdir(lua_State *L)
+{
+    const char *dirname = luaL_checkstring(L,-1);
+    lua_pushinteger( L,rmdir( dirname ) );
+
+    return 1;
+}
+
+
 static struct luaone_s {
     const char *name;
     int (*func)(lua_State *);
@@ -199,6 +216,8 @@ static struct luaone_s {
     { "rshift", luaone_rshift },
     { "lshift", luaone_lshift },
     { "stat"  , luaone_stat },
+    { "mkdir" , luaone_mkdir },
+    { "rmdir" , luaone_rmdir },
     { NULL    , NULL } ,
 };
 
