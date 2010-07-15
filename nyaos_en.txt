@@ -1193,17 +1193,29 @@ File/Directory Operation
 
     lua_e "stat=nyaos.stat('_nya') ; print( stat.size )"
 
+    When the file does not exist, return nil.
+
 * nyaos.chdir - change the current working directory
 
-    lua_e "nyaos.chdir('..')"
+    lua_e "status,errmsg = nyaos.chdir('..')"
+
+    At succeeding, status is 0
+    At failure , status is not 0 and errmsg has an error message.
 
 * nyaos.mkdir - make a directory
 
-    lua_e "nyaos.mkdir('HOGE')"
+    lua_e "status,errmsg = nyaos.mkdir('HOGE')"
+
+    At succeeding, status is 0
+    At failure , status is not 0 and errmsg has an error message.
+    
 
 * nyaos.rmdir - remove a directory
 
-    lua_e "nyaos.rmdir('HOGE')"
+    lua_e "status,errmsg = nyaos.rmdir('HOGE')"
+
+    At succeeding, status is 0
+    At failure , status is not 0 and errmsg has an error message.
 
 Bit operation.
 --------------

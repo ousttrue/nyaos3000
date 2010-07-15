@@ -14,11 +14,11 @@ const static char NYAOS_OPENDIR[] = "nyaos_opendir";
 
 static int luaone_chdir(lua_State *L)
 {
-    const char *newdir = lua_tostring(L,1);
-    if( newdir != NULL ){
-        chdir( newdir );
-    }
-    return 0;
+    const char *newdir = luaL_checkstring(L,1);
+    errno = 0;
+    lua_pushinteger( L , chdir(newdir) );
+    lua_pushstring( L , strerror(errno) );
+    return 2;
 }
 
 static int luaone_bitand(lua_State *L)
@@ -180,26 +180,32 @@ static int luaone_opendir(lua_State *L)
 static int luaone_stat(lua_State *L)
 {
     const char *fname = luaL_checkstring(L,-1);
+    errno = 0;
     NnDir stat(fname);
-    NnDir2Lua(L,stat);
-
-    return 1;
+    if( stat.more() ){
+        NnDir2Lua(L,stat);
+        return 1;
+    }else{
+        return 0;
+    }
 }
 
 static int luaone_mkdir(lua_State *L)
 {
     const char *dirname = luaL_checkstring(L,-1);
+    errno = 0;
     lua_pushinteger( L,mkdir( dirname ) );
-
-    return 1;
+    lua_pushstring( L,strerror(errno) );
+    return 2;
 }
 
 static int luaone_rmdir(lua_State *L)
 {
     const char *dirname = luaL_checkstring(L,-1);
+    errno = 0;
     lua_pushinteger( L,rmdir( dirname ) );
-
-    return 1;
+    lua_pushstring( L,strerror(errno) );
+    return 2;
 }
 
 

@@ -1371,17 +1371,28 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
 
     lua_e "stat=nyaos.stat('_nya') ; print( stat.size )"
 
+    ファイルが存在しない場合は nil が返ります。
+
 * nyaos.chdir - ディレクトリ移動
 
-    lua_e "nyaos.chdir('..')"
+    lua_e "status,errmsg = nyaos.chdir('HOGE')"
+
+    status に成否(0:成功,not 0:失敗)
+    errmsg にメッセージが入ります。
 
 * nyaos.mkdir - ディレクトリ作成
 
-    lua_e "nyaos.mkdir('HOGE')"
+    lua_e "status,errmsg = nyaos.mkdir('HOGE')"
+
+    status に成否(0:成功,not 0:失敗)
+    errmsg にメッセージが入ります。
 
 * nyaos.rmdir - ディレクトリ削除
 
-    lua_e "nyaos.rmdir('HOGE')"
+    lua_e "status,errmsg = nyaos.rmdir('HOGE')"
+
+    status に成否(0:成功,not 0:失敗)
+    errmsg にメッセージが入ります。
 
 * ビットオペレーション
 
