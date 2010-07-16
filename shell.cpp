@@ -534,7 +534,7 @@ static int call_nyaos_command( const char *cmdname , const char *params , int &s
 int NyadosShell::interpret2( const NnString &replace_ , int wait )
 {
     int rv=0;
-
+    NnExecutable *func;
     NnString replace;
 
     filter_with_lua( "filter2" , replace_ , replace );
@@ -564,8 +564,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 
     arg0low = arg0;
     arg0low.downcase();
-    NnExecutable *func = (NnExecutable*)functions.get(arg0low);
-    if( func != NULL ){
+    if( (func=(NnExecutable*)functions.get(arg0low)) != NULL ){
         /* サブシェルを実行する */
         NnVector param;
         param.append( arg0.clone() );

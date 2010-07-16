@@ -194,7 +194,11 @@ static int luaone_mkdir(lua_State *L)
 {
     const char *dirname = luaL_checkstring(L,-1);
     errno = 0;
+#ifdef __EMX__
+    lua_pushinteger( L,mkdir( dirname,0777 ) );
+#else
     lua_pushinteger( L,mkdir( dirname ) );
+#endif
     lua_pushstring( L,strerror(errno) );
     return 2;
 }
