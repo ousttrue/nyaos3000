@@ -190,6 +190,25 @@ static int luaone_stat(lua_State *L)
     }
 }
 
+static int luaone_splitknj(lua_State *L)
+{
+    const char *p = luaL_checkstring(L,-1);
+    int n=0;
+    lua_newtable(L);
+    while( *p != '\0' ){
+        lua_pushinteger(L,++n);
+        if( isKanji(*p) ){
+            lua_pushlstring(L,p,2);
+            p+=2;
+        }else{
+            lua_pushlstring(L,p,1);
+            p++;
+        }
+        lua_settable(L,-3);
+    }
+    return 1;
+}
+
 static int luaone_mkdir(lua_State *L)
 {
     const char *dirname = luaL_checkstring(L,-1);
@@ -228,6 +247,7 @@ static struct luaone_s {
     { "stat"  , luaone_stat },
     { "mkdir" , luaone_mkdir },
     { "rmdir" , luaone_rmdir },
+    { "splitknj" , luaone_splitknj },
     { NULL    , NULL } ,
 };
 

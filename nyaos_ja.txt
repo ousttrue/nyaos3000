@@ -1404,6 +1404,19 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
        print(nyaos.lshift(8,1))
     "
 
+* splitknj - 日本語1文字単位の分割
+
+    文字列を1バイトではなく、1文字単位で分割して、各文字を配列に格納します。
+
+    lua_e "
+        local sample = [[あはソはいaひひふふふソ]]
+        local table = nyaos.splitknj(sample)
+
+        for i=1,#table do
+            print( table[i] )
+        end
+    "
+
 
 注意事項
 ========
@@ -1463,7 +1476,10 @@ dir/w がエラーになります
 変更履歴
 ========
 
-3.00_0 (2010/07/15)
+3.1.0_0 (2010/07/18)
+    - Lua関数: nyaos.splitknj() 追加
+
+3.0.0_0 (2010/07/17)
     - コマンド解釈の優先度を
             エイリアス→内蔵コマンド→Luaコマンド2(nyaos.command2)
             →Luaコマンド1(nyaos.command)→関数→外部コマンド
