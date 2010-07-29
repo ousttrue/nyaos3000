@@ -138,7 +138,7 @@ lua_e "
     for i,e in pairs(nyaos.argv) do
         if e == '-t' then
             -- ls にカラーオプションを付ける --
-            nyaos.alias.ls = (nyaos.alias.ls or 'ls')..' --color'
+            nyaos.alias.ls = (nyaos.alias.ls or 'ls')..' --color -x'
 
             if os.getenv('VIMSHELL') == '1' then
                 nyaos.option.ls_colors='fi=37:di=32:sy=31:ro=34:hi=33:ex=35:ec=0'

@@ -432,6 +432,8 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
     /* 出力先が端末の時はカラーをデフォルトとする */
     if( conOut.isatty() ){
         option |= OPT_COLOR;
+    }else{
+        option |= OPT_ONE;
     }
     
     argv.splitTo( args );
@@ -465,6 +467,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                     case 'l': option |= OPT_LONG ; break;
                     case 'a': option |= OPT_ALL  ; break;
                     case '1': option |= OPT_ONE  ; break;
+                    case 'x': option &=~OPT_ONE  ; break;
                     case 'R': option |= OPT_REC  ; break;
                     case 'r':
                         filecmpr.set_reverse(1) ;
