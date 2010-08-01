@@ -12,19 +12,17 @@ char dbcs_table[ 256 + 128 ];
 void init_dbcs_table()
 {
 #ifdef __EMX__
-    char buffer[12];
+    enum{ BUFSIZ=12 };
+    char buffer[BUFSIZ];
 
     COUNTRYCODE country;
 
     country.country = 0;
     country.codepage = 0;
 
-    int rc=(int)DosQueryDBCSEnv((ULONG)numof(buffer)
-				,&country
-				,buffer);
+    int rc=(int)DosQueryDBCSEnv((ULONG)BUFSIZ ,&country ,buffer);
     char *p=buffer;
     while( (p[0]!=0 || p[1] !=0) && p < buffer+sizeof(buffer) ){
-      /* printf("DBCS %02x--%02x\n",p[0] & 255 ,p[1] & 255); */
       memset( (dbcs_table+128)+(p[0] & 255), 1
 	     , (p[1] & 255)-(p[0] & 255)+1 );
       p += 2;
