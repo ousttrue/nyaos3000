@@ -229,6 +229,7 @@ errpt:
 
 int main( int argc, char **argv )
 {
+    init_dbcs_table();
     // set_new_handler(nya_new_handler);
     properties.put("nyatype",new NnString("NYAOS3K") );
     setvbuf( stdout , NULL , _IONBF , 0 );

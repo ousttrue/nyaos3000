@@ -27,7 +27,7 @@ OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O
 	shell.$(O) shell4.$(O) foreach.$(O) which.$(O) reader.$(O) nnvector.$(O) \
 	ntcons.$(O) shellstr.$(O) cmds1.$(O) cmds2.$(O) xscript.$(O) shortcut.$(O) \
 	strfork.$(O) lsf.$(O) open.$(O) nua.$(O) luautil.$(O) getch_msvc.$(O) \
-	source.$(O) nnlua.$(O)
+	source.$(O) nnlua.$(O) dbcs.$(O)
 
 ifeq ($(OS),Windows_NT)
 nyaos.exe : $(OBJS) nyacusrc.$(O)
@@ -69,6 +69,7 @@ nnvector.$(O)  : nnvector.cpp  nnvector.h  nnobject.h
 nnhash.$(O) : nnhash.cpp nnhash.h nnobject.h
 strfork.$(O) : strfork.cpp
 nnlua.$(O) : nnlua.cpp nnlua.h
+dbcs.$(O) : dbcs.cpp
 
 # ŠÂ‹«ˆË‘¶ƒ‰ƒCƒuƒ‰ƒŠ
 writer.$(O) : writer.cpp    writer.h
