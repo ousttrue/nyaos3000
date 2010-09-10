@@ -218,7 +218,7 @@ void VariableFilter::filter( NnString::Iter &p , NnString &result )
 		}
 		++p;
 	    }else{
-		for( ; p.alnum() ; ++p )
+		for( ; p.alnum() || *p == '_' ; ++p )
 		    name << *p;
 		if( lookup(name,value)==0 ){
 		    result << value;
