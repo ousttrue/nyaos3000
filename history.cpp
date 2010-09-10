@@ -159,8 +159,9 @@ NnString *History::operator[](int at)
 	return NULL;
     if( at >= 0 )
         return (NnString *)this->at(at);
+    /* at ‚ª•‰‚Ìê‡ */
     at += size();
-    if( at < 0 || at >= this->size() )
+    if( at < 0 )
 	return NULL;
     return (NnString *)this->at( at );
 }

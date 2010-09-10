@@ -90,9 +90,7 @@ static int mySpawn(
     cmdname.dequote();
 
     NnString fullpath_cmdname;
-    if( NnDir::access(cmdname.chars())==0 ){
-        fullpath_cmdname = cmdname;
-    }else if( which( cmdname.chars() , fullpath_cmdname ) != 0 ){
+    if( which( cmdname.chars() , fullpath_cmdname ) != 0 ){
         errno = ENOENT;
         return -1;
     }

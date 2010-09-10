@@ -219,7 +219,7 @@ int KeyFunction::code_sub( const char *keyname1 , int start , int end )
 	    return keynames[start].code;
 	return -1;
     }
-    int mid = start+end >> 1;
+    int mid = (start+end) >> 1;
     int diff=stricmp( keynames[mid].name , keyname1 );
     if( diff < 0 )
 	return code_sub( keyname1 , mid+1 , end );
