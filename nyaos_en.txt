@@ -1231,7 +1231,15 @@ lua_e "
 History
 =======
 
-3.00_0 (2010/07/12)
+3.0.0_1 (2010/09/11)
+    - Fix: did not replace the environment variable which begins `$' and 
+           includes `_'.
+    - Fix: treated no suffiexed filename as executable.
+    - Fix: searched executables written with relative path though %PATH%.
+    - force static-link libstdc++ With the latest MinGW(20100831).
+    - remove warnings on the latest MinGW(20100831) on history.cpp,keybound.cpp
+
+3.0.0_0 (2010/07/12)
     - Change command-name search-path from
             alias -> built-in command -> nyaos.command2(Lua)
             -> nyaos.command(Lua) -> function -> external command
