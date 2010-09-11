@@ -19,7 +19,7 @@
 #include "source.h"
 
 #ifndef VER
-#define VER "3.0.0_1"
+#define VER "3.1.0_1"
 #endif
 
 #ifdef __MINGW32__
@@ -229,6 +229,7 @@ errpt:
 
 int main( int argc, char **argv )
 {
+    init_dbcs_table();
     // set_new_handler(nya_new_handler);
     properties.put("nyatype",new NnString("NYAOS3K") );
     setvbuf( stdout , NULL , _IONBF , 0 );

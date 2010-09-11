@@ -337,7 +337,8 @@ built-in ls(list)
 option usage
     -a all files including files starting with dot and underscore, and attributed hidden.
     -l long format
-    -1 1 file per 1 line.
+    -1 list one file per line
+    -x list entries by lines instead of by columns
     -R recursively
     -t sort by update-date.
     -r sort reversely
@@ -1228,8 +1229,37 @@ lua_e "
    print(nyaos.lshift(8,1))
 "
 
+* splitknj 
+
+    split a string into table whose element is one charactor(shift-jis).
+
+    lua_e "
+        local sample = [[‚ ‚Íƒ\‚Í‚¢a‚Ð‚Ð‚Ó‚Ó‚Óƒ\]]
+        local table = nyaos.splitknj(sample)
+
+        for i=1,#table do
+            print( table[i] )
+        end
+    "
+
+
 History
 =======
+
+develop
+-------
+3.1.0_1 (2010/09/11)
+    - same between 3.0.0_0 and _1
+
+
+3.1.0_0 (2010/08/02)
+    - Not only Japanese, All DBCS Supported.
+    - When stdout is a tty, ls behaves as ls -1.
+    - add option -x to ls.
+    - add Lua function: nyaos.splitknj()
+
+stable
+------
 
 3.0.0_1 (2010/09/11)
     - Fix: did not replace the environment variable which begins `$' and 

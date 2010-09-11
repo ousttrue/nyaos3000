@@ -40,8 +40,11 @@
  */
 
 /* 漢字の先頭バイトであれば、非0 を返す */
+extern char dbcs_table[ 256 + 128 ];
+void init_dbcs_table();
+
 #undef  isKanji
-#define isKanji(x) ((unsigned char)(((x)^0x20)-0xA1) <= 0x3B)
+#define isKanji(n) (dbcs_table+128)[n]
 
 #undef  isSpace
 #define isSpace(x) isspace((x)&255)
