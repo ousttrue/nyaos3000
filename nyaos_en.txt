@@ -1495,4 +1495,4 @@ Thanks to...
     Takeshi Yokobayashi , Christoph Brendes , TEM               ,
     Hideden             , Lukewarm(sava)    , Masayuki Hayashi  ,
     thinca              , Shougo            , Saitou            ,
-    craftware
+    craftware           , Dice
