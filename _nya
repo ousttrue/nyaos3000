@@ -17,8 +17,8 @@ suffix rb  ruby
 suffix jar java -jar
 suffix lua lua
 suffix awk awk -f
-suffix vbs cscript
-suffix js  cscript
+suffix vbs cscript //nologo
+suffix js  cscript //nologo
 
 option +backquote
 option +history
