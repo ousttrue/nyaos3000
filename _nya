@@ -10,6 +10,9 @@
 #    - そのユーザで定義する設定は (2) へ
 # 配置してください.
 
+alias kill  taskkill /pid
+alias kill9 taskkill /f /pid
+
 suffix ny  %nyatype% -f
 suffix pl  perl
 suffix py  python
