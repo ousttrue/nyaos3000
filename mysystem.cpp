@@ -264,6 +264,7 @@ static void devidePipes( const char *cmdline , NnVector &vector )
  *	cmdline - コマンド
  *	wait - MYP_WAIT / MYP_NOWAIT / MYP_PIPE
  *	result - コマンドの実行結果を格納する先
+ *	error_fname - エラーになった時に表示するコマンド名を入れる器
  * return
  *        0 : 成功
  *       -1 : リダイレクト失敗.
@@ -271,7 +272,8 @@ static void devidePipes( const char *cmdline , NnVector &vector )
 static int do_one_command( 
         const char *cmdline ,
         mysystem_process_t wait ,
-        mysystem_result_t  &result )
+        mysystem_result_t  &result ,
+        NnString &error_fname )
 {
     Redirect redirect0(0);
     Redirect redirect1(1);
@@ -309,7 +311,11 @@ static int do_one_command(
     NnVector args;
 
     execstr.splitTo( args );
-    return mySpawn( args , wait , result );
+    int rc=mySpawn( args , wait , result );
+    if( rc != 0 ){
+        error_fname = args.const_at(0)->repr();
+    }
+    return rc;
 }
 
 /* NYADOS 専用：system代替関数（パイプライン処理）
@@ -330,6 +336,8 @@ static int do_pipeline(
     devidePipes( cmdline , pipeSet );
     for( int i=0 ; i < pipeSet.size() ; ++i ){
 	errno = 0;
+        NnString error_fname;
+
         if( pipefd0 != -1 ){
 	    // パイプラインが既に作られている場合、
 	    // 入力側を標準入力へ張る必要がある
@@ -353,19 +361,23 @@ static int do_pipeline(
             pipefd0 = handles[0];
 
             rc = do_one_command( ((NnString*)pipeSet.at(i))->chars(),
-                            MYP_NOWAIT , result);
+                            MYP_NOWAIT , result , error_fname );
             dup2( save1 , 1 );
             ::close( save1 );
         }else{
             rc = do_one_command( ((NnString*)pipeSet.at(i))->chars(),
-                            wait , result );
+                            wait , result , error_fname );
         }
 	if( rc != 0 ){
 	    if( ((NnString*)pipeSet.at(i))->length() > 110 ){
 		conErr << "Too long command line,"
 			    " or bad command or file name.\n";
 	    }else if( errno != 0 ){
-                conErr << strerror( errno ) << '\n';
+                int save_errno=errno;
+                if( ! error_fname.empty() ){
+                    conErr << error_fname << ": ";
+                }
+                conErr << strerror( save_errno ) << '\n';
 	    }else{
                 conErr << "unexpected error.\n";
             }

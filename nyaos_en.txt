@@ -1248,6 +1248,10 @@ History
 
 develop
 -------
+
+3.1.1_0 (2010/09/23)
+    - display filename before the error message: 'No Such file or directory'
+
 3.1.0_1 (2010/09/11)
     - same between 3.0.0_0 and _1
 
