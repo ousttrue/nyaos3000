@@ -9,7 +9,7 @@
  */
 int NnVector::grow(int n)
 {
-    if( n <= max_ ) return 0;
+    // if( n <= max_ ) return 0;
     NnObject **newVector = (NnObject**)(array != NULL 
 			? realloc( array , n*sizeof(NnObject*) )
 			: malloc( n*sizeof(NnObject*) ) );

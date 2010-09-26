@@ -182,7 +182,7 @@ void Console::backspace(int n)
 #ifdef ESCAPE_SEQUENCE_OK
     printf("\x1B[%dD",n);
 #elif defined(NYACUS)
-    int x,y;
+    int x=0,y=0;
     getLocate(x,y);
     locate(x-n,y);
 #else

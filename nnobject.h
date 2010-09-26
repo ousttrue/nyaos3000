@@ -44,14 +44,14 @@ extern char dbcs_table[ 256 + 128 ];
 void init_dbcs_table();
 
 #undef  isKanji
-#define isKanji(n) (dbcs_table+128)[n]
+#define isKanji(n) dbcs_table[(unsigned)(128+(n))]
 
 #undef  isSpace
-#define isSpace(x) isspace((x)&255)
+#define isSpace(x) isspace((unsigned)((x)&255))
 #undef  isDigit
-#define isDigit(x) isdigit((x)&255)
+#define isDigit(x) isdigit((unsigned)((x)&255))
 #undef  isAlpha
-#define isAlpha(x) isalpha((x)&255)
+#define isAlpha(x) isalpha((unsigned)((x)&255))
     
 /* Ã“I”z—ñ‚Ì—v‘f‚ğ•Ô‚· */
 #undef  numof
