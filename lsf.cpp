@@ -20,6 +20,7 @@ enum {
     OPT_ONE   = 0x4 ,
     OPT_REC   = 0x8 ,
     OPT_COLOR = 0x10 , 
+    OPT_ALL2  = 0x20 , // -A
 };
 
 # define LS_LEFT  "\033["
@@ -396,7 +397,12 @@ static void dir1( const char *dirname ,
 			    st->stamp() )
 			);
 	}
-	if( ( st->name().startsWith(".") ||
+        if( ( st->name().compare(".") == 0 ||
+              st->name().compare("..") == 0 ) && 
+             (option & OPT_ALL2 ) != 0 ) 
+        {
+            delete st;
+        }else if( ( st->name().startsWith(".") ||
               st->name().startsWith("_") ||
               st->isHidden() ) && 
             (option & OPT_ALL)==0 )
@@ -465,6 +471,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                 for(const char *p=path.chars()+1 ; *p != '\0' ; ++p ){
                     switch( *p ){
                     case 'l': option |= OPT_LONG ; break;
+                    case 'A': option |= OPT_ALL2 ;
                     case 'a': option |= OPT_ALL  ; break;
                     case '1': option |= OPT_ONE  ; break;
                     case 'x': option &=~OPT_ONE  ; break;
