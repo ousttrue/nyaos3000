@@ -2354,7 +2354,7 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
 
 最新版のバイナリ・ソースは、下記ＵＲＬからダウンロード可能です。
 
-    http://nyaos.org
+    http://www.nyaos.org
 
 質問・バグリポート・提案がございましたら、以下までご連絡ください。
 
@@ -2373,6 +2373,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     横林 武 様        Christoph Brendes様  TEM 様 
     hideden 様        lukewarm(sava)様     林 雅之 様
     thinca 様         Shougo 様            齊藤 様
-    craftware 様      Dice様
+    craftware 様      Dice様               tyru 様
 
 この場を借りて、お礼申し上げます。ありがとうございました。

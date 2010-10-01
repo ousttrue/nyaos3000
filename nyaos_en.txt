@@ -1482,7 +1482,7 @@ Nihongo Yet Another Open Shell (NYAOS) is the free software.
 You can distribute with GNU General Publice License.
 
     Download-site:
-        http://nyaos.org
+        http://www.nyaos.org
 
     Bug-Report
         iyahaya@nifty.com
@@ -1499,4 +1499,4 @@ Thanks to...
     Takeshi Yokobayashi , Christoph Brendes , TEM               ,
     Hideden             , Lukewarm(sava)    , Masayuki Hayashi  ,
     thinca              , Shougo            , Saitou            ,
-    craftware           , Dice
+    craftware           , Dice              , tyru              ,
