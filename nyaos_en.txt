@@ -675,6 +675,14 @@ REDIRECT of STDERR
         link COMMAND2's standard-input with both COMMAND1's standard-output and
         standard-error-output.
 
+Caution:
+    To redirect standard output and standard-error-output to the same file, do:
+        COMMAND >FILENAME 2>&1
+
+    Doing
+        COMMAND 2>&1 >FILENAME
+    FILENAME includes only COMMAND's standard-output.
+
 
 COMMAND SUBSTITUTION
 ====================
