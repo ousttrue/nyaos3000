@@ -12,8 +12,9 @@
 
 alias kill  taskkill /pid
 alias kill9 taskkill /f /pid
+alias ps    tasklist
 
-suffix ny  %nyatype% -f
+suffix ny  nyaos -f
 suffix pl  perl
 suffix py  python
 suffix rb  ruby
@@ -35,7 +36,7 @@ foreach i (mkdir rmdir type md rd start )
     alias $i $COMSPEC /c $i
 end
 
-foreach cmd (dir copy move del rename ren del)
+foreach cmd (dir copy move del rename ren del attrib)
     $cmd{
         if %glob.defined% -ne 0 then
             option -glob
