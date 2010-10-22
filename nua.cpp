@@ -524,6 +524,8 @@ int NyaosLua::init()
         lua_newtable(L);
         lua_setfield(L,-2,"filter2");
         lua_newtable(L);
+        lua_setfield(L,-2,"filter3");
+        lua_newtable(L);
         lua_setfield(L,-2,"goodbye");
 
         /* close nyaos table */

@@ -29,6 +29,7 @@
 #include "shell.h"
 #include "writer.h"
 #include "mysystem.h"
+#include "nua.h"
 
 enum{
     TOO_LONG_COMMANDLINE = -3  ,
@@ -71,6 +72,49 @@ int mkpipeline( int pipefd[] )
     return 0;
 }
 
+static void lua_filter( NnString &cmdname , NnString &cmdline )
+{
+    NyaosLua L("filter3");
+    if( L != NULL ){
+        if( lua_isfunction(L,-1) ){
+            lua_pushstring( L,cmdname.chars() );
+            lua_pushstring( L,cmdline.chars() );
+            if( lua_pcall(L,2,2,0) != 0 ){
+                goto errpt;
+            }
+            if( lua_isstring(L,-1) && lua_isstring(L,-2) ){
+                cmdname = lua_tostring(L,-2);
+                cmdline = lua_tostring(L,-1);
+            }
+        }else if( lua_istable(L,-1) ){
+            lua_pushnil(L); /* start key */
+            while( lua_next(L,-2) != 0 ){
+                if( lua_isfunction(L,-1) ){
+                    lua_pushstring( L,cmdname.chars() );
+                    lua_pushstring( L,cmdline.chars() );
+                    if( lua_pcall(L,2,2,0) != 0 ){
+                        goto errpt;
+                    }
+                    if( lua_isstring(L,-1) && lua_isstring(L,-2) ){
+                        cmdname = lua_tostring(L,-2);
+                        cmdline = lua_tostring(L,-1);
+                    }
+                    lua_pop(L,2);
+                }else{
+                    lua_pop(L,1); /* drop value */
+                }
+            }
+        }
+    }
+    return;
+errpt:
+    const char *msg = lua_tostring(L,-1);
+    conErr << msg << '\n';
+    return;
+}
+
+
+
 /* 代替spawn。spawnのインターフェイスを NNライブラリに適した形で提供する。
  *      args - パラメータ
  *      wait - MYP_WAIT   : プロセス終了を待つ
@@ -110,6 +154,9 @@ static int mySpawn(
         cmdline << args.const_at(i)->repr() << ' ';
     }
     cmdline.chop();
+
+    lua_filter( fullpath_cmdname , cmdline );
+
 #ifdef __EMX__
     unsigned long type=0;
     int rc=DosQueryAppType( (unsigned char *)cmdname.chars() , &type );
