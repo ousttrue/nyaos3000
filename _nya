@@ -10,9 +10,13 @@
 #    - そのユーザで定義する設定は (2) へ
 # 配置してください.
 
-alias kill  taskkill /pid
-alias kill9 taskkill /f /pid
-alias ps    tasklist
+if /%OS%/ == /Windows_NT/ then
+    alias  kill  taskkill /pid
+    alias  kill9 taskkill /f /pid
+    alias  ps    tasklist
+    suffix vbs   cscript //nologo
+    suffix js    cscript //nologo
+endif
 
 suffix ny  nyaos -f
 suffix pl  perl
@@ -21,8 +25,6 @@ suffix rb  ruby
 suffix jar java -jar
 suffix lua lua
 suffix awk awk -f
-suffix vbs cscript //nologo
-suffix js  cscript //nologo
 
 option +backquote
 option +history
