@@ -1197,6 +1197,43 @@ nyaos.filter の他に nyaos.filter2 というフックもあります。
 文字列がフィルター対象となります。
 
 
+外部コマンド呼び出し前フック
+----------------------------
+
+nyaos.filter3.xxxxx (xxxxx は任意) という関数を定義しておくと、外部コマンド
+を呼ぶシステムコール直前に、呼び出しパラメータを加工することができます。
+
+nyaos.filter3.xxxxx はコマンド名とフルコマンドラインの二つをパラメータとして
+受け取ります。これを加工して、戻り値として二つを返すことでシステムコール
+(Windows だと CreateProcess、OS/2 だとDosExecPgm)のパラメータを差し替えるこ
+とができます。(戻り値が二個無い場合は、差し替えは行われません)
+
+以下は、#! (shebang) を実現するための定義例です。
+
+    function drop_first_token( s )
+        for i=1,string.len(s) do
+            if string.sub(s,i,i) == ' ' then
+                return string.sub(s,i)
+            end
+        end
+        return ''
+    end
+
+    function nyaos.filter3.shebang( name , param )
+        local suffix = string.lower( string.sub( name , #name - 3 ) )
+        if suffix ~= '.exe' and suffix ~= '.com' then
+            local fd=io.open( name , 'r' )
+            local line=fd:read()
+            fd:close()
+            if string.sub(line,1,2)=='#!' then
+                local interpretor = string.sub(line,3)
+                local new_param = interpretor .. ' ' .. name .. ' ' .. drop_first_token( param )
+                return interpretor , new_param
+            end
+        end
+    end
+
+
 キーボードフック
 ----------------
 
@@ -1488,7 +1525,8 @@ dir/w がエラーになります
 開発版
 ------
 
-3.1.1_0 (2010/09/23)
+3.1.1_0 (2010/10/24)
+    - nyaos.filter3.xxxxx を実装。
     - No Such file or directory の前にファイル名を表示するようにした。
 
 3.1.0_1 (2010/09/11)

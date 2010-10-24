@@ -1026,6 +1026,42 @@ nyaos.filter2 is like nyaos.filter but its parameter is the commandline after
 alias and suffix are extracted.
 
 
+external command-call hook
+--------------------------
+
+Define nyaos.filter3.xxxxx, You can modify parameters at call external
+command with CreateProcess(Windows) or DosExecPgm(OS/2).
+
+`nyaos.filter3.xxxxx' gets two parameter and returns same two.
+The first one is command-name and the second one is full-command-line. 
+To return nothing means not to change command-name and parameter.
+
+This source below is sample to realize shebang like Linux/UNIX.
+
+    function drop_first_token( s )
+        for i=1,string.len(s) do
+            if string.sub(s,i,i) == ' ' then
+                return string.sub(s,i)
+            end
+        end
+        return ''
+    end
+
+    function nyaos.filter3.shebang( name , param )
+        local suffix = string.lower( string.sub( name , #name - 3 ) )
+        if suffix ~= '.exe' and suffix ~= '.com' then
+            local fd=io.open( name , 'r' )
+            local line=fd:read()
+            fd:close()
+            if string.sub(line,1,2)=='#!' then
+                local interpretor = string.sub(line,3)
+                local new_param = interpretor .. ' ' .. name .. ' ' .. drop_first_token( param )
+                return interpretor , new_param
+            end
+        end
+    end
+
+
 Keyboard-hook
 -------------
 
@@ -1257,7 +1293,8 @@ History
 develop
 -------
 
-3.1.1_0 (2010/09/23)
+3.1.1_0 (2010/10/24)
+    - make hook as nyaos.filter3.xxxxx
     - display filename before the error message: 'No Such file or directory'
 
 3.1.0_1 (2010/09/11)
