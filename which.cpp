@@ -6,27 +6,33 @@
 #include "nnstring.h"
 #include "shell.h"
 
-/* 拡張子を持つファイル名であれば 1 を返す */
-static int has_dot(const char *path)
+/* ディレクトリではなく、ファイルとして存在していれば 1
+ * さもなければ 0 を返す
+ */
+static int is_file( const NnString &path )
 {
-    int lastdot=NnString::findLastOf(path,"/\\.");
-    if( lastdot >= 0 && path[ lastdot ] == '.' )
-        return 1;
-    else
+    NnFileStat *st = NnFileStat::stat( path );
+    if( st == NULL ){
         return 0;
+    }else if( st->isDir() ){
+        delete st;
+        return 0;
+    }else{
+        delete st;
+        return 1;
+    }
 }
+
 
 /* フルパス一歩手前になっているファイル名に、.exe 拡張子を補って、
  * 存在があるかを確認する
  *    nm - フルパス一歩手前になっているファイル名
- *    has_dot_f - nm の中に「.」が含まれていたら真をセットする
  *    which - 見付かった時に、補ったパス名を格納する先
  * return
  *     0 - 見付かった(which に値が入る)
  *    -1 - 見付からなかった
- *    -2 - 見付かったが、実行拡張子を持たない
  */
-static int exists( const char *nm , int has_dot_f , NnString &which )
+static int exists( const char *nm , NnString &which )
 {
     static const char *suffix_list[]={
         ".exe" , ".com" , ".bat" , ".cmd" , NULL 
@@ -35,14 +41,13 @@ static int exists( const char *nm , int has_dot_f , NnString &which )
 
     for( const char **p=suffix_list ; *p != NULL ; ++p ){
         path << *p;
-        if( NnDir::access(path.chars()) == 0 ){
+        if( is_file(path) ){
             which = path ;
             return 0;
         }
         path.chop( path.length()-4 );
     }
-    /* 拡張子の無いファイルは、たとえ存在しても実行できない */
-    if( has_dot_f && NnDir::access(path.chars()) == 0 ){
+    if( is_file(path) ){
         which = path ;
         return 0;
     }
@@ -59,8 +64,7 @@ static int exists( const char *nm , int has_dot_f , NnString &which )
  */
 int which( const char *nm, NnString &which )
 {
-    int has_dot_f = has_dot(nm);
-    if( exists(nm,has_dot_f,which)==0 )
+    if( exists(nm,which)==0 )
         return 0;
 
     /* 相対パス指定・絶対パス指定しているものは、
@@ -81,7 +85,7 @@ int which( const char *nm, NnString &which )
 	if( path.empty() )
 	    continue;
         path << '\\' << nm;
-        if( exists(path.chars(),has_dot_f,which)==0 )
+        if( exists(path.chars(),which)==0 )
             return 0;
     }
     return -1;
