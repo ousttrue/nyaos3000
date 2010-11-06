@@ -662,43 +662,64 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     return 0;
 }
 
-void call_luahooks(
-        const char *hookname,
-        int (*pushfunc)(lua_State *L,void *),
-        void *arg)
+LuaHook::LuaHook(const char *hookname) : L(hookname) , count(0)
 {
-    NyaosLua L(hookname);
+    if( L == NULL ){
+        status = ERROR_HOOK;
+    }else if( lua_isfunction(L,-1) ){
+        status = SINGLE_HOOK;
+        lua_pop(L,1);
+    }else if( lua_istable(L,-1) ){
+        status = MULTI_HOOK;
 
-    if( L != NULL ){
-        if( lua_isfunction(L,-1) ){
-            if( (*pushfunc)(L,arg) != 0 )
-                goto errpt;
-        }else if( lua_istable(L,-1) ){
-            NnVector funclist;
+        lua_pushnil(L); /* start key */
+        while( lua_next(L,-2) != 0 ){
+            if( lua_isfunction(L,-1) ){
+                lua_pushvalue(L,-2);
+                funclist.append( new NnString(luaL_checkstring(L,-1)) );
+                lua_pop(L,2);
+            }else{
+                lua_pop(L,1); /* drop value */
+            }
+        }
+        funclist.sort();
+    }else{
+        status = ERROR_HOOK;
+    }
+}
 
-            lua_pushnil(L); /* start key */
-            while( lua_next(L,-2) != 0 ){
-                if( lua_isfunction(L,-1) ){
-                    lua_pushvalue(L,-2);
-                    funclist.append( new NnString(luaL_checkstring(L,-1)) );
-                    lua_pop(L,2);
-                }else{
-                    lua_pop(L,1); /* drop value */
-                }
-            }
-            funclist.sort();
-            for(int i=0 ; i<funclist.size() ; i++){
-                lua_getfield(L,-1,funclist.const_at(i)->repr());
-                if( (*pushfunc)(L,arg) != 0 )
-                    goto errpt;
-            }
-            lua_pop(L,1); /* drop table */
+int LuaHook::next()
+{
+    switch( status ){
+    default:
+        return 0;
+    case SINGLE_HOOK:
+        return count++ == 0;
+    case MULTI_HOOK:
+        if( count < funclist.size() ){
+            lua_getfield(L,-1,funclist.const_at(count)->repr());
+            count++;
+            return 1;
         }else{
-            lua_pop(L,1);
+            if( count == funclist.size() ){
+                lua_pop(L,1);
+            }
+            return 0;
+        }
+    };
+}
+
+void call_luahooks(
+    const char *hookname ,
+    int (*pushfunc)(lua_State *L,void *) ,
+    void *arg )
+{
+    LuaHook LH( hookname );
+    while( LH.next() ){
+        if( (*pushfunc)(LH,arg) != 0 ){
+            const char *msg = lua_tostring(LH,-1);
+            conErr << msg << '\n';
+            return;
         }
     }
-    return;
-errpt:
-    const char *msg = lua_tostring(L,-1);
-    conErr << msg << '\n';
 }
