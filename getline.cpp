@@ -134,10 +134,10 @@ Status GetLine::operator() ( NnString &result )
     for(;;){
         int key=getkey();
         Status rc=NEXTCHAR;
-        NyaosLua L(NULL); /* stacked [nyaos] */
-        if( L.ok() ){
-            lua_getfield(L,-1,"keyhook"); /* [nyaos,keyhook] */
-            if( lua_type(L,-1) == LUA_TFUNCTION ){
+        int count=0;
+        {
+            LuaHook L("keyhook");
+            while( L.next() ){
                 int start=lua_gettop(L);  /* [nyaos,keyhook] */
 
                 lua_newtable(L);
@@ -151,15 +151,10 @@ Status GetLine::operator() ( NnString &result )
                 if( lua_pcall(L,1,LUA_MULTRET,0) == 0 ){
                     /* keyhook Ç‹Ç≈Ç™ pop Ç≥ÇÍ [nyaos,r1,r2...] */
                     int n=lua_gettop(L);
-                    if( n < start ){ /* à¯êî 0 å¬ */
-                        rc = interpret( key );
-                    }else{
+                    if( n >= start ){ /* à¯êî 0 å¬ */
+                        ++count;
                         for(int i=start ; i<=n && rc==NEXTCHAR ;i++){
                             switch( lua_type(L,i) ){
-                            default:
-                            case LUA_TNIL:
-                                rc = interpret( key );
-                                break;
                             case LUA_TBOOLEAN:
                                 rc = lua_toboolean(L,i) ? NEXTLINE : CANCEL;
                                 break;
@@ -171,6 +166,7 @@ Status GetLine::operator() ( NnString &result )
                                 break;
                             }
                         }
+                        lua_pop(L,n-start+1);
                     }
                 }else{
                     /* messaging error */
@@ -184,13 +180,14 @@ Status GetLine::operator() ( NnString &result )
                     prompt();
                     puts_between( offset , pos );
                     repaint_after();
+                    break;
                 }
-            }else{
+            }
+            if( count == 0 ){
                 rc = interpret(key);
             }
-        }else{
-            rc = interpret(key);
         }
+
 	int len;
         switch( rc ){
         case NEXTCHAR:

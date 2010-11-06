@@ -526,6 +526,8 @@ int NyaosLua::init()
         lua_newtable(L);
         lua_setfield(L,-2,"filter3");
         lua_newtable(L);
+        lua_setfield(L,-2,"keyhook");
+        lua_newtable(L);
         lua_setfield(L,-2,"goodbye");
 
         /* close nyaos table */
@@ -668,7 +670,6 @@ LuaHook::LuaHook(const char *hookname) : L(hookname) , count(0)
         status = ERROR_HOOK;
     }else if( lua_isfunction(L,-1) ){
         status = SINGLE_HOOK;
-        lua_pop(L,1);
     }else if( lua_istable(L,-1) ){
         status = MULTI_HOOK;
 
