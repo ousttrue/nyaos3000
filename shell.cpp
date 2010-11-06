@@ -361,6 +361,19 @@ int sub_brace_erase( NyadosShell &bshell ,
 		     const NnString &arg1 );
 
 
+static int callbacked_for_filter(lua_State *L,void *arg)
+{
+    NnString *result=static_cast<NnString*>( arg );
+
+    lua_pushstring(L,result->chars());
+    if( lua_pcall(L,1,1,0) != 0 )
+        return -1;
+    if( lua_isstring(L,-1) )
+        *result = lua_tostring(L,-1); 
+    lua_pop(L,1); /* drop return value */
+    return 0;
+}
+
 /* コマンドラインフィルター(フック箇所が複数あるので関数化)
  *    hookname - フック名 "filter" "filter2" 
  *    source - フィルター前文字列
@@ -371,50 +384,12 @@ static void filter_with_lua(
         const NnString &source,
         NnString &result)
 {
-    result = source;
-    NyaosLua L(hookname);
-
-    if( L != NULL ){
-        if( lua_isfunction(L,-1) ){
-            lua_pushstring(L,result.chars());
-            if( lua_pcall(L,1,1,0) != 0 )
-                goto errpt;
-            if( lua_isstring(L,-1) )
-                result = lua_tostring(L,-1); 
-        }else if( lua_istable(L,-1) ){
-            result = source;
-            NnVector funclist;
-
-            lua_pushnil(L); /* start key */
-            while( lua_next(L,-2) != 0 ){
-                if( lua_isfunction(L,-1) ){
-                    lua_pushvalue(L,-2);
-                    funclist.append( new NnString(luaL_checkstring(L,-1)) );
-                    lua_pop(L,2);
-                }else{
-                    lua_pop(L,1); /* drop value */
-                }
-            }
-            funclist.sort();
-            for(int i=0 ; i<funclist.size() ; i++){
-                lua_getfield(L,-1,funclist.const_at(i)->repr());
-                lua_pushstring(L,result.chars());
-                if( lua_pcall(L,1,1,0) != 0 )
-                    goto errpt;
-                if( lua_isstring(L,-1))
-                    result = lua_tostring(L,-1); 
-                lua_pop(L,1); /* drop return value */
-            }
-            lua_pop(L,1); /* drop table */
-        }else{
-            lua_pop(L,1);
-        }
-    }
-    return;
-errpt:
-    const char *msg = lua_tostring(L,-1);
-    conErr << msg << '\n';
+    result = source ;
+    call_luahooks( hookname , callbacked_for_filter , &result );
 }
+
+
+
 
 /* Lua関数の戻り値を適当に、整数戻り値にする。
  *     nil   ⇒ 0 (成功扱い)

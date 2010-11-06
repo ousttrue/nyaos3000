@@ -661,3 +661,44 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     redirect_rewind( back_in , back_out , back_err );
     return 0;
 }
+
+void call_luahooks(
+        const char *hookname,
+        int (*pushfunc)(lua_State *L,void *),
+        void *arg)
+{
+    NyaosLua L(hookname);
+
+    if( L != NULL ){
+        if( lua_isfunction(L,-1) ){
+            if( (*pushfunc)(L,arg) != 0 )
+                goto errpt;
+        }else if( lua_istable(L,-1) ){
+            NnVector funclist;
+
+            lua_pushnil(L); /* start key */
+            while( lua_next(L,-2) != 0 ){
+                if( lua_isfunction(L,-1) ){
+                    lua_pushvalue(L,-2);
+                    funclist.append( new NnString(luaL_checkstring(L,-1)) );
+                    lua_pop(L,2);
+                }else{
+                    lua_pop(L,1); /* drop value */
+                }
+            }
+            funclist.sort();
+            for(int i=0 ; i<funclist.size() ; i++){
+                lua_getfield(L,-1,funclist.const_at(i)->repr());
+                if( (*pushfunc)(L,arg) != 0 )
+                    goto errpt;
+            }
+            lua_pop(L,1); /* drop table */
+        }else{
+            lua_pop(L,1);
+        }
+    }
+    return;
+errpt:
+    const char *msg = lua_tostring(L,-1);
+    conErr << msg << '\n';
+}
