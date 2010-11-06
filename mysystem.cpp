@@ -72,33 +72,21 @@ int mkpipeline( int pipefd[] )
     return 0;
 }
 
-static int lua_filter_callbacked(lua_State *L,void *arg)
-{
-    NnString *param=static_cast<NnString*>( arg );
-    
-    lua_pushstring( L,param[0].chars() );
-    lua_pushstring( L,param[1].chars() );
-    if( lua_pcall(L,2,2,0) != 0 ){
-        return -1;
-    }
-    if( lua_isstring(L,-1) && lua_isstring(L,-2) ){
-        param[0] = lua_tostring(L,-2);
-        param[1] = lua_tostring(L,-1);
-    }
-    lua_pop(L,2);
-    return 0;
-}
-
 static void lua_filter( NnString &cmdname , NnString &cmdline )
 {
-    NnString param[2];
-    param[0] = cmdname;
-    param[1] = cmdline;
-
-    call_luahooks("filter3",lua_filter_callbacked,param);
-
-    cmdname = param[0];
-    cmdline = param[1];
+    LuaHook L("filter3");
+    while( L.next() ){
+        lua_pushstring( L,cmdname.chars() );
+        lua_pushstring( L,cmdline.chars() );
+        if( lua_pcall(L,2,2,0) != 0 ){
+            return;
+        }
+        if( lua_isstring(L,-1) && lua_isstring(L,-2) ){
+            cmdname = lua_tostring(L,-2);
+            cmdline = lua_tostring(L,-1);
+        }
+        lua_pop(L,2);
+    }
 }
 
 

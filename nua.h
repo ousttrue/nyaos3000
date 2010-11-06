@@ -2,6 +2,7 @@
 #define NUA_H
 
 #include "nnlua.h"
+#include "nnvector.h"
 
 class NyaosLua : public NnLua {
     private:

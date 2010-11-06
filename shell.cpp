@@ -360,20 +360,6 @@ int sub_brace_start( NyadosShell &bshell ,
 int sub_brace_erase( NyadosShell &bshell , 
 		     const NnString &arg1 );
 
-
-static int callbacked_for_filter(lua_State *L,void *arg)
-{
-    NnString *result=static_cast<NnString*>( arg );
-
-    lua_pushstring(L,result->chars());
-    if( lua_pcall(L,1,1,0) != 0 )
-        return -1;
-    if( lua_isstring(L,-1) )
-        *result = lua_tostring(L,-1); 
-    lua_pop(L,1); /* drop return value */
-    return 0;
-}
-
 /* コマンドラインフィルター(フック箇所が複数あるので関数化)
  *    hookname - フック名 "filter" "filter2" 
  *    source - フィルター前文字列
@@ -385,10 +371,16 @@ static void filter_with_lua(
         NnString &result)
 {
     result = source ;
-    call_luahooks( hookname , callbacked_for_filter , &result );
+    LuaHook L( hookname );
+    while( L.next() ){
+        lua_pushstring(L,result.chars() );
+        if( lua_pcall(L,1,1,0) != 0 )
+            return;
+        if( lua_isstring(L,-1) )
+            result = lua_tostring(L,-1); 
+        lua_pop(L,1); /* drop return value */
+    }
 }
-
-
 
 
 /* Lua関数の戻り値を適当に、整数戻り値にする。

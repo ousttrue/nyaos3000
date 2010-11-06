@@ -709,18 +709,3 @@ int LuaHook::next()
         }
     };
 }
-
-void call_luahooks(
-    const char *hookname ,
-    int (*pushfunc)(lua_State *L,void *) ,
-    void *arg )
-{
-    LuaHook LH( hookname );
-    while( LH.next() ){
-        if( (*pushfunc)(LH,arg) != 0 ){
-            const char *msg = lua_tostring(LH,-1);
-            conErr << msg << '\n';
-            return;
-        }
-    }
-}
