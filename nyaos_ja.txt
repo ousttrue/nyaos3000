@@ -1237,21 +1237,25 @@ nyaos.filter3.xxxxx はコマンド名とフルコマンドラインの二つをパラメータとして
 キーボードフック
 ----------------
 
-nyaos.keyhook という関数を定義しておくと、ユーザのキータイプ毎に呼び出します::
+nyaos.keyhook.xxxxx という関数を定義しておくと、ユーザのキータイプ毎に
+呼び出します
 
     lua_e "
-        function nyaos.keyhook(t)
-            if t.key == nyaos.key.ESCAPE and t.text == '' then
-                return os.getenv('EDITOR') or 'notepad',true
+        function nyaos.keyhook.date(t)
+            if t.key == nyaos.key.F11 then
+                return os.date('%Y%m%d')
             end
-            return nil
+        end
+        function nyaos.keyhook.time(t)
+            if t.key == nyaos.key.F12 then
+                return os.date('%H%M%S')
+            end
         end
     "
 
-例では、コマンドラインが空の状態で Esc キーをタイプすると、
-環境変数 EDITOR に定義されたエディタか、notepad を起動します。
+例では、F11 を押すと日付が、F12 を押すと時刻が挿入されます。
 
-関数 nyaos.keyhook の仕様は次の通りです。
+関数 nyaos.keyhook.xxxxx の仕様は次の通りです。
 
     * 引数
           o t.key : キーコード
@@ -1524,6 +1528,10 @@ dir/w がエラーになります
 
 開発版
 ------
+
+3.1.2_0 (2010/11/11)
+    - nyaos.keyhook をテーブル化した。
+    - nyaos.filter3.xxxxx の呼び出しを辞書順にした。
 
 3.1.1_0 (2010/10/24)
     - nyaos.filter3.xxxxx を実装。

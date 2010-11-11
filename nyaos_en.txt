@@ -1065,20 +1065,24 @@ This source below is sample to realize shebang like Linux/UNIX.
 Keyboard-hook
 -------------
 
-NYAOS calls the function nyaos.keyhook everytime user types key.
+NYAOS calls the function nyaos.keyhook.xxxxx everytime user types key.
 
 Example in _nya:
 
-lua_e "
-    function nyaos.keyhook(t)
-        if t.key == nyaos.key.ESCAPE and t.text == '' then
-            return os.getenv('EDITOR') or 'notepad',true
+    lua_e "
+        function nyaos.keyhook.date(t)
+            if t.key == nyaos.key.F11 then
+                return os.date('%Y%m%d')
+            end
         end
-        return nil
-    end
-"
+        function nyaos.keyhook.time(t)
+            if t.key == nyaos.key.F12 then
+                return os.date('%H%M%S')
+            end
+        end
+    "
 
-When command-line is empty , your favorite editor raise with ESCAPE-Key typing.
+Type F11, and insert date(YYYYMMDD). Type F12, ans insert time(HHMMDD)
 
 The function nyaos.keyhook's spec is below
 
@@ -1292,6 +1296,11 @@ History
 
 develop
 -------
+
+3.1.2_0 (2010/11/11)
+    - treat nyaos.keyhook not only as a function but also 
+      as a table with functions.
+    - call nyaos.filter3.xxxx order by name.
 
 3.1.1_0 (2010/10/24)
     - make hook as nyaos.filter3.xxxxx
