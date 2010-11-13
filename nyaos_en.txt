@@ -741,9 +741,13 @@ Diffences from CMD.EXE's one is below:
 
     Only NYAOS 
 
-        $W | the last part of the current directory. 
-           | For example, the current directory is c:\foo\bar,
-           | $W was replaced to 'bar'.
+        $W  | the last part of the current directory. 
+            | For example, the current directory is c:\foo\bar,
+            | $W was replaced to 'c:bar'.
+            |
+        $Wn | the last n-part of the current directory.
+            | For example, the current directory is c:\foo\bar\gar,
+            | $W2 was replaced to 'c:...\bar\gar'.
 
     NYAOS does not understand $+,$M(Windows),$I(OS/2)
 
@@ -1297,6 +1301,9 @@ History
 develop
 -------
 
+3.1.3_0 (2010/11/13)
+    - meta charactor $Wn in %PROMPT%
+
 3.1.2_0 (2010/11/11)
     - treat nyaos.keyhook not only as a function but also 
       as a table with functions.
@@ -1554,3 +1561,4 @@ Thanks to...
     Hideden             , Lukewarm(sava)    , Masayuki Hayashi  ,
     thinca              , Shougo            , Saitou            ,
     craftware           , Dice              , tyru              ,
+    nocd5
