@@ -137,8 +137,7 @@ void eval_dollars_sequence( const char *sp , NnString &result )
                         depth = (*(sp+1) - '0');
                         sp++;
                     }
-                    // ! GCC Extension ! //
-                    int posbuf[depth];
+                    int *posbuf=new int[depth];
                     memset(posbuf, -1, sizeof(posbuf));
 
                     int rootpos = 2;
@@ -154,6 +153,7 @@ void eval_dollars_sequence( const char *sp , NnString &result )
                         result << (char)pwd.at(0) << (char)pwd.at(1) << "...";
                         result << pwd.chars()+posbuf[0];
                     }
+                    delete[]posbuf;
                     break;
                 }
                 default:  result << '$' << *sp; break;
