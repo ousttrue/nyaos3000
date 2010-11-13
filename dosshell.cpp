@@ -129,6 +129,7 @@ void eval_dollars_sequence( const char *sp , NnString &result )
                 case 'W':{
                     NnString pwd;
                     NnDir::getcwd(pwd);
+                    int print_dots = 0;
 
                     int depth = 1;
                     if ((*(sp+1) != '\0') &&
@@ -136,9 +137,10 @@ void eval_dollars_sequence( const char *sp , NnString &result )
                        ){
                         depth = (*(sp+1) - '0');
                         sp++;
+                        print_dots = 1;
                     }
                     int *posbuf=new int[depth];
-                    memset(posbuf, -1, sizeof(posbuf));
+                    memset(posbuf, -1, sizeof(int)*depth);
 
                     int rootpos = 2;
                     // findLastOf w/ buffering
@@ -150,8 +152,12 @@ void eval_dollars_sequence( const char *sp , NnString &result )
                     if( posbuf[0] == -1 || posbuf[0] == 2 ){
                         result << pwd;
                     }else{
-                        result << (char)pwd.at(0) << (char)pwd.at(1) << "...";
-                        result << pwd.chars()+posbuf[0];
+                        result << (char)pwd.at(0) << (char)pwd.at(1);
+                        if( print_dots ){
+                            result << "..." << pwd.chars()+posbuf[0];
+                        }else{
+                            result << pwd.chars()+posbuf[0]+1;
+                        }
                     }
                     delete[]posbuf;
                     break;
