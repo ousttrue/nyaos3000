@@ -129,12 +129,30 @@ void eval_dollars_sequence( const char *sp , NnString &result )
                 case 'W':{
                     NnString pwd;
                     NnDir::getcwd(pwd);
-                    int rootpos=pwd.findLastOf("/\\");
-                    if( rootpos == -1 || rootpos == 2 ){
+
+                    int depth = 1;
+                    if ((*(sp+1) != '\0') &&
+                        ((0 < (*(sp+1)-'0')) && ((*(sp+1)-'0') < 10)) // 0 < depth < 10
+                       ){
+                        depth = (*(sp+1) - '0');
+                        sp++;
+                    }
+                    // ! GCC Extension ! //
+                    int posbuf[depth];
+                    memset(posbuf, -1, sizeof(posbuf));
+
+                    int rootpos = 2;
+                    // findLastOf w/ buffering
+                    while ((rootpos = pwd.findOf("/\\", rootpos)) != -1){
+                        for (int i = 0; i < depth-1; i++) posbuf[i] = posbuf[i+1];
+                        posbuf[depth-1] = rootpos++;
+                    }
+
+                    if( posbuf[0] == -1 || posbuf[0] == 2 ){
                         result << pwd;
                     }else{
-                        result << (char)pwd.at(0) << (char)pwd.at(1);
-                        result << pwd.chars()+rootpos+1;
+                        result << (char)pwd.at(0) << (char)pwd.at(1) << "...";
+                        result << pwd.chars()+posbuf[0];
                     }
                     break;
                 }
