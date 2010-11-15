@@ -1215,6 +1215,14 @@ Test file existance.
 lua_e "print( nyaos.access('_nya',0) )"
 
 
+io.write with escape-sequence emulation
+---------------------------------------
+
+    lua_e "nyaos.write('\027[32mHOGE\n')"
+
+print green HOGE.
+
+
 File/Directory Operation
 ------------------------
 
@@ -1301,7 +1309,8 @@ History
 develop
 -------
 
-3.1.3_0 (2010/11/13)
+3.1.3_0 (2010/11/15)
+    - nyaos.write(io.write with escape-sequence emulation)
     - meta charactor $Wn in %PROMPT%
 
 3.1.2_0 (2010/11/11)

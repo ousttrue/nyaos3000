@@ -357,6 +357,16 @@ int nua_getkey(lua_State *L)
     return 1;
 }
 
+int nua_write(lua_State *L)
+{
+    int n=lua_gettop(L);
+    for(int i=1;i<=n;i++){
+        const char *s=luaL_checkstring(L,i);
+        conOut << s;
+    }
+    return 0;
+}
+
 int nua_default_complete(lua_State *L)
 {
     const char *basestring = lua_tostring(L,1);
@@ -508,6 +518,8 @@ int NyaosLua::init()
         lua_setfield(L,-2,"access");
         lua_pushcfunction(L,nua_getkey);
         lua_setfield(L,-2,"getkey");
+        lua_pushcfunction(L,nua_write);
+        lua_setfield(L,-2,"write");
         lua_pushcfunction(L,nua_default_complete);
         lua_setfield(L,-2,"default_complete");
 
