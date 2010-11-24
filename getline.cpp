@@ -495,14 +495,8 @@ Status GetLine::i_search(int key)
        int search_offset = 0;
        int search_step = -1;
 
-       if( which_command(key) == &GetLine::enter )
-       {
-           // 決定
-           replace_all_repaint( history_found );
-           return interpret(key);
-       }
-       else if( which_command(key) == &GetLine::erase_all
-             || which_command(key) == &GetLine::abort )
+       if( which_command(key) == &GetLine::erase_all
+           || which_command(key) == &GetLine::abort )
        {
            // キャンセル
            return CANCEL;
@@ -525,13 +519,6 @@ Status GetLine::i_search(int key)
            new_hint = hint;
            search_offset = -1;
            search_step = -1;
-       }
-       else if( which_command(key) == &GetLine::foreward
-             || which_command(key) == &GetLine::backward )
-       {
-           // 採用して編集
-           replace_all_repaint( history_found );
-           return interpret(key);
        }
        else if( which_command(key) == &GetLine::backspace )
        {
@@ -556,7 +543,8 @@ Status GetLine::i_search(int key)
        }
        else
        {
-           continue;
+           replace_all_repaint( history_found );
+           return interpret(key);
        }
 
        if(!new_hint.empty())
