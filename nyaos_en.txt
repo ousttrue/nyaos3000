@@ -1100,6 +1100,7 @@ The function nyaos.keyhook's spec is below
       + integer : interpret it as key-code
       + true : same as ENTER
       + false : same as Ctrl-C
+      + table : eval elements of it from 1st one.
 
  Key-code constants
 
@@ -1308,6 +1309,10 @@ History
 
 develop
 -------
+
+3.1.4_0 (2010/11/25)
+    - When return-value of nyaos.keyhook.xxxx is table, interpret elements
+      of them.
 
 3.1.3_0 (2010/11/24)
     - Keys besides ->,<-,^B,^F are able to terminate incremental-search-mode.

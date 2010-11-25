@@ -164,6 +164,29 @@ Status GetLine::operator() ( NnString &result )
                             case LUA_TSTRING:
                                 this->insertHere( lua_tostring(L,i) );
                                 break;
+                            case LUA_TTABLE:
+                                for(int j=1;;j++){
+                                    lua_pushinteger(L,j);
+                                    lua_gettable(L,i);
+                                    switch( lua_type(L,-1) ){
+                                    case LUA_TBOOLEAN:
+                                        rc = lua_toboolean(L,-1) 
+                                            ? NEXTLINE : CANCEL ;
+                                        break;
+                                    case LUA_TNUMBER:
+                                        rc = interpret( lua_tointeger(L,-1) );
+                                        break;
+                                    case LUA_TSTRING:
+                                        this->insertHere( lua_tostring(L,-1) );
+                                        break;
+                                    case LUA_TNIL:
+                                        lua_pop(L,1);
+                                        goto table_loop;
+                                    }
+                                    lua_pop(L,1);
+                                }
+                             table_loop:
+                                break;
                             }
                         }
                         lua_pop(L,n-start+1);
