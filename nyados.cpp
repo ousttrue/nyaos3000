@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <io.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <signal.h>
 #if defined(HAVE_NOT_OLD_NEW_H) || defined(__MINGW32__)
@@ -243,13 +244,13 @@ int main( int argc, char **argv )
 
     /* nyaos.argv[0] */
     lua_pushinteger(L,0);
-#ifdef __EMX__
-    lua_pushstring(L,argv[0]);
-#else
     char me[ FILENAME_MAX ];
+#ifdef __EMX__
+    _execname( me , sizeof(me) );
+#else
     GetModuleFileName( NULL , me , sizeof(me) );
-    lua_pushstring(L,me);
 #endif
+    lua_pushstring(L,me);
     lua_settable(L,-3);
     for(int i=1;i<argc;i++){
         /* nyaos.argv[1]... */
