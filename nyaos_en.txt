@@ -1580,4 +1580,4 @@ Thanks to...
     Hideden             , Lukewarm(sava)    , Masayuki Hayashi  ,
     thinca              , Shougo            , Saitou            ,
     craftware           , Dice              , tyru              ,
-    nocd5
+    nocd5               , wantora
