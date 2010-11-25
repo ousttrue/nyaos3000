@@ -1189,6 +1189,8 @@ Tools
 
 - nyaos.pid - current runnning nyaos's process-id
 
+- nyaos.version - NYAOS's version string.
+
 Execute NYAOS-command in Lua-code
 ----------------------------------
 
@@ -1313,6 +1315,8 @@ develop
 3.1.4_0 (2010/11/25)
     - When return-value of nyaos.keyhook.xxxx is table, interpret elements
       of them.
+    - include version-string in 'nyaos.version' and nyaos-executable-path
+      in 'nyaos.argv[0]'
 
 3.1.3_0 (2010/11/24)
     - Keys besides ->,<-,^B,^F are able to terminate incremental-search-mode.

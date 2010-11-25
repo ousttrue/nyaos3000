@@ -240,7 +240,19 @@ int main( int argc, char **argv )
     NyaosLua L(NULL);
     assert( L.ok() );
     lua_newtable(L);
+
+    /* nyaos.argv[0] */
+    lua_pushinteger(L,0);
+#ifdef __EMX__
+    lua_pushstring(L,argv[0]);
+#else
+    char me[ FILENAME_MAX ];
+    GetModuleFileName( NULL , me , sizeof(me) );
+    lua_pushstring(L,me);
+#endif
+    lua_settable(L,-3);
     for(int i=1;i<argc;i++){
+        /* nyaos.argv[1]... */
         lua_pushinteger(L,i); /* [3] */
         lua_pushstring(L,argv[i]); /* [4] */
         lua_settable(L,-3);
@@ -270,6 +282,8 @@ int main( int argc, char **argv )
     }
     /* argv ‚ð nyaos ‚ÌƒtƒB[ƒ‹ƒh‚É“o˜^‚·‚é */
     lua_setfield(L,-2,"argv");
+    lua_pushstring(L,VER);
+    lua_setfield(L,-2,"version");
 
     conOut << 
 #ifdef ESCAPE_SEQUENCE_OK
