@@ -367,88 +367,80 @@ void GetLine::replace_repaint_here( int size , const NnString &match )
  */
 Status GetLine::complete(int)
 {
-    int complete_continue;
-    do{
-        complete_continue = 0;
+    Completion comp;
+    int i,n,hasSpace=0;
 
-        Completion comp;
-        int i,n,hasSpace=0;
+    if( (n=read_complete_list(comp)) <= 0 )
+	return NEXTCHAR;
+    
+    if( comp.word.findOf(" \t\r\n!") != -1 )
+	hasSpace = 1;
 
-        if( (n=read_complete_list(comp)) <= 0 )
-            return NEXTCHAR;
-        
-        if( comp.word.findOf(" \t\r\n!") != -1 )
-            hasSpace = 1;
+    // 補完候補の第一候補をとりあえずバッファへコピー.
+    NnString match=comp.path_of(0);
+    if( strchr( match.chars() , ' ' ) != NULL || comp.word.at(0) == '"' )
+	hasSpace = 1;
 
-        // 補完候補の第一候補をとりあえずバッファへコピー.
-        NnString match=comp.path_of(0);
-        if( strchr( match.chars() , ' ' ) != NULL || comp.word.at(0) == '"' )
-            hasSpace = 1;
+    // 候補が複数ある場合は、
+    // 二番目以降の候補と比較してゆき、共通部分だけを残してゆく.
+    for( i=1; i < n ; ++i ){
+	if( strchr( comp.path_of(i).chars() , ' ' ) != NULL )
+	    hasSpace = 1;
+	match.chop( sameLength( comp.path_of(i).chars() , match.chars() )); 
+    }
 
-        // 候補が複数ある場合は、
-        // 二番目以降の候補と比較してゆき、共通部分だけを残してゆく.
-        for( i=1; i < n ; ++i ){
-            if( strchr( comp.path_of(i).chars() , ' ' ) != NULL )
-                hasSpace = 1;
-            match.chop( sameLength( comp.path_of(i).chars() , match.chars() )); 
-        }
+    // (基本的にありえないが)、補完候補の方が、元文字列より短い場合は
+    // 何もせず終了する。
+    if( match.length() <= comp.size && ! hasSpace )
+	return NEXTCHAR;
+    
+    // ワイルドカード補完したときに、候補の共通部が全くない場合、
+    // 引用符だけになるのを防ぐ…
+    if( match.length() == 0 )
+	return NEXTCHAR;
+    
+    /* ショートカット展開 */
+    if( n==1 && comp.path_of(0).iendsWith(".lnk") && properties.get("lnkexp") != NULL )
+    {
+	/* 候補が一つで、それがショートカットの場合 */
 
-        // (基本的にありえないが)、補完候補の方が、元文字列より短い場合は
-        // 何もせず終了する。
-        if( match.length() <= comp.size && ! hasSpace )
-            return NEXTCHAR;
-        
-        // ワイルドカード補完したときに、候補の共通部が全くない場合、
-        // 引用符だけになるのを防ぐ…
-        if( match.length() == 0 )
-            return NEXTCHAR;
-        
-        /* ショートカット展開 */
-        if( n==1 && comp.path_of(0).iendsWith(".lnk") && properties.get("lnkexp") != NULL )
-        {
-            /* 候補が一つで、それがショートカットの場合 */
+	char buffer[ FILENAME_MAX ];
+	if( read_shortcut( comp.path_of(0).chars() , buffer , sizeof(buffer)-1 ) == 0 ){
+	    comp.path_of(0) = buffer;
 
-            char buffer[ FILENAME_MAX ];
-            if( read_shortcut( comp.path_of(0).chars() , buffer , sizeof(buffer)-1 ) == 0 ){
-                comp.path_of(0) = buffer;
+	    NnDir stat( comp.path_of(0) );
+	    if( stat.isDir() ){
+		comp.path_of(0) << '\\';
+	    }
+	    match = comp.path_of(0);
+	}
+    }
 
-                NnDir stat( comp.path_of(0) );
-                if( stat.isDir() ){
-                    comp.path_of(0) << '\\';
-                }
-                match = comp.path_of(0);
-            }
-        }
+    // 空白を含むとき、先頭に”を入れる。
+    if( hasSpace ){
+	if( match.at(0)=='~' ){
+	    for(int i=1; match.at(i) != '\0' ; ++i ){
+		if( match.at(i) == '\\' || match.at(i) == '/' ){
+		    match.insertAt(i+1,"\"");
+		    break;
+		}
+	    }
+	}else{
+	    match.unshift( '"' );
+	}
+    }
 
-        // 空白を含むとき、先頭に”を入れる。
-        if( hasSpace ){
-            if( match.at(0)=='~' ){
-                for(int i=1; match.at(i) != '\0' ; ++i ){
-                    if( match.at(i) == '\\' || match.at(i) == '/' ){
-                        match.insertAt(i+1,"\"");
-                        break;
-                    }
-                }
-            }else{
-                match.unshift( '"' );
-            }
-        }
-
-        if( n==1 && match.length() > 0 ){ // 候補が一つしかない場合は…
-            int tail=match.lastchar();
-            // 空白がある場合は、引用符を閉じる。
-            if( hasSpace )
-                match += '"';
-            if( tail != '\\' && tail != '/' ){
-                // 非ディレクトリの場合は、末尾に空白を入れる。
-                match += ' ';
-            }else{
-                complete_continue = 1;
-            }
-        }
-        replace_repaint_here( comp.size , match );
-    }while( complete_continue );
-
+    if( n==1 && match.length() > 0 ){ // 候補が一つしかない場合は…
+	int tail=match.lastchar();
+	// 空白がある場合は、引用符を閉じる。
+	if( hasSpace )
+	    match += '"';
+	if( tail != '\\' && tail != '/' ){
+	    // 非ディレクトリの場合は、末尾に空白を入れる。
+	    match += ' ';
+	}
+    }
+    replace_repaint_here( comp.size , match );
     return NEXTCHAR;
 }
 

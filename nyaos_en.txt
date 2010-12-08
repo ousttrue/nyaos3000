@@ -1312,9 +1312,7 @@ History
 develop
 -------
 
-3.1.4_0 (2010/12/08)
-    - At completing a directory-name which has only one sub-directory,
-      complete the sub-directory-name recursively.
+3.1.4_0 (2010/11/25)
     - When return-value of nyaos.keyhook.xxxx is table, interpret elements
       of them.
     - include version-string in 'nyaos.version' and nyaos-executable-path
