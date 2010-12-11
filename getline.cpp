@@ -132,7 +132,7 @@ Status GetLine::operator() ( NnString &result )
     lastKey = 0;
     
     for(;;){
-        int key=getkey();
+        currKey = getkey();
         Status rc=NEXTCHAR;
         int count=0;
         {
@@ -141,7 +141,7 @@ Status GetLine::operator() ( NnString &result )
                 int start=lua_gettop(L);  /* [nyaos,keyhook] */
 
                 lua_newtable(L);
-                lua_pushinteger(L,key);
+                lua_pushinteger(L,currKey);
                 lua_setfield(L,-2,"key");
                 lua_pushinteger(L,pos);
                 lua_setfield(L,-2,"pos");
@@ -207,7 +207,7 @@ Status GetLine::operator() ( NnString &result )
                 }
             }
             if( count == 0 ){
-                rc = interpret(key);
+                rc = interpret(currKey);
             }
         }
 
@@ -240,7 +240,7 @@ Status GetLine::operator() ( NnString &result )
             buffer.term();
             return rc;
         }
-        lastKey = key;
+        lastKey = currKey;
     }
 }
 

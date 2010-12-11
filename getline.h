@@ -192,6 +192,7 @@ public:
     Status erase_listing_or_bye(int) , swap_char(int) ;
     Status xscript(int) , ime_toggle(int) , i_search(int) ;
 private:
+    int currKey;
     int lastKey;				/* ‘O‰ñ‰Ÿ‚³‚ê‚½ƒL[ */
 
     typedef Status (GetLine::*BindFunc)(int ch);

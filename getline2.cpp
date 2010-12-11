@@ -438,7 +438,9 @@ Status GetLine::complete(int)
 	if( tail != '\\' && tail != '/' ){
 	    // 非ディレクトリの場合は、末尾に空白を入れる。
 	    match += ' ';
-	}
+        }else{
+            currKey = -1;
+        }
     }
     replace_repaint_here( comp.size , match );
     return NEXTCHAR;
