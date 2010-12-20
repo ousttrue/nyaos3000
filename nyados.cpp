@@ -20,7 +20,7 @@
 #include "source.h"
 
 #ifndef VER
-#define VER "3.1.4_0"
+#define VER "3.1.4_1"
 #endif
 
 #ifdef __MINGW32__
@@ -228,16 +228,8 @@ errpt:
     (void)Console::getkey();
 }
 
-int main( int argc, char **argv )
+void set_nyaos_argv_version( int argc , char **argv )
 {
-    init_dbcs_table();
-    // set_new_handler(nya_new_handler);
-    properties.put("nyatype",new NnString("NYAOS3K") );
-    setvbuf( stdout , NULL , _IONBF , 0 );
-    setvbuf( stderr , NULL , _IONBF , 0 );
-
-    NnVector nnargv;
-
     NyaosLua L(NULL);
     assert( L.ok() );
     lua_newtable(L);
@@ -257,6 +249,25 @@ int main( int argc, char **argv )
         lua_pushinteger(L,i); /* [3] */
         lua_pushstring(L,argv[i]); /* [4] */
         lua_settable(L,-3);
+    }
+    /* argv を nyaos のフィールドに登録する */
+    lua_setfield(L,-2,"argv");
+    lua_pushstring(L,VER);
+    lua_setfield(L,-2,"version");
+}
+
+int main( int argc, char **argv )
+{
+    init_dbcs_table();
+    // set_new_handler(nya_new_handler);
+    properties.put("nyatype",new NnString("NYAOS3K") );
+    setvbuf( stdout , NULL , _IONBF , 0 );
+    setvbuf( stderr , NULL , _IONBF , 0 );
+
+    set_nyaos_argv_version(argc,argv);
+
+    NnVector nnargv;
+    for(int i=1;i<argc;i++){
         if( argv[i][0] == '-' ){
             int rv;
             switch( argv[i][1] ){
@@ -281,10 +292,6 @@ int main( int argc, char **argv )
             nnargv.append( new NnString(argv[i]) );
         }
     }
-    /* argv を nyaos のフィールドに登録する */
-    lua_setfield(L,-2,"argv");
-    lua_pushstring(L,VER);
-    lua_setfield(L,-2,"version");
 
     conOut << 
 #ifdef ESCAPE_SEQUENCE_OK
