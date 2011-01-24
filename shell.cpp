@@ -73,9 +73,14 @@ static void semi2spc( NnString::Iter &it , NnString &value )
     }
 }
 
-int VariableFilter::lookup( NnString &name , NnString &value )
+int VariableFilter::lookup( NnString &name_ , NnString &value )
 {
     /* •Ï”–¼‚©‚ç .length ‚â .suffix ‚È‚Ç‚ÌŠg’£•”•ª‚ðŽæ“¾‚·‚é */
+
+    NnString name,from,to;
+    name_.splitTo(name,from,"/");
+    from.splitTo(from,to,"/");
+
     NnString base,suffix;
     for( NnString::Iter it(name) ; *it ; ++it ){
 	if( *it == '.' ){
@@ -106,9 +111,11 @@ int VariableFilter::lookup( NnString &name , NnString &value )
 	}else if( suffix.compare("split") == 0 ){
 	    NnString::Iter temp(*s);
 	    semi2spc( temp , value );
-	}else{
+	}else if( from.empty() ){
 	    value = *s;
-	}
+	}else{
+            s->replace(from,to,value);
+        }
 	return 0;
     }
     const char *p=getEnv(upname.chars(),NULL);
@@ -123,6 +130,9 @@ int VariableFilter::lookup( NnString &name , NnString &value )
 	    semi2spc( temp , value );
 	}else{
 	    value = p;
+            if( ! from.empty() ){
+                value.replace(from,to,value);
+            }
 	}
 	return 0;
     }

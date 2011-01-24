@@ -188,6 +188,7 @@ public:
 	{ return findOf( chars() , dem , startIndex ); }
     int findLastOf( const char *dem , int startIndex=0 ) const
 	{ return findLastOf( chars() , dem , startIndex ); }
+    void replace( const NnString &from , const NnString &to , NnString &result );
     
     /* 1文字何で、文字列を走査するポインタ */
     class Iter{

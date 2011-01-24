@@ -727,6 +727,9 @@ were provided as below.
     %VARNAME.split%   or ${VARIABLE.split}
         substitution ';' in the value of the variable to one space.
 
+    %VARNAME/FROM/TO%  or  ${VARNAME/FROM/TO}
+        substitution the string:FROM in the value of the value to string:TO
+
 
 EXTENDED PROMPT
 ===============
@@ -1311,6 +1314,9 @@ History
 
 develop
 -------
+
+3.1.5_0 (2011/01/24)
+    - support syntax: %VAR/FROM/TO% , ${VAR/FROM/TO} 
 
 3.1.4_1 (2010/12/20)
     - Fix: 'nyaos -E "print(nyaos.version,nyaos.argv[0])"' does not 

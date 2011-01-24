@@ -563,3 +563,23 @@ NnString &NnString::addValueOf( int x )
     }
     return *this << "0123456789"[x];
 }
+
+void NnString::replace( const NnString &from , const NnString &to , NnString &result_ )
+{
+    int lastindex=0;
+    NnString result;
+    char *p;
+
+    while( (p=strstr(this->chars()+lastindex,from.chars())) != NULL ){
+        int index=(p - this->chars());
+        for(int i=lastindex ; i<index ; i++){
+            result << this->at(i);
+        }
+        result << to;
+        lastindex = index + from.length();
+    }
+    for(int i=lastindex ; i<this->length() ; i++){
+        result << this->at(i);
+    }
+    result_ = result;
+}
