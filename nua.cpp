@@ -642,6 +642,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     NnString arg1,left;
     argv.splitTo( arg1 , left );
     NyadosShell::dequote( arg1 );
+    arg1.replace( "$T" , "\n" , arg1 );
 
     if( arg1.empty() ){
         conErr << "lua_e \"lua-code\"\n" ;
@@ -658,9 +659,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
 #endif
 
     /* Lua インタプリタコール */
-    if( luaL_loadstring(L,luaL_gsub( L, arg1.chars(), "$T", "\n") ) ||
-        lua_pcall( L , 0 , 0 , 0 ) )
-    {
+    if( luaL_loadstring(L,arg1.chars() ) || lua_pcall( L , 0 , 0 , 0 ) ){
         const char *msg = lua_tostring( L , -1 );
         conErr << msg << '\n';
     }
