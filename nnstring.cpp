@@ -564,14 +564,28 @@ NnString &NnString::addValueOf( int x )
     return *this << "0123456789"[x];
 }
 
+int NnString::search( const NnString &target , int i )
+{
+    const char *p=rep->buffer+i;
+    const char *q=target.rep->buffer;
+    while( i < this->length() ){
+        if( *p == *q && memcmp(p,q,target.length())==0 ){
+            return i;
+        }
+        if( isKanji(*p) ){
+            ++i;++p;
+        }
+        ++i;++p;
+    }
+    return -1;
+}
+
 void NnString::replace( const NnString &from , const NnString &to , NnString &result_ )
 {
-    int lastindex=0;
+    int index,lastindex=0;
     NnString result;
-    char *p;
 
-    while( (p=strstr(this->chars()+lastindex,from.chars())) != NULL ){
-        int index=(p - this->chars());
+    while( (index=this->search(from,lastindex)) >= 0 ){
         for(int i=lastindex ; i<index ; i++){
             result << this->at(i);
         }
