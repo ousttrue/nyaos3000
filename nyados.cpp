@@ -20,7 +20,7 @@
 #include "source.h"
 
 #ifndef VER
-#define VER "3.1.5_0"
+#define VER "3.1.6_0"
 #endif
 
 #ifdef __MINGW32__
@@ -297,7 +297,7 @@ int main( int argc, char **argv )
 #ifdef ESCAPE_SEQUENCE_OK
 "\x1B[2J" << 
 #endif
-	"Nihongo Yet Another Open Shell "VER" (c) 2001-10 by HAYAMA,Kaoru\n";
+	"Nihongo Yet Another Open Shell "VER" (c) 2001-11 by HAYAMA,Kaoru\n";
     if( properties.get("debug") != NULL ){
         conOut << "This version is built on " __DATE__ " " __TIME__ "\n";
     }

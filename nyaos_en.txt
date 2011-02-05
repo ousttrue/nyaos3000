@@ -732,7 +732,10 @@ were provided as below.
 
 
 EXTENDED PROMPT
-===============
+=======================
+
+Static prompt
+-------------
 
     for instance,
     with option statement:
@@ -753,6 +756,34 @@ Diffences from CMD.EXE's one is below:
             | $W2 was replaced to 'c:...\bar\gar'.
 
     NYAOS does not understand $+,$M(Windows),$I(OS/2)
+
+Dynamic prompt by Lua
+---------------------
+    To define lua function 'nyaos.propmt', you can change prompt 
+    dynamically.
+
+        The first argument:
+            same as %PROMPT%
+        The first return value:
+            When nil:
+                Function's results are ignored and eval %PROMPT% 
+            When true:
+                The second return value are printed as prompt.
+                Macro-strings inside are expanded.
+            When false:
+                The second return value are printed as prompt.
+                Macro-strings inside are not expanded.
+        The second return value:
+            set string to print as prompt.
+
+    for example:
+        lua_e "
+            function nyaos.prompt(p)
+                return true,'('..(nyaos.option.errorlevel or 0)..')\n'..p
+            end
+        "
+        
+        Print result value of previous executed commands as prompt.
 
 
 MULTI-LINE-STATEMENT
@@ -1314,6 +1345,9 @@ History
 
 develop
 -------
+
+3.1.6_0 (2011/02/05)
+    - Dynamic prompt by Lua
 
 3.1.5_0 (2011/01/24)
     - support syntax: %VAR/FROM/TO% , ${VAR/FROM/TO} 

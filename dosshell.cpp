@@ -60,6 +60,13 @@ static int isExecutable( const char *path )
  */
 void eval_dollars_sequence( const char *sp , NnString &result )
 {
+    if( sp == NULL || *sp == '\0' ){
+        NnString pwd;
+        NnDir::getcwd(pwd);
+        result << pwd << '>';
+        return;
+    }
+
     time_t now;
     time( &now );
     struct tm *thetime = localtime( &now );
@@ -397,12 +404,26 @@ int DosShell::prompt()
     const char *sp=prompt_.chars();
     NnString prompt;
 
-    if( sp != NULL && sp[0] != '\0' ){
-        eval_dollars_sequence( sp , prompt );
+    NyaosLua L("prompt");
+    if( lua_isfunction(L,-1) ){
+        lua_pushstring(L,sp && *sp ? sp : "");
+        if( lua_pcall(L,1,2,0) == 0 ){
+            if( lua_isnil(L,-2) ){
+                /* nil ⇒ プロンプトに変更なし */
+                eval_dollars_sequence( sp , prompt );
+            }else if( lua_toboolean(L,-2) ){
+                /* true,"文字列" ⇒ $マクロを評価して表示 */
+                eval_dollars_sequence( lua_tostring(L,-1) , prompt );
+            }else{
+                /* false,"文字列" ⇒ $マクロを評価しないで表示 */
+                prompt = lua_tostring(L,-1);
+            }
+        }else{
+            conErr << lua_tostring(L,1) << "\n";
+            eval_dollars_sequence( sp , prompt );
+        }
     }else{
-        NnString pwd;
-        NnDir::getcwd(pwd);
-        prompt << pwd << '>';
+        eval_dollars_sequence( sp , prompt );
     }
 
 #ifdef PROMPT_SHIFT
