@@ -890,6 +890,7 @@ cursor-color and position.
     35   | Foreground-color to purple
     36   | Foreground-color to light-blue
     37   | Foreground-color to white
+    39   | Foreground-color to default
     41   | Background-color to red
     42   | Background-color to green
     43   | Background-color to yellow
@@ -897,6 +898,7 @@ cursor-color and position.
     45   | Background-color to purple
     46   | Background-color to light-blue
     47   | Background-color to white
+    49   | Background-color to default
 
     ESC [2J  cleaning screen
     ESC [>5l drawing cursor on
@@ -1346,7 +1348,8 @@ History
 develop
 -------
 
-3.1.6_0 (2011/02/05)
+3.1.6_0 (2011/04/27)
+    - Support ESC[39m and ESC[49m (import code from @mattn_jp)
     - Dynamic prompt by Lua
 
 3.1.5_0 (2011/01/24)
@@ -1625,4 +1628,4 @@ Thanks to...
     Hideden             , Lukewarm(sava)    , Masayuki Hayashi  ,
     thinca              , Shougo            , Saitou            ,
     craftware           , Dice              , tyru              ,
-    nocd5               , wantora
+    nocd5               , wantora           , mattn(@mattn_jp)
