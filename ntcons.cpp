@@ -200,6 +200,26 @@ void Console::color(int n)
 }
 
 
+int Console::foremask(int n)
+{
+    return n & (
+	FOREGROUND_RED
+	|FOREGROUND_BLUE
+	|FOREGROUND_GREEN
+	|FOREGROUND_INTENSITY);
+}
+
+
+int Console::backmask(int n)
+{
+    return n & (
+	BACKGROUND_RED
+	|BACKGROUND_BLUE
+	|BACKGROUND_GREEN
+	|BACKGROUND_INTENSITY);
+}
+
+
 int Console::color()
 {
     if (hStdout == (HANDLE )-1L)
