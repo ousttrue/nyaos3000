@@ -71,8 +71,12 @@ Writer &AnsiConsoleWriter::write( char c )
 
 		    if( 30 <= param[i] && param[i] <= 37 ){
 			forecolor = cnv[ param[i]-30 ];
+		    }else if( param[i] == 39 ){
+			forecolor = Console::foremask(default_color);
 		    }else if( 40 <= param[i] && param[i] <= 47 ){
 			backcolor = cnv[ param[i]-40 ];
+		    }else if( param[i] == 49 ){
+			backcolor = Console::backmask(default_color);
 		    }else if( param[i] == 1 ){
 			high = 1;
 		    }else if( param[i] == 0 ){

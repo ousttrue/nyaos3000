@@ -15,6 +15,8 @@ public:
     static void getLocate(int &x,int &y);
     static void color(int c);
     static int color();
+    static int foremask(int n);
+    static int backmask(int n);
     static int getWidth();
 #endif
     /* enum{ SHIFT = 0x3 }; */
