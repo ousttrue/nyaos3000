@@ -58,6 +58,7 @@ static void buffering_thread( void *b_ )
  * return
  *   0  : 成功
  *   -1 : オーバーフロー(max までは dst に取り込んでいる)
+ *   -2 : テンポラリファイルが作成できなかった
  */
 int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
 {
@@ -83,6 +84,9 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
     ::close(pipefd[1]);
 #else
     FILE *fp=tmpfile();
+    if( fp==NULL ){
+        return -2;
+    }
     int savefd = dup(1);
     dup2( fileno(fp) , 1 );
 #endif
@@ -131,6 +135,7 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
  * return
  *      0  成功
  *      -1 オーバーフロー
+ *      -2 テンポラリファイルが作成できない。
  */
 static int doQuote( const char *&sp , NnString &dst , int max , int quote )
 {
@@ -153,6 +158,9 @@ static int doQuote( const char *&sp , NnString &dst , int max , int quote )
 
     NnString buffer;
     int rc=eval_cmdline( q.chars() , buffer , max , !quote );
+    if( rc < 0 ){
+        return rc;
+    }
     if( quote ){
         for(const char *p = buffer.chars() ; *p != '\0' ; ++p ){
             if( *p == '"' ){
@@ -374,9 +382,15 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    }
         }else if( *sp == '`' && backquotemax > 0 ){
 	    ++sp;
-            if( doQuote( sp , dst , backquotemax , quote ) == -1 ){
-                conErr << "over flow commandline.\n";
+            switch( doQuote( sp , dst , backquotemax , quote ) ){
+            case -1:
+                conErr << "Over flow commandline.\n";
                 return -1;
+            case -2:
+                conErr << "Can not make temporary file.\n";
+                return -1;
+            default:
+                break;
             }
 	    ++sp;
 	}else{
@@ -473,9 +487,15 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
 	    --sp;
         }else if( *sp == '`'  && backquotemax > 0 ){
 	    ++sp;
-            if( doQuote( sp , dst , backquotemax , quote ) == -1 ){
+            switch( doQuote( sp , dst , backquotemax , quote ) ) {
+            case -1:
                 conErr << "Over flow commandline.\n";
                 return -1;
+            case -2:
+                conErr << "Can not make temporary file.\n";
+                return -1;
+            default:
+                break;
             }
 	}else if( *sp == '<' && *(sp+1) == '<'  &&  quote == 0 ){
 	    /* ヒアドキュメント */
