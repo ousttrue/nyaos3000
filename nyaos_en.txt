@@ -1348,6 +1348,10 @@ History
 develop
 -------
 
+3.1.6_1 (2011/05/24)
+    - Don't crash on using backquote when \ is not allowed 
+      to write on Windows.  
+
 3.1.6_0 (2011/04/30)
     - On Windows' Escape-sequence emulation, support 
         ESC[39m (set foreground-color to default one)
@@ -1632,3 +1636,4 @@ Thanks to...
     thinca              , Shougo            , Saitou            ,
     craftware           , Dice              , tyru              ,
     nocd5               , wantora           , mattn(@mattn_jp)
+    Akinori Hattori(@hattya)

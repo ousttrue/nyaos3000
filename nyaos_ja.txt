@@ -1570,6 +1570,10 @@ dir/w がエラーになります
 開発版
 ------
 
+3.1.6_1 (2011/05/24)
+    - Windows で \ が書き込み不可の時に、逆クォートを使うと
+      落ちてしまう不具合を修正
+
 3.1.6_0 (2011/04/30)
     - Windowsのエスケープシーケンスエミュレーションで
           ESC[39m (文字色をデフォルトに戻す)
@@ -2496,5 +2500,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     thinca 様         Shougo 様            齊藤 様
     craftware 様      Dice様               tyru 様
     nocd5 様          wantora 様           mattn(@mattn_jp)様
+    Akinori Hattori(@hattya)様
 
 この場を借りて、お礼申し上げます。ありがとうございました。

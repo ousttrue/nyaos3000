@@ -83,8 +83,13 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
     dup2( pipefd[1] , 1 );
     ::close(pipefd[1]);
 #else
-    FILE *fp=tmpfile();
+    char *tmppath=NULL;
+    if( (tmppath=_tempnam("\\","NYA"))==NULL ){
+        return -2;
+    }
+    FILE *fp=fopen(tmppath,"w+");
     if( fp==NULL ){
+        free(tmppath);
         return -2;
     }
     int savefd = dup(1);
@@ -121,6 +126,10 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
             return -1;
     }
     fclose(fp);
+    if( tmppath != NULL ){
+        remove(tmppath);
+        free(tmppath);
+    }
 #endif
     dst.trim();
     return 0;
