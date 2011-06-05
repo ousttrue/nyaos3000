@@ -20,7 +20,7 @@
 #include "source.h"
 
 #ifndef VER
-#define VER "3.1.6_1"
+#define VER "3.1.7_0"
 #endif
 
 #ifdef __MINGW32__
@@ -352,12 +352,22 @@ int main( int argc, char **argv )
 	    if( histsize !=0 && (histfrom=hisObj->size() - histsize)<0 )
 		histfrom = 0;
         }
+
+        {
+            FileReader fr( histfn->chars() );
+            if( ! fr.eof() ){
+                hisObj->read( fr );
+                hisObj->sort();
+                hisObj->uniq();
+            }
+        }
+
         FileWriter fw( histfn->chars() , "w" );
         if( fw.ok() ){
-            NnString his1;
+            History1 his1;
             for(int i=histfrom ; i<hisObj->size() ; i++ ){
                 if( hisObj->get(i,his1) == 0 )
-                    fw << his1 << '\n';
+                    fw << his1.stamp() << ' ' << his1.body() << '\n';
             }
         }
     }

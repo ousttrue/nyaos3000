@@ -227,7 +227,7 @@ Status GetLine::operator() ( NnString &result )
         case NEXTLINE:
             if( buffer.length() > 0 ){
 		len = buffer.decode( result );
-		NnString *r=history.top();
+		History1 *r=history.top();
 		if( r != NULL )
 		    *r = result;
                 history.pack();
@@ -277,7 +277,7 @@ void GetLine::replace_all_repaint( const NnString &s )
  */
 void GetLine::get_nline_nword(int m,int n,NnString &word)
 {
-    NnString line=*history[m];
+    NnString line=history[m]->body();
     NnString left;
 
     line.splitTo( word , left);
@@ -295,7 +295,7 @@ int GetLine::seekLineForward(int &m, const char *line)
     for(;;){
         if( --m < 0 )
             return -1;
-        if( history[m]->startsWith(line) )
+        if( history[m]->body().startsWith(line) )
             return 0;
     }
 }
@@ -308,7 +308,7 @@ int GetLine::seekLineBackward(int &m, const char *line )
     for(;;){
         if( ++m >= history.size() )
             return -1;
-        if( history[m]->startsWith(line) )
+        if( history[m]->body().startsWith(line) )
             return 0;
     }
 }
@@ -374,7 +374,7 @@ int GetLine::seekWordBackward(int &m,int &n,const NnString &word,NnString &found
         while( --n <= 0 ){
             if( ++m >= history.size() )
                 return -1;
-            n = count_words(*history[m]);
+            n = count_words(history[m]->body());
         }
         get_nline_nword(m,n,found);
         if( found.startsWith(word) )
@@ -583,7 +583,7 @@ Status GetLine::i_search(int key)
 
            for(;;)
            {
-               NnString history_upper = *history[pos];
+               NnString history_upper = history[pos]->body();
                history_upper.upcase();
 
                if( strstr( history_upper.chars(), new_hint_upper.chars() )!=NULL )
@@ -606,7 +606,7 @@ Status GetLine::i_search(int key)
 
            hint = new_hint;
            history_pos = pos;
-           history_found = history[pos]->chars();
+           history_found = history[pos]->body().chars();
        }
        else
        {

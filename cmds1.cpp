@@ -122,14 +122,16 @@ int cmd_history( NyadosShell &shell , const NnString &argv )
         start = 0;
     
     for(int i=start ; i<hisObj->size() ; i++ ){
-        NnString history;
+        History1 history;
 	hisObj->get(i,history);
-        conOut << i << " : ";
-	for(int j=0;j<history.length();++j){
-	    if( TwinBuffer::isCtrl(history.at(j)) )
-                conOut << '^' << (char)('@'+history.at(j));
+        NnString line( history.body() );
+
+        conOut << history.stamp() << ' ';
+	for(int j=0;j< line.length();++j){
+	    if( TwinBuffer::isCtrl( line.at(j)) )
+                conOut << '^' << (char)('@'+line.at(j));
 	    else
-                conOut << (char)history.at(j);
+                conOut << (char)line.at(j);
 	}
         conOut << '\n';
     }

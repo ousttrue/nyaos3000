@@ -1348,6 +1348,11 @@ History
 develop
 -------
 
+3.1.7_0 (2011/06/05)
+    - record time-stamp in history which can print 'history' command.
+    - On saving history, merge it with already saved history order 
+      by time-stamp.
+
 3.1.6_1 (2011/05/24)
     - Don't crash on using backquote when \ is not allowed 
       to write on Windows.  

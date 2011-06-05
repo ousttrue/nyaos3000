@@ -206,12 +206,12 @@ Status GetLine::next(int)
         return NEXTCHAR;
 
     if( history_pointor == history.size()-1 )
-	buffer.decode( *history[ history_pointor ] );
+	buffer.decode( history[ history_pointor ]->body() );
 
     if( ++history_pointor >= history.size() )
         history_pointor = 0;
 
-    replace_all_repaint( history[ history_pointor ]->chars() );
+    replace_all_repaint( history[ history_pointor ]->body().chars() );
 
     return NEXTCHAR;
 }
@@ -224,12 +224,12 @@ Status GetLine::previous(int)
         return NEXTCHAR;
 
     if( history_pointor == history.size()-1 )
-	buffer.decode( *history[ history_pointor ] );
+	buffer.decode( history[ history_pointor ]->body() );
 
     if( --history_pointor < 0 )
         history_pointor = history.size()-1;
 
-    replace_all_repaint( history[ history_pointor ]->chars() );
+    replace_all_repaint( history[ history_pointor ]->body().chars() );
 
     return NEXTCHAR;
 }
@@ -264,7 +264,7 @@ Status GetLine::vz_previous(int key)
             : seekLineBackward(m,temp.chars() ) ) < 0 )
             return NEXTCHAR;
         for(;;){
-            sealsize = printSeal( history[m]->chars()+buffer.length() , sealsize );
+            sealsize = printSeal( history[m]->body().chars()+buffer.length() , sealsize );
             key=getkey();
             if( which_command(key) == &GetLine::vz_previous ){
 		/* 次に入力されたコマンドが過去検索の場合 */
@@ -277,7 +277,7 @@ Status GetLine::vz_previous(int key)
             }else{
 		/* 次に入力されたコマンドが検索以外だった場合 */
 		eraseSeal( sealsize );
-                insertHere( history[m]->chars()+buffer.length() );
+                insertHere( history[m]->body().chars()+buffer.length() );
 		/* 入力されたキー自体を解釈し直して終了 */
                 return interpret(key);
             }
