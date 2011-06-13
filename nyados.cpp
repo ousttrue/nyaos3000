@@ -20,7 +20,7 @@
 #include "source.h"
 
 #ifndef VER
-#define VER "3.1.7_0"
+#define VER "3.1.7_1"
 #endif
 
 #ifdef __MINGW32__
@@ -356,9 +356,51 @@ int main( int argc, char **argv )
         {
             FileReader fr( histfn->chars() );
             if( ! fr.eof() ){
-                hisObj->read( fr );
-                hisObj->sort();
-                hisObj->uniq();
+                History hisObj2;
+                History newHisObj;
+                hisObj2.read( fr );
+
+                int i=0, j=0;
+                int size=hisObj->size(), size2=hisObj2.size();
+
+                /* 先頭の一致部分を読み飛ばす */
+                while(i<size && j<size2){
+                    if((*hisObj)[i]->compare(*hisObj2[j]) == 0){
+                        i++; j++;
+                    }else{
+                        break;
+                    }
+                }
+                int startIndex=i;
+
+                /* マージする */
+                while(i<size && j<size2){
+                    History1 *history=(*hisObj)[i];
+                    History1 *history2=hisObj2[j];
+
+                    if(history->compare(*history2) == 0){
+                        newHisObj.append(new History1(*history));
+                        i++; j++;
+                    }else if(history->stamp().compare(history2->stamp()) >= 0){
+                        newHisObj.append(new History1(*history2));
+                        j++;
+                    }else{
+                        newHisObj.append(new History1(*history));
+                        i++;
+                    }
+                }
+                for( ; i<size ; i++ )
+                    newHisObj.append(new History1(*(*hisObj)[i]));
+                for( ; j<size2 ; j++ )
+                    newHisObj.append(new History1(*hisObj2[j]));
+
+                /* newHisObjからhisObjにコピーする */
+                for(int k=startIndex ; k<size ; k++ )
+                    hisObj->drop();
+                for(int k=0 ; k < newHisObj.size() ; k++ )
+                    hisObj->append(newHisObj[k]);
+                while(newHisObj.size()>0)
+                    newHisObj.pop(); // deleteはしない
             }
         }
 

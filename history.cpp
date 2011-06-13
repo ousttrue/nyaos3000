@@ -243,7 +243,7 @@ void History::read( Reader &reader )
             stamp[19] = '\0';
             this->append( new History1(buffer.chars()+20,stamp) );
         }else{
-            this->append( new History1(buffer) );
+            this->append( new History1(buffer, "1970/01/01 00:00:00") );
         }
     }
 }

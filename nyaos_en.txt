@@ -1348,6 +1348,13 @@ History
 develop
 -------
 
+3.1.7_1 (2011/06/13)
+    [Bugfix]
+    - Records in history were not sorted which have no timestamp.
+    - Same records in history were saved as one record.
+    - It takes time to save history which has a lot of records.
+    (import code from wantora)
+
 3.1.7_0 (2011/06/05)
     - record time-stamp in history which can print 'history' command.
     - On saving history, merge it with already saved history order 
