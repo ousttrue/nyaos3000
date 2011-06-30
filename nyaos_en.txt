@@ -1348,6 +1348,10 @@ History
 develop
 -------
 
+3.1.7_2 (2011/06/30)
+    [BugFix]
+    - nyaos.history always returned "<NnObject>".
+
 3.1.7_1 (2011/06/13)
     [Bugfix]
     - Records in history were not sorted which have no timestamp.

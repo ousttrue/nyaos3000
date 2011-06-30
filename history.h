@@ -24,6 +24,7 @@ public:
     const NnString &stamp(){ return stamp_; }
     NnString &body(){ return body_; }
     int compare( const NnSortable &s ) const;
+    const char *repr() const { return body_.chars(); }
 };
 
 class History : public NnVector {
