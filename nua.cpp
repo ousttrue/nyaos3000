@@ -10,6 +10,7 @@
 #include "getline.h"
 #include "nua.h"
 #include "ntcons.h"
+#include "history.h"
 
 #ifdef NYACUS
 #  include <windows.h>
@@ -235,7 +236,12 @@ int nua_vector_add(lua_State *L)
 {
     NnVector **vec=(NnVector**)luaL_checkudata(L,-2,NYAOS_NNVECTOR);
     const char *str=luaL_checkstring(L,-1);
-    (*vec)->append( new NnString(str) );
+    History *history=dynamic_cast<History*>( *vec );
+    if( history != NULL ){
+        history->append( new History1(str) );
+    }else{
+        (*vec)->append( new NnString(str) );
+    }
     return 0;
 }
 
