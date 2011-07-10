@@ -1348,6 +1348,9 @@ History
 develop
 -------
 
+3.1.8_0 (2011/07/10)
+    - OS/2 version does not require emx.dll now.
+
 3.1.7_2 (2011/06/30)
     [BugFix]
     - nyaos.history always returned "<NnObject>".

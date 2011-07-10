@@ -1,4 +1,5 @@
 LUAPATH=../lua-5.1.4
+L=$(LUAPATH)/src/
 CC=gcc
 RM=cmd /c del
 CCC=
@@ -15,12 +16,11 @@ ifeq ($(OS),Windows_NT)
 		LDFLAGS="-s -lole32 -luuid -llua -static -lstdc++ -L$(LUAPATH)/src" nyaos.exe
 
 else
-	$(MAKE) CFLAGS="$(CCC) -O2 -I$(LUAPATH)/src" O=o \
-		LDFLAGS="-lstdcpp -lliblua -L$(LUAPATH)/src" nyaos.exe
+	$(MAKE) CFLAGS="$(CCC) -O2 -I$(LUAPATH)/src -Zomf -Zsys" O=obj LDFLAGS="$(L)lapi.o $(L)lcode.o $(L)ldebug.o $(L)ldo.o $(L)ldump.o $(L)lfunc.o $(L)lgc.o $(L)llex.o $(L)lmem.o $(L)lobject.o $(L)lopcodes.o $(L)lparser.o $(L)lstate.o $(L)lstring.o $(L)ltable.o $(L)ltm.o $(L)lundump.o $(L)lvm.o $(L)lzio.o $(L)lauxlib.o $(L)lbaselib.o $(L)ldblib.o $(L)liolib.o $(L)lmathlib.o $(L)loslib.o $(L)ltablib.o $(L)lstrlib.o $(L)loadlib.o $(L)linit.o -lstdcpp" nyaos.exe
 endif
 
 lua :
-	$(MAKE) -C $(LUAPATH) generic
+	$(MAKE) -C $(L) MYCFLAGS="-Zomf -Zsys" o
 
 OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O) \
 	getline.$(O) getline2.$(O) keybound.$(O) dosshell.$(O) nnhash.$(O) \
