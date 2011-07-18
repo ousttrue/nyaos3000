@@ -4,7 +4,7 @@
      „³„¯„®„¯„ª„®„³@„³„¯„ª„®„¯„ª„®
            The Free Software
      Nihongo Yet Another Open Shell
-  Copyright (C) 2001-2010 HAYAMA,Kaoru
+  Copyright (C) 2001-2011 HAYAMA,Kaoru
 
 –ÚŸ
 ====
