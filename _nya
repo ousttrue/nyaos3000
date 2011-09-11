@@ -1,3 +1,14 @@
+#(English)
+#   This file _nya is the script NYAOS execute on starting up.
+#   NYAOS reads _nya(s) on these directories in the same order as written:
+#    (1) _nya on the same directory as NYAOS.EXE
+#    (2) %HOME%\_nya or %USERPROFILE%\_nya
+#    (3) The current directory
+# I recommend you to
+#    - put the original _nya on (1)
+#    - put your customized _nya on (2)
+#
+#(Japanese)
 # _nya は NYAOS の初期設定ファイルです.
 #   (1) NYAOS.EXE のあるディレクトリ
 #   (2) %HOME% の下(未定義であれば %USERPROFILE%)

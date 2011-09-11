@@ -126,7 +126,7 @@ int cmd_history( NyadosShell &shell , const NnString &argv )
 	hisObj->get(i,history);
         NnString line( history.body() );
 
-        conOut << history.stamp() << ' ';
+        conOut << i << ' ' << history.stamp() << ' ';
 	for(int j=0;j< line.length();++j){
 	    if( TwinBuffer::isCtrl( line.at(j)) )
                 conOut << '^' << (char)('@'+line.at(j));
