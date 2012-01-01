@@ -4,7 +4,7 @@
      ┻┗┛┗━┛┻　┻┗━┛┗━┛
            The Free Software
      Nihongo Yet Another Open Shell
-  Copyright (C) 2001-2011 HAYAMA,Kaoru
+  Copyright (C) 2001-2012 HAYAMA,Kaoru
 
 目次
 ====
@@ -1566,6 +1566,9 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.3.0_0 (2012/01/01)
+    - Lua 5.2 対応
 
 3.2.0_0 (2011/09/11)
     - ヒストリ番号が表示されていなかったのを修正

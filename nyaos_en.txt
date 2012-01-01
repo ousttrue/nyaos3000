@@ -1,6 +1,6 @@
            The Free Software 
      Nihongo Yet Another Open Shell
-       2001-2011 (c) HAYAMA,Kaoru
+       2001-2012 (c) HAYAMA,Kaoru
 
 Feature
 =======
@@ -1344,6 +1344,9 @@ lua_e "
 
 History
 =======
+
+3.3.0_0 (2012/01/01)
+    - change Lua-engine version 5.1.4 to 5.2
 
 3.2.0_0 (2011/09/11)
     - fix: History numbers are not displayed.
