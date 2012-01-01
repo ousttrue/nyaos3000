@@ -59,7 +59,7 @@ static int do_source( const NnString &cmdname , const NnVector &argv )
         rb.reader = fr;
 
         NyaosLua L;
-        if( lua_load(L , reader_for_lua , &rb, cmdname.chars()) != 0 ||
+        if( lua_load(L , reader_for_lua , &rb, cmdname.chars(),NULL) != 0 ||
             lua_pcall( L , 0 , 0 , 0 ) != 0 )
         {
             conErr << cmdname.chars() << ": " << lua_tostring(L,-1) << '\n';
