@@ -1484,16 +1484,6 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
     status に成否(0:成功,not 0:失敗)
     errmsg にメッセージが入ります。
 
-* ビットオペレーション
-
-    lua_e "
-       print(nyaos.bitand(1,2))
-       print(nyaos.bitor(1,2))
-       print(nyaos.bitxor(1,2))
-       print(nyaos.rshift(8,1))
-       print(nyaos.lshift(8,1))
-    "
-
 * splitknj - 日本語1文字単位の分割
 
     文字列を1バイトではなく、1文字単位で分割して、各文字を配列に格納します。
@@ -1569,6 +1559,8 @@ dir/w がエラーになります
 
 3.3.0_0 (2012/01/01)
     - Lua 5.2 対応
+    - NYAOS 独自の pairs , ipairs を削除
+    - nyaos.bitand、bitor、bitxor、rshift、lshiftを削除
 
 3.2.0_0 (2011/09/11)
     - ヒストリ番号が表示されていなかったのを修正

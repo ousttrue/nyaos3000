@@ -21,46 +21,6 @@ static int luaone_chdir(lua_State *L)
     return 2;
 }
 
-static int luaone_bitand(lua_State *L)
-{
-    int left=luaL_checkint(L,1);
-    int right=luaL_checkint(L,2);
-    lua_pushinteger(L,left & right);
-    return 1;
-}
-
-static int luaone_bitor(lua_State *L)
-{
-    int left=luaL_checkint(L,1);
-    int right=luaL_checkint(L,2);
-    lua_pushinteger(L,left | right);
-    return 1;
-}
-
-static int luaone_bitxor(lua_State *L)
-{
-    int left=luaL_checkint(L,1);
-    int right=luaL_checkint(L,2);
-    lua_pushinteger(L,left ^ right);
-    return 1;
-}
-
-static int luaone_rshift(lua_State *L)
-{
-    int left=luaL_checkint(L,1);
-    int right=luaL_checkint(L,2);
-    lua_pushinteger(L,left >> right);
-    return 1;
-}
-
-static int luaone_lshift(lua_State *L)
-{
-    int left=luaL_checkint(L,1);
-    int right=luaL_checkint(L,2);
-    lua_pushinteger(L,left << right);
-    return 1;
-}
-
 static void NnDir2Lua(lua_State *L,NnDir &stat)
 {
     lua_newtable(L);
@@ -239,11 +199,6 @@ static struct luaone_s {
     { "chdir" , luaone_chdir } ,
     { "dir"   , luaone_opendir },
     { "filefind" , luaone_findfirst },
-    { "bitand", luaone_bitand },
-    { "bitor" , luaone_bitor },
-    { "bitxor", luaone_bitxor },
-    { "rshift", luaone_rshift },
-    { "lshift", luaone_lshift },
     { "stat"  , luaone_stat },
     { "mkdir" , luaone_mkdir },
     { "rmdir" , luaone_rmdir },
