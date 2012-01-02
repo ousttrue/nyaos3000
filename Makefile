@@ -17,7 +17,7 @@ ifeq ($(OS),Windows_NT)
 lua :
 	$(MAKE) -C $(L) generic
 else
-	$(MAKE) CFLAGS="$(CCC) -O2 -I$(LUAPATH)/src -Zomf -Zsys" O=obj LDFLAGS="$(L)lapi.o $(L)lcode.o $(L)ldebug.o $(L)ldo.o $(L)ldump.o $(L)lfunc.o $(L)lgc.o $(L)llex.o $(L)lmem.o $(L)lobject.o $(L)lopcodes.o $(L)lparser.o $(L)lstate.o $(L)lstring.o $(L)ltable.o $(L)ltm.o $(L)lundump.o $(L)lvm.o $(L)lzio.o $(L)lauxlib.o $(L)lbaselib.o $(L)ldblib.o $(L)liolib.o $(L)lmathlib.o $(L)loslib.o $(L)ltablib.o $(L)lstrlib.o $(L)loadlib.o $(L)linit.o -lstdcpp" nyaos.exe
+	$(MAKE) CFLAGS="$(CCC) -O2 -I$(LUAPATH)/src -Zomf -Zsys" O=obj LDFLAGS="$(L)lapi.o $(L)lcode.o $(L)lctype.o $(L)ldebug.o $(L)ldo.o $(L)ldump.o $(L)lfunc.o $(L)lgc.o $(L)llex.o $(L)lmem.o $(L)lobject.o $(L)lopcodes.o $(L)lparser.o $(L)lstate.o $(L)lstring.o $(L)ltable.o $(L)ltm.o $(L)lundump.o $(L)lvm.o $(L)lzio.o $(L)lauxlib.o $(L)lbaselib.o $(L)lbitlib.o $(L)lcorolib.o $(L)ldblib.o $(L)liolib.o $(L)lmathlib.o $(L)loslib.o $(L)lstrlib.o $(L)ltablib.o $(L)loadlib.o $(L)linit.o -lstdcpp" nyaos.exe
 
 lua :
 	$(MAKE) -C $(L) MYCFLAGS="-Zomf -Zsys" o
