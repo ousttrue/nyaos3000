@@ -156,6 +156,8 @@ alias
 -----
 
     alias NAME DEFINITION
+    OR
+    alias NAME=DEFINITION
 	define the alias NAME as DEFINITION.
     alias NAME
 	display the definitiion of the alias NAME.
@@ -404,6 +406,8 @@ Assign value to nyaos's variables.
 They are able to be access with Lua code through lua-table: nyaos.option[].
 
     > option VARNAME VALUE
+    OR
+    > option VARNAME=VALUE
 
         set VALUE into variable VARNAME
 
@@ -581,6 +585,8 @@ suffix
 ------
 
     suffix SUFFIX INTERPRETOR
+    OR
+    suffix SUFFIX=INTERPRETOR
 
 Associate SUFFIX with INTERPRETOR.
 
@@ -1332,6 +1338,10 @@ File/Directory Operation
 
 History
 =======
+
+3.3.1_0 (2012/01/03)
+    - support bash-like syntax such as `alias foo=bar' on the commands:
+      alias, suffix, option.
 
 3.3.0_0 (2012/01/01)
     - change Lua-engine version 5.1.4 to 5.2
