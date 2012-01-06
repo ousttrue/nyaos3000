@@ -114,6 +114,7 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
 #else
     rewind( fp );
     int ch;
+    int rc=0;
     while( !feof(fp) && (ch=getc(fp)) != EOF ){
         if( shrink && isSpace(ch) ){
             if( ! isSpace(lastchar) )
@@ -122,8 +123,10 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
             dst += (char)ch;
         }
         lastchar = ch;
-        if( max && dst.length() >= max )
-            return -1;
+        if( max && dst.length() >= max ){
+            rc = -1;
+            break;
+        }
     }
     fclose(fp);
     if( tmppath != NULL ){
@@ -132,7 +135,7 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
     }
 #endif
     dst.trim();
-    return 0;
+    return rc;
 }
 
 /* 逆クォート処理

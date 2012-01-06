@@ -1,6 +1,6 @@
            The Free Software 
      Nihongo Yet Another Open Shell
-       2001-2011 (c) HAYAMA,Kaoru
+       2001-2012 (c) HAYAMA,Kaoru
 
 Feature
 =======
@@ -1344,6 +1344,10 @@ lua_e "
 
 History
 =======
+
+3.2.0_1 (2012/01/07)
+    - fix: nyaos.eval does not work correctly when arguments' command output
+           over 32767 chars.
 
 3.2.0_0 (2011/09/11)
     - fix: History numbers are not displayed.

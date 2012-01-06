@@ -30,9 +30,9 @@ typedef unsigned short letter_t;
  */
 class NnString : public NnSortable { 
     struct Rep {
-	short refcnt;
-	short length;
-	short max;
+	int refcnt;
+	int length;
+	int max;
 	char  buffer[1];
     };
     static Rep zero;

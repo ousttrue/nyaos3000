@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "nnstring.h"
 #include "nnvector.h"
 
@@ -158,6 +159,9 @@ int NnString::grow( int growsize )
  */
 int NnString::keep( int len )
 {
+    if( len < 0 || len >= INT_MAX ){
+        return -1;
+    }
     /* keep ‚ğÀs‚·‚é
      * ¨ •¶š—ñ‚É•ÏX‚ğ‰Á‚¦‚é.
      * ¨ •¡»‰»‚µ‚È‚¯‚ê‚Î‚¢‚¯‚È‚¢
