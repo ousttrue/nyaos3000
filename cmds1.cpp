@@ -43,6 +43,14 @@ int cmd_setter( NyadosShell &shell , NnHash &hash , const NnString &argv )
     if( value == NULL )
         return 0;
     argv.splitTo( name , *value );
+    int equalPos=name.findOf("=");
+    if( equalPos >= 0 ){ /* bash ŒİŠ·‚Ìİ’è® */
+        NnString left ( name.chars() , equalPos );
+        NnString right( name.chars()+equalPos+1 );
+        name = left;
+        right << ' ' << *value;
+        *value = right;
+    }
     name.downcase();
     value->trim();
 

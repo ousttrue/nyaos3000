@@ -156,6 +156,8 @@ alias
 -----
 
     alias NAME DEFINITION
+    OR
+    alias NAME=DEFINITION
 	define the alias NAME as DEFINITION.
     alias NAME
 	display the definitiion of the alias NAME.
@@ -404,6 +406,8 @@ Assign value to nyaos's variables.
 They are able to be access with Lua code through lua-table: nyaos.option[].
 
     > option VARNAME VALUE
+    OR
+    > option VARNAME=VALUE
 
         set VALUE into variable VARNAME
 
@@ -581,6 +585,8 @@ suffix
 ------
 
     suffix SUFFIX INTERPRETOR
+    OR
+    suffix SUFFIX=INTERPRETOR
 
 Associate SUFFIX with INTERPRETOR.
 
@@ -1317,18 +1323,7 @@ File/Directory Operation
     At succeeding, status is 0
     At failure , status is not 0 and errmsg has an error message.
 
-Bit operation.
---------------
-
-lua_e "
-   print(nyaos.bitand(1,2))
-   print(nyaos.bitor(1,2))
-   print(nyaos.bitxor(1,2))
-   print(nyaos.rshift(8,1))
-   print(nyaos.lshift(8,1))
-"
-
-* splitknj 
+* nyaos.splitknj 
 
     split a string into table whose element is one charactor(shift-jis).
 
@@ -1341,13 +1336,23 @@ lua_e "
         end
     "
 
-
 History
 =======
+
+3.3.0_1 (2012/01/07)
+    - support bash-like syntax such as `alias foo=bar' on the commands:
+      alias, suffix, option.
+    - fix: nyaos.eval does not work correctly when arguments' command output
+           over 32767 chars.
 
 3.2.0_1 (2012/01/07)
     - fix: nyaos.eval does not work correctly when arguments' command output
            over 32767 chars.
+
+3.3.0_0 (2012/01/01)
+    - change Lua-engine version 5.1.4 to 5.2
+    - remove nyaos's own mechanism of pairs and ipairs.
+    - remove nyaos.bitand, bitor, bitxor, rshift, lshift.
 
 3.2.0_0 (2011/09/11)
     - fix: History numbers are not displayed.
