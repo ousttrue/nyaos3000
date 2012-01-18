@@ -1339,6 +1339,9 @@ File/Directory Operation
 History
 =======
 
+3.3.1_0 (2012/01/18)
+    - modify _nya to call mklink via cmd.exe with alias.
+
 3.3.0_1 (2012/01/07)
     - support bash-like syntax such as `alias foo=bar' on the commands:
       alias, suffix, option.
@@ -1664,5 +1667,5 @@ Thanks to...
     Hideden             , Lukewarm(sava)    , Masayuki Hayashi  ,
     thinca              , Shougo            , Saitou            ,
     craftware           , Dice              , tyru              ,
-    nocd5               , wantora           , mattn(@mattn_jp)
-    Akinori Hattori(@hattya)
+    nocd5               , wantora           , mattn(@mattn_jp)  ,
+    Akinori Hattori(@hattya)                , gocho(@gocho)

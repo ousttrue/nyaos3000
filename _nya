@@ -45,7 +45,7 @@ option +glob
 option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
 option uncompletechar ,;=``
 
-foreach i (mkdir rmdir type md rd start )
+foreach i (mkdir rmdir type md rd start mklink)
     alias $i $COMSPEC /c $i
 end
 

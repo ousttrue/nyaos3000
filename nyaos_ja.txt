@@ -1562,6 +1562,10 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.3.1_0 (2012/01/18)
+    - mklink を CMD.EXE 経由で呼び出すよう alias 定義した(_nya)
+
 3.3.0_1 (2012/01/07)
     - 「alias foo=bar」といった bash 互換文法を alias, suffix, option で
       使えるようになった。
@@ -2529,6 +2533,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     thinca 様         Shougo 様            齊藤 様
     craftware 様      Dice様               tyru 様
     nocd5 様          wantora 様           mattn(@mattn_jp)様
-    Akinori Hattori(@hattya)様
+    Akinori Hattori(@hattya)様             gocho(@gocho)様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
