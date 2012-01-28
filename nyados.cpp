@@ -333,9 +333,7 @@ int main( int argc, char **argv )
     NnString *histfn=(NnString*)properties.get("savehist");
     if( histfn != NULL ){
 	FileReader fr( histfn->chars() );
-	if( fr.eof() ){
-	    perror( histfn->chars() );
-	}else{
+	if( !fr.eof() ){
 	    intShell.getHistoryObject()->read( fr );
 	}
     }
