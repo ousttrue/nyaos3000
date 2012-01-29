@@ -1339,7 +1339,13 @@ File/Directory Operation
 History
 =======
 
-3.3.1_0 (2012/01/18)
+3.3.0_2 (2012/01/30)
+    - Suppress the error when the file pointed option savehist is not exists.
+    - It can save history and call nyaos.good.* even if terminal window
+      is closed with button.
+    - Fix the problem to insert unnecessary double quotation on filename
+      completion when the directory name has the charactor whose second
+      byte is included option-uncompletechar.
     - modify _nya to call mklink via cmd.exe with alias.
 
 3.3.0_1 (2012/01/07)
