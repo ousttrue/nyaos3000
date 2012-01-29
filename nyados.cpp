@@ -256,6 +256,113 @@ void set_nyaos_argv_version( int argc , char **argv )
     lua_setfield(L,-2,"version");
 }
 
+static void load_history( History *hisObj )
+{
+    NnString *histfn=(NnString*)properties.get("savehist");
+    if( histfn != NULL && hisObj != NULL ){
+	FileReader fr( histfn->chars() );
+	if( !fr.eof() ){
+            hisObj->read( fr );
+	}
+    }
+}
+
+static void save_history( History *hisObj )
+{
+    NnString *histfn=(NnString*)properties.get("savehist");
+    if( histfn != NULL && hisObj != NULL ){
+        int histfrom=0;
+        NnString *histsizestr=(NnString*)properties.get("histfilesize");
+        if( histsizestr != NULL ){
+	    int histsize=atoi(histsizestr->chars());
+	    if( histsize !=0 && (histfrom=hisObj->size() - histsize)<0 )
+		histfrom = 0;
+        }
+
+        {
+            FileReader fr( histfn->chars() );
+            if( ! fr.eof() ){
+                History hisObj2;
+                History newHisObj;
+                hisObj2.read( fr );
+
+                int i=0, j=0;
+                int size=hisObj->size(), size2=hisObj2.size();
+
+                /* 先頭の一致部分を読み飛ばす */
+                while(i<size && j<size2){
+                    if((*hisObj)[i]->compare(*hisObj2[j]) == 0){
+                        i++; j++;
+                    }else{
+                        break;
+                    }
+                }
+                int startIndex=i;
+
+                /* マージする */
+                while(i<size && j<size2){
+                    History1 *history=(*hisObj)[i];
+                    History1 *history2=hisObj2[j];
+
+                    if(history->compare(*history2) == 0){
+                        newHisObj.append(new History1(*history));
+                        i++; j++;
+                    }else if(history->stamp().compare(history2->stamp()) >= 0){
+                        newHisObj.append(new History1(*history2));
+                        j++;
+                    }else{
+                        newHisObj.append(new History1(*history));
+                        i++;
+                    }
+                }
+                for( ; i<size ; i++ )
+                    newHisObj.append(new History1(*(*hisObj)[i]));
+                for( ; j<size2 ; j++ )
+                    newHisObj.append(new History1(*hisObj2[j]));
+
+                /* newHisObjからhisObjにコピーする */
+                for(int k=startIndex ; k<size ; k++ )
+                    hisObj->drop();
+                for(int k=0 ; k < newHisObj.size() ; k++ )
+                    hisObj->append(newHisObj[k]);
+                while(newHisObj.size()>0)
+                    newHisObj.pop(); // deleteはしない
+            }
+        }
+
+        FileWriter fw( histfn->chars() , "w" );
+        if( fw.ok() ){
+            History1 his1;
+            for(int i=histfrom ; i<hisObj->size() ; i++ ){
+                if( hisObj->get(i,his1) == 0 )
+                    fw << his1.stamp() << ' ' << his1.body() << '\n';
+            }
+        }
+    }
+}
+
+static History *globalHistoryObject=NULL;
+
+#ifdef __MINGW32__
+
+static BOOL WINAPI HandleRoutine( DWORD dwCtrlType )
+{
+    switch( dwCtrlType ){
+    case CTRL_CLOSE_EVENT:
+    case CTRL_LOGOFF_EVENT:
+    case CTRL_SHUTDOWN_EVENT:
+        if( globalHistoryObject != NULL )
+            save_history( globalHistoryObject );
+        goodbye();
+        ExitProcess(0);
+        break;
+    default:
+        break;
+    }
+    return FALSE;
+}
+#endif
+
 int main( int argc, char **argv )
 {
     init_dbcs_table();
@@ -329,89 +436,15 @@ int main( int argc, char **argv )
     /* DOS窓からの入力に従って実行する */
     InteractiveShell intShell;
 
-    /* ヒストリをロードする */
-    NnString *histfn=(NnString*)properties.get("savehist");
-    if( histfn != NULL ){
-	FileReader fr( histfn->chars() );
-	if( !fr.eof() ){
-	    intShell.getHistoryObject()->read( fr );
-	}
-    }
+#ifdef __MINGW32__
+    SetConsoleCtrlHandler( HandleRoutine , TRUE );
+#endif
 
+    globalHistoryObject = intShell.getHistoryObject();
+    load_history( globalHistoryObject );
     intShell.mainloop();
-
-    /* ヒストリを保存する */
-    if( (histfn=(NnString*)properties.get("savehist")) != NULL ){
-        int histfrom=0;
-        NnString *histsizestr=(NnString*)properties.get("histfilesize");
-	History *hisObj=intShell.getHistoryObject();
-        if( histsizestr != NULL ){
-	    int histsize=atoi(histsizestr->chars());
-	    if( histsize !=0 && (histfrom=hisObj->size() - histsize)<0 )
-		histfrom = 0;
-        }
-
-        {
-            FileReader fr( histfn->chars() );
-            if( ! fr.eof() ){
-                History hisObj2;
-                History newHisObj;
-                hisObj2.read( fr );
-
-                int i=0, j=0;
-                int size=hisObj->size(), size2=hisObj2.size();
-
-                /* 先頭の一致部分を読み飛ばす */
-                while(i<size && j<size2){
-                    if((*hisObj)[i]->compare(*hisObj2[j]) == 0){
-                        i++; j++;
-                    }else{
-                        break;
-                    }
-                }
-                int startIndex=i;
-
-                /* マージする */
-                while(i<size && j<size2){
-                    History1 *history=(*hisObj)[i];
-                    History1 *history2=hisObj2[j];
-
-                    if(history->compare(*history2) == 0){
-                        newHisObj.append(new History1(*history));
-                        i++; j++;
-                    }else if(history->stamp().compare(history2->stamp()) >= 0){
-                        newHisObj.append(new History1(*history2));
-                        j++;
-                    }else{
-                        newHisObj.append(new History1(*history));
-                        i++;
-                    }
-                }
-                for( ; i<size ; i++ )
-                    newHisObj.append(new History1(*(*hisObj)[i]));
-                for( ; j<size2 ; j++ )
-                    newHisObj.append(new History1(*hisObj2[j]));
-
-                /* newHisObjからhisObjにコピーする */
-                for(int k=startIndex ; k<size ; k++ )
-                    hisObj->drop();
-                for(int k=0 ; k < newHisObj.size() ; k++ )
-                    hisObj->append(newHisObj[k]);
-                while(newHisObj.size()>0)
-                    newHisObj.pop(); // deleteはしない
-            }
-        }
-
-        FileWriter fw( histfn->chars() , "w" );
-        if( fw.ok() ){
-            History1 his1;
-            for(int i=histfrom ; i<hisObj->size() ; i++ ){
-                if( hisObj->get(i,his1) == 0 )
-                    fw << his1.stamp() << ' ' << his1.body() << '\n';
-            }
-        }
-    }
+    save_history( globalHistoryObject );
+    globalHistoryObject = NULL;
     goodbye();
     return 0;
 }
-
