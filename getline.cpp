@@ -488,6 +488,8 @@ NnString GetLine::current_word(int &at,int &size)
             }
             if( buffer[j] == '"' )
                 inQuote = !inQuote;
+            if( isKanji(buffer[j]) )
+                ++j;
             ++j;
         }
     }
