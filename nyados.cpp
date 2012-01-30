@@ -278,6 +278,12 @@ static void save_history( History *hisObj )
 	    if( histsize !=0 && (histfrom=hisObj->size() - histsize)<0 )
 		histfrom = 0;
         }
+        /* 強制終了時、スタックトップに空ヒストリが入っているので
+         * 削除しておく */
+        History1 *top=hisObj->top();
+        if( top != NULL && top->body().empty() ){
+            hisObj->pop();
+        }
 
         {
             FileReader fr( histfn->chars() );
