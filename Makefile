@@ -1,5 +1,10 @@
+# for static link
 LUAPATH=../lua-5.2.0
 L=$(LUAPATH)/src/
+
+# for dynamic link
+DLUAPATH=../lua-5.2_Win32_dllw4_lib
+
 CC=gcc
 RM=cmd /c del
 CCC=
@@ -14,6 +19,11 @@ all :
 ifeq ($(OS),Windows_NT)
 	$(MAKE) CFLAGS="$(CCC) -O3 -Wall -I$(LUAPATH)/src" O=o \
 		LDFLAGS="-s -lole32 -luuid -llua -static -lstdc++ -L$(LUAPATH)/src" nyaos.exe
+
+dynamic_link :
+	$(MAKE) CFLAGS="$(CCC) -O3 -Wall -I$(DLUAPATH)/include" O=o \
+		LDFLAGS="-s -lole32 -luuid -llua52 -static -lstdc++ -L$(DLUAPATH)" nyaos.exe
+
 lua :
 	$(MAKE) -C $(L) generic
 else
