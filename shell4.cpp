@@ -480,6 +480,14 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
     NnString progname,args;
     src.splitTo( progname,args );
     NnDir::filter( progname.chars() , dst );
+
+    /* ƒvƒƒOƒ‰ƒ€–¼‚É‹ó”’‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½‚çA"" ‚ÅˆÍ‚Ý’¼‚· */
+    if( dst.findOf(" ") >= 0 ){
+        dst.dequote();
+        dst.unshift('"');
+        dst << '"';
+    }
+
     if( args.empty() )
 	return 0;
 

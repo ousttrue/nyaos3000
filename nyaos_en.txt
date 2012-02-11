@@ -1339,6 +1339,10 @@ File/Directory Operation
 History
 =======
 
+3.3.0_3 (2012/02/11)
+    - Fix problem: regarded spaces in %HOME% or %USERPROFILE% as 
+      parameter's separetor at calling program with tilde-charactor. 
+
 3.3.0_2 (2012/01/30)
     - Suppress the error when the file pointed option savehist is not exists.
     - It can save history and call nyaos.good.* even if terminal window
