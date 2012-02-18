@@ -529,10 +529,17 @@ set
 
 set ENVNAME=VALUE
     set environment variable ENVNAME the value of VALUE.
+    compatible to CMD.EXE. Double-quotation is inserted as is.
+set ENVNAME:=VALUE
+    set environment variable ENVNAME the value of VALUE.
+    One double-quotation is ignored and two double-quotations
+    are converted to one double-quotation.
 set ENVNAME=
     erase variable ENVNAME. same as CMD.EXE/COMMAND.COM
 set ENVNAME+=VALUE
     If %ENVNAME% does not have VALUE, do 'set ENVNAME=VALUE;%ENVNAME%'.
+    One double-quotation is ignored and two double-quotations
+    are converted to one double-quotation.
 
 for instance:
 
@@ -555,6 +562,8 @@ for instance:
     set ENVNAME-=VALUE
 
 Remove VALUE from %ENVNAME%.
+One double-quotation is ignored and two double-quotations
+are converted to one double-quotation.
 
 for instance.
 
@@ -1347,7 +1356,13 @@ File/Directory Operation
 History
 =======
 
-3.3.1_0 (2012/02/18)
+3.3.1_0 (2012/02/19)
+    - `set foo:="ahaha "" ihihi"' make $foo to `ahaha " ihihi'
+      (`set foo="ahaha "" ihihi"` remains to make $foo to `"ahaha "" ihihi"')
+    - On `set foo= ; set foo+"a""b"', $foo was `ab'. But now it is `a"b'.
+    - Aginst not existing command FOO, two error message ware printed as:
+      `FOO: No such file or directory' and `FOO: Bad file descriptor'.
+      Now, the latter are removed.
     - add Lua-functin: nyaos.putenv()
 
 3.3.0_3 (2012/02/11)
