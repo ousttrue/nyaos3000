@@ -296,7 +296,10 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 
             PipeWriter *pw=new PipeWriter(pipecmds);
             if( pw == NULL || ! pw->ok() ){
-                perror( pipecmds.chars() );
+                /* PipeWriter 内でエラーを出力しているので、
+                 * メッセージは出さなくてよい。
+                 * perror( pipecmds.chars() );
+                 */
                 delete pw;
                 return -1;
 	    }
@@ -307,7 +310,10 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 
             PipeWriter *pw=new PipeWriter(pipecmds);
             if( pw == NULL || ! pw->ok() ){
-                perror( pipecmds.chars() );
+                /* PipeWriter 内でエラーを出力しているので、
+                 * メッセージは出さなくてよい。
+                 * perror( pipecmds.chars() );
+                 */
                 delete pw;
                 return -1;
 	    }
