@@ -268,7 +268,6 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
  */
 static void appendArray( NnVector &list , NnString *ele )
 {
-    ele->dequote();
     for(int k=0;k<list.size();k++){
         if( ((NnString*)list.at(k))->icompare(*ele) == 0 ){
             delete ele;
@@ -284,7 +283,6 @@ static void appendArray( NnVector &list , NnString *ele )
  */
 static void removeArray( NnVector &list , NnString *ele )
 {
-    ele->dequote();
     for(int k=0;k<list.size();k++){
         if( ((NnString*)list.at(k))->icompare(*ele) == 0 ){
             list.removeAt( k );
@@ -308,7 +306,7 @@ static void manipArray( NnVector &list , const char *env ,
     NnString rest(env);
     while( ! rest.empty() ){
 	NnString path;
-	rest.splitTo( path , rest , ";" );
+	rest.splitTo( path , rest , ";" , "");
 	if( ! path.empty() )
 	    (*func)( list , (NnString*)path.clone() );
     }
@@ -372,9 +370,11 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
 	/*** Åuset ENV+=VALUEÅv ***/
 	NnVector list;
 	NnString newval;
+        NnString value_;
 
 	name.chop();
-	manipArray( list , value.chars() , &appendArray );
+        NyadosShell::dequote(value.chars(),value_);
+	manipArray( list , value_.chars() , &appendArray );
 	const char *oldval=getEnv(name.chars());
 	if( oldval != NULL ){
 	    manipArray( list , oldval , &appendArray );
@@ -389,9 +389,11 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
 	if( oldval != NULL ){
 	    NnString newval;
 	    NnVector list;
+            NnString value_;
 
+            NyadosShell::dequote(value.chars(),value_);
 	    manipArray( list , oldval        , &appendArray );
-	    manipArray( list , value.chars() , &removeArray );
+	    manipArray( list , value_.chars() , &removeArray );
 	    joinArray( list , newval );
             putenv_( name , newval );
 	}
