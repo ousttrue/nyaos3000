@@ -303,7 +303,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
             conOut_ = pw ;
             conErr_ = new WriterClone(pw);
 	}else{ /* •W€o—Í‚Ì‚Ý */
-            NnString pipecmds( restcmd.chars()+1 );
+            NnString pipecmds( restcmd.chars() );
 
             PipeWriter *pw=new PipeWriter(pipecmds);
             if( pw == NULL || ! pw->ok() ){

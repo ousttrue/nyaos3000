@@ -845,7 +845,7 @@ int NyadosShell::interpret1( const NnString &statement )
 	}
 	
 	if( dem == '|' )
-	    replace << " | ";
+	    replace << "|";
     }
     return this->interpret2( replace  , wait );
 }
