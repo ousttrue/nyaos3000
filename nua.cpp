@@ -371,6 +371,16 @@ int nua_default_complete(lua_State *L)
     return 1;
 }
 
+int nua_putenv(lua_State *L )
+{
+    extern void putenv_(const NnString &,const NnString &);
+    NnString name( lua_tostring(L,1) );
+    NnString value( lua_tostring(L,2) );
+
+    putenv_( name , value );
+    return 0;
+}
+
 int NyaosLua::initialized=0;
 
 /* NYAOS Œü‚¯ Lua ŠÂ‹«‰Šú‰»
@@ -487,6 +497,8 @@ int NyaosLua::init()
         lua_setfield(L,-2,"write");
         lua_pushcfunction(L,nua_default_complete);
         lua_setfield(L,-2,"default_complete");
+        lua_pushcfunction(L,nua_putenv);
+        lua_setfield(L,-2,"putenv");
 
         lua_pushinteger(L, getpid() );
         lua_setfield(L,-2,"pid");

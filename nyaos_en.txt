@@ -1268,6 +1268,14 @@ io.write with escape-sequence emulation
 print green HOGE.
 
 
+setting environment variable
+----------------------------
+
+    lua_e "nyaos.putenv(VARNAME,VALUE)"
+
+When VALUE is nil, erase variable.
+
+
 File/Directory Operation
 ------------------------
 
@@ -1338,6 +1346,9 @@ File/Directory Operation
 
 History
 =======
+
+3.3.1_0 (2012/02/18)
+    - add Lua-functin: nyaos.putenv()
 
 3.3.0_3 (2012/02/11)
     - Fix problem: regarded spaces in %HOME% or %USERPROFILE% as 

@@ -329,6 +329,19 @@ static void joinArray( NnVector &list , NnString &result )
     }
 }
 
+/* putenv のラッパー(メモリリーク回避用)
+ *      name    環境変数名
+ *      value   値
+ */
+void putenv_( const NnString &name , const NnString &value)
+{
+    static NnHash envList;
+    NnString *env=new NnString();
+
+    *env << name << "=" << value;
+    putenv( env->chars() );
+    envList.put( name , env );
+}
 
 /* 環境変数をセット
  *	argv	「XXX=YYY」形式の文字列
@@ -351,13 +364,10 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
     NnString name( argv.chars() , equalPos );  name.upcase();
     NnString value( argv.chars() + equalPos + 1 );
 
-    // 環境変数を定義する.
-    static NnHash envList;
-    NnString *env=new NnString;
-
     if( value.length() == 0 ){
 	/*** 「set ENV=」→ 環境変数 ENV を削除する ***/
-	*env << name << '=';
+        static NnString null;
+        putenv_( name , null );
     }else if( name.endsWith("+") ){
 	/*** 「set ENV+=VALUE」 ***/
 	NnVector list;
@@ -371,7 +381,7 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
 	}
 	manipArray( list , oldval , &appendArray );
 	joinArray( list , newval );
-	*env << name << '=' << newval;
+        putenv_( name , newval );
     }else if( name.endsWith("-") ){
 	/***「set ENV-=VALUE」***/
 	name.chop();
@@ -383,14 +393,12 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
 	    manipArray( list , oldval        , &appendArray );
 	    manipArray( list , value.chars() , &removeArray );
 	    joinArray( list , newval );
-	    *env << name << '=' << newval;
+            putenv_( name , newval );
 	}
     }else{
 	/*** 「set ENV=VALUE」そのまま代入する ***/
-	*env << name << '=' << value;
+        putenv_( name , value );
     }
-    putenv( env->chars() );
-    envList.put( name , env );
     return 0;
 }
 
