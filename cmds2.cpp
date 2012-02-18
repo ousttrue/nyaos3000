@@ -397,6 +397,11 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
 	    joinArray( list , newval );
             putenv_( name , newval );
 	}
+    }else if( name.endsWith(":") ){
+        name.chop();
+        NnString value_;
+        NyadosShell::dequote(value.chars(),value_);
+        putenv_( name , value_ );
     }else{
 	/*** Åuset ENV=VALUEÅvÇªÇÃÇ‹Ç‹ë„ì¸Ç∑ÇÈ ***/
         putenv_( name , value );
