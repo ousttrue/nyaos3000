@@ -1356,7 +1356,9 @@ File/Directory Operation
 History
 =======
 
-3.3.1_0 (2012/02/19)
+3.3.1_0 (2012/03/02)
+    - Enabled replacing by "suffix" command against result replaced by 
+      "alias" command.
     - `set foo:="ahaha "" ihihi"' make $foo to `ahaha " ihihi'
       (`set foo="ahaha "" ihihi"` remains to make $foo to `"ahaha "" ihihi"')
     - On `set foo= ; set foo+"a""b"', $foo was `ab'. But now it is `a"b'.

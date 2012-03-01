@@ -1578,7 +1578,8 @@ dir/w がエラーになります
 変更履歴
 ========
 
-3.3.1_0 (2012/02/19)
+3.3.1_0 (2012/03/02)
+    - alias の置換結果に suffix で置換できるようにした。
     -「set foo:="ahaha "" ihihi"」で $foo が「ahaha " ihihi」になるようにした。
        (従来の「set foo="ahaha "" ihihi"」では「"ahaha "" ihihi"」のまま)    
     -「set foo= ;set foo+="a""b"」で $foo が「ab」になっていたのを「a"b」に
