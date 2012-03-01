@@ -834,15 +834,21 @@ int NyadosShell::interpret1( const NnString &statement )
         if( aliasValue != NULL ){// エイリアスだった。
             /* パラメータを分解する */
             NnVector param;
+            NnString buffer;
+
             param.append( arg0.clone() );
 	    argv.splitTo( param );
-	    if( replaceDollars( aliasValue , param , argv , replace ) == 0 ){
-	       replace << ' ' << argv;
+	    if( replaceDollars( aliasValue , param , argv , buffer ) == 0 ){
+	       buffer << ' ' << argv;
 	    }
-	}else{
-	    if( insertInterpreter(arg0low.chars(),argv,replace) != 0 )
-		replace << arg0 << ' ' << argv ;
+
+            buffer.splitTo( arg0 , argv );
+            arg0.slash2yen();
+            arg0low = arg0;
+            arg0low.downcase();
 	}
+        if( insertInterpreter(arg0low.chars(),argv,replace) != 0 )
+            replace << arg0 << ' ' << argv ;
 	
 	if( dem == '|' )
 	    replace << "|";
