@@ -211,7 +211,6 @@ Status GetLine::operator() ( NnString &result )
             }
         }
 
-	int len;
         switch( rc ){
         case NEXTCHAR:
             break;
@@ -226,13 +225,12 @@ Status GetLine::operator() ( NnString &result )
           
         case NEXTLINE:
             if( buffer.length() > 0 ){
-		len = buffer.decode( result );
+                (void)buffer.decode( result );
 		History1 *r=history.top();
 		if( r != NULL )
 		    *r = result;
                 history.pack();
             }else{
-		len = 0;
                 history.drop();
                 result = "";
             }
