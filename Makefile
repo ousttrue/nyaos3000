@@ -18,7 +18,7 @@ CCC=
 all :
 ifeq ($(OS),Windows_NT)
 	$(MAKE) CFLAGS="$(CCC) -O3 -Wall -I$(LUAPATH)/src" O=o \
-		LDFLAGS="-s -lole32 -luuid -llua -static -lstdc++ -L$(LUAPATH)/src" nyaos.exe
+		LDFLAGS="-s -lole32 -loleaut32 -luuid -llua -static -lstdc++ -L$(LUAPATH)/src" nyaos.exe
 
 dynamic_link :
 	$(MAKE) CFLAGS="$(CCC) -O3 -Wall -I$(DLUAPATH)/include" O=o \
@@ -40,7 +40,7 @@ OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O
 	shell.$(O) shell4.$(O) foreach.$(O) which.$(O) reader.$(O) nnvector.$(O) \
 	ntcons.$(O) shellstr.$(O) cmds1.$(O) cmds2.$(O) xscript.$(O) shortcut.$(O) \
 	strfork.$(O) lsf.$(O) open.$(O) nua.$(O) luautil.$(O) getch_msvc.$(O) \
-	source.$(O) nnlua.$(O) dbcs.$(O)
+	source.$(O) nnlua.$(O) dbcs.$(O) lua32com.$(O) win32com.$(O)
 
 ifeq ($(OS),Windows_NT)
 nyaos.exe : $(OBJS) nyacusrc.$(O)
@@ -92,6 +92,8 @@ wildcard.$(O) : wildcard.cpp  nnstring.h nnvector.h nndir.h
 ntcons.$(O) : ntcons.cpp
 open.$(O) : open.cpp
 getch_msvc.$(O) : getch_msvc.cpp
+lua32com.$(O) : lua32com.cpp win32com.h
+win32com.$(O) : win32com.cpp win32com.h
 
 nua.$(O) : nua.cpp nua.h nnlua.h
 luautil.$(O) : luautil.cpp

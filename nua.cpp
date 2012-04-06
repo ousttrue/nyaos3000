@@ -28,6 +28,7 @@ const static char
     NYAOS_NNVECTOR[]    = "nyaos_nnvector" ;
 
 extern int open_luautil( lua_State *L );
+extern int create_object( lua_State *L );
 
 static void lstop (lua_State *L, lua_Debug *ar) {
   (void)ar;  /* unused arg. */
@@ -485,6 +486,8 @@ int NyaosLua::init()
         }
 
         /* tool functions */
+        lua_pushcfunction(L,create_object);
+        lua_setfield(L,-2,"create_object");
         lua_pushcfunction(L,nua_exec);
         lua_setfield(L,-2,"exec");
         lua_pushcfunction(L,nua_eval);
