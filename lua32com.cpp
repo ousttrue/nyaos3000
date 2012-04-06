@@ -112,7 +112,19 @@ static int call_member(lua_State *L)
     }
     int n=lua_gettop(L);
     for(int i=3;i<=n;++i){
-        args << lua_tostring(L,i);
+        switch( lua_type(L,i) ){
+        case LUA_TNUMBER:
+            args << lua_tonumber(L,i);
+            break;
+        case LUA_TBOOLEAN:
+        case LUA_TNIL:
+            args.add_as_boolean( lua_toboolean(L,i) );
+            break;
+        case LUA_TSTRING:
+        default:
+            args << lua_tostring(L,i);
+            break;
+        }
     }
     HRESULT hr=(**m).invoke( DISPATCH_METHOD | DISPATCH_PROPERTYGET, args , args.size() , result );
     if( FAILED(hr) ){

@@ -181,3 +181,21 @@ void Variants::operator << (int n)
     v[n-1].vt   = VT_I4 ;
     v[n-1].lVal = n ;
 }
+
+void Variants::operator << (double d)
+{
+    grow();
+
+    VariantInit( &v[n-1] );
+    v[n-1].vt     = VT_R8;
+    v[n-1].dblVal = d;
+}
+
+void Variants::add_as_boolean(int n)
+{
+    grow();
+
+    VariantInit( &v[n-1] );
+    v[n-1].vt = VT_BOOL;
+    v[n-1].boolVal = n;
+}
