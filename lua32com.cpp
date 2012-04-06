@@ -152,17 +152,29 @@ static int find_member(lua_State *L)
         lua_pushstring(L,"Can not find method for ActiveXObject");
         return 2;
     }
-    ActiveXMember **m=static_cast<ActiveXMember**>(
-            lua_newuserdata(L,sizeof(ActiveXMember*))
-            );
-    *m = member;
-    luaL_newmetatable(L,"ActiveXMember");
-    lua_pushcfunction(L,destroy_member);
-    lua_setfield(L,-2,"__gc");
-    lua_pushcfunction(L,call_member);
-    lua_setfield(L,-2,"__call");
-    lua_setmetatable(L,-2);
-    return 1;
+
+    Variants args;
+    VARIANT result; VariantInit(&result);
+    HRESULT hr=member->invoke( DISPATCH_PROPERTYGET , args , 0 , result );
+    if( FAILED(hr) ){
+        // member is method 
+        ActiveXMember **m=static_cast<ActiveXMember**>(
+                lua_newuserdata(L,sizeof(ActiveXMember*))
+                );
+        *m = member;
+        luaL_newmetatable(L,"ActiveXMember");
+        lua_pushcfunction(L,destroy_member);
+        lua_setfield(L,-2,"__gc");
+        lua_pushcfunction(L,call_member);
+        lua_setfield(L,-2,"__call");
+        lua_setmetatable(L,-2);
+        return 1;
+    }else{
+        // member is property
+        int rc=variant2lua( result , L );
+        delete member;
+        return rc;
+    }
 }
 
 
