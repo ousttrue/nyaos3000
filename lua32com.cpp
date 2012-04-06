@@ -42,6 +42,54 @@ static void push_activexobject(lua_State *L,ActiveXObject *obj)
     lua_setmetatable(L,-2);
 }
 
+static int variant2lua( VARIANT &v , lua_State *L )
+{
+    if( v.vt == VT_BSTR ){
+        char *p=Unicode::b2c( v.bstrVal );
+        // printf("v=[%s](VT_BSTR)\n",p);
+        lua_pushstring(L,p);
+        delete[]p;
+    }else if( v.vt == (VT_BSTR|VT_BYREF) ){
+        char *p=Unicode::b2c( *v.pbstrVal );
+        // printf("v=[%s](VT_BSTR|VT_BYREF)\n",p);
+        lua_pushstring(L,p);
+        delete[]p;
+    }else if( v.vt == VT_DISPATCH ){
+        ActiveXObject *o=new ActiveXObject( v.pdispVal );
+        push_activexobject(L,o);
+    }else if( v.vt == (VT_DISPATCH|VT_BYREF) ){
+        ActiveXObject *o=new ActiveXObject( *v.ppdispVal );
+        push_activexobject(L,o);
+    }else if( v.vt == VT_BOOL ){
+        lua_pushboolean(L,v.boolVal);
+    }else if( v.vt == (VT_BOOL|VT_BYREF) ){
+        lua_pushboolean(L,*v.pboolVal); 
+    }else if( v.vt == VT_UI1 ){
+        lua_pushinteger(L,v.bVal);
+    }else if( v.vt == (VT_UI1|VT_BYREF) ){
+        lua_pushinteger(L,*v.pbVal);
+    }else if( v.vt == VT_I2 ){
+        lua_pushinteger(L,v.iVal);
+    }else if( v.vt == (VT_I2|VT_BYREF) ){
+        lua_pushinteger(L,*v.piVal);
+    }else if( v.vt == VT_I4 ){
+        lua_pushinteger(L,v.lVal);
+    }else if( v.vt == (VT_I4|VT_BYREF) ){
+        lua_pushinteger(L,*v.plVal);
+    }else if( v.vt == VT_R4 ){
+        lua_pushnumber(L,v.fltVal);
+    }else if( v.vt == (VT_R4|VT_BYREF) ){
+        lua_pushnumber(L,*v.pfltVal);
+    }else if( v.vt == VT_R8 ){
+        lua_pushnumber(L,v.dblVal);
+    }else if( v.vt == (VT_R8|VT_BYREF) ){
+        lua_pushnumber(L,*v.pdblVal);
+    }else{
+        return 0;
+    }
+    return 1;
+}
+
 static int call_member(lua_State *L)
 {
     TRACE("[CALL] call_member");
@@ -66,36 +114,13 @@ static int call_member(lua_State *L)
     for(int i=3;i<=n;++i){
         args << lua_tostring(L,i);
     }
-    HRESULT hr=(**m).invoke( DISPATCH_METHOD , args , args.size() , result );
+    HRESULT hr=(**m).invoke( DISPATCH_METHOD | DISPATCH_PROPERTYGET, args , args.size() , result );
     if( FAILED(hr) ){
         lua_pushnil(L);
         lua_pushstring(L,"Something happend on COM");
         return 2;
     }
-    if( result.vt == VT_BSTR ){
-        char *p=Unicode::b2c( result.bstrVal );
-        // printf("RESULT=[%s](VT_BSTR)\n",p);
-        lua_pushstring(L,p);
-        delete[]p;
-        return 1;
-    }else if( result.vt == (VT_BSTR|VT_BYREF) ){
-        char *p=Unicode::b2c( *result.pbstrVal );
-        // printf("RESULT=[%s](VT_BSTR|VT_BYREF)\n",p);
-        lua_pushstring(L,p);
-        delete[]p;
-        return 1;
-    }else if( result.vt == VT_DISPATCH ){
-        ActiveXObject *o=new ActiveXObject( result.pdispVal );
-        push_activexobject(L,o);
-        return 1;
-    }else if( result.vt == (VT_DISPATCH|VT_BYREF) ){
-        ActiveXObject *o=new ActiveXObject( *result.ppdispVal );
-        push_activexobject(L,o);
-        return 1;
-    }else{
-        // printf("result.vt == %d\n",result.vt);
-        return 0;
-    }
+    return variant2lua(result,L);
 }
 
 static int find_member(lua_State *L)
