@@ -47,7 +47,7 @@ public:
             WORD wflags ,
             VARIANT *argv ,
             int argc ,
-            VARIANT *result );
+            VARIANT &result );
 
     int call(const char *name, Variants &args , VARIANT &result );
 

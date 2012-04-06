@@ -14,7 +14,8 @@ extern "C" {
 static int destroy_object(lua_State *L)
 {
     TRACE("[CALL] destroy_object");
-    ActiveXObject **u=static_cast<ActiveXObject**>( lua_touserdata(L,1) );
+    ActiveXObject **u=static_cast<ActiveXObject**>(
+            luaL_checkudata(L,1,"ActiveXObject") );
     delete *u;
     return 0;
 }
@@ -22,8 +23,48 @@ static int destroy_object(lua_State *L)
 static int destroy_member(lua_State *L)
 {
     TRACE("[CALL] destroy_member");
-    ActiveXMember **m=static_cast<ActiveXMember**>(lua_touserdata(L,1));
+    ActiveXMember **m=static_cast<ActiveXMember**>(
+            luaL_checkudata(L,1,"ActiveXMember"));
     delete *m;
+    return 0;
+}
+
+static void lua2variants( lua_State *L , int i , Variants &args )
+{
+    switch( lua_type(L,i) ){
+    case LUA_TNUMBER:
+        args << lua_tonumber(L,i);
+        break;
+    case LUA_TBOOLEAN:
+    case LUA_TNIL:
+        args.add_as_boolean( lua_toboolean(L,i) );
+        break;
+    case LUA_TSTRING:
+    default:
+        args << lua_tostring(L,i);
+        break;
+    }
+}
+
+static int put_property(lua_State *L)
+{
+    TRACE("[CALL] put_property");
+    ActiveXObject **u=static_cast<ActiveXObject**>(
+            luaL_checkudata(L,1,"ActiveXObject") );
+    if( u == NULL ){
+        TRACE("no ActiveXObject");
+        return 0;
+    }
+    const char *member_name = lua_tostring(L,2);
+    if( member_name == NULL ){
+        TRACE("no member name");
+        return 0;
+    }
+
+    Variants args;  lua2variants(L,3,args);
+    VARIANT result; VariantInit(&result);
+
+    (**u).invoke( member_name , DISPATCH_PROPERTYPUT , args , args.size() , result );
     return 0;
 }
 
@@ -39,6 +80,8 @@ static void push_activexobject(lua_State *L,ActiveXObject *obj)
     lua_setfield(L,-2,"__gc");
     lua_pushcfunction(L,find_member);
     lua_setfield(L,-2,"__index");
+    lua_pushcfunction(L,put_property);
+    lua_setfield(L,-2,"__newindex");
     lua_setmetatable(L,-2);
 }
 
@@ -85,6 +128,7 @@ static int variant2lua( VARIANT &v , lua_State *L )
     }else if( v.vt == (VT_R8|VT_BYREF) ){
         lua_pushnumber(L,*v.pdblVal);
     }else{
+        // printf("vt=[%d]\n",v.vt);
         return 0;
     }
     return 1;
@@ -110,21 +154,8 @@ static int call_member(lua_State *L)
         lua_pushstring(L,"Invalid ActiveXObject");
         return 2;
     }
-    int n=lua_gettop(L);
-    for(int i=3;i<=n;++i){
-        switch( lua_type(L,i) ){
-        case LUA_TNUMBER:
-            args << lua_tonumber(L,i);
-            break;
-        case LUA_TBOOLEAN:
-        case LUA_TNIL:
-            args.add_as_boolean( lua_toboolean(L,i) );
-            break;
-        case LUA_TSTRING:
-        default:
-            args << lua_tostring(L,i);
-            break;
-        }
+    for(int i=lua_gettop(L);i>=3;--i){
+        lua2variants(L,i,args);
     }
     HRESULT hr=(**m).invoke( DISPATCH_METHOD | DISPATCH_PROPERTYGET, args , args.size() , result );
     if( FAILED(hr) ){

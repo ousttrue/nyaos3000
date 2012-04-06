@@ -110,8 +110,8 @@ int ActiveXMember::invoke(
         VARIANT &result )
 {
     HRESULT hr;
-    DISPID dispid_name;
     DISPPARAMS disp_params;
+    DISPID dispid_propertyput=DISPID_PROPERTYPUT;
     UINT puArgerr = 0;
     EXCEPINFO excepinfo;
 
@@ -120,7 +120,7 @@ int ActiveXMember::invoke(
 
     if( wflags & DISPATCH_PROPERTYPUT ){
         disp_params.cNamedArgs = 1;
-        disp_params.rgdispidNamedArgs = &dispid_name;
+        disp_params.rgdispidNamedArgs = &dispid_propertyput;
     }else{
         disp_params.cNamedArgs = 0;
         disp_params.rgdispidNamedArgs = NULL;
@@ -144,18 +144,18 @@ int ActiveXObject::invoke(
         WORD wflags ,
         VARIANT *argv ,
         int argc ,
-        VARIANT *result )
+        VARIANT &result )
 {
     ActiveXMember method( *this , name );
     if( ! method.ok() )
         return -1;
 
-    return method.invoke(wflags,argv,argc,*result);
+    return method.invoke(wflags,argv,argc,result);
 }
 
 int ActiveXObject::call(const char *name, Variants &args , VARIANT &result )
 {
-    return invoke( name , DISPATCH_METHOD , args , args.size() , &result );
+    return invoke( name , DISPATCH_METHOD , args , args.size() , result );
 }
 
 void Variants::grow()
@@ -173,13 +173,13 @@ void Variants::operator << (const char *s)
     v[n-1].bstrVal = *str_stack;
 }
 
-void Variants::operator << (int n)
+void Variants::operator << (int i)
 {
     grow();
     
     VariantInit( &v[n-1] );
     v[n-1].vt   = VT_I4 ;
-    v[n-1].lVal = n ;
+    v[n-1].lVal = i ;
 }
 
 void Variants::operator << (double d)
