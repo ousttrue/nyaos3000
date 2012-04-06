@@ -11,7 +11,9 @@
 #include "getline.h"
 #include "nua.h"
 
+#ifdef NYACUS
 extern int read_shortcut(const char *src,char *buffer,int size);
+#endif
 
 int NnPair::compare( const NnSortable &x ) const
 {
@@ -399,6 +401,7 @@ Status GetLine::complete(int)
     if( match.length() == 0 )
 	return NEXTCHAR;
     
+#ifdef NYACUS
     /* ショートカット展開 */
     if( n==1 && comp.path_of(0).iendsWith(".lnk") && properties.get("lnkexp") != NULL )
     {
@@ -415,6 +418,7 @@ Status GetLine::complete(int)
 	    match = comp.path_of(0);
 	}
     }
+#endif
 
     // 空白を含むとき、先頭に”を入れる。
     if( hasSpace ){

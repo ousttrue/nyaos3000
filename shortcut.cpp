@@ -1,6 +1,3 @@
-#include "config.h"
-#if defined(NYACUS)
-
 #include <windows.h>
 #include <shlobj.h>
 #include <stdio.h>
@@ -99,16 +96,3 @@ int read_shortcut(const char *src,char *buffer,int size)
     CT_Filer2View_UnInit();
     return rc;
 }
-
-
-
-
-#else
-
-int read_shortcut(const char *src,char *buffer,int size)
-{
-    buffer[0] = '\0';
-    return -1;
-}
-
-#endif

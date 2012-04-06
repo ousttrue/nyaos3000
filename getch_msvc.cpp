@@ -9,8 +9,6 @@
   
 */
 
-#ifndef __EMX__
-
 #include <windows.h>
 #ifdef BUILD_FOR_WCHAR
 #include <wchar.h>
@@ -284,5 +282,4 @@ main(int argc, char **argv)
   return 0;
 }
 
-#endif
 #endif

@@ -34,13 +34,19 @@ lua :
 endif
 
 
-OBJS=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O) \
+OBJS_=nyados.$(O) nnstring.$(O) nndir.$(O) twinbuf.$(O) mysystem.$(O) keyfunc.$(O) \
 	getline.$(O) getline2.$(O) keybound.$(O) dosshell.$(O) nnhash.$(O) \
 	writer.$(O) history.$(O) ishell.$(O) scrshell.$(O) wildcard.$(O) cmdchdir.$(O) \
 	shell.$(O) shell4.$(O) foreach.$(O) which.$(O) reader.$(O) nnvector.$(O) \
-	ntcons.$(O) shellstr.$(O) cmds1.$(O) cmds2.$(O) xscript.$(O) shortcut.$(O) \
-	strfork.$(O) lsf.$(O) open.$(O) nua.$(O) luautil.$(O) getch_msvc.$(O) \
-	source.$(O) nnlua.$(O) dbcs.$(O) lua32com.$(O) win32com.$(O)
+	ntcons.$(O) shellstr.$(O) cmds1.$(O) cmds2.$(O) xscript.$(O)  \
+	strfork.$(O) lsf.$(O) open.$(O) nua.$(O) luautil.$(O)  \
+	source.$(O) nnlua.$(O) dbcs.$(O)
+
+ifeq ($(OS),Windows_NT)
+OBJS=$(OBJS_) lua32com.$(O) win32com.$(O) getch_msvc.$(O) shortcut.$(O)
+else
+OBJS=$(OBJS_)
+endif
 
 ifeq ($(OS),Windows_NT)
 nyaos.exe : $(OBJS) nyacusrc.$(O)

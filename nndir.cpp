@@ -59,7 +59,9 @@ enum{
     W95_DATE_FORMAT = 0 ,
     DOS_DATE_FORMAT = 1 ,
 };
+#ifdef NYACUS
 extern int read_shortcut(const char *src,char *buffer,int size);
+#endif
 
 /** 「...\」→「..\..\」 DOS,OS/2 の為 */
 void NnDir::extractDots( const char *&sp , NnString &dst )
@@ -355,12 +357,14 @@ int NnDir::chdir( const char *argv )
         || newdir.at( newdir.length()-1 ) == '/' )
         newdir += '.';
 
+#ifdef NYACUS
     if( newdir.iendsWith(".lnk") ){
 	char buffer[ FILENAME_MAX ];
 	if( read_shortcut( newdir.chars() , buffer , sizeof(buffer) )==0 ){
 	    newdir = buffer;
 	}
     }
+#endif
     return ::chdir( newdir.chars() );
 }
 
