@@ -1,6 +1,6 @@
 #include "win32com.h"
 
-#define DEBUG
+//#define DEBUG
 
 #include <stdlib.h>
 

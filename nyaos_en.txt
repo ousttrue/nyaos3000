@@ -1225,6 +1225,19 @@ nyaos.default_complete does not use the third argument.
 Tools
 -----
 
+- nyaos.create_object - create new COM-Object (only on Windows)
+
+    local word=nyaos.create_object("Word.Application")
+    word.Visible = true
+    word.documents:Add()
+    word.Selection.Font.Size = 28
+    word.Selection:typetext("Hello,World")
+
+- nyaos.get_active_object - call running COM-Object (only on Windows)
+
+    local word=nyaos.get_active_object("Word.Application")
+    word:Quit()
+
 - nyaos.getkey() - get keycode typed
 
     lua_e "print(nyaos.getkey())"
@@ -1355,6 +1368,10 @@ File/Directory Operation
 
 History
 =======
+
+3.3.2_0 (2012/04/07)
+    - Can call COM-Object from built-in Lua
+      (added function: nyaos.create_object , nyaos.get_active_object)
 
 3.3.1_0 (2012/03/02)
     - Enabled replacing by "suffix" command against result replaced by 

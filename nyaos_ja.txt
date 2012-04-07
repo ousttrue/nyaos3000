@@ -1402,7 +1402,20 @@ LIST : 追加する補完候補が入ったテーブル
 
 NYAOS の直接の動作には影響しませんが、ツールとして次のような関数を提供しています。
 
-* nyaos.getkey() - 一文字キー入力を行う
+* nyaos.create_object - COMオブジェクトを新規作成する(Windowsのみ)
+
+    local word=nyaos.create_object("Word.Application")
+    word.Visible = true
+    word.documents:Add()
+    word.Selection.Font.Size = 28
+    word.Selection:typetext("あはは")
+
+* nyaos.get_active_object - 起動済みのCOMを呼び出す(Windowsのみ)
+
+    local word=nyaos.get_active_object("Word.Application")
+    word:Quit()
+
+* nyaos.getkey - 一文字キー入力を行う
 
     lua_e "print(nyaos.getkey())"
 
@@ -1577,6 +1590,10 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.3.2_0 (2012/04/07)
+    - 内蔵Luaから、COMオブジェクトを呼び出せるようにした(Windowsのみ)
+      (nyaos.create_object , nyaos.get_active_object)
 
 3.3.1_0 (2012/03/02)
     - alias の置換結果に suffix で置換できるようにした。
