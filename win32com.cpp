@@ -54,7 +54,7 @@ ActiveXObject::~ActiveXObject()
         CoUninitialize();
 }
 
-ActiveXObject::ActiveXObject(const char *name)
+ActiveXObject::ActiveXObject(const char *name,bool isNewInstance)
 {
     CLSID clsid;
     HRESULT hr;
@@ -73,18 +73,37 @@ ActiveXObject::ActiveXObject(const char *name)
         goto exit;
     }
 
-    /* インスタンス作成 */
-    hr = CoCreateInstance(
-            clsid ,
-            NULL ,
-            CLSCTX_INPROC_SERVER , /* or CLSCTX_LOCAL_SERVER , */
-            IID_IDispatch ,
-            (void**)&this->pApplication );
-    if( FAILED(hr) ){
+    if( isNewInstance ){ // create_object
+        /* インスタンス作成 */
+        hr = CoCreateInstance(
+                clsid ,
+                NULL ,
+                CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER ,
+                IID_IDispatch ,
+                (void**)&this->pApplication );
+        if( FAILED(hr) ){
 #ifdef DEBUG
-        puts("Error: CoCreateInstance");
+            puts("Error: CoCreateInstance");
 #endif
-        goto exit;
+            goto exit;
+        }
+    }else{ // get_object
+        IUnknown *pUnknown;
+        hr = GetActiveObject( clsid , 0 , &pUnknown );
+        if( FAILED(hr) ){
+            if( pUnknown != NULL )
+                pUnknown->Release();
+            // TRACE("[FAIL] GetActiveObject");
+            goto exit;
+        }
+        hr = pUnknown->QueryInterface(
+                IID_IDispatch ,
+                (void**)&this->pApplication );
+        if( pUnknown != NULL )
+            pUnknown->Release();
+        if( FAILED(hr) ){
+            goto exit;
+        }
     }
     return;
 exit:

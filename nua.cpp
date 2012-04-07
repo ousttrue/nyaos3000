@@ -29,7 +29,8 @@ const static char
 
 extern int open_luautil( lua_State *L );
 #ifdef NYACUS
-extern int create_object( lua_State *L );
+extern int com_create_object( lua_State *L );
+extern int com_get_active_object( lua_State *L );
 #endif
 
 static void lstop (lua_State *L, lua_Debug *ar) {
@@ -489,8 +490,10 @@ int NyaosLua::init()
 
         /* tool functions */
 #ifdef NYACUS
-        lua_pushcfunction(L,create_object);
+        lua_pushcfunction(L,com_create_object);
         lua_setfield(L,-2,"create_object");
+        lua_pushcfunction(L,com_get_active_object);
+        lua_setfield(L,-2,"get_active_object");
 #endif
         lua_pushcfunction(L,nua_exec);
         lua_setfield(L,-2,"exec");

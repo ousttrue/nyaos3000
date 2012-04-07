@@ -208,12 +208,11 @@ static int find_member(lua_State *L)
     }
 }
 
-
-int create_object(lua_State *L)
+static int new_activex_object(lua_State *L,bool isNewObject)
 {
     TRACE("[CALL] create_object");
     const char *name=lua_tostring(L,1);
-    ActiveXObject *obj=new ActiveXObject(name);
+    ActiveXObject *obj=new ActiveXObject(name,isNewObject);
     if( obj != NULL && !obj->ok() ){
         lua_pushnil(L);
         lua_pushstring(L,"Can not find ActiveXObject");
@@ -221,4 +220,14 @@ int create_object(lua_State *L)
     }
     push_activexobject(L,obj);
     return 1;
+}
+
+int com_create_object(lua_State *L)
+{
+    return new_activex_object(L,true);
+}
+
+int com_get_active_object(lua_State *L)
+{
+    return new_activex_object(L,false);
 }

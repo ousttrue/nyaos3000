@@ -39,7 +39,7 @@ class ActiveXObject {
     static int instance_count;
     IDispatch *pApplication;
 public:
-    explicit ActiveXObject(const char *name);
+    explicit ActiveXObject(const char *name,bool isNewInstance=true);
     explicit ActiveXObject(IDispatch *p) : pApplication(p) { instance_count++; }
     ~ActiveXObject();
 
