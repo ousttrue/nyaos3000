@@ -57,7 +57,9 @@ ActiveXObject::~ActiveXObject()
 ActiveXObject::ActiveXObject(const char *name,bool isNewInstance)
 {
     CLSID clsid;
-    HRESULT hr;
+
+    this->pApplication = NULL;
+    construct_error_ = 0;
 
     if( instance_count++ <= 0 )
         CoInitialize(NULL);
@@ -65,56 +67,58 @@ ActiveXObject::ActiveXObject(const char *name,bool isNewInstance)
     Unicode className(name);
 
     /* クラスID取得 */
-    hr = CLSIDFromProgID( className , &clsid );
-    if( FAILED(hr) ){
+    construct_error_ = CLSIDFromProgID( className , &clsid );
+    if( FAILED(construct_error_) ){
 #ifdef DEBUG
         puts("Error: CLSIDFromProgID");
 #endif
-        goto exit;
+        return;
     }
 
     if( isNewInstance ){ // create_object
         /* インスタンス作成 */
-        hr = CoCreateInstance(
+        construct_error_ = CoCreateInstance(
                 clsid ,
                 NULL ,
                 CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER ,
                 IID_IDispatch ,
                 (void**)&this->pApplication );
-        if( FAILED(hr) ){
+        if( FAILED(construct_error_) ){
 #ifdef DEBUG
             puts("Error: CoCreateInstance");
 #endif
-            goto exit;
+            if( pApplication != NULL ){
+                pApplication->Release();
+                pApplication = NULL;
+            }
         }
     }else{ // get_object
-        IUnknown *pUnknown;
-        hr = GetActiveObject( clsid , 0 , &pUnknown );
-        if( FAILED(hr) ){
+        IUnknown *pUnknown=NULL;
+        construct_error_ = GetActiveObject( clsid , 0 , &pUnknown );
+        if( FAILED(construct_error_) ){
             if( pUnknown != NULL )
                 pUnknown->Release();
-            // TRACE("[FAIL] GetActiveObject");
-            goto exit;
+            return;
         }
-        hr = pUnknown->QueryInterface(
+        construct_error_ = pUnknown->QueryInterface(
                 IID_IDispatch ,
                 (void**)&this->pApplication );
         if( pUnknown != NULL )
             pUnknown->Release();
-        if( FAILED(hr) ){
-            goto exit;
+        if( FAILED(construct_error_) ){
+            if( pApplication != NULL ){
+                pApplication->Release();
+                pApplication = NULL;
+            }
         }
     }
-    return;
-exit:
-    pApplication = NULL;
 }
 
 ActiveXMember::ActiveXMember( ActiveXObject &instance , const char *name ) : instance_(instance)
 {
     Unicode methodName(name);
 
-    this->construct_error = instance.getIDispatch()->GetIDsOfNames(
+    this->construct_error_ = instance.getIDispatch()->GetIDsOfNames(
             IID_NULL , /* 将来のための予約フィールド */
             &methodName ,
             1 ,

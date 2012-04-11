@@ -38,9 +38,10 @@ public:
 class ActiveXObject {
     static int instance_count;
     IDispatch *pApplication;
+    HRESULT construct_error_;
 public:
     explicit ActiveXObject(const char *name,bool isNewInstance=true);
-    explicit ActiveXObject(IDispatch *p) : pApplication(p) { instance_count++; }
+    explicit ActiveXObject(IDispatch *p) : pApplication(p) , construct_error_(NO_ERROR) { instance_count++; }
     ~ActiveXObject();
 
     int invoke(const char *name,
@@ -50,6 +51,7 @@ public:
             VARIANT &result );
 
     int ok() const { return pApplication != NULL ; }
+    HRESULT construct_error() const { return construct_error_; }
 
     IDispatch *getIDispatch(){ return pApplication; }
 };
@@ -57,13 +59,14 @@ public:
 class ActiveXMember {
     ActiveXObject &instance_;
     DISPID dispid_;
-    HRESULT construct_error;
+    HRESULT construct_error_;
 public:
     ActiveXMember( ActiveXObject &instance , const char *name );
     DISPID dispid() const { return dispid_; }
     int invoke(WORD wflags,VARIANT *argv , int argc , VARIANT &result,HRESULT *hr=0,char **error_info=0 );
 
-    int ok() const { return ! FAILED(construct_error); }
+    int ok() const { return ! FAILED(construct_error_); }
+    HRESULT construct_error() const { return construct_error_; }
 };
 
 #endif

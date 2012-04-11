@@ -11,6 +11,20 @@ extern "C" {
 //#define TRACE(x) puts(x)
 #define TRACE(x)
 
+static void hr_to_lua_message(HRESULT hr,lua_State *L)
+{
+    LPVOID s;
+    FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM ,
+                  NULL ,
+                  hr ,
+                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  (LPTSTR)&s,
+                  0,
+                  NULL);
+    lua_pushstring(L,(LPCTSTR)s);
+    LocalFree(s);
+}
+
 static void set_nyaos_error(lua_State *L,const char *s)
 {
     lua_getglobal(L,"nyaos");
@@ -216,10 +230,14 @@ static int find_member(lua_State *L)
     }
     const char *member_name=lua_tostring(L,2);
     ActiveXMember *member=new ActiveXMember(**u,member_name);
-    if( member == NULL || !member->ok() ){
-        set_nyaos_error(L,"Can not find method for ActiveXObject");
+    if( member == NULL ){
         lua_pushnil(L);
         lua_pushstring(L,"Can not find method for ActiveXObject");
+        return 2;
+    }else if( !member->ok() ){
+        lua_pushnil(L);
+        hr_to_lua_message(member->construct_error(),L);
+        set_nyaos_error(L,lua_tostring(L,-1));
         delete member;
         return 2;
     }
@@ -242,10 +260,12 @@ static int find_member(lua_State *L)
                 set_nyaos_error(L,error_info);
                 lua_pushnil(L);
                 lua_pushstring(L,error_info);
-                return 2;
             }else{
-                return 0;
+                lua_pushnil(L);
+                hr_to_lua_message(hr,L);
             }
+            set_nyaos_error(L,lua_tostring(L,-1));
+            return 2;
         }
     }else{
         int rc=variant2lua( result , L );
@@ -268,13 +288,19 @@ static int new_activex_object(lua_State *L,bool isNewObject)
     TRACE("[CALL] create_object");
     const char *name=lua_tostring(L,1);
     ActiveXObject *obj=new ActiveXObject(name,isNewObject);
-    if( obj != NULL && !obj->ok() ){
+    if( obj == NULL ){
         lua_pushnil(L);
         lua_pushstring(L,"Can not find ActiveXObject");
         return 2;
+    }else if( !obj->ok() ){
+        lua_pushnil(L);
+        hr_to_lua_message(obj->construct_error(),L);
+        delete obj;
+        return 2;
+    }else{
+        push_activexobject(L,obj);
+        return 1;
     }
-    push_activexobject(L,obj);
-    return 1;
 }
 
 int com_create_object(lua_State *L)
