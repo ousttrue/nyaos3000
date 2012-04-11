@@ -11,6 +11,20 @@ extern "C" {
 //#define TRACE(x) puts(x)
 #define TRACE(x)
 
+static void set_nyaos_error(lua_State *L,const char *s)
+{
+    lua_getglobal(L,"nyaos");
+    if( lua_istable(L,-1) ){
+        if( s != NULL ){
+            lua_pushstring(L,s);
+        }else{
+            lua_pushnil(L);
+        }
+        lua_setfield(L,-2,"error");
+    }
+    lua_pop(L,1);
+}
+
 static int destroy_object(lua_State *L)
 {
     TRACE("[CALL] destroy_object");
@@ -94,7 +108,6 @@ static int variant2lua( VARIANT &v , lua_State *L )
         delete[]p;
     }else if( v.vt == (VT_BSTR|VT_BYREF) ){
         char *p=Unicode::b2c( *v.pbstrVal );
-        // printf("v=[%s](VT_BSTR|VT_BYREF)\n",p);
         lua_pushstring(L,p);
         delete[]p;
     }else if( v.vt == VT_DISPATCH ){
@@ -157,12 +170,22 @@ static int call_member(lua_State *L)
     for(int i=lua_gettop(L);i>=3;--i){
         lua2variants(L,i,args);
     }
-    HRESULT hr=(**m).invoke( DISPATCH_METHOD | DISPATCH_PROPERTYGET, args , args.size() , result );
-    if( FAILED(hr) ){
+    char *error_info=0;
+    if( (**m).invoke( DISPATCH_METHOD | DISPATCH_PROPERTYGET ,
+                args , args.size() , result , &error_info ) != 0 )
+    {
         lua_pushnil(L);
-        lua_pushstring(L,"Something happend on COM");
+        if( error_info != 0 ){
+            lua_pushstring(L,error_info);
+            delete[]error_info;
+            set_nyaos_error(L,error_info);
+        }else{
+            lua_pushstring(L,"Something happend on COM");
+            set_nyaos_error(L,"Something happend on COM");
+        }
         return 2;
     }
+    delete[]error_info;
     return variant2lua(result,L);
 }
 
@@ -172,6 +195,7 @@ static int find_member(lua_State *L)
     ActiveXObject **u=static_cast<ActiveXObject**>(
             luaL_checkudata(L,1,"ActiveXObject") );
     if( u == NULL || !(**u).ok() ){
+        set_nyaos_error(L,"Invalid Object. Expected <ActiveXObject>");
         lua_pushnil(L);
         lua_pushstring(L,"Invalid Object. Expected <ActiveXObject>");
         return 2;
@@ -179,31 +203,49 @@ static int find_member(lua_State *L)
     const char *member_name=lua_tostring(L,2);
     ActiveXMember *member=new ActiveXMember(**u,member_name);
     if( member == NULL || !member->ok() ){
+        set_nyaos_error(L,"Can not find method for ActiveXObject");
         lua_pushnil(L);
         lua_pushstring(L,"Can not find method for ActiveXObject");
+        delete member;
         return 2;
     }
 
     Variants args;
     VARIANT result; VariantInit(&result);
-    HRESULT hr=member->invoke( DISPATCH_PROPERTYGET , args , 0 , result );
-    if( FAILED(hr) ){
-        // member is method 
-        ActiveXMember **m=static_cast<ActiveXMember**>(
-                lua_newuserdata(L,sizeof(ActiveXMember*))
-                );
-        *m = member;
-        luaL_newmetatable(L,"ActiveXMember");
-        lua_pushcfunction(L,destroy_member);
-        lua_setfield(L,-2,"__gc");
-        lua_pushcfunction(L,call_member);
-        lua_setfield(L,-2,"__call");
-        lua_setmetatable(L,-2);
-        return 1;
+    char *error_info=0;
+    if( member->invoke( DISPATCH_PROPERTYGET ,
+                args , 0 , result , &error_info ) != 0 )
+    {
+        if( member->hr() == DISP_E_MEMBERNOTFOUND ){
+            // member is method 
+            ActiveXMember **m=static_cast<ActiveXMember**>(
+                    lua_newuserdata(L,sizeof(ActiveXMember*))
+                    );
+            *m = member;
+            luaL_newmetatable(L,"ActiveXMember");
+            lua_pushcfunction(L,destroy_member);
+            lua_setfield(L,-2,"__gc");
+            lua_pushcfunction(L,call_member);
+            lua_setfield(L,-2,"__call");
+            lua_setmetatable(L,-2);
+            delete[]error_info;
+            return 1;
+        }else{
+            delete member;
+            if( error_info != 0 ){
+                set_nyaos_error(L,error_info);
+                lua_pushnil(L);
+                lua_pushstring(L,error_info);
+                return 2;
+            }else{
+                return 0;
+            }
+        }
     }else{
         // member is property
         int rc=variant2lua( result , L );
         delete member;
+        delete[]error_info;
         return rc;
     }
 }

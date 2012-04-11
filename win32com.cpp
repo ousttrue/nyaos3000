@@ -126,9 +126,9 @@ int ActiveXMember::invoke(
         WORD wflags ,
         VARIANT *argv ,
         int argc , 
-        VARIANT &result )
+        VARIANT &result ,
+        char **error_info )
 {
-    HRESULT hr;
     DISPPARAMS disp_params;
     DISPID dispid_propertyput=DISPID_PROPERTYPUT;
     UINT puArgerr = 0;
@@ -145,7 +145,7 @@ int ActiveXMember::invoke(
         disp_params.rgdispidNamedArgs = NULL;
     }
 
-    hr = this->instance_.getIDispatch()->Invoke(
+    this->hr_ = this->instance_.getIDispatch()->Invoke(
             this->dispid() ,
             IID_NULL ,
             LOCALE_SYSTEM_DEFAULT ,
@@ -154,8 +154,15 @@ int ActiveXMember::invoke(
             &result ,
             &excepinfo ,
             &puArgerr );
-
-    return FAILED(hr) ? -1 : 0;
+    if( FAILED(this->hr_) ){
+        if( this->hr_ == DISP_E_EXCEPTION && error_info != 0 ){
+            *error_info = Unicode::b2c( excepinfo.bstrDescription );
+        }
+        return -1;
+    }else{
+        return 0;
+    }
+    return FAILED(this->hr_) ? -1 : 0;
 }
 
 int ActiveXObject::invoke(
@@ -170,11 +177,6 @@ int ActiveXObject::invoke(
         return -1;
 
     return method.invoke(wflags,argv,argc,result);
-}
-
-int ActiveXObject::call(const char *name, Variants &args , VARIANT &result )
-{
-    return invoke( name , DISPATCH_METHOD , args , args.size() , result );
 }
 
 void Variants::grow()
@@ -216,5 +218,5 @@ void Variants::add_as_boolean(int n)
 
     VariantInit( &v[n-1] );
     v[n-1].vt = VT_BOOL;
-    v[n-1].boolVal = n;
+    v[n-1].boolVal = n ? VARIANT_TRUE : VARIANT_FALSE ;
 }

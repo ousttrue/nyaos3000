@@ -49,8 +49,6 @@ public:
             int argc ,
             VARIANT &result );
 
-    int call(const char *name, Variants &args , VARIANT &result );
-
     int ok() const { return pApplication != NULL ; }
 
     IDispatch *getIDispatch(){ return pApplication; }
@@ -63,9 +61,10 @@ class ActiveXMember {
 public:
     ActiveXMember( ActiveXObject &instance , const char *name );
     DISPID dispid() const { return dispid_; }
-    int invoke(WORD wflags,VARIANT *argv , int argc , VARIANT &result );
+    int invoke(WORD wflags,VARIANT *argv , int argc , VARIANT &result,char **error_info=0 );
 
     int ok() const { return ! FAILED(hr_); }
+    HRESULT hr() const { return hr_; }
 };
 
 #endif
