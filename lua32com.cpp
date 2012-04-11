@@ -172,7 +172,7 @@ static int call_member(lua_State *L)
     }
     char *error_info=0;
     if( (**m).invoke( DISPATCH_METHOD | DISPATCH_PROPERTYGET ,
-                args , args.size() , result , &error_info ) != 0 )
+                args , args.size() , result , NULL , &error_info ) != 0 )
     {
         lua_pushnil(L);
         if( error_info != 0 ){
@@ -187,6 +187,20 @@ static int call_member(lua_State *L)
     }
     delete[]error_info;
     return variant2lua(result,L);
+}
+
+static void push_activexmember(lua_State *L,ActiveXMember *member)
+{
+    ActiveXMember **m=static_cast<ActiveXMember**>(
+            lua_newuserdata(L,sizeof(ActiveXMember*))
+            );
+    *m = member;
+    luaL_newmetatable(L,"ActiveXMember");
+    lua_pushcfunction(L,destroy_member);
+    lua_setfield(L,-2,"__gc");
+    lua_pushcfunction(L,call_member);
+    lua_setfield(L,-2,"__call");
+    lua_setmetatable(L,-2);
 }
 
 static int find_member(lua_State *L)
@@ -212,22 +226,14 @@ static int find_member(lua_State *L)
 
     Variants args;
     VARIANT result; VariantInit(&result);
+    HRESULT hr;
     char *error_info=0;
     if( member->invoke( DISPATCH_PROPERTYGET ,
-                args , 0 , result , &error_info ) != 0 )
+                args , 0 , result , &hr , &error_info ) != 0 )
     {
-        if( member->hr() == DISP_E_MEMBERNOTFOUND ){
+        if( hr == DISP_E_MEMBERNOTFOUND || hr == DISP_E_BADPARAMCOUNT ){
             // member is method 
-            ActiveXMember **m=static_cast<ActiveXMember**>(
-                    lua_newuserdata(L,sizeof(ActiveXMember*))
-                    );
-            *m = member;
-            luaL_newmetatable(L,"ActiveXMember");
-            lua_pushcfunction(L,destroy_member);
-            lua_setfield(L,-2,"__gc");
-            lua_pushcfunction(L,call_member);
-            lua_setfield(L,-2,"__call");
-            lua_setmetatable(L,-2);
+            push_activexmember(L,member);
             delete[]error_info;
             return 1;
         }else{
@@ -242,11 +248,18 @@ static int find_member(lua_State *L)
             }
         }
     }else{
-        // member is property
         int rc=variant2lua( result , L );
-        delete member;
-        delete[]error_info;
-        return rc;
+        if( rc != 0 ){
+            // member is property
+            delete member;
+            delete[]error_info;
+            return rc;
+        }else{
+            // member is method
+            push_activexmember(L,member);
+            delete[]error_info;
+            return 1;
+        }
     }
 }
 

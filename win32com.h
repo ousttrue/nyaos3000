@@ -20,11 +20,11 @@ class UnicodeStack;
 
 class Variants {
     VARIANTARG *v;
-    int n;
+    int size_;
     UnicodeStack *str_stack;
     void grow();
 public:
-    Variants() : v(NULL),n(0),str_stack(0){}
+    Variants() : v(NULL),size_(0),str_stack(0){}
     ~Variants();
 
     operator VARIANTARG*(){ return v; }
@@ -32,7 +32,7 @@ public:
     void operator << ( int n );
     void operator << ( double d );
     void add_as_boolean( int n );
-    size_t size(){ return n; }
+    size_t size(){ return size_; }
 };
 
 class ActiveXObject {
@@ -57,14 +57,13 @@ public:
 class ActiveXMember {
     ActiveXObject &instance_;
     DISPID dispid_;
-    HRESULT hr_;
+    HRESULT construct_error;
 public:
     ActiveXMember( ActiveXObject &instance , const char *name );
     DISPID dispid() const { return dispid_; }
-    int invoke(WORD wflags,VARIANT *argv , int argc , VARIANT &result,char **error_info=0 );
+    int invoke(WORD wflags,VARIANT *argv , int argc , VARIANT &result,HRESULT *hr=0,char **error_info=0 );
 
-    int ok() const { return ! FAILED(hr_); }
-    HRESULT hr() const { return hr_; }
+    int ok() const { return ! FAILED(construct_error); }
 };
 
 #endif

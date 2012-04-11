@@ -114,7 +114,7 @@ ActiveXMember::ActiveXMember( ActiveXObject &instance , const char *name ) : ins
 {
     Unicode methodName(name);
 
-    this->hr_ = instance.getIDispatch()->GetIDsOfNames(
+    this->construct_error = instance.getIDispatch()->GetIDsOfNames(
             IID_NULL , /* 将来のための予約フィールド */
             &methodName ,
             1 ,
@@ -127,8 +127,10 @@ int ActiveXMember::invoke(
         VARIANT *argv ,
         int argc , 
         VARIANT &result ,
+        HRESULT *pHr ,
         char **error_info )
 {
+    HRESULT hr;
     DISPPARAMS disp_params;
     DISPID dispid_propertyput=DISPID_PROPERTYPUT;
     UINT puArgerr = 0;
@@ -145,7 +147,7 @@ int ActiveXMember::invoke(
         disp_params.rgdispidNamedArgs = NULL;
     }
 
-    this->hr_ = this->instance_.getIDispatch()->Invoke(
+    hr = this->instance_.getIDispatch()->Invoke(
             this->dispid() ,
             IID_NULL ,
             LOCALE_SYSTEM_DEFAULT ,
@@ -154,15 +156,17 @@ int ActiveXMember::invoke(
             &result ,
             &excepinfo ,
             &puArgerr );
-    if( FAILED(this->hr_) ){
-        if( this->hr_ == DISP_E_EXCEPTION && error_info != 0 ){
+    if( pHr != NULL ){
+        *pHr = hr;
+    }
+    if( FAILED(hr) ){
+        if( hr == DISP_E_EXCEPTION && error_info != 0 ){
             *error_info = Unicode::b2c( excepinfo.bstrDescription );
         }
         return -1;
     }else{
         return 0;
     }
-    return FAILED(this->hr_) ? -1 : 0;
 }
 
 int ActiveXObject::invoke(
@@ -181,7 +185,7 @@ int ActiveXObject::invoke(
 
 void Variants::grow()
 {
-    v = static_cast<VARIANTARG*>( realloc(v,++n*sizeof(VARIANTARG)) );
+    v = static_cast<VARIANTARG*>( realloc(v,++size_*sizeof(VARIANTARG)) );
 }
 
 void Variants::operator << (const char *s)
@@ -189,34 +193,34 @@ void Variants::operator << (const char *s)
     grow();
     str_stack=new UnicodeStack(s,str_stack);
 
-    VariantInit( &v[n-1] );
-    v[n-1].vt = VT_BSTR;
-    v[n-1].bstrVal = *str_stack;
+    VariantInit( &v[size_-1] );
+    v[size_-1].vt = VT_BSTR;
+    v[size_-1].bstrVal = *str_stack;
 }
 
 void Variants::operator << (int i)
 {
     grow();
     
-    VariantInit( &v[n-1] );
-    v[n-1].vt   = VT_I4 ;
-    v[n-1].lVal = i ;
+    VariantInit( &v[size_-1] );
+    v[size_-1].vt   = VT_I4 ;
+    v[size_-1].lVal = i ;
 }
 
 void Variants::operator << (double d)
 {
     grow();
 
-    VariantInit( &v[n-1] );
-    v[n-1].vt     = VT_R8;
-    v[n-1].dblVal = d;
+    VariantInit( &v[size_-1] );
+    v[size_-1].vt     = VT_R8;
+    v[size_-1].dblVal = d;
 }
 
 void Variants::add_as_boolean(int n)
 {
     grow();
 
-    VariantInit( &v[n-1] );
-    v[n-1].vt = VT_BOOL;
-    v[n-1].boolVal = n ? VARIANT_TRUE : VARIANT_FALSE ;
+    VariantInit( &v[size_-1] );
+    v[size_-1].vt = VT_BOOL;
+    v[size_-1].boolVal = n ? VARIANT_TRUE : VARIANT_FALSE ;
 }
