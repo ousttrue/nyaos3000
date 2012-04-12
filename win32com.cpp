@@ -192,7 +192,7 @@ void Variants::grow()
     v = static_cast<VARIANTARG*>( realloc(v,++size_*sizeof(VARIANTARG)) );
 }
 
-void Variants::operator << (const char *s)
+void Variants::add_as_string(const char *s)
 {
     grow();
     str_stack=new UnicodeStack(s,str_stack);
@@ -202,16 +202,7 @@ void Variants::operator << (const char *s)
     v[size_-1].bstrVal = *str_stack;
 }
 
-void Variants::operator << (int i)
-{
-    grow();
-    
-    VariantInit( &v[size_-1] );
-    v[size_-1].vt   = VT_I4 ;
-    v[size_-1].lVal = i ;
-}
-
-void Variants::operator << (double d)
+void Variants::add_as_number(double d)
 {
     grow();
 
@@ -227,4 +218,12 @@ void Variants::add_as_boolean(int n)
     VariantInit( &v[size_-1] );
     v[size_-1].vt = VT_BOOL;
     v[size_-1].boolVal = n ? VARIANT_TRUE : VARIANT_FALSE ;
+}
+
+void Variants::add_as_null()
+{
+    grow();
+
+    VariantInit( &v[size_-1] );
+    v[size_-1].vt = VT_NULL;
 }

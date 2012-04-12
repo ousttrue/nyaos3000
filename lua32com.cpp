@@ -61,15 +61,17 @@ static void lua2variants( lua_State *L , int i , Variants &args )
 {
     switch( lua_type(L,i) ){
     case LUA_TNUMBER:
-        args << lua_tonumber(L,i);
+        args.add_as_number( lua_tonumber(L,i) );
         break;
     case LUA_TBOOLEAN:
-    case LUA_TNIL:
         args.add_as_boolean( lua_toboolean(L,i) );
+        break;
+    case LUA_TNIL:
+        args.add_as_null();
         break;
     case LUA_TSTRING:
     default:
-        args << lua_tostring(L,i);
+        args.add_as_string( lua_tostring(L,i) );
         break;
     }
 }

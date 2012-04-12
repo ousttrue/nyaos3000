@@ -28,10 +28,10 @@ public:
     ~Variants();
 
     operator VARIANTARG*(){ return v; }
-    void operator << ( const char *s );
-    void operator << ( int n );
-    void operator << ( double d );
+    void add_as_string( const char *s );
+    void add_as_number( double d );
     void add_as_boolean( int n );
+    void add_as_null();
     size_t size(){ return size_; }
 };
 
