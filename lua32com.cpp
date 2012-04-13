@@ -8,8 +8,8 @@ extern "C" {
 
 #include "win32com.h"
 
-//#define TRACE(x) puts(x)
-#define TRACE(x)
+// #define DBG(x) (x)
+#define DBG(x)
 
 static void hr_to_lua_message(HRESULT hr,lua_State *L)
 {
@@ -41,7 +41,7 @@ static void set_nyaos_error(lua_State *L,const char *s)
 
 static int destroy_object(lua_State *L)
 {
-    TRACE("[CALL] destroy_object");
+    DBG( puts("[CALL] destroy_object") );
     ActiveXObject **u=static_cast<ActiveXObject**>(
             luaL_checkudata(L,1,"ActiveXObject") );
     delete *u;
@@ -50,7 +50,7 @@ static int destroy_object(lua_State *L)
 
 static int destroy_member(lua_State *L)
 {
-    TRACE("[CALL] destroy_member");
+    DBG( puts("[CALL] destroy_member") );
     ActiveXMember **m=static_cast<ActiveXMember**>(
             luaL_checkudata(L,1,"ActiveXMember"));
     delete *m;
@@ -78,16 +78,16 @@ static void lua2variants( lua_State *L , int i , Variants &args )
 
 static int put_property(lua_State *L)
 {
-    TRACE("[CALL] put_property");
+    DBG( puts("[CALL] put_property") );
     ActiveXObject **u=static_cast<ActiveXObject**>(
             luaL_checkudata(L,1,"ActiveXObject") );
     if( u == NULL ){
-        TRACE("no ActiveXObject");
+        DBG( puts("no ActiveXObject") );
         return 0;
     }
     const char *member_name = lua_tostring(L,2);
     if( member_name == NULL ){
-        TRACE("no member name");
+        DBG( puts("no member name") );
         return 0;
     }
 
@@ -96,6 +96,14 @@ static int put_property(lua_State *L)
 
     (**u).invoke( member_name , DISPATCH_PROPERTYPUT , args , args.size() , result );
     return 0;
+}
+
+static int return_self(lua_State *L)
+{
+    DBG( printf("[CALL] return_self argc=%d\n",lua_gettop(L)) );
+    DBG( printf("lua_type(argc[-1])==%d\n",lua_type(L,-1)) );
+    lua_pushvalue(L,1);
+    return 1;
 }
 
 static int find_member(lua_State *L);
@@ -112,6 +120,8 @@ static void push_activexobject(lua_State *L,ActiveXObject *obj)
     lua_setfield(L,-2,"__index");
     lua_pushcfunction(L,put_property);
     lua_setfield(L,-2,"__newindex");
+    lua_pushcfunction(L,return_self);
+    lua_setfield(L,-2,"__call");
     lua_setmetatable(L,-2);
 }
 
@@ -119,7 +129,6 @@ static int variant2lua( VARIANT &v , lua_State *L )
 {
     if( v.vt == VT_BSTR ){
         char *p=Unicode::b2c( v.bstrVal );
-        // printf("v=[%s](VT_BSTR)\n",p);
         lua_pushstring(L,p);
         delete[]p;
     }else if( v.vt == (VT_BSTR|VT_BYREF) ){
@@ -157,7 +166,7 @@ static int variant2lua( VARIANT &v , lua_State *L )
     }else if( v.vt == (VT_R8|VT_BYREF) ){
         lua_pushnumber(L,*v.pdblVal);
     }else{
-        // printf("vt=[%d]\n",v.vt);
+        DBG( printf("vt=[%d]\n",v.vt) );
         return 0;
     }
     return 1;
@@ -165,7 +174,7 @@ static int variant2lua( VARIANT &v , lua_State *L )
 
 static int call_member(lua_State *L)
 {
-    TRACE("[CALL] call_member");
+    DBG( puts("[CALL] call_member") );
     Variants args;
     VARIANT result; VariantInit(&result);
 
@@ -201,6 +210,7 @@ static int call_member(lua_State *L)
         }
         return 2;
     }
+    DBG( puts("invoke(DISPATCH_PROPERTYGET|DISPATCH_METHOD) succeded.") );
     delete[]error_info;
     return variant2lua(result,L);
 }
@@ -221,7 +231,7 @@ static void push_activexmember(lua_State *L,ActiveXMember *member)
 
 static int find_member(lua_State *L)
 {
-    TRACE("[CALL] find_member");
+    DBG( puts("[CALL] find_member") );
     ActiveXObject **u=static_cast<ActiveXObject**>(
             luaL_checkudata(L,1,"ActiveXObject") );
     if( u == NULL || !(**u).ok() ){
@@ -251,8 +261,11 @@ static int find_member(lua_State *L)
     if( member->invoke( DISPATCH_PROPERTYGET ,
                 args , 0 , result , &hr , &error_info ) != 0 )
     {
+        DBG( printf("invoke('%s',DISPATCH_PROPERTYGET) failed. hr==%0lX\n",
+                    member_name,hr) );
+
         if( hr == DISP_E_MEMBERNOTFOUND || hr == DISP_E_BADPARAMCOUNT ){
-            // member is method 
+            DBG( puts("member is method") );
             push_activexmember(L,member);
             delete[]error_info;
             return 1;
@@ -270,6 +283,8 @@ static int find_member(lua_State *L)
             return 2;
         }
     }else{
+        DBG( printf("invoke('%s',DISPATCH_PROPERTYGET) success. hr==%0lX\n",
+                    member_name,hr) );
         int rc=variant2lua( result , L );
         if( rc != 0 ){
             // member is property
@@ -287,7 +302,7 @@ static int find_member(lua_State *L)
 
 static int new_activex_object(lua_State *L,bool isNewObject)
 {
-    TRACE("[CALL] create_object");
+    DBG( puts("[CALL] create_object") );
     const char *name=lua_tostring(L,1);
     ActiveXObject *obj=new ActiveXObject(name,isNewObject);
     if( obj == NULL ){

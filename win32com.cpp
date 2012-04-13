@@ -51,7 +51,7 @@ ActiveXObject::~ActiveXObject()
     if( pApplication != NULL )
         pApplication->Release();
     if( --instance_count <= 0 )
-        CoUninitialize();
+        OleUninitialize();
 }
 
 ActiveXObject::ActiveXObject(const char *name,bool isNewInstance)
@@ -62,7 +62,7 @@ ActiveXObject::ActiveXObject(const char *name,bool isNewInstance)
     construct_error_ = 0;
 
     if( instance_count++ <= 0 )
-        CoInitialize(NULL);
+        OleInitialize(NULL);
 
     Unicode className(name);
 
