@@ -60,6 +60,23 @@ static int destroy_member(lua_State *L)
 static void lua2variants( lua_State *L , int i , Variants &args )
 {
     switch( lua_type(L,i) ){
+    case LUA_TTABLE:
+        {
+            int n=luaL_len(L,i);
+            DBG( printf("[lua2variants] stack=%d (before)\n",lua_gettop(L)));
+            const char **array=(const char**)malloc(sizeof(const char*)*n);
+            for(int j=0;j<n;j++){
+                lua_pushinteger(L,j+1);
+                lua_gettable(L,i);
+                array[j] = lua_tostring(L,-1);
+                DBG( printf("array[%d]=%s\n",j,array[j]) );
+                lua_pop(L,1);
+            }
+            DBG( printf("[lua2variants] stack=%d (after)\n",lua_gettop(L)));
+            args.add_str_array( n , array );
+            free(array);
+        }
+        break;
     case LUA_TNUMBER:
         args.add_as_number( lua_tonumber(L,i) );
         break;

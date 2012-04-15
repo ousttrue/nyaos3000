@@ -30,6 +30,7 @@ public:
     void add_as_number( double d );
     void add_as_boolean( int n );
     void add_as_null();
+    void add_str_array( int argc , const char **argv );
     size_t size(){ return size_; }
 };
 

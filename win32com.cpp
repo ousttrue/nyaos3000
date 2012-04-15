@@ -5,7 +5,10 @@
 #include <stdlib.h>
 
 #ifdef DEBUG
+#  define DBG(x) (x)
 #  include <stdio.h>
+#else
+#  define DBG(x)
 #endif
 
 BSTR Unicode::c2b(const char *s)
@@ -218,4 +221,32 @@ void Variants::add_as_null()
 {
     grow();
     v[size_-1].vt = VT_NULL;
+}
+
+void Variants::add_str_array( int argc , const char **argv )
+{
+    SAFEARRAYBOUND bound_info={ argc , 0 };
+    SAFEARRAY *array=SafeArrayCreate( VT_BSTR , 1 , &bound_info );
+
+    DBG( puts("[CALLED] SafeArrayCreate") );
+    BSTR *p=NULL;
+    HRESULT hr=SafeArrayAccessData( array , (void**)&p );
+    DBG( puts("[CALLED] SafeArrayAccessData") );
+    if( FAILED(hr) ){
+        DBG( printf("[FAIL] SafeArrayAccessData==%0lX\n",hr) );
+        return;
+    }
+    if( p == NULL ){
+        DBG( printf("[FAIL] SafeArrayAccessData pointor null\n") );
+    }
+    for( int i=0 ; i < argc ; ++i ){
+        DBG( printf("write[%d]='%s'\n",i,argv[i]) );
+        p[i] = Unicode::c2b(argv[i]);
+    }
+    DBG( puts("[CALLED] All c2b") );
+    grow();
+    v[size_-1].vt     = VT_ARRAY | VT_BSTR ;
+    v[size_-1].parray = array;
+    SafeArrayUnaccessData( array );
+    DBG( puts("[CALLED] SafeArrayUnaccessData") );
 }
