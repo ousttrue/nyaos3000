@@ -160,14 +160,17 @@ int ActiveXMember::invoke(
     if( pHr != NULL ){
         *pHr = hr;
     }
+    int rc=0;
     if( FAILED(hr) ){
         if( hr == DISP_E_EXCEPTION && error_info != 0 ){
             *error_info = Unicode::b2c( excepinfo.bstrDescription );
         }
-        return -1;
-    }else{
-        return 0;
+        rc = -1;
     }
+    SysFreeString( excepinfo.bstrDescription );
+    SysFreeString( excepinfo.bstrSource );
+    SysFreeString( excepinfo.bstrHelpFile );
+    return rc;
 }
 
 int ActiveXObject::invoke(
