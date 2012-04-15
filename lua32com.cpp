@@ -57,24 +57,121 @@ static int destroy_member(lua_State *L)
     return 0;
 }
 
+static int how_many_dim( lua_State *L )
+{
+    int rc=1;
+    lua_pushinteger(L,1);
+    lua_gettable(L,-2);
+    if( lua_istable(L,-1) ){
+        rc += how_many_dim(L);
+    }
+    lua_pop(L,1);
+    return rc;
+}
+
+static int how_many_len( lua_State *L , SAFEARRAYBOUND *bound )
+{
+    if( ! lua_istable(L,-1) )
+        return 1;
+    bound->cElements = luaL_len(L,-1);
+    bound->lLbound   = 0;
+    ++bound;
+    lua_pushinteger(L,1);
+    lua_gettable(L,-2);
+    int n=how_many_len(L,bound);
+    lua_pop(L,1);
+    return n+1;
+}
+
+static void reset_safearray(
+        int depth,
+        int maxdepth,
+        long *counter,
+        SAFEARRAYBOUND *bound ,
+        SAFEARRAY *array )
+{
+    for( counter[depth]=0 ;
+            counter[depth] < static_cast<long>(bound[depth].cElements) ;
+            ++counter[depth] )
+    {
+        if( maxdepth == depth ){
+            VARIANT var;
+            VariantInit(&var);
+            var.vt = VT_EMPTY;
+            SafeArrayPutElement( array , counter , &var );
+        }else{
+            reset_safearray( depth+1 , maxdepth , counter , bound , array );
+        }
+    }
+}
+
+static void table2safearray(
+        lua_State *L ,
+        int depth ,
+        int maxdepth ,
+        long *counter ,
+        SAFEARRAYBOUND *bound ,
+        SAFEARRAY *array )
+{
+    for(counter[depth]=0 ;
+            counter[depth] < static_cast<long>(bound[depth].cElements) ;
+            ++counter[depth] )
+    {
+        DBG( printf("[%ld]",counter[depth]) );
+        lua_pushinteger(L,1+counter[depth]);
+        lua_gettable(L,-2);
+        if( maxdepth == depth ){
+            VARIANT var; VariantInit(&var);
+            switch( lua_type(L,-1) ){
+            case LUA_TSTRING:
+                DBG( puts("<STR>") );
+                var.vt      = VT_BSTR ;
+                var.bstrVal = Unicode::c2b( lua_tostring(L,-1) );
+                break;
+            case LUA_TNUMBER:
+                DBG( puts("<NUM>") );
+                var.vt      = VT_R8 ;
+                var.dblVal  = lua_tonumber(L,-1);
+                break;
+            default:
+                DBG( puts("<EMP>") );
+                var.vt      = VT_EMPTY ;
+                break;
+            }
+            SafeArrayPutElement( array , counter , &var );
+            VariantClear( &var );
+        }else{
+            if( lua_istable(L,-1) ){
+                DBG( puts("<TBL>") );
+                table2safearray(L,depth+1,maxdepth,counter,bound,array);
+            }else{
+                DBG( puts("<not TBL>") );
+            }
+        }
+        lua_pop(L,1);
+    }
+}
+
 static void lua2variants( lua_State *L , int i , Variants &args )
 {
     switch( lua_type(L,i) ){
     case LUA_TTABLE:
         {
-            int n=luaL_len(L,i);
-            DBG( printf("[lua2variants] stack=%d (before)\n",lua_gettop(L)));
-            const char **array=(const char**)malloc(sizeof(const char*)*n);
-            for(int j=0;j<n;j++){
-                lua_pushinteger(L,j+1);
-                lua_gettable(L,i);
-                array[j] = lua_tostring(L,-1);
-                DBG( printf("array[%d]=%s\n",j,array[j]) );
-                lua_pop(L,1);
-            }
-            DBG( printf("[lua2variants] stack=%d (after)\n",lua_gettop(L)));
-            args.add_str_array( n , array );
-            free(array);
+            int dim = how_many_dim(L);
+            DBG( printf("max depth=%d\n",dim) );
+            SAFEARRAYBOUND *bound = new SAFEARRAYBOUND[dim];
+            how_many_len(L,bound);
+            long *counter=new long[dim];
+
+            SAFEARRAY *array=SafeArrayCreate(VT_VARIANT,dim,bound);
+
+            reset_safearray(0,dim-1,counter,bound,array);
+            table2safearray(L,0,dim-1,counter,bound,array);
+
+            VARIANT *pvar=args.add_anything();
+            VariantInit(pvar);
+            pvar->vt = VT_VARIANT | VT_ARRAY;
+            pvar->parray = array;
         }
         break;
     case LUA_TNUMBER:
