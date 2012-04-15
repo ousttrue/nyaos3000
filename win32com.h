@@ -16,15 +16,13 @@ public:
     BSTR *operator &(){ return &w; }
     char *toChar(){ return b2c(w); } // To free, delete[]r;
 };
-class UnicodeStack;
 
 class Variants {
     VARIANTARG *v;
     int size_;
-    UnicodeStack *str_stack;
     void grow();
 public:
-    Variants() : v(NULL),size_(0),str_stack(0){}
+    Variants() : v(NULL),size_(0){}
     ~Variants();
 
     operator VARIANTARG*(){ return v; }

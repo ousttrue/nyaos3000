@@ -258,6 +258,7 @@ static int find_member(lua_State *L)
     VARIANT result; VariantInit(&result);
     HRESULT hr;
     char *error_info=0;
+    int rc=0;
     if( member->invoke( DISPATCH_PROPERTYGET ,
                 args , 0 , result , &hr , &error_info ) != 0 )
     {
@@ -267,8 +268,7 @@ static int find_member(lua_State *L)
         if( hr == DISP_E_MEMBERNOTFOUND || hr == DISP_E_BADPARAMCOUNT ){
             DBG( puts("member is method") );
             push_activexmember(L,member);
-            delete[]error_info;
-            return 1;
+            rc = 1;
         }else{
             delete member;
             if( error_info != 0 ){
@@ -280,24 +280,26 @@ static int find_member(lua_State *L)
                 hr_to_lua_message(hr,L);
             }
             set_nyaos_error(L,lua_tostring(L,-1));
-            return 2;
+            rc = 2;
         }
     }else{
         DBG( printf("invoke('%s',DISPATCH_PROPERTYGET) success. hr==%0lX\n",
                     member_name,hr) );
-        int rc=variant2lua( result , L );
+        rc=variant2lua( result , L );
         if( rc != 0 ){
             // member is property
             delete member;
-            delete[]error_info;
-            return rc;
         }else{
             // member is method
             push_activexmember(L,member);
-            delete[]error_info;
-            return 1;
+            rc = 1;
         }
     }
+    delete[]error_info;
+    if( result.vt != VT_DISPATCH ){
+        VariantClear( &result );
+    }
+    return rc;
 }
 
 static int new_activex_object(lua_State *L,bool isNewObject)

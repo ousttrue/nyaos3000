@@ -31,17 +31,14 @@ char *Unicode::b2c(BSTR w)
     return p;
 }
 
-class UnicodeStack : public Unicode {
-    UnicodeStack *next;
-public:
-    UnicodeStack( const char *s , UnicodeStack *n ) : Unicode(s) , next(n){}
-    ~UnicodeStack(){ delete next; }
-};
-
 Variants::~Variants()
 {
-    free(v);
-    delete str_stack;
+    if( v != NULL ){
+        for(int i=0;i<size_;++i){
+            VariantClear( &v[i] );
+        }
+        free(v);
+    }
 }
 
 int ActiveXObject::instance_count = 0;
@@ -190,23 +187,19 @@ int ActiveXObject::invoke(
 void Variants::grow()
 {
     v = static_cast<VARIANTARG*>( realloc(v,++size_*sizeof(VARIANTARG)) );
+    VariantInit( &v[size_-1] );
 }
 
 void Variants::add_as_string(const char *s)
 {
     grow();
-    str_stack=new UnicodeStack(s,str_stack);
-
-    VariantInit( &v[size_-1] );
     v[size_-1].vt = VT_BSTR;
-    v[size_-1].bstrVal = *str_stack;
+    v[size_-1].bstrVal = Unicode::c2b(s);
 }
 
 void Variants::add_as_number(double d)
 {
     grow();
-
-    VariantInit( &v[size_-1] );
     v[size_-1].vt     = VT_R8;
     v[size_-1].dblVal = d;
 }
@@ -214,8 +207,6 @@ void Variants::add_as_number(double d)
 void Variants::add_as_boolean(int n)
 {
     grow();
-
-    VariantInit( &v[size_-1] );
     v[size_-1].vt = VT_BOOL;
     v[size_-1].boolVal = n ? VARIANT_TRUE : VARIANT_FALSE ;
 }
@@ -223,7 +214,5 @@ void Variants::add_as_boolean(int n)
 void Variants::add_as_null()
 {
     grow();
-
-    VariantInit( &v[size_-1] );
     v[size_-1].vt = VT_NULL;
 }
