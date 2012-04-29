@@ -38,8 +38,9 @@ nyaos.exe's option
 -f SCRIPTFILENAME ARG(s)
     load SCRIPTFILENAME and execute it.
     After executing, nyaos.exe shutdown.
-    When SCRIPTFILENAME ends with .lua or .luac ,
-    execute with Lua-interpretor.
+    When SCRIPTFILENAME ends with .lua , .luac or .nua ,
+    execute with Lua-interpretor. You can omit '-f'.
+    (`nyaos foo.lua' equals `nyaos -f foo.lua')
 
 -D
     Debug flag. It equals to statement 'option +debug'.
@@ -1369,9 +1370,10 @@ File/Directory Operation
 History
 =======
 
-3.3.2_0 (2012/04/07)
+3.3.2_0 (2012/04/30)
     - Can call COM-Object from built-in Lua
       (added function: nyaos.create_object , nyaos.get_active_object)
+    - You can write `nyaos foo.lua' as `nyaos -f foo.lua'.
 
 3.3.1_0 (2012/03/02)
     - Enabled replacing by "suffix" command against result replaced by 

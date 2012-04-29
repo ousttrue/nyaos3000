@@ -111,7 +111,7 @@ static int opt_EF( int argc , char **argv , int &i )
     NyaosLua L;
     int n=0;
 
-    if( argv[i][1] == 'E' ){
+    if( argv[i][0] == '-' && argv[i][1] == 'E' ){
         if( luaL_loadstring( L , argv[++i] ) )
             goto errpt;
     }else{
@@ -157,7 +157,7 @@ static int opt_f( int argc , char **argv , int &i )
 	return 2;
     }
     NnString path(argv[i+1]);
-    if( path.endsWith( ".lua" ) || path.endsWith(".luac") ){
+    if( path.endsWith( ".lua" ) || path.endsWith(".luac") || path.endsWith(".nua") ){
         return opt_EF(argc,argv,i);
     }
 
@@ -402,7 +402,15 @@ int main( int argc, char **argv )
             if( rv != 0 )
                 return rv-1;
         }else{
-            nnargv.append( new NnString(argv[i]) );
+            NnString *S0=new NnString(argv[i]);
+            if( S0->endsWith(".lua") || S0->endsWith(".luac") ||
+                    S0->endsWith(".nua") || S0->endsWith(".ny") )
+            {
+                delete S0;
+                --i;
+                return opt_f(argc,argv,i);
+            }
+            nnargv.append( S0 );
         }
     }
 
