@@ -239,6 +239,65 @@ static void push_activexobject(lua_State *L,ActiveXObject *obj)
     lua_setmetatable(L,-2);
 }
 
+static int variant2lua( VARIANT &v , lua_State *L );
+static void safearray2table_sub(
+        SAFEARRAY *safearray ,
+        int depth ,
+        int dim ,
+        long *counter ,
+        long *start ,
+        long *end ,
+        lua_State *L )
+{
+    DBG( putchar('{') );
+    lua_newtable(L);
+    for( counter[depth]=start[depth] ; counter[depth] <= end[depth] ; ++counter[depth] ){
+        DBG( printf("[%ld]=",counter[depth]) );
+        lua_pushinteger(L,counter[depth]);
+        if( depth >= (dim-1) ){
+            VARIANT *p=0;
+            DBG( putchar('*') );
+            HRESULT hr = SafeArrayPtrOfIndex(
+                    safearray,
+                    counter,
+                    (void**)&p);
+            if( FAILED(hr) ){
+                lua_pushnil(L);
+            }else{
+                variant2lua(*p,L);
+            }
+        }else{
+            safearray2table_sub(safearray,depth+1,dim,counter,start,end,L);
+        }
+        lua_settable(L,-3);
+    }
+    DBG( puts("}") );
+}
+
+static void safearray2table( VARIANT &v , lua_State *L )
+{
+    SAFEARRAY *safearray = ( (v.vt & VT_BYREF) ? *v.pparray : v.parray );
+    int dim = SafeArrayGetDim( safearray );
+    long *counter=new long[dim];
+    long *start  =new long[dim];
+    long *end    =new long[dim];
+    for(int i=0;i<dim;++i){
+        SafeArrayGetLBound(safearray,i+1,&start[i]);
+        SafeArrayGetUBound(safearray,i+1,&end[i]);
+        DBG( printf("bound[%d]=%ld..%ld\n",i,start[i],end[i]) );
+    }
+    HRESULT hr = SafeArrayLock(safearray);
+    if( FAILED(hr) ){
+        goto exit;
+    }
+    safearray2table_sub( safearray , 0 , dim , counter , start , end , L );
+    SafeArrayUnlock(safearray);
+exit:
+    delete[]counter;
+    delete[]start;
+    delete[]end;
+}
+
 static int variant2lua( VARIANT &v , lua_State *L )
 {
     if( v.vt == VT_BSTR ){
@@ -279,9 +338,11 @@ static int variant2lua( VARIANT &v , lua_State *L )
         lua_pushnumber(L,v.dblVal);
     }else if( v.vt == (VT_R8|VT_BYREF) ){
         lua_pushnumber(L,*v.pdblVal);
+    }else if( (v.vt & VT_ARRAY) != 0 ){
+        safearray2table( v , L );
     }else{
         DBG( printf("vt=[%d]\n",v.vt) );
-        return 0;
+        lua_pushnil( L );
     }
     return 1;
 }
