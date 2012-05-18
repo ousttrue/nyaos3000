@@ -506,3 +506,26 @@ int com_get_active_object(lua_State *L)
 {
     return new_activex_object(L,false);
 }
+
+static void const_setter(void *L_,const char *name,VARIANT &value)
+{
+    lua_State *L=static_cast<lua_State*>(L_);
+
+    lua_pushstring( L , name );
+    variant2lua( value , L );
+    lua_settable( L , -3 );
+}
+
+int com_const_load(lua_State *L)
+{
+    ActiveXObject **u=static_cast<ActiveXObject**>(
+            luaL_checkudata(L,1,"ActiveXObject") );
+    if( u == NULL ){
+        lua_pushnil(L);
+        lua_pushstring(L,"Invalid ActiveXObject");
+        return 2;
+    }
+    lua_newtable(L);
+    (**u).const_load(L,const_setter);
+    return 1;
+}

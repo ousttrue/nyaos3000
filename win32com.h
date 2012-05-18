@@ -48,6 +48,7 @@ public:
             VARIANT *argv ,
             int argc ,
             VARIANT &result );
+    int const_load(void *L,void (*setter)(void *,const char *,VARIANT &));
 
     int ok() const { return pApplication != NULL ; }
     HRESULT construct_error() const { return construct_error_; }

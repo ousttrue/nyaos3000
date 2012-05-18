@@ -114,6 +114,67 @@ ActiveXObject::ActiveXObject(const char *name,bool isNewInstance)
     }
 }
 
+int ActiveXObject::const_load(
+        void *L ,
+        void (*setter)(void *L,const char *,VARIANT &) )
+{
+    ITypeInfo *pTypeInfo;
+    LCID lcid = LOCALE_SYSTEM_DEFAULT;
+
+    HRESULT hr=pApplication->GetTypeInfo(0,lcid,&pTypeInfo);
+    if( FAILED(hr) )
+        return -1;
+
+    ITypeLib *pTypeLib;
+    unsigned int index;
+    hr=pTypeInfo->GetContainingTypeLib(&pTypeLib,&index);
+    pTypeInfo->Release();
+
+    int n=pTypeLib->GetTypeInfoCount();
+    for( int i=0 ; i < n ; i++ ){
+        hr = pTypeLib->GetTypeInfo(i,&pTypeInfo);
+        if( FAILED(hr) )
+            continue;
+        TYPEATTR *pTypeAttr;
+        pTypeInfo->GetTypeAttr(&pTypeAttr);
+        if( FAILED(hr) ){
+            pTypeInfo->Release();
+            continue;
+        }
+        for( int j=0 ; j < pTypeAttr->cVars ; j++ ){
+            VARDESC *pVarDesc;
+            hr = pTypeInfo->GetVarDesc(j,&pVarDesc);
+            if( FAILED(hr) )
+                continue;
+            if( pVarDesc->varkind == VAR_CONST &&
+                    ( pVarDesc->wVarFlags & (
+                        VARFLAG_FHIDDEN |
+                        VARFLAG_FRESTRICTED |
+                        VARFLAG_FNONBROWSABLE ) )==0 )
+            {
+                BSTR bstr;
+                unsigned int len;
+
+                hr = pTypeInfo->GetNames(pVarDesc->memid,&bstr,1,&len);
+                if( FAILED(hr) || len==0 || bstr==0 )
+                    continue;
+                
+                char *name=Unicode::b2c(bstr);
+                SysFreeString(bstr);
+
+                (*setter)(L , name , *pVarDesc->lpvarValue );
+
+                delete[]name;
+            }
+
+        }
+        pTypeInfo->Release();
+    }
+    pTypeLib->Release();
+    return 0;
+}
+
+
 ActiveXMember::ActiveXMember( ActiveXObject &instance , const char *name ) : instance_(instance)
 {
     Unicode methodName(name);
