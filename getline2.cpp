@@ -69,6 +69,16 @@ static int expand_environemnt_variable(
     }
 }
 
+static int nondir_filter( NnDir &dir , void *xt )
+{
+    if( *static_cast<int*>(xt) == 0 )
+        return 1;
+    if( dir.isDir() )
+        return 1;
+    return 0;
+}
+
+
 /* 補完候補リストを作成する.
  *      region  パスを含む範囲(引用符含む)
  *      array   候補リストを入れる先
@@ -77,9 +87,22 @@ static int expand_environemnt_variable(
  */
 int GetLine::makeCompletionList( const NnString &region, NnVector &array )
 {
-    return makeCompletionListCore( region , array );
+    /* ディレクトリを排除するコマンドかどうかを判定する */
+    int directory_only=0;
+    static const char *command_for_dironly[]={
+        "cd ","pushd ",NULL
+    };
+    for(const char **p=command_for_dironly ; *p != NULL ; ++p ){
+        if( strncmp( buffer.chars() , *p , strlen(*p) )==0 ){
+            directory_only = 1;
+            break;
+        }
+    }
+    return makeCompletionListCore( region , array ,
+            nondir_filter , &directory_only);
 }
-int GetLine::makeCompletionListCore( const NnString &region, NnVector &array )
+int GetLine::makeCompletionListCore( const NnString &region, NnVector &array ,
+        int (*filter)(NnDir &,void *xt),void *xt )
 {
     int i;
     NnString path;
@@ -163,6 +186,9 @@ int GetLine::makeCompletionListCore( const NnString &region, NnVector &array )
         if( strnicmp( dir.name() , path.chars() +(lastroot+1)
                     , path.length()-(lastroot+1) ) != 0 
 	    && ! has_wildcard )
+            continue;
+
+        if( filter != NULL && (*filter)(dir,xt)==0 )
             continue;
 
         NnStringIC *name=new NnStringIC(basename);

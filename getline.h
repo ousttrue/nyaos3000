@@ -112,6 +112,8 @@ public:
     static void init();
 };
 
+class NnDir;
+
 class GetLine {
     friend class KeyFunctionEdit;
 public:
@@ -208,7 +210,8 @@ public:
     Status operator() ( NnString &result );
     const char *operator() ( const char *defaultString=0 );
 
-    static int makeCompletionListCore( const NnString &s , NnVector & );
+    static int makeCompletionListCore( const NnString &s , NnVector & ,
+            int (*)(NnDir &,void *xt)=0,void *xt=0 );
 };
 
 class NnHash;
