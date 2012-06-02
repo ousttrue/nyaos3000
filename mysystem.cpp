@@ -116,20 +116,23 @@ static int mySpawn(
 
     NnString cmdline;
     const char *comspec = getenv("COMSPEC");
+    const char *tailchar="";
 
     if( comspec != NULL && (
                 fullpath_cmdname.iendsWith(".cmd") ||
                 fullpath_cmdname.iendsWith(".bat") ) )
     {
-        cmdline << comspec << " /C ";
+        cmdline << comspec << " /S /C \"";
         fullpath_cmdname = cmdname = comspec;
+        tailchar = "\"";
     }
 
     for(int i=0 ; i < args.size() ; ++i ){
         cmdline << args.const_at(i)->repr() << ' ';
     }
     cmdline.chop();
-
+    cmdline << tailchar;
+    
     lua_filter( fullpath_cmdname , cmdline );
 
 #ifdef __EMX__
