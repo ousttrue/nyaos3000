@@ -122,7 +122,11 @@ static int mySpawn(
                 fullpath_cmdname.iendsWith(".cmd") ||
                 fullpath_cmdname.iendsWith(".bat") ) )
     {
+#ifdef NYACUS
         cmdline << comspec << " /S /C \"";
+#else
+        cmdline << comspec << " /C \"";
+#endif
         fullpath_cmdname = cmdname = comspec;
         tailchar = "\"";
     }
