@@ -1239,6 +1239,13 @@ Tools
     local word=nyaos.get_active_object("Word.Application")
     word:Quit()
 
+* nyaos.const_load - import constants from COM (only on Windows)
+
+    local excel=nyaos.create_object("Excel.Application")
+    local excel_const=nyaos.const_load(excel)
+    for key,val in pairs(excel_const) do
+        print(key.."="..val)
+    end
 - nyaos.getkey() - get keycode typed
 
     lua_e "print(nyaos.getkey())"
@@ -1369,6 +1376,13 @@ File/Directory Operation
 
 History
 =======
+
+3.3.3_0 (2012/06/03)
+    - Complete only directory when the command is CD or PUSHD.
+    - Lua: nyaos.const_load() which imports constants from COM
+    - Fix problem: could not execute a batchfile when both the 
+      batchfile's name and argument are enclosed in double-quotation.
+      (for example: "foo.bat" "arg1")
 
 3.3.2_0 (2012/04/30)
     - Can call COM-Object from built-in Lua

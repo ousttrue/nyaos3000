@@ -1415,6 +1415,14 @@ NYAOS の直接の動作には影響しませんが、ツールとして次のような関数を提供しています
     local word=nyaos.get_active_object("Word.Application")
     word:Quit()
 
+* nyaos.const_load - COM より定数を読み込む(Windowsのみ)
+
+    local excel=nyaos.create_object("Excel.Application")
+    local excel_const=nyaos.const_load(excel)
+    for key,val in pairs(excel_const) do
+        print(key.."="..val)
+    end
+
 * nyaos.getkey - 一文字キー入力を行う
 
     lua_e "print(nyaos.getkey())"
@@ -1590,6 +1598,12 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.3.3_0 (2012/06/03)
+    - cd , pushd で、ディレクトリだけを補完させるようにした。
+    - COM の定数読み込みを行う、nyaos.const_load を実装
+    - バッチファイル実行時に、実行ファイル名と引数の両方をダブルクォート
+      で囲むと正しく実行できない問題を修正(例: "foo.bat" "arg1")
 
 3.3.2_0 (2012/04/30)
     - 内蔵Luaから、COMオブジェクトを呼び出せるようにした(Windowsのみ)
