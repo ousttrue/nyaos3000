@@ -2603,5 +2603,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     craftware 様      Dice様               tyru 様
     nocd5 様          wantora 様           mattn(@mattn_jp)様
     Akinori Hattori(@hattya)様             gocho(@gocho)様
+    Yohei Endo(@yoheie)様
 
 この場を借りて、お礼申し上げます。ありがとうございました。

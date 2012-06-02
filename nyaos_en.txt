@@ -1739,4 +1739,5 @@ Thanks to...
     thinca              , Shougo            , Saitou            ,
     craftware           , Dice              , tyru              ,
     nocd5               , wantora           , mattn(@mattn_jp)  ,
-    Akinori Hattori(@hattya)                , gocho(@gocho)
+    Akinori Hattori(@hattya)                , gocho(@gocho)     ,
+    Yohei Endo(@yoheie)—l
