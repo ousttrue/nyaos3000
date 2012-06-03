@@ -22,7 +22,7 @@ ifeq ($(OS),Windows_NT)
 
 dynamic_link :
 	$(MAKE) CFLAGS="$(CCC) -O3 -Wall -I$(DLUAPATH)/include" O=o \
-		LDFLAGS="-s -lole32 -luuid -llua52 -static -lstdc++ -L$(DLUAPATH)" nyaos.exe
+		LDFLAGS="-s -lole32 -loleaut32 -luuid -llua52 -static -lstdc++ -L$(DLUAPATH)" nyaos.exe
 
 lua :
 	$(MAKE) -C $(L) generic
