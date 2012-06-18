@@ -1377,6 +1377,11 @@ File/Directory Operation
 History
 =======
 
+3.3.3_1 (2012/06/18)
+    - Fix: freeze at executing the script with `nyaos -f FILENAME'
+      and FILENAME's code is `lua_e "print(io.read())"'
+      (on Windows only)
+
 3.3.3_0 (2012/06/03)
     - Complete only directory when the command is CD or PUSHD.
     - Lua: nyaos.const_load() which imports constants from COM
@@ -1740,4 +1745,4 @@ Thanks to...
     craftware           , Dice              , tyru              ,
     nocd5               , wantora           , mattn(@mattn_jp)  ,
     Akinori Hattori(@hattya)                , gocho(@gocho)     ,
-    Yohei Endo(@yoheie)—l
+    Yohei Endo(@yoheie) , pepperP/Pink(@mugyu)

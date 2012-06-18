@@ -1599,6 +1599,10 @@ dir/w がエラーになります
 変更履歴
 ========
 
+3.3.3_1 (2012/06/18)
+    - 「lua_e "print(io.read())"」という内容のファイルを nyaos -f で
+       実行するとフリーズする問題を修正 (Windows のみ)
+
 3.3.3_0 (2012/06/03)
     - cd , pushd で、ディレクトリだけを補完させるようにした。
     - COM の定数読み込みを行う、nyaos.const_load を実装
@@ -2603,6 +2607,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     craftware 様      Dice様               tyru 様
     nocd5 様          wantora 様           mattn(@mattn_jp)様
     Akinori Hattori(@hattya)様             gocho(@gocho)様
-    Yohei Endo(@yoheie)様
+    Yohei Endo(@yoheie)様                  pepperP/Pink(@mugyu)様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
