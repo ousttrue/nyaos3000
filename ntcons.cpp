@@ -54,7 +54,6 @@ int getch_replacement_for_msvc();
 
 static HANDLE   hStdin = (HANDLE )-1L;
 static HANDLE   hStdout = (HANDLE )-1L;
-static BOOL     bStdioInitialized;
 static BOOL     bStdinIsConsole;
 
 static DWORD    default_console_mode = ~0u;
@@ -71,11 +70,14 @@ void Console::restore_default_console_mode()
 /* APIによる標準入出力の初期化 */
 static void initializeStdio()
 {
+    static bool firstcalled=true;
+
     hStdin  = GetStdHandle(STD_INPUT_HANDLE);   /* 標準入力ハンドルの取得 */
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);  /* 標準出力ハンドルの取得 */
-    if (!bStdioInitialized) {
+    if( firstcalled ){
+        firstcalled = false;
+
         DWORD dw;
-        bStdioInitialized = TRUE;
         /* stdin リダイレクト時の対処（stdinをunbuffered mode に）*/
         setvbuf(stdin, NULL, _IONBF, 0);
         setmode(fileno(stdin), O_BINARY);
@@ -86,33 +88,25 @@ static void initializeStdio()
                 default_console_mode = dw;
                 atexit( Console::restore_default_console_mode );
             }
-            dw &= ~(ENABLE_PROCESSED_INPUT |
-                    ENABLE_LINE_INPUT |
-                    ENABLE_ECHO_INPUT |
-                    ENABLE_INSERT_MODE |
-                    ENABLE_QUICK_EDIT_MODE);
-            SetConsoleMode(hStdin, dw);
-            /* 終了時は元の値に戻したほうがいいかも… */
         }
     }
 }
 
 void Console::enable_ctrl_c()
 {
-    DWORD dw;
-
     initializeStdio();
-    GetConsoleMode(hStdin, &dw);
-    SetConsoleMode(hStdin, dw | ENABLE_PROCESSED_INPUT );
+    SetConsoleMode(hStdin, default_console_mode );
 }
 
 void Console::disable_ctrl_c()
 {
-    DWORD dw;
-
     initializeStdio();
-    GetConsoleMode(hStdin, &dw);
-    SetConsoleMode(hStdin, dw & ~ENABLE_PROCESSED_INPUT );
+    SetConsoleMode(hStdin, default_console_mode 
+                              & ~ENABLE_PROCESSED_INPUT 
+                              & ~ENABLE_LINE_INPUT
+                              & ~ENABLE_ECHO_INPUT
+                              & ~ENABLE_INSERT_MODE
+                              & ~ENABLE_QUICK_EDIT_MODE);
 }
 
 void Console::getLocate(int &x,int &y)
