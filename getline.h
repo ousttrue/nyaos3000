@@ -233,6 +233,9 @@ public:
     void end();
     int prompt();
     void clear();
+#ifdef NYACUS
+    int title();
+#endif
 
     void setPrompt( const NnString &p ){ prompt_ = p; }
 

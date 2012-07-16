@@ -310,6 +310,9 @@ void DosShell::start()
         this->cursor_on_ = "\x1B[>5l";
     }
     prompt();
+#ifdef NYACUS
+    title();
+#endif
 }
 
 /* 編集終了フック */
@@ -469,3 +472,43 @@ void DosShell::clear()
 {
     conOut << clear_ ;
 }
+
+#ifdef NYACUS
+/* タイトルを設定する.
+ * return タイトルの桁数(バイト数ではない=>エスケープシーケンスを含まない)
+ */
+int DosShell::title()
+{
+    char title_[1024];
+    GetConsoleTitle( title_ , sizeof(title_) );
+
+    const char *sp=title_;
+    NnString title;
+
+    NyaosLua L("title");
+    if( lua_isfunction(L,-1) ){
+        lua_pushstring(L,sp && *sp ? sp : "");
+        if( lua_pcall(L,1,2,0) == 0 ){
+            if( lua_isnil(L,-2) ){
+                /* nil ⇒ タイトルに変更なし */
+                eval_dollars_sequence( sp , title );
+            }else if( lua_toboolean(L,-2) ){
+                /* true,"文字列" ⇒ $マクロを評価して表示 */
+                eval_dollars_sequence( lua_tostring(L,-1) , title );
+            }else{
+                /* false,"文字列" ⇒ $マクロを評価しないで表示 */
+                title = lua_tostring(L,-1);
+            }
+        }else{
+            conErr << lua_tostring(L,1) << "\n";
+            eval_dollars_sequence( sp , title );
+        }
+    }else{
+        eval_dollars_sequence( sp , title );
+    }
+
+    int title_size = strlenNotEscape( title.chars() );
+    SetConsoleTitle(title.chars());
+    return title_size;
+}
+#endif

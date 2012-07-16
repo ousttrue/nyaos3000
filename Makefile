@@ -1,5 +1,5 @@
 # for static link
-LUAPATH=../lua-5.2.0
+LUAPATH=../lua-5.2.1
 L=$(LUAPATH)/src/
 
 # for dynamic link
