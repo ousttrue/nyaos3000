@@ -618,16 +618,6 @@ Status NyadosShell::readcommand( NnString &buffer )
 	NnString temp;
 	Status rc;
 
-#ifdef NYACUS
-	NnObject *val;
-	NnString title( getEnv("TITLE") );
-	if( title.length() != 0 ){
-	    SetConsoleTitle( title.chars() );
-	}else if( (val=properties.get("title")) != NULL ){
-	    SetConsoleTitle( (*(NnString*)val).chars() );
-	}
-#endif
-
 	/* ç≈èâÇÃÇPçséÊìæ */
 	for(;;){
 	    rc=readline( current );

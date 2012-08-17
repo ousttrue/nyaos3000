@@ -474,41 +474,41 @@ void DosShell::clear()
 }
 
 #ifdef NYACUS
-/* タイトルを設定する.
- * return タイトルの桁数(バイト数ではない=>エスケープシーケンスを含まない)
- */
-int DosShell::title()
+/* タイトルを設定する. */
+void DosShell::title()
 {
-    char title_[1024];
-    GetConsoleTitle( title_ , sizeof(title_) );
-
-    const char *sp=title_;
-    NnString title;
-
     NyaosLua L("title");
     if( lua_isfunction(L,-1) ){
-        lua_pushstring(L,sp && *sp ? sp : "");
+        char title_[1024];
+        Console::getConsoleTitle( title_ , sizeof(title_) );
+        lua_pushstring(L,title_);
         if( lua_pcall(L,1,2,0) == 0 ){
-            if( lua_isnil(L,-2) ){
-                /* nil ⇒ タイトルに変更なし */
-                eval_dollars_sequence( sp , title );
-            }else if( lua_toboolean(L,-2) ){
+            if( lua_toboolean(L,-2) ){
                 /* true,"文字列" ⇒ $マクロを評価して表示 */
+                NnString title;
                 eval_dollars_sequence( lua_tostring(L,-1) , title );
-            }else{
+                Console::setConsoleTitle( title.chars() );
+            }else if( ! lua_isnil(L,-2) ){
                 /* false,"文字列" ⇒ $マクロを評価しないで表示 */
-                title = lua_tostring(L,-1);
+                Console::setConsoleTitle( lua_tostring(L,-1) );
             }
         }else{
             conErr << lua_tostring(L,1) << "\n";
-            eval_dollars_sequence( sp , title );
         }
     }else{
-        eval_dollars_sequence( sp , title );
+        const char *t1=getEnv("TITLE",NULL);
+        NnObject *t2;
+        NnString title;
+        if( t1 != NULL ){
+            eval_dollars_sequence( t1 , title );
+            Console::setConsoleTitle( title.chars() );
+        }else if( (t2=properties.get("title")) != NULL ){
+            NnString *t3=dynamic_cast<NnString*>( t2 );
+            if( t3 != NULL ){
+                eval_dollars_sequence( t3->chars() , title );
+                Console::setConsoleTitle( title.chars() );
+            }
+        }
     }
-
-    int title_size = strlenNotEscape( title.chars() );
-    SetConsoleTitle(title.chars());
-    return title_size;
 }
 #endif

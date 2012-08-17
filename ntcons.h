@@ -26,6 +26,7 @@ public:
     static void readClipBoard( NnString &buffer );
     static void readTextVram( int x , int y , char *buffer , int size );
     static void setConsoleTitle( const char *s );
+    static void getConsoleTitle( char *s , size_t size );
 };
 
 #endif

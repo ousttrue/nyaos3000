@@ -234,7 +234,7 @@ public:
     int prompt();
     void clear();
 #ifdef NYACUS
-    int title();
+    void title();
 #endif
 
     void setPrompt( const NnString &p ){ prompt_ = p; }
