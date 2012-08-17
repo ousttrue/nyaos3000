@@ -450,7 +450,7 @@ unsigned int Console::getShiftKey()
 }
 #endif
 
-void Console::getConsoleTitle( char *s , size_t size )
+void Console::getConsoleTitle( char *s , int size )
 {
 #ifdef NYACUS
     GetConsoleTitle( s , size );
