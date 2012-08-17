@@ -1,11 +1,9 @@
 #ifndef NNLUA_HEADER
 #define NNLUA_HEADER
 
-extern "C" {
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
-}
 
 class NnLua{
     private:

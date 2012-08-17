@@ -3,11 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern "C" {
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
-}
+
 #include "nndir.h"
 
 const static char NYAOS_OPENDIR[] = "nyaos_opendir";
