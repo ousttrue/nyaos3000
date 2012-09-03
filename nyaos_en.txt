@@ -802,6 +802,33 @@ Dynamic prompt by Lua
         Print result value of previous executed commands as prompt.
 
 
+WINDOW TITLE
+============
+
+You can change window title with Lua-function, environment-variable,
+or option statement.
+
+Lua-function
+------------
+
+    lua_e "
+        function nyaos.title()
+            return false,'TITLE-STRING'
+        end
+    "
+
+To change 'false' to 'true', you can use macros like %PROMPT%.
+
+
+Environment-variable
+--------------------
+    set TITLE=TITLE-STRING
+
+option statement
+----------------
+    option title TITLE-STRING
+
+
 MULTI-LINE-STATEMENT
 ====================
 
