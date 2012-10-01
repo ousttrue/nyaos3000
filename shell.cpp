@@ -943,6 +943,7 @@ int cmd_pwd     ( NyadosShell & , const NnString & );
 int cmd_folder  ( NyadosShell & , const NnString & );
 int cmd_lua_e   ( NyadosShell & , const NnString & );
 int cmd_function_list( NyadosShell & , const NnString & );
+int cmd_cls     ( NyadosShell & , const NnString & );
 
 int cmd_eval( NyadosShell &shell , const NnString &argv )
 {
@@ -962,6 +963,7 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "alias"   , &cmd_alias    },
 	{ "bindkey" , &cmd_bindkey  },
 	{ "cd"	    , &cmd_chdir    },
+        { "cls"     , &cmd_cls      },
 	{ "dirs"    , &cmd_dirs     },
 	{ "else"    , &cmd_else     },
 	{ "endif"   , &cmd_endif    },

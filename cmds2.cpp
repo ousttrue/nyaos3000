@@ -9,6 +9,7 @@
 #include "getline.h"
 #include "shell.h"
 #include "nua.h"
+#include "ntcons.h"
 
 int cmd_bindkey( NyadosShell &shell, const NnString &argv )
 {
@@ -421,5 +422,11 @@ int cmd_exit( NyadosShell & , const NnString & )
 int cmd_echoOut( NyadosShell & , const NnString &argv )
 {
     conOut << argv << '\n';
+    return 0;
+}
+
+int cmd_cls( NyadosShell & , const NnString & )
+{
+    Console::clear();
     return 0;
 }
