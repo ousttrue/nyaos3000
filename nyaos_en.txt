@@ -242,6 +242,11 @@ cd
   * 'cd --basedir XXX' same as 'cd `basedir XXX`'
   * able to change directory pointed shortcut(*.lnk) file.
 
+cls
+---
+
+clear screen.
+
 dirs
 ----
 
@@ -1404,6 +1409,11 @@ File/Directory Operation
 History
 =======
 
+3.3.4_0 (2012/10/01)
+    - Can change Window's title (on Windows only)
+      (merge @nocd5's code)
+    - build-in cls command.
+
 3.3.3_1 (2012/06/18)
     - Fix: freeze at executing the script with `nyaos -f FILENAME'
       and FILENAME's code is `lua_e "print(io.read())"'
@@ -1773,3 +1783,4 @@ Thanks to...
     nocd5               , wantora           , mattn(@mattn_jp)  ,
     Akinori Hattori(@hattya)                , gocho(@gocho)     ,
     Yohei Endo(@yoheie) , pepperP/Pink(@mugyu)
+    Martin Hason

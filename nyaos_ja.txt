@@ -346,6 +346,12 @@ cd
 ショートカットの指すディレクトリへ移動します。拡張子 .lnk は必須です。
 
 
+cls
+---
+
+画面をクリアします。
+
+
 dirs
 ----
 
@@ -1627,6 +1633,11 @@ dir/w がエラーになります
 変更履歴
 ========
 
+3.3.4_0 (2012/10/01)
+    - ウインドウタイトルを変更できるようになった(Windowsのみ)
+      (@nocd5 氏コードマージ)
+    - 内蔵 cls コマンド
+
 3.3.3_1 (2012/06/18)
     - 「lua_e "print(io.read())"」という内容のファイルを nyaos -f で
        実行するとフリーズする問題を修正 (Windows のみ)
@@ -2636,5 +2647,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     nocd5 様          wantora 様           mattn(@mattn_jp)様
     Akinori Hattori(@hattya)様             gocho(@gocho)様
     Yohei Endo(@yoheie)様                  pepperP/Pink(@mugyu)様
+    Martin Hason 様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
