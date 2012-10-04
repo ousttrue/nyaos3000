@@ -1413,6 +1413,7 @@ History
     - Can change Window's title (on Windows only)
       (merge @nocd5's code)
     - build-in cls command.
+    - If ~/_nya and ./_nya are the same file, not load them twice.
 
 3.3.3_1 (2012/06/18)
     - Fix: freeze at executing the script with `nyaos -f FILENAME'
