@@ -138,10 +138,16 @@ static void set_rcfname_for_Lua( const char *fname )
 /* rcfname_ Ç _nya Ç∆ÇµÇƒåƒÇ—èoÇ∑ */
 void callrc( const NnString &rcfname_ , const NnVector &argv )
 {
+    static NnHash already_called;
+
     if( access( rcfname_.chars() , 0 ) != 0 ){
         /* printf( "%s: not found.\n",rcfname_.chars() ); */
         return;
     }
+    NnString rcfname_upper(rcfname_); rcfname_upper.upcase();
+    if( already_called.get(rcfname_upper) != NULL )
+        return;
+    already_called.put(rcfname_upper,new NnObject());
 
     rcfname = rcfname_;
     rcfname.slash2yen();
