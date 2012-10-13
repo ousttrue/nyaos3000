@@ -13,7 +13,7 @@ static void chg_tilde()
 {
     int i;
     for( i=1 ; i <= 9 ; ++i ){
-	char no[]={ '0' + i , '\0' };
+	char no[]={ static_cast<char>('0' + i) , '\0' };
 	int n=dirstack.size()-i;
 	if( n >= 0 ){
 	    NnDir::specialFolder.put( no , ((NnString*)dirstack.at(n))->clone() );

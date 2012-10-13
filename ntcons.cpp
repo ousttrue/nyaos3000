@@ -370,7 +370,7 @@ void Console::readTextVram( int x , int y , char *buffer , int n )
 #ifdef NYACUS
     if (hStdout == (HANDLE )-1L)
 	initializeStdio();
-    COORD cursor={ x , y };
+    COORD cursor={ static_cast<short>(x) , static_cast<short>(y) };
     DWORD size;
     ::ReadConsoleOutputCharacter( hStdout, buffer , n , cursor , &size );
 #else
