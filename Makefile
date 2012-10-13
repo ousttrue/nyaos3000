@@ -5,29 +5,28 @@ L=$(LUAPATH)/src/
 # for dynamic link
 DLUAPATH=../lua-5.2_Win32_dllw4_lib
 
-CC=gcc
 RM=cmd /c del
-CCC=
 
 .SUFFIXES : .cpp .obj .exe .h .res .rc .cpp .h .o
+
 .cpp.obj :
-	$(CC) $(CFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) -c $<
 .cpp.o :
-	$(CC) $(CFLAGS) -c $<
+	$(CXX) $(CXXFLAGS) -c $<
 
 all :
 ifeq ($(OS),Windows_NT)
-	$(MAKE) CFLAGS="$(CCC) -O3 -Wall -I$(LUAPATH)/src" O=o \
-		LDFLAGS="-s -lole32 -loleaut32 -luuid -llua -static -lstdc++ -L$(LUAPATH)/src" nyaos.exe
+	$(MAKE) CXXFLAGS="-O3 -Wall -I$(LUAPATH)/src" O=o \
+		LDFLAGS="-s -lole32 -loleaut32 -luuid -llua -static -L$(LUAPATH)/src" nyaos.exe
 
 dynamic_link :
-	$(MAKE) CFLAGS="$(CCC) -O3 -Wall -I$(DLUAPATH)/include" O=o \
-		LDFLAGS="-s -lole32 -loleaut32 -luuid -llua52 -static -lstdc++ -L$(DLUAPATH)" nyaos.exe
+	$(MAKE) CXXFLAGS="-O3 -Wall -I$(DLUAPATH)/include" O=o \
+		LDFLAGS="-s -lole32 -loleaut32 -luuid -llua52 -static -L$(DLUAPATH)" nyaos.exe
 
 lua :
 	$(MAKE) -C $(L) generic MYCFLAGS="-fno-omit-frame-pointer"
 else
-	$(MAKE) CFLAGS="$(CCC) -O2 -I$(LUAPATH)/src -Zomf -Zsys" O=obj LDFLAGS="$(L)lapi.o $(L)lcode.o $(L)lctype.o $(L)ldebug.o $(L)ldo.o $(L)ldump.o $(L)lfunc.o $(L)lgc.o $(L)llex.o $(L)lmem.o $(L)lobject.o $(L)lopcodes.o $(L)lparser.o $(L)lstate.o $(L)lstring.o $(L)ltable.o $(L)ltm.o $(L)lundump.o $(L)lvm.o $(L)lzio.o $(L)lauxlib.o $(L)lbaselib.o $(L)lbitlib.o $(L)lcorolib.o $(L)ldblib.o $(L)liolib.o $(L)lmathlib.o $(L)loslib.o $(L)lstrlib.o $(L)ltablib.o $(L)loadlib.o $(L)linit.o -lstdcpp" nyaos.exe
+	$(MAKE) CXXFLAGS="-O2 -I$(LUAPATH)/src -Zomf -Zsys" O=obj LDFLAGS="$(L)lapi.o $(L)lcode.o $(L)lctype.o $(L)ldebug.o $(L)ldo.o $(L)ldump.o $(L)lfunc.o $(L)lgc.o $(L)llex.o $(L)lmem.o $(L)lobject.o $(L)lopcodes.o $(L)lparser.o $(L)lstate.o $(L)lstring.o $(L)ltable.o $(L)ltm.o $(L)lundump.o $(L)lvm.o $(L)lzio.o $(L)lauxlib.o $(L)lbaselib.o $(L)lbitlib.o $(L)lcorolib.o $(L)ldblib.o $(L)liolib.o $(L)lmathlib.o $(L)loslib.o $(L)lstrlib.o $(L)ltablib.o $(L)loadlib.o $(L)linit.o -lstdcpp" nyaos.exe
 
 lua :
 	$(MAKE) -C $(L) MYCFLAGS="-Zomf -Zsys -fno-omit-frame-pointer" o
@@ -53,7 +52,7 @@ nyaos.exe : $(OBJS) nyacusrc.$(O)
 else
 nyaos.exe : $(OBJS)
 endif
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 # ƒƒCƒ“ƒ‹[ƒ`ƒ“
 nyados.$(O)   : nyados.cpp   nnstring.h getline.h
