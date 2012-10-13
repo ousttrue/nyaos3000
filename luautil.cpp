@@ -3,9 +3,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifndef LUA_IS_COMPILED_AS_CPP
+extern "C" {
+#endif
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
+#ifndef LUA_IS_COMPILED_AS_CPP
+}
+#endif
 
 #include "nndir.h"
 

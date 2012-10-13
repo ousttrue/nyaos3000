@@ -25,12 +25,12 @@ dynamic_link :
 		LDFLAGS="-s -lole32 -loleaut32 -luuid -llua52 -static -lstdc++ -L$(DLUAPATH)" nyaos.exe
 
 lua :
-	$(MAKE) -C $(L) generic MYCFLAGS="-fno-omit-frame-pointer -x c++" MYLIBS=-lstdc++
+	$(MAKE) -C $(L) generic MYCFLAGS="-fno-omit-frame-pointer"
 else
 	$(MAKE) CFLAGS="$(CCC) -O2 -I$(LUAPATH)/src -Zomf -Zsys" O=obj LDFLAGS="$(L)lapi.o $(L)lcode.o $(L)lctype.o $(L)ldebug.o $(L)ldo.o $(L)ldump.o $(L)lfunc.o $(L)lgc.o $(L)llex.o $(L)lmem.o $(L)lobject.o $(L)lopcodes.o $(L)lparser.o $(L)lstate.o $(L)lstring.o $(L)ltable.o $(L)ltm.o $(L)lundump.o $(L)lvm.o $(L)lzio.o $(L)lauxlib.o $(L)lbaselib.o $(L)lbitlib.o $(L)lcorolib.o $(L)ldblib.o $(L)liolib.o $(L)lmathlib.o $(L)loslib.o $(L)lstrlib.o $(L)ltablib.o $(L)loadlib.o $(L)linit.o -lstdcpp" nyaos.exe
 
 lua :
-	$(MAKE) -C $(L) MYCFLAGS="-Zomf -Zsys -fno-omit-frame-pointer -x c++" MYLIBS="-lstdc++" o
+	$(MAKE) -C $(L) MYCFLAGS="-Zomf -Zsys -fno-omit-frame-pointer" o
 endif
 
 

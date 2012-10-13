@@ -1,9 +1,15 @@
 #ifndef NNLUA_HEADER
 #define NNLUA_HEADER
 
+#ifndef LUA_IS_COMPILED_AS_CPP
+extern "C" {
+#endif
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
+#ifndef LUA_IS_COMPILED_AS_CPP
+}
+#endif
 
 class NnLua{
     private:
