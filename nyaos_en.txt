@@ -1409,11 +1409,12 @@ File/Directory Operation
 History
 =======
 
-3.3.4_0 (2012/10/01)
+3.3.4_0 (2012/10/14)
     - Can change Window's title (on Windows only)
       (merge @nocd5's code)
     - build-in cls command.
     - If ~/_nya and ./_nya are the same file, not load them twice.
+    - Remove warnings at compiling with g++ 4.7.0
 
 3.3.3_1 (2012/06/18)
     - Fix: freeze at executing the script with `nyaos -f FILENAME'
