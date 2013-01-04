@@ -3,7 +3,6 @@
 #include <string.h>
 #include <time.h>
 
-#include "config.h"
 #include "ntcons.h"
 #include "nnhash.h"
 #include "getline.h"
@@ -132,7 +131,11 @@ void eval_dollars_sequence( const char *sp , NnString &result )
                     result.addValueOf(thetime->tm_sec) ;
                     break;
                 case 'V':
-                    result << SHELL_NAME ; break;
+#ifdef __EMX__
+                    result << "NYAOS2" ; break;
+#else
+                    result << "NYACUS" ; break;
+#endif
                 case 'W':{
                     NnString pwd;
                     NnDir::getcwd(pwd);

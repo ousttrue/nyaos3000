@@ -1,5 +1,3 @@
-#include "config.h"
-
 #include <ctype.h>
 #include <errno.h>
 #include <io.h>
@@ -8,9 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(NYADOS)
-#  include <dos.h>
-#elif defined(__EMX__)
+#ifdef __EMX__
 #  include <fcntl.h>
 #  define INCL_DOSSESMGR
 #  define INCL_DOSERRORS
@@ -30,11 +26,6 @@
 #include "writer.h"
 #include "mysystem.h"
 #include "nua.h"
-
-enum{
-    TOO_LONG_COMMANDLINE = -3  ,
-    MAX_COMMANDLINE_SIZE = 127 ,
-};
 
 typedef enum mysystem_process_e {
     MYP_WAIT ,
@@ -289,7 +280,7 @@ static void devidePipes( const char *cmdline , NnVector &vector )
 	vector.append( one.clone() );
 }
 
-/* NYADOS 専用：リダイレクト処理付き１コマンド処理ルーチン
+/* リダイレクト処理付き１コマンド処理ルーチン
  *	cmdline - コマンド
  *	wait - MYP_WAIT / MYP_NOWAIT / MYP_PIPE
  *	result - コマンドの実行結果を格納する先
@@ -347,7 +338,7 @@ static int do_one_command(
     return rc;
 }
 
-/* NYADOS 専用：system代替関数（パイプライン処理）
+/* system代替関数（パイプライン処理）
  *	cmdline - コマンド文字列	
  */
 static int do_pipeline(

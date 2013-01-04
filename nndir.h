@@ -1,7 +1,6 @@
 #ifndef LFN_H
 #define LFN_H
 
-#include "config.h"
 #include "nnstring.h"
 #include "nnhash.h"
 
@@ -115,15 +114,10 @@ public:
     static int lastRoot(const char *path)
 	{ return NnString::findLastOf(path,"/\\:"); }
     static int seekEnd( int handle );
-#ifdef NYADOS
-    static const char *long2short( const char *src );
-#else
     static const char *long2short( const char *src ){ return src; }
-#endif
     static void extractDots( const char *&sp, NnString &dst );
     static NnHash specialFolder;
     static void set_default_special_folder();
 };
 
 #endif
-

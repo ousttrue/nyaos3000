@@ -4,7 +4,6 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include "config.h"
 #include "getline.h"
 #include "ntcons.h"
 

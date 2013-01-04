@@ -4,7 +4,6 @@
 #define GETLINE_H
 
 #include <stdlib.h>
-#include "config.h"
 #include "const.h"
 #include "nnstring.h"
 #include "nnvector.h"

@@ -10,9 +10,8 @@
  *        ┣ NnHash (文字列キーのハッシュ)
  *        ┣ NnBullet  (文字列キーと値のペア)
  *        ┣ Writer    (汎出力)
- *        ┃   ┣ FileWriter    (ファイル出力:NYADOS版)
  *        ┃   ┗ StreamWriter  (FILE*出力)
- *        ┃      ┣ FileWriter (ファイル出力:NYACUS版)
+ *        ┃      ┣ FileWriter (ファイル出力)
  *        ┃      ┗ PipeWriter (パイプ出力)
  *        ┣ Reader    (汎入力)
  *        ┃   ┗ StreamReader  (FILE*入力)
@@ -106,10 +105,6 @@ public:
 /* このヘッダで宣言されているメソッドの実体は
  * NnString.cpp で定義されている。
  */
-
-template <class T> T max1(T a,T b){ return a<b ? b : a ; }
-template <class T> T min1(T a,T b){ return a<b ? a : b ; }
-
 const char *getEnv( const char *var , const char *none=NULL );
 
 class NnVector;

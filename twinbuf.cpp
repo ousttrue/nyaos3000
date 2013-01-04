@@ -258,4 +258,3 @@ int TwinBuffer::decode(NnString &buffer)
 {
     return decode(0,this->length(),buffer);
 }
-

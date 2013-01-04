@@ -1,5 +1,3 @@
-#include "config.h"
-
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -12,17 +10,18 @@
 #include <fcntl.h>
 #include <io.h>
 
-#if defined(__EMX__)
+#ifdef __EMX__
 #  define INCL_DOSFILEMGR
 #  include <os2.h>
 #else
+#  include <direct.h>
 #  include <dir.h>
 #endif
 
 #include "nndir.h"
 
 /* Default Special Folder 設定のため */
-#ifdef __MINGW32__ 
+#ifdef NYACUS 
 #    include <windows.h>
 #    include <shlobj.h>
 #    include <stdio.h>
@@ -38,10 +37,6 @@ int NnTimeStamp::compare( const NnTimeStamp &o ) const
 	                      :  o.second - second ;
 }
 
-#ifdef __MINGW32__
-#else
-#endif
-
 static void stamp_conv( time_t time1 , NnTimeStamp &stamp_ )
 {
     struct tm *tm1;
@@ -54,14 +49,6 @@ static void stamp_conv( time_t time1 , NnTimeStamp &stamp_ )
     stamp_.month  = tm1->tm_mon + 1;
     stamp_.year   = tm1->tm_year + 1900 ;
 }
-
-enum{
-    W95_DATE_FORMAT = 0 ,
-    DOS_DATE_FORMAT = 1 ,
-};
-#ifdef NYACUS
-extern int read_shortcut(const char *src,char *buffer,int size);
-#endif
 
 /** 「...\」→「..\..\」 DOS,OS/2 の為 */
 void NnDir::extractDots( const char *&sp , NnString &dst )
@@ -92,7 +79,7 @@ NnObject *NnDir::operator * ()
 }
 
 struct NnDir::Core {
-#if defined(__EMX__)
+#ifdef __EMX__
     _FILEFINDBUF4 findbuf;
     ULONG findcount;
     unsigned handle;
@@ -119,7 +106,7 @@ struct NnDir::Core {
     void stamp( NnTimeStamp &stamp );
 };
 
-#ifdef __MINGW32__
+#ifdef NYACUS
 int NnDir::Core::findfirst( const char* path, unsigned attr)
 {
     attributes = attr;
@@ -350,7 +337,7 @@ int NnDir::chdir( const char *argv )
 #ifdef __EMX__
         _chdrive( newdir.at(0) );
 #else
-        setdisk( (newdir.at(0) & 0x1F)-1 );
+        _chdrive( newdir.at(0) & 0x1F );
 #endif
     }
     if(    newdir.at( newdir.length()-1 ) == '\\'
@@ -359,6 +346,7 @@ int NnDir::chdir( const char *argv )
 
 #ifdef NYACUS
     if( newdir.iendsWith(".lnk") ){
+        extern int read_shortcut(const char *src,char *buffer,int size);
 	char buffer[ FILENAME_MAX ];
 	if( read_shortcut( newdir.chars() , buffer , sizeof(buffer) )==0 ){
 	    newdir = buffer;
@@ -452,7 +440,7 @@ int  NnDir::chdrive( int driveletter )
 #ifdef __EMX__
 	_chdrive( driveletter );
 #else
-	setdisk( (driveletter & 0x1F )- 1 );
+	_chdrive( driveletter & 0x1F );
 #endif
 }
 
@@ -464,8 +452,6 @@ int NnDir::getcwdrive()
     return 
 #ifdef __EMX__
 	_getdrive();
-#elif defined(__TURBOC__)
-	'A'+getdisk();
 #else
 	'A'+ _getdrive() - 1;
 #endif

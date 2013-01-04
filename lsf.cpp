@@ -342,13 +342,7 @@ int NnFileComparer::operator()( const NnObject *left_ ,
 	diff = left->stamp().compare( right->stamp() );
 	break;
     case COMPARE_WITH_SIZE:
-#ifdef NYADOS /* オーバーフローを懸念して… */
-	diff = ( left->size() < right->size() ? -1
-		:left->size() > right->size() ? +1
-		: 0 );
-#else
 	diff = right->size() - left->size();
-#endif
 	break;
     }
     return reverse ? -diff : diff ;

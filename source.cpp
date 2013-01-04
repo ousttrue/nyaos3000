@@ -5,6 +5,8 @@
 #include "writer.h"
 #include "shell.h"
 
+#define RUN_COMMANDS "_nya"
+
 struct ReaderAndBuffer {
     Reader *reader;
     NnString line;

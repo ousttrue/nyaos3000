@@ -417,11 +417,7 @@ int NnString::istartsWith( const char *s ) const
     return strnicmp( chars() , s , strlen(s) )==0 ;
 }
 
-#ifdef __DMC__
-int NnString::endsWith( const char *s , int __CLIB func(const char *,const char *) ) const
-#else
 int NnString::endsWith( const char *s , int func(const char *,const char *) ) const
-#endif
 {
     int len1=strlen(s);
     int i;

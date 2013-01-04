@@ -1,7 +1,3 @@
-#include "config.h"
-
-#ifndef NYADOS /* NYADOS では open をサポートしない */
-
 #include <stdlib.h>
 #include "nnstring.h"
 #include "shell.h"
@@ -97,5 +93,3 @@ int cmd_open( NyadosShell &shell , const NnString &argv )
 
  * http://www.microsoft.com/japan/msdn/library/default.asp?url=/japan/msdn/library/ja/vclib/html/_crt__fullpath.2c_._wfullpath.asp
  */
-
-#endif /* not NYADOS */

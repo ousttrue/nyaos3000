@@ -2,9 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-#ifdef __DMC__
-#  include <dos.h>
-#endif
 
 #include <string.h>
 #include "nndir.h"
@@ -510,11 +507,7 @@ void GetLine::listing_( Completion &comp )
         if( prints[i].length() > 0 )
             putchr('\n');
     }
-#ifdef ARRAY_DELETE_NEED_SIZE
-    delete [ny] prints;
-#else
     delete [] prints;
-#endif
     prompt();
     /*DEL*puts_between( offset , buffer.length() ); *2004.10.17*/
     puts_between( offset , pos );

@@ -137,11 +137,7 @@ NnHash::~NnHash()
 	    p = nxt;
 	}
     }
-#ifdef ARRAY_DELETE_NEED_SIZE
-    delete[size]table;
-#else
     delete[]table;
-#endif
 }
 
 /* ハッシュ用カーソル初期化

@@ -1,4 +1,3 @@
-#include "config.h"
 #include "ntcons.h"
 #include "writer.h"
 
@@ -17,13 +16,7 @@ Status GetLine::xscript(int)
 }
 #else
 
-
-#ifdef NYACUS
-#  include <windows.h>
-#else
-#  include <dos.h>
-   typedef struct { int X,Y; } COORD ;
-#endif
+#include <windows.h>
 
 class NnScreen {
     COORD size_ , cursor_ ;
@@ -113,7 +106,6 @@ void KeyFunctionXScript::init()
 
 void NnScreen::load()
 {
-#ifdef NYACUS
     HANDLE  hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO  csbi;
 
@@ -124,33 +116,10 @@ void NnScreen::load()
     bottom_   = csbi.srWindow.Bottom;
     cursor_.X = csbi.dwCursorPosition.X; 
     cursor_.Y = csbi.dwCursorPosition.Y;
-#else
-    union REGS in,out,sreg;
-
-    /* 画面行数取得 */
-    in.x.ax = 0x1130;
-    in.h.bh = 0;
-    int86( 0x10 , &in , &out );
-    size_.Y = out.h.dl+1;
-
-    /* 画面桁数取得 */
-    in.h.ah = 0x0F;
-    int86( 0x10 , &in , &out );
-    size_.X = out.h.ah;
-
-    /* カーソル位置取得 */
-    in.h.ah = 0x3;
-    in.h.bh = 0;
-    int86( 0x10 , &in , &out );
-    cursor_.X = out.h.dl;
-    cursor_.Y = out.h.dh;
-#endif
 }
 
 class XScript {
-#ifdef NYACUS
     HANDLE    hConsoleOutput ;
-#endif
     NnScreen  screen ;
     COORD     cursor , start , end ;
 private:
@@ -170,9 +139,7 @@ public:
 
 XScript::XScript()
 {
-#ifdef NYACUS
     hConsoleOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-#endif
 
     screen.load();
     cursor = screen.cursor();
@@ -180,67 +147,12 @@ XScript::XScript()
 
 void XScript::invartPoint( const COORD &cursor)
 {
-#ifdef NYACUS
     WORD attr;
     DWORD size;
 
     ::ReadConsoleOutputAttribute( hConsoleOutput, &attr, 1, cursor, &size);
     attr = ((attr&0xF)<<4)|(attr>>4);
     ::WriteConsoleOutputAttribute( hConsoleOutput, &attr, 1, cursor, &size);
-#else
-    union REGS in , out;
-    struct SREGS sreg;
-    unsigned char buff[2];
-
-    _asm{
-        push es
-        push bp
-        mov  ax,ss
-        mov  es,ax
-        mov  bp,offset buff
-        mov  ax,01310h
-        mov  cx,1
-        mov  dl,byte ptr cursor.X
-        mov  dh,byte ptr cursor.Y
-        xor  bh,bh
-        int  010h
-        pop  bp
-        pop  es
-    }
-    /*
-    sreg.es = FP_SEG(buff);
-    in.x.bp = FP_OFF(buff);
-    in.x.ax = 0x1310;
-    in.x.cx = 1;
-    in.x.dl = cursor.X;
-    in.x.dh = cursor.Y;
-    in.h.bh = 0;
-
-    int86x( 0x10 , &in , &out , &sregs );
-    */
-
-    buff[1] = ((buff[1]&0xF)<<4)|(buff[1]>>4);
-
-    _asm{
-        push es
-        push bp
-        mov  ax,ss
-        mov  es,ax
-        mov  bp,offset buff
-        mov  ax,01302h
-        mov  cx,1
-        mov  dl,byte ptr cursor.X
-        mov  dh,byte ptr cursor.Y
-        xor  bh,bh
-        int  010h
-        pop  bp
-        pop  es
-    }
-    /* 
-      in.x.ax = 0x1300;
-      int86x( 0x10 , &in , &out , &sregs );
-    */
-#endif
 }
 
 /* 一文字をキーボードから入力し、それを機能コードへ変換する */
@@ -259,10 +171,8 @@ void XScript::loop()
     char title[1024];
     bool isSelecting = false;
 
-#ifdef NYACUS
     GetConsoleTitle( title , sizeof(title) );
     SetConsoleTitle( "XScript" );
-#endif
     for(;;){
         KeyFunctionXScript::XScriptFuncCode  code = inputFuncCode();
 
@@ -327,9 +237,7 @@ void XScript::loop()
 	// 選択処理.
         if( Console::getShiftKey() & Console::SHIFT ){
 	    if( !isSelecting){ /* 未選択→選択状態 */
-#ifdef NYACUS
 		SetConsoleTitle( "XScript[Selecting…]");
-#endif
 		isSelecting = true;
 		end = cursor;
 		invartRect();
@@ -338,9 +246,7 @@ void XScript::loop()
 	    }
 	}else{ //非選択
 	    if( isSelecting){
-#ifdef NYACUS
 		SetConsoleTitle( "XScript");
-#endif
 		isSelecting = false;
 		invartRect();
 	    }
@@ -350,9 +256,7 @@ exit:
     if( isSelecting )
         invartRect();
     Console::locate( screen.cursor_x() , screen.cursor_y() );
-#ifdef NYACUS
     SetConsoleTitle( title );
-#endif
 }
 
 /* 矩形領域指定の為に左上のポイントと右下のポイントを差すように

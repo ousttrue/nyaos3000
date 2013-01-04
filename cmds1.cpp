@@ -1,9 +1,6 @@
 #include <stddef.h>
 #include <stdlib.h>
 #include <ctype.h>
-#if defined(NYADOS)
-#  include <dos.h>
-#endif
 #ifndef __EMX__
 #  include <dir.h>
 #endif

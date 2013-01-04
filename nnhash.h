@@ -7,7 +7,6 @@
 #define NNHASH_H
 
 #include "nnstring.h"
-#include "config.h"
 
 /** ハッシュテーブルのオブジェクト */
 class NnHash : public NnObject {

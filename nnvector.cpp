@@ -59,13 +59,6 @@ int NnVector::append( NnObject *obj )
  *      ‘å¬ŠÖŒW‚ð•\‚·®”’l(x-y‚É‘Š“–)
  */
 static int 
-#if defined(__DMC__)
-#if defined(__OS2__)
-    _stdcall
-#else
-    __CLIB
-#endif
-#endif
 compare(const void *x,const void *y)
 {
     NnSortable *xs=( *(NnObject**)x )->sortable();

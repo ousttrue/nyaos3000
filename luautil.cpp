@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef NYACUS
+#  include <direct.h>
+#endif
 
 #ifndef LUA_IS_COMPILED_AS_CPP
 extern "C" {

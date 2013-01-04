@@ -2,21 +2,18 @@
  *   コンソールを直接操作する関数などを格納する。
  */
 
-#include "config.h"
-#if !defined(__DMC__) && !defined(__OS2__)
+#ifndef __OS2__
 #  include <conio.h>
 #endif
 #include <fcntl.h>
 #include <io.h>
 #include <stdio.h>
 #include <stdlib.h>
-#if defined(NYADOS)
-#  include <dos.h>
-#endif
 #include "ntcons.h"
 #include "nnstring.h"
 
 #if defined(__EMX__) /*** OS/2 専用 static 変数/関数群 ***/
+#  define ESCAPE_SEQUENCE_OK
 
 #include <sys/kbdscan.h>
 #define INCL_WIN
@@ -243,20 +240,7 @@ int Console::getWidth()
 
 static int getkey_()
 {
-#ifdef __DMC__
-#ifdef ASM_OK
-    _asm {
-	mov ah,07h
-	int 21h
-	xor ah,ah
-    }
-#else
-    union REGS in,out;
-    in.h.ah = 0x7;
-    int86( 0x21 , &in , &out );
-    return out.h.al & 255;
-#endif
-#elif defined(__EMX__)
+#if defined(__EMX__)
     return _read_kbd(0,1,0);
 #elif defined(NYACUS)
     int c;
@@ -367,86 +351,25 @@ void Console::readClipBoard( NnString &buffer )
 #ifdef NYACUS
 void Console::readTextVram( int x , int y , char *buffer , int n )
 {
-#ifdef NYACUS
     if (hStdout == (HANDLE )-1L)
 	initializeStdio();
     COORD cursor={ static_cast<short>(x) , static_cast<short>(y) };
     DWORD size;
     ::ReadConsoleOutputCharacter( hStdout, buffer , n , cursor , &size );
-#else
-    union REGS in , out ;
-    struct SREGS sregs;
-    char *buffer1=new char[n*2];
-    unsigned off1=FP_OFF(buffer1) , seg1 = FP_SEG(buffer1);
-
-    _asm {
-	push es
-	push bp 
-
-	mov  cx,n
-	mov  dl,byte ptr x
-	mov  dh,byte ptr y
-	xor  bh,bh
-	mov  ax,seg1
-	mov  es,ax
-	mov  bp,off1
-	mov  ax,1310h
-	int  010h
-
-	pop  bp
-	pop  es
-    };
-    /* 
-	sregs.es = FP_SEG(buffer1);
-	in.x.bp  = FP_OFF(buffer1);
-	in.x.ax = 0x1310;
-	in.x.cx = n;
-	in.h.dl = x;
-	in.h.dh = y;
-	in.h.bh = 0;
-    */
-
-    int86x( 0x10 , &in , &out , &sregs );
-    for(int i=0 ; i<n ; i++){
-	buffer[i] = ( buffer1[i*2] ? buffer1[i*2] : ' ');
-    }
-    delete[]buffer1;
-    buffer[n] = '\0';
-#endif
 }
 
 void Console::locate(int x,int y)
 {
-#ifdef NYACUS
     COORD coord;
     if( hStdout == (HANDLE )-1L )
 	initializeStdio();
 
     coord.X = x ; coord.Y = y;
     SetConsoleCursorPosition(hStdout,coord);
-#else
-    _asm{
-	mov ah,02h
-	xor bh,bh
-	mov dl,byte ptr x
-	mov dh,byte ptr y
-	int 10h
-    }
-#endif
 }
 unsigned int Console::getShiftKey()
 {
-#ifdef NYACUS
     return GetKeyState( VK_SHIFT ) ;
-#else
-    unsigned char result;
-    _asm{
-	mov ah,02h
-	int 16h
-	mov result,al
-    }
-    return result;
-#endif
 }
 #endif
 

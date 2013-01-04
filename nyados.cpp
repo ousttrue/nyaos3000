@@ -4,13 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#if defined(HAVE_NOT_OLD_NEW_H) || defined(__MINGW32__)
+#if defined(HAVE_NOT_OLD_NEW_H) || defined(NYACUS)
 #  include <new>
 #else
 #  include <new.h>
 #endif
 
-#include "config.h"
 #include "nnstring.h"
 #include "getline.h"
 #include "ishell.h"
@@ -23,11 +22,11 @@
 #define VER "3.3.4_0"
 #endif
 
-#ifdef __MINGW32__
+#ifdef NYACUS
 #  include <windows.h>
 #endif
 
-#ifdef __MINGW32__
+#ifdef NYACUS
 int  nya_new_handler(size_t size)
 #else
 void nya_new_handler()
@@ -35,7 +34,7 @@ void nya_new_handler()
 {
     fputs("memory allocation error.\n",stderr);
     abort();
-#ifdef __MINGW32__
+#ifdef NYACUS
     return 0;
 #endif
 }
@@ -349,7 +348,7 @@ static void save_history( History *hisObj )
 
 static History *globalHistoryObject=NULL;
 
-#ifdef __MINGW32__
+#ifdef NYACUS
 
 static BOOL WINAPI HandleRoutine( DWORD dwCtrlType )
 {
@@ -415,10 +414,7 @@ int main( int argc, char **argv )
     }
 
     conOut << 
-#ifdef ESCAPE_SEQUENCE_OK
-"\x1B[2J" << 
-#endif
-	"Nihongo Yet Another Open Shell "VER" (c) 2001-12 by HAYAMA,Kaoru\n";
+	"Nihongo Yet Another Open Shell "VER" (c) 2001-13 by HAYAMA,Kaoru\n";
     if( properties.get("debug") != NULL ){
         conOut << "This version is built on " __DATE__ " " __TIME__ "\n";
     }
@@ -427,7 +423,7 @@ int main( int argc, char **argv )
 
     /* _nya Çé¿çsÇ∑ÇÈ */
     if( rcfname.empty() ){
-#ifdef __MINGW32__
+#ifdef NYACUS
         char execname[ FILENAME_MAX ];
 
         if( GetModuleFileName( NULL , execname , sizeof(execname)-1 ) > 0 ){
@@ -435,7 +431,7 @@ int main( int argc, char **argv )
         }else{
 #endif
             seek_and_call_rc(argv[0],nnargv);
-#ifdef __MINGW32__
+#ifdef NYACUS
         }
 #endif
     }else{
@@ -450,7 +446,7 @@ int main( int argc, char **argv )
     /* DOSëãÇ©ÇÁÇÃì¸óÕÇ…è]Ç¡Çƒé¿çsÇ∑ÇÈ */
     InteractiveShell intShell;
 
-#ifdef __MINGW32__
+#ifdef NYACUS
     SetConsoleCtrlHandler( HandleRoutine , TRUE );
 #endif
 
