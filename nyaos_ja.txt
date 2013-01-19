@@ -1633,6 +1633,9 @@ dir/w がエラーになります
 変更履歴
 ========
 
+3.3.4_1 (2013/01/19)
+    - 一部の Windows 7 環境で ls , プロンプトの日本語が化ける問題を修正
+
 3.3.4_0 (2012/10/14)
     - ウインドウタイトルを変更できるようになった(Windowsのみ)
       (@nocd5 氏コードマージ)
@@ -2650,6 +2653,7 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     nocd5 様          wantora 様           mattn(@mattn_jp)様
     Akinori Hattori(@hattya)様             gocho(@gocho)様
     Yohei Endo(@yoheie)様                  pepperP/Pink(@mugyu)様
-    Martin Hason 様
+    Martin Hason 様   @orange_clover様     @usaturn様
+    @turky様          @kyon_mm様
 
 この場を借りて、お礼申し上げます。ありがとうございました。

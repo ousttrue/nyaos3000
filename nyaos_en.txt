@@ -1409,6 +1409,10 @@ File/Directory Operation
 History
 =======
 
+3.3.4_1 (2013/01/19)
+    - Bugfix: Japanese letters are not printed correctly on builtin-ls 
+      and prompt in some Windows-7 environments.
+
 3.3.4_0 (2012/10/14)
     - Can change Window's title (on Windows only)
       (merge @nocd5's code)
@@ -1784,5 +1788,6 @@ Thanks to...
     craftware           , Dice              , tyru              ,
     nocd5               , wantora           , mattn(@mattn_jp)  ,
     Akinori Hattori(@hattya)                , gocho(@gocho)     ,
-    Yohei Endo(@yoheie) , pepperP/Pink(@mugyu)
-    Martin Hason
+    Yohei Endo(@yoheie) , pepperP/Pink(@mugyu) ,
+    Martin Hason        , @orange_clover    , @usaturn          ,
+    @turky              , @kyon_mm
