@@ -19,7 +19,7 @@
 #include "source.h"
 
 #ifndef VER
-#define VER "3.3.4_0"
+#define VER "3.3.4_1"
 #endif
 
 #ifdef NYACUS

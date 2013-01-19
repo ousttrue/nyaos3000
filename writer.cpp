@@ -39,7 +39,15 @@ Writer &AnsiConsoleWriter::write( char c )
 	    // fflush( stderr );
 	    Console::backspace();
 	}else{
-            ::_write( this->fd() , &c , sizeof(char) );
+            if( this->prevchar ){
+                char buffer[3] = { this->prevchar , c , '\0' };
+                ::_write( this->fd() , buffer , sizeof(char)*2 );
+                this->prevchar = 0;
+            }else if( isKanji(c) ){
+                this->prevchar = c ;
+            }else{
+                ::_write( this->fd() , &c , sizeof(char) );
+            }
 	}
     }else{
 	if( c == '[' ){

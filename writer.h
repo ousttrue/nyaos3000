@@ -92,11 +92,12 @@ class AnsiConsoleWriter : public RawWriter {
     size_t n;
     enum { PRINTING , STACKING } mode ;
     enum { BAREN = 1 , GREATER = 2 } ;
+    char prevchar;
 public:
     AnsiConsoleWriter( int fd ) 
-	: RawWriter(fd) , flag(0) , n(0) , mode(PRINTING) {}
+	: RawWriter(fd) , flag(0) , n(0) , mode(PRINTING) , prevchar(0){}
     AnsiConsoleWriter( FILE *fp )
-	: RawWriter(fileno(fp)) , flag(0) , n(0) , mode(PRINTING) {fflush(fp);}
+	: RawWriter(fileno(fp)) , flag(0) , n(0) , mode(PRINTING) , prevchar(0){fflush(fp);}
 
     Writer &write( char c );
     Writer &write( const char *p );
