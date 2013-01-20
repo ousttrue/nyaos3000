@@ -1,6 +1,6 @@
            The Free Software 
      Nihongo Yet Another Open Shell
-       2001-2012 (c) HAYAMA,Kaoru
+       2001-2013 (c) HAYAMA,Kaoru
 
 Feature
 =======
