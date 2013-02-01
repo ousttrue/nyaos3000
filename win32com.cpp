@@ -212,6 +212,10 @@ int ActiveXMember::invoke(
         disp_params.rgdispidNamedArgs = NULL;
     }
 
+    excepinfo.bstrDescription = 0;
+    excepinfo.bstrSource = 0;
+    excepinfo.bstrHelpFile = 0;
+
     hr = this->instance_.getIDispatch()->Invoke(
             this->dispid() ,
             IID_NULL ,
@@ -231,9 +235,12 @@ int ActiveXMember::invoke(
         }
         rc = -1;
     }
-    SysFreeString( excepinfo.bstrDescription );
-    SysFreeString( excepinfo.bstrSource );
-    SysFreeString( excepinfo.bstrHelpFile );
+    if( excepinfo.bstrDescription )
+        SysFreeString( excepinfo.bstrDescription );
+    if( excepinfo.bstrSource )
+        SysFreeString( excepinfo.bstrSource );
+    if( excepinfo.bstrHelpFile )
+        SysFreeString( excepinfo.bstrHelpFile );
     return rc;
 }
 
