@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#if defined(HAVE_NOT_OLD_NEW_H) || defined(NYACUS)
+#ifdef NYACUS
 #  include <new>
+#  include <windows.h>
 #else
 #  include <new.h>
 #endif
@@ -17,14 +18,7 @@
 #include "nua.h"
 #include "ntcons.h"
 #include "source.h"
-
-#ifndef VER
-#define VER "3.3.4_1"
-#endif
-
-#ifdef NYACUS
-#  include <windows.h>
-#endif
+#include "version.h"
 
 #ifdef NYACUS
 int  nya_new_handler(size_t size)
