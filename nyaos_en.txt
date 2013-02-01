@@ -1409,6 +1409,10 @@ File/Directory Operation
 History
 =======
 
+3.3.4_2 (2013/02/02)
+    - Bugfix: crashes at calling COM.
+    - Able to see the version information in the exe-file's property.
+
 3.3.4_1 (2013/01/19)
     - Bugfix: Japanese letters are not printed correctly on builtin-ls 
       and prompt in some Windows-7 environments.
