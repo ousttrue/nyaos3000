@@ -12,7 +12,7 @@ extern "C" {
 
 #include "win32com.h"
 
-// #define DBG(x) (x)
+//#define DBG(x) (x)
 #define DBG(x)
 
 static void hr_to_lua_message(HRESULT hr,lua_State *L)
@@ -225,6 +225,9 @@ static int return_self(lua_State *L)
 }
 
 static int find_member(lua_State *L);
+static int make_iterator(lua_State *L);
+static int make_iterator_from_member(lua_State *L);
+
 static void push_activexobject(lua_State *L,ActiveXObject *obj)
 {
     ActiveXObject **u=
@@ -240,6 +243,8 @@ static void push_activexobject(lua_State *L,ActiveXObject *obj)
     lua_setfield(L,-2,"__newindex");
     lua_pushcfunction(L,return_self);
     lua_setfield(L,-2,"__call");
+    lua_pushcfunction(L,make_iterator);
+    lua_setfield(L,-2,"__pairs");
     lua_setmetatable(L,-2);
 }
 
@@ -401,10 +406,16 @@ static void push_activexmember(lua_State *L,ActiveXMember *member)
             );
     *m = member;
     luaL_newmetatable(L,"ActiveXMember");
+
     lua_pushcfunction(L,destroy_member);
     lua_setfield(L,-2,"__gc");
+
     lua_pushcfunction(L,call_member);
     lua_setfield(L,-2,"__call");
+
+    lua_pushcfunction(L,make_iterator_from_member);
+    lua_setfield(L,-2,"__pairs");
+
     lua_setmetatable(L,-2);
 }
 
@@ -532,4 +543,106 @@ int com_const_load(lua_State *L)
     lua_newtable(L);
     (**u).const_load(L,const_setter);
     return 1;
+}
+
+static int destroy_iterator(lua_State *L)
+{
+    ActiveXIterator **axi=static_cast<ActiveXIterator**>(
+        luaL_checkudata(L,1,"ActiveXIterator") );
+    if( axi == NULL ){
+        lua_pushnil(L);
+        lua_pushstring(L,"Invalid ActiveXIterator");
+        return 2;
+    }
+    delete (*axi);
+    return 0;
+}
+
+static int next_iterator(lua_State *L)
+{
+    DBG( puts("[Enter] next_iterator") );
+    ActiveXIterator **axi=static_cast<ActiveXIterator**>(
+        luaL_checkudata(L,1,"ActiveXIterator") );
+    if( axi == NULL ){
+        lua_pushnil(L);
+        lua_pushstring(L,"Invalid ActiveXIterator");
+        DBG( puts("[leave] next_iterator (failure)") );
+        return 2;
+    }
+    if( (**axi).nextObj() ){
+        variant2lua( (**axi).var() , L );
+        DBG( puts("[leave] next_iterator (continue)") );
+        return 1;
+    }else{
+        DBG( puts("[leave] next_iterator (fisnish)") );
+        return 0;
+    }
+}
+
+static int make_iterator(lua_State *L)
+{
+    DBG( puts("[Enter] make_iterator") );
+    ActiveXObject **axo=static_cast<ActiveXObject**>(
+        luaL_checkudata(L,1,"ActiveXObject") );
+    DBG( puts("[Step1] make_iterator") );
+    if( axo == NULL || !(**axo).ok() ){
+        set_nyaos_error(L,"Invalid Object. Expected <ActiveXObject>");
+        lua_pushnil(L);
+        lua_pushstring(L,"Invalid Object. Expected <ActiveXObject>");
+        DBG( puts("[Leave] make_iterator (failure)") );
+        return 2;
+    }
+    DBG( puts("[Step2] make_iterator") );
+
+    // first return value : iterator-function
+    lua_pushcfunction(L,next_iterator);
+
+    DBG( puts("[Step3] make_iterator") );
+    // second return value : object 
+    ActiveXIterator **axi=
+        static_cast<ActiveXIterator**>(
+                lua_newuserdata( L , sizeof(ActiveXIterator*) ));
+    DBG( puts("[Step4] make_iterator") );
+    *axi = new ActiveXIterator(**axo);
+    DBG( puts("[Step5] make_iterator") );
+    luaL_newmetatable(L,"ActiveXIterator");
+    lua_pushcfunction(L,destroy_iterator);
+    lua_setfield(L,-2,"__gc");
+    lua_setmetatable(L,-2);
+    DBG( puts("[Leave] make_iterator (success)") );
+    return 2;
+}
+
+static int make_iterator_from_member(lua_State *L)
+{
+    DBG( puts("[Enter] make_iterator_from_member") );
+    ActiveXMember **axo=static_cast<ActiveXMember**>(
+        luaL_checkudata(L,1,"ActiveXMember") );
+    DBG( puts("[Step1] make_iterator_from_member") );
+    if( axo == NULL || !(**axo).ok() ){
+        set_nyaos_error(L,"Invalid Object. Expected <ActiveXMember>");
+        lua_pushnil(L);
+        lua_pushstring(L,"Invalid Object. Expected <ActiveXMember>");
+        DBG( puts("[Leave] make_iterator_from_member (failure)") );
+        return 2;
+    }
+    DBG( puts("[Step2] make_iterator_from_member") );
+
+    // first return value : iterator-function
+    lua_pushcfunction(L,next_iterator);
+
+    DBG( puts("[Step3] make_iterator_from_member") );
+    // second return value : object 
+    ActiveXIterator **axi=
+        static_cast<ActiveXIterator**>(
+                lua_newuserdata( L , sizeof(ActiveXIterator*) ));
+    DBG( puts("[Step4] make_iterator_from_member") );
+    *axi = new ActiveXIterator((**axo).instance());
+    DBG( puts("[Step5] make_iterator_from_member") );
+    luaL_newmetatable(L,"ActiveXIterator");
+    lua_pushcfunction(L,destroy_iterator);
+    lua_setfield(L,-2,"__gc");
+    lua_setmetatable(L,-2);
+    DBG( puts("[Leave] make_iterator_from_member (success)") );
+    return 2;
 }

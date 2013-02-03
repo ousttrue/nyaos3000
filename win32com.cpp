@@ -296,3 +296,73 @@ VARIANT *Variants::add_anything()
     grow();
     return &v[size_-1];
 }
+
+ActiveXIterator::ActiveXIterator( ActiveXObject &parent )
+{
+    DBG( puts("[Enter] new ActiveXIterator") );
+    VariantInit( &var_ );
+    status_ = true;
+
+    unsigned argErr;
+
+    EXCEPINFO excepinfo;
+    memset(&excepinfo, 0, sizeof(excepinfo));
+
+    DISPPARAMS dispParams;
+    dispParams.rgvarg = NULL;
+    dispParams.rgdispidNamedArgs = NULL;
+    dispParams.cNamedArgs = 0;
+    dispParams.cArgs = 0;
+
+    HRESULT hr = parent.getIDispatch()->Invoke(
+                DISPID_NEWENUM , 
+                IID_NULL ,
+                LOCALE_SYSTEM_DEFAULT ,
+                DISPATCH_METHOD | DISPATCH_PROPERTYGET ,
+                &dispParams ,
+                &var_ ,
+                &excepinfo ,
+                &argErr );
+
+    if( FAILED(hr) ){
+        DBG( puts("[Fail] new ActiveXIterator (Invoke Error)") );
+        status_ = false;
+        pEnumVariant_ = 0;
+    }else{
+        hr = var_.pdispVal->QueryInterface(
+                IID_IEnumVARIANT ,
+                (void**) &pEnumVariant_ );
+        if( FAILED(hr) ){
+            DBG( puts("[Fail] new ActiveXIterator (QueryInterface)") );
+            status_ = false;
+        }
+    }
+    VariantClear( &var_ );
+    VariantInit( &var_ );
+    DBG( puts("[Leave] new ActiveXIterator") );
+}
+
+ActiveXIterator::~ActiveXIterator()
+{
+    if( pEnumVariant_ != NULL )
+        pEnumVariant_->Release();
+}
+
+bool ActiveXIterator::nextObj()
+{
+    DBG( puts("[Enter] ActiveXIterator::nextObj") );
+    if( ! ok() ){
+        DBG( puts("[Leave] ActiveXIterator::nextObj ( !ok() )") );
+        return false;
+    }
+
+    VariantClear( &var_ );
+    VariantInit( &var_ );
+    if( pEnumVariant_->Next(1,&var_,NULL) != S_OK ){
+        DBG( puts("[Leave] ActiveXIterator::nextObj ( Next()!=S_OK )") );
+        VariantClear( &var_ );
+        return false;
+    }
+    DBG( puts("[Leave] ActiveXIterator::nextObj (true)") );
+    return true;
+}

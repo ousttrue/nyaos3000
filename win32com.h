@@ -67,6 +67,20 @@ public:
 
     int ok() const { return ! FAILED(construct_error_); }
     HRESULT construct_error() const { return construct_error_; }
+    ActiveXObject &instance(){ return instance_; }
+};
+
+class ActiveXIterator {
+    IEnumVARIANT  *pEnumVariant_;
+    VARIANT        var_;
+    bool status_;
+public:
+    ActiveXIterator( ActiveXObject &parent );
+    ~ActiveXIterator();
+    bool ok() const { return status_; }
+    bool nextObj();
+
+    VARIANT        &var(){ return var_; }
 };
 
 #endif
