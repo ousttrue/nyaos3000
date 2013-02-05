@@ -205,4 +205,31 @@ lua_e "
 
         os.remove(tmpfile)
     end
+
+    function nyaos.command.lnk(src,dst)
+        if not dst then
+            print('Usage: lnk FILENAME SHORTCUT')
+            return 1
+        end
+        local fsObj=nyaos.create_object('Scripting.FileSystemObject')
+        if not string.match(src,'^http://') then
+            src = fsObj:GetAbsolutePathName(src)
+        end
+        dst = fsObj:GetAbsolutePathName(dst)
+        if fsObj:FolderExists(dst) then
+            dst = dst .. '\\' .. fsObj:getFileName(src)
+        end
+        if string.match(src,'^http://') then
+            dst = dst .. '.url'
+        elseif not string.match(dst,'%.lnk$') then
+            dst = dst .. '.lnk'
+        end
+        print('    '..src)
+        print('--> '..dst)
+
+        local shell = assert(nyaos.create_object('WScript.Shell'))
+        local shortcut=assert(shell:CreateShortcut(dst))
+        shortcut.TargetPath=src
+        shortcut:Save()
+    end
 "
