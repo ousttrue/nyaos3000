@@ -90,7 +90,7 @@ int read_shortcut(const char *src,char *buffer,int size)
 	return -1;
     
     if( CT_Filer2View_Load( src ) != TRUE 
-	|| m_pShellLink->GetPath( buffer , size, &f, SLGP_SHORTPATH) != NOERROR )
+	|| m_pShellLink->GetPath( buffer , size, &f, 0 ) != NOERROR )
 	rc = -2;
     
     CT_Filer2View_UnInit();
