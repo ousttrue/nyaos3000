@@ -72,6 +72,8 @@ static int nondir_filter( NnDir &dir , void *xt )
         return 1;
     if( dir.isDir() )
         return 1;
+    if( dir->endsWith(".lnk") )
+        return 1;
     return 0;
 }
 
