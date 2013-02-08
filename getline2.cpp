@@ -416,7 +416,7 @@ Status GetLine::complete(int)
 
     // (基本的にありえないが)、補完候補の方が、元文字列より短い場合は
     // 何もせず終了する。
-    if( match.length() <= comp.size && ! hasSpace )
+    if( match.length() < comp.size && ! hasSpace )
 	return NEXTCHAR;
     
     // ワイルドカード補完したときに、候補の共通部が全くない場合、
