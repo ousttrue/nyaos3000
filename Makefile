@@ -55,7 +55,7 @@ endif
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
 # メインルーチン
-nyados.$(O)   : nyados.cpp   nnstring.h getline.h
+nyados.$(O)   : nyados.cpp   nnstring.h getline.h version.h
 
 # 一行入力
 twinbuf.$(O)  : twinbuf.cpp  getline.h
@@ -106,6 +106,9 @@ luautil.$(O) : luautil.cpp
 # リソース
 nyacusrc.$(O)  : nyacus.rc luacat.ico
 	windres --output-format=coff -o $@ $<
+
+nyacus.rc : version.lua version.h 
+	nyaos version.lua
 
 clean : 
 	-$(RM) *.obj
