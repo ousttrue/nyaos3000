@@ -197,7 +197,7 @@ lua_e "
 
         for line in io.lines( tmpfile ) do
             local left,right = string.match(line,'([^=]+)=(.*)$')
-            if os.getenv(left) ~= right then
+            if left and right and os.getenv(left) ~= right then
                 print('SET '..left..'='..right)
                 nyaos.exec('SET '..left..'='..right)
             end
