@@ -1409,17 +1409,28 @@ File/Directory Operation
 History
 =======
 
+3.3.4_3 (2013/02/09)
+    - Fix the problen that current directory name became SHORTFILE 
+      NAME(8.3) when do "cd SHORTCUT.lnk".(WINDOWS)
+    - Fix the bug that it does not work to complete a filename of 
+      shortcut after "cd ".(WINDOWS)
+    - Fix the bug that on filename's completing, Filename's case 
+      is not corrected when length of common characters of 
+      complition-list are same as typed characters.
+    - Added the new lua command `lnk' to make shortcut to the 
+      default _nya.(WINDOWS)
+
 3.3.4_2 (2013/02/02)
-    - Bugfix: crashes at calling COM.
-    - Able to see the version information in the exe-file's property.
+    - Fix the problem crashing at calling COM. (WINDOWS)
+    - The version information can be seen in the exe-file's property.
+      (WINDOWS)
 
 3.3.4_1 (2013/01/19)
-    - Bugfix: Japanese letters are not printed correctly on builtin-ls 
-      and prompt in some Windows-7 environments.
+    - Fix the problem that Japanese letters are not printed correctly 
+      on builtin-ls and prompt in some Windows-7 environments.
 
 3.3.4_0 (2012/10/14)
-    - Can change Window's title (on Windows only)
-      (merge @nocd5's code)
+    - Can change Window's title (merge @nocd5's code) (WINDOWS)
     - build-in cls command.
     - If ~/_nya and ./_nya are the same file, not load them twice.
     - Remove warnings at compiling with g++ 4.7.0
