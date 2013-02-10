@@ -27,6 +27,9 @@
 #include "mysystem.h"
 #include "nua.h"
 
+//#define DBG(s) s
+#define DBG(s)
+
 typedef enum mysystem_process_e {
     MYP_WAIT ,
     MYP_NOWAIT , 
@@ -80,6 +83,10 @@ static void lua_filter( NnString &cmdname , NnString &cmdline )
     }
 }
 
+static int remove_quote_and_caret(int c)
+{
+    return (c=='^' || c=='"') ? '\0' : c;
+}
 
 /* 代替spawn。spawnのインターフェイスを NNライブラリに適した形で提供する。
  *      args - パラメータ
@@ -95,9 +102,9 @@ static int mySpawn(
         mysystem_process_t wait  ,
         mysystem_result_t  &result )
 {
-    /* コマンド名から、ダブルクォートを除く */
+    /* コマンド名から、ダブルクォートとキャレットを除く */
     NnString cmdname(args.const_at(0)->repr());
-    cmdname.dequote();
+    cmdname.filter(remove_quote_and_caret);
 
     NnString fullpath_cmdname;
     if( which( cmdname.chars() , fullpath_cmdname ) != 0 ){
@@ -118,16 +125,24 @@ static int mySpawn(
 #else
         cmdline << comspec << " /C \"";
 #endif
+        if( fullpath_cmdname.findOf(" ",0) >= 0 )
+            cmdline << '\"' << fullpath_cmdname << "\"";
+        else
+            cmdline << fullpath_cmdname;
         fullpath_cmdname = cmdname = comspec;
         tailchar = "\"";
+    }else{
+        cmdline << args.const_at(0)->repr();
     }
 
-    for(int i=0 ; i < args.size() ; ++i ){
-        cmdline << args.const_at(i)->repr() << ' ';
+    for(int i=1 ; i < args.size() ; ++i ){
+        cmdline << ' ' <<args.const_at(i)->repr();
     }
-    cmdline.chop();
+    cmdline.trim();
     cmdline << tailchar;
-    
+
+    DBG( printf("mySpawn('%s')\n",cmdline.chars()) );
+
     lua_filter( fullpath_cmdname , cmdline );
 
 #ifdef __EMX__
@@ -295,36 +310,45 @@ static int do_one_command(
         mysystem_result_t  &result ,
         NnString &error_fname )
 {
+    DBG( printf("do_one_command('%s',...)\n",cmdline) );
+
     Redirect redirect0(0);
     Redirect redirect1(1);
     Redirect redirect2(2);
     NnString execstr;
 
     int quote=0;
+    bool escape=false;
     while( *cmdline != '\0' ){
 	if( *cmdline == '"' )
 	    quote ^= 1;
 
-        if( quote==0 && cmdline[0]=='<' ){
+        if( quote==0 && cmdline[0]=='<' && !escape ){
             ++cmdline;
             NnString path;
             NyadosShell::readNextWord( cmdline , path );
             if( redirect0.switchTo( path , "r" ) != 0 ){
                 return -1;
             }
-        }else if( quote==0 && cmdline[0]=='>' ){
+        }else if( quote==0 && cmdline[0]=='>' && !escape ){
 	    ++cmdline;
             if( parseRedirect( cmdline , redirect1 ) != 0 )
                 return -1;
-	}else if( quote==0 && cmdline[0]=='1' && cmdline[1]=='>' ){
+	}else if( quote==0 && cmdline[0]=='1' && cmdline[1]=='>' && !escape ){
 	    cmdline += 2;
 	    if( after_lessthan( cmdline , redirect1 ) != 0 )
                 return -1;
-	}else if( quote==0 && cmdline[0]=='2' && cmdline[1]=='>' ){
+	}else if( quote==0 && cmdline[0]=='2' && cmdline[1]=='>' && !escape ){
 	    cmdline += 2;
             if( after_lessthan( cmdline , redirect2 ) != 0 )
                 return -1;
+        }else if( !escape && quote==0 && *cmdline == '^' ){
+            escape = true;
+            ++cmdline;
 	}else{
+            escape = false;
+            if( isKanji(*cmdline) )
+                execstr << *cmdline++;
 	    execstr << *cmdline++;
 	}
     }
@@ -414,6 +438,7 @@ static int do_pipeline(
 int mySystem( const char *cmdline , int wait )
 {
     mysystem_result_t result;
+    DBG( printf("mySystem('%s')\n",cmdline) );
     if( wait ){
         int rc = do_pipeline( cmdline , MYP_WAIT , result );
         return rc ? rc : result.rc ;

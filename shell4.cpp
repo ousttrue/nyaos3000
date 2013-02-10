@@ -4,11 +4,15 @@
 #include <stdio.h>
 #include <process.h>
 #include <io.h>
+
 #include "shell.h"
 #include "nnstring.h"
 #include "nnhash.h"
 #include "getline.h"
 #include "reader.h"
+
+//#define DBG(s) (s)
+#define DBG(s)
 
 static void glob( NnString &line )
 {
@@ -151,17 +155,23 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
  */
 static int doQuote( const char *&sp , NnString &dst , int max , int quote )
 {
+    bool escape = false;
     NnString q;
     while( *sp != '\0' ){
-        if( *sp =='`' ){
+        if( *sp =='`' && !escape ){
             /* 連続する `` は、一つの ` へ変換する。 */
             if( *(sp+1) != '`' )
                 break;
 	    ++sp;
         }
-	if( isKanji(*sp) )
-	    q += *sp++;
-        q += *sp++;
+        if( !quote ){
+            escape = (!escape && *sp == '^');
+        }
+        if( !escape ){
+            if( isKanji(*sp) )
+                q += *sp++;
+            q += *sp++;
+        }
     }
     if( q.length() <= 0 ){
         dst += '`';
@@ -187,6 +197,8 @@ static int doQuote( const char *&sp , NnString &dst , int max , int quote )
                 dst << '"' << *p << '"';
             }else if( *p == '"' ){
                 dst << "\"\"\"\"";
+            }else if( *p == '^' ){
+                dst << "^^";
             }else{
                 dst << *p;
             }
@@ -264,9 +276,8 @@ int isFolder( const char *sp , int quote , int spc )
  *	sp … 先頭位置
  *	len … 長さ
  *	dst … 本来のフォルダー名を入れるところ
- *	quote … 二重引用符内なら真にする
  */	
-static void doFolder( const char *&sp , int len , NnString &dst , int & )
+static void doFolder( const char *&sp , int len , NnString &dst )
 {
     NnString name(sp,len),value;
     NnDir::filter( name.chars() , value );
@@ -283,6 +294,8 @@ static void doFolder( const char *&sp , int len , NnString &dst , int & )
  *	dst - 結果が入る
  * return
  *      0 - 成功 , -1 - 失敗
+ *
+ * ここで「^」文字の削除も行う
  */
 int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 {
@@ -321,7 +334,8 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	}
     }
     int prevchar=' ';
-    int quote=0;
+    bool quote  = false;
+    bool escape = false;
     int len;
     dst.erase();
     int backquotemax=getQuoteMax();
@@ -333,9 +347,9 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    quote = !quote;
 	
 	int prevchar1=(*sp & 255);
-	if( (len=isFolder(sp,quote,isSpace(prevchar))) != 0 ){
-	    doFolder( sp , len , dst , quote );
-        }else if( *sp == '<' && !quote ){
+	if( !escape && (len=isFolder(sp,quote,isSpace(prevchar))) != 0 ){
+	    doFolder( sp , len , dst );
+        }else if( *sp == '<' && !quote && !escape ){
             ++sp;
             NnString fn;
             NyadosShell::readNextWord(sp,fn);
@@ -350,7 +364,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
                 conErr << "can't redirect stdin.\n";
                 return -1;
             }
-        }else if( *sp == '>' && !quote ){
+        }else if( *sp == '>' && !quote && !escape ){
 	    ++sp;
 	    FileWriter *fw=readWriteRedirect( sp );
 	    if( fw != NULL ){
@@ -359,7 +373,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 		conErr << "can't redirect stdout.\n";
 		return -1;
 	    }
-	}else if( *sp == '1' && *(sp+1) == '>' && !quote ){
+	}else if( *sp == '1' && *(sp+1) == '>' && !escape && !quote ){
 	    if( ! restcmd.empty() ){
 		/* すでにリダイレクトしていたら、エラー */
 		conErr << "ambigous redirect.\n";
@@ -381,7 +395,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 		    return -1;
 		}
 	    }
-	}else if( *sp == '2' && *(sp+1) == '>' && !quote ){
+	}else if( *sp == '2' && *(sp+1) == '>' && !escape && !quote ){
 	    sp += 2;
 	    if( *sp == '&' && *(sp+1) == '1' ){
 		sp += 2;
@@ -398,7 +412,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 		    return -1;
 		}
 	    }
-        }else if( *sp == '`' && backquotemax > 0 ){
+        }else if( *sp == '`' && backquotemax > 0 && !escape ){
 	    ++sp;
             switch( doQuote( sp , dst , backquotemax , quote ) ){
             case -1:
@@ -411,7 +425,11 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
                 break;
             }
 	    ++sp;
+        }else if( !quote && !escape && *sp=='^' ){
+            ++sp;
+            escape = true;
 	}else{
+            escape = false;
 	    if( isKanji(*sp) )
 		dst += *sp++;
 	    dst += *sp++;
@@ -482,6 +500,7 @@ void NyadosShell::doHereDocument( const char *&sp , NnString &dst , char prefix 
  */
 int NyadosShell::explode4external( const NnString &src , NnString &dst )
 {
+    DBG( printf("NyadosShell::explode4external('%s',...)\n",src.chars()) );
     /* プログラム名をフィルターにかける：チルダ変換など */
     NnString progname,args;
     src.splitTo( progname,args );
@@ -499,19 +518,20 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
 
     dst << ' ';
     int backquotemax=getQuoteMax();
-    int quote=0;
+    bool quote=false;
+    bool escape=false;
     int len;
 
     // 引数のコピー.
     int spc=1;
     for( const char *sp=args.chars() ; *sp != '\0' ; ++sp ){
         if( *sp == '"' )
-            quote ^= 1;
+            quote = !quote;
 
-	if( (len=isFolder(sp,quote,spc)) != 0 ){
-	    doFolder( sp , len , dst , quote );
+	if( !escape && (len=isFolder(sp,quote,spc)) != 0 ){
+	    doFolder( sp , len , dst );
 	    --sp;
-        }else if( *sp == '`'  && backquotemax > 0 ){
+        }else if( *sp == '`'  && backquotemax > 0  && !escape ){
 	    ++sp;
             switch( doQuote( sp , dst , backquotemax , quote ) ) {
             case -1:
@@ -523,15 +543,16 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
             default:
                 break;
             }
-	}else if( *sp == '<' && *(sp+1) == '<'  &&  quote == 0 ){
+	}else if( *sp == '<' && *(sp+1) == '<' && !quote && !escape ){
 	    /* ヒアドキュメント */
 	    doHereDocument( sp , dst , '<' );
-	}else if( *sp == '<' && *(sp+1) == '=' && quote == 0 ){
+	}else if( *sp == '<' && *(sp+1) == '=' && !quote && !escape ){
 	    /* インラインファイルテキスト */
 	    doHereDocument( sp , dst , ' ' );
-	}else if( *sp == '|' && *(sp+1) == '&' ){
+	}else if( *sp == '|' && *(sp+1) == '&' && !escape ){
 	    dst << "2>&1 |";
         }else{
+            escape = (!escape && !quote && *sp == '^');
 	    if( isKanji(*sp) )
 		dst += *sp++;
             dst += *sp;

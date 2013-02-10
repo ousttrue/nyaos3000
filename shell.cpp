@@ -598,12 +598,29 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 static int countQuote( const char *p )
 {
     int qc=0;
+    bool escape=false;
+    bool quote =false;
     for( ; *p != '\0' ; ++p ){
-	if( *p == '"' )
+	if( *p == '"' && !escape ){
 	    ++qc;
+            quote = !quote;
+        }
+        escape = (!escape && !quote && *p=='^');
     }
     return qc;
 }
+
+static bool isEscapeEnd( const char *p )
+{
+    bool escape = false;
+    while( *p != '\0' ){
+        escape = (!escape && *p == '^');
+        ++p;
+    }
+    return escape;
+}
+
+
 
 /* ソースから、１コマンドずつ切り出す。
  * 切り出した内容は基本的にヒストリ置換されるだけで、他の加工はない。
@@ -620,8 +637,9 @@ Status NyadosShell::readcommand( NnString &buffer )
 	    rc=readline( current );
 	    if( rc == TERMINATE || rc == CANCEL )
 		return rc;
-	    current.trim();
-	    if( current.length() > 0 && ! current.startsWith("#") )
+            NnString current_ = current;
+            current_.trim();
+	    if( current_.length() > 0 && ! current_.startsWith("#") )
 		break;
 	    /* コメント行の場合は、もう一度取得しなおし */
 	    current.erase();
@@ -662,11 +680,9 @@ Status NyadosShell::readcommand( NnString &buffer )
 	    if( properties.get("bracexp") != NULL )
 		brace_expand( current );
 		
-	    current.trim();
 	    if( countQuote(current.chars()) % 2 != 0 ){
 		nesting.append(new NnString("quote>"));
-	    }else if( current.endsWith("^") ){
-                // lastchar() == '^'
+	    }else if( isEscapeEnd(current.chars() )){
 		nesting.append(new NnString("more>"));
 		current.chop();
 	    }else{
@@ -883,6 +899,16 @@ int NyadosShell::interpret( const NnString &statement )
         if( *p == '"' ){
             quote ^= 1;
         }
+        if( *p == '^' && (
+            (*(p+1) == '&' && *(p+2) == '&' ) ||
+            (*(p+1) == '|' && *(p+2) == '|' ) ) )
+        {
+            replace << '^' << *(p+1) << *(p+2);
+            p += 3;
+            continue;
+        }
+        if( isKanji(*p) )
+            replace << *p++;
         replace << *p++;
     }
     return this->interpret1( replace );

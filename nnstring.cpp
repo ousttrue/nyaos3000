@@ -356,11 +356,13 @@ void NnString::splitTo( NnString &first , NnString &rest ) const
 
     int quote=0;
     int len=0;
+    bool escape = false;
     while( p < length() ){
-        if( isSpace( at(p) ) && !quote )
+        if( isSpace( at(p) ) && !quote && !escape )
             break;
         if( this->at(p)=='"' )
             quote ^= 1;
+        escape = (!quote & !escape && this->at(p)=='^' );
 	if( isKanji(this->at(p)) ){
 	    ++len;
 	    ++p;
@@ -376,19 +378,21 @@ void NnString::splitTo( NnString &first , NnString &rest ) const
         rest.erase();
     }
 }
-int NnString::splitTo( NnString &first , NnString &rest , const char *dem , const char *quotechars ) const
+int NnString::splitTo( NnString &first , NnString &rest , const char *dem , const char *quotechars , const char *escapechars ) const
 {
     NnString rest1;
     int i=0 , quote=0 ;
+    bool escape = false;
     while( i < length() ){
         const char *q=strchr(quotechars,at(i));
         if( q != NULL && *q != '\0' ){
             quote ^= (1<<(q-quotechars));
         }
-	if( quote==0 && strchr(dem,at(i)) != NULL ){
-	    rest1 = chars()+i+1 ;
-	    break;
-	}
+        if( !quote && !escape && strchr(dem,at(i)) != NULL ){
+            rest1 = chars()+i+1 ;
+            break;
+        }
+        escape = (strchr(escapechars,at(i)) != NULL );
 	if( isKanji(at(i)) )
 	    ++i;
 	++i;
