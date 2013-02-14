@@ -413,10 +413,7 @@ static int do_pipeline(
                             wait , result , error_fname );
         }
 	if( rc != 0 ){
-	    if( ((NnString*)pipeSet.at(i))->length() > 110 ){
-		conErr << "Too long command line,"
-			    " or bad command or file name.\n";
-	    }else if( errno != 0 ){
+	    if( errno != 0 ){
                 int save_errno=errno;
                 if( ! error_fname.empty() ){
                     conErr << error_fname << ": ";
