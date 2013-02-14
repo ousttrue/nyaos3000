@@ -45,11 +45,11 @@ option +glob
 option prompt $e[31;40;1m[$w]$_$$ $e[37;1m
 option uncompletechar ,;=``
 
-foreach i (mkdir rmdir type md rd start mklink)
+foreach i (mkdir rmdir type md rd start mklink assoc)
     alias $i $COMSPEC /c $i
 end
 
-foreach cmd (dir copy move del rename ren del attrib)
+foreach cmd (dir copy move del rename ren del attrib for)
     $cmd{
         if %glob.defined% -ne 0 then
             option -glob
