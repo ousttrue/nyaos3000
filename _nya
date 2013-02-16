@@ -79,9 +79,9 @@ vzbind{
 
 lua_e "
     --- NYAOS 終了時のフック ---
-    function nyaos.goodbye.message()
-        print('Good bye !!')
-    end
+    -- function nyaos.goodbye.message()
+    --    print('Good bye !!')
+    -- end
 
     -- キーフックサンプル --
     -- (「nyaos.keyhook = sample_keyhook」で利用可能)

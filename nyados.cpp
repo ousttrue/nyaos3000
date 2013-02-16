@@ -407,10 +407,13 @@ int main( int argc, char **argv )
         }
     }
 
-    conOut << 
-	"Nihongo Yet Another Open Shell "VER" (c) 2001-13 by HAYAMA,Kaoru\n";
-    if( properties.get("debug") != NULL ){
-        conOut << "This version is built on " __DATE__ " " __TIME__ "\n";
+    if( isatty(fileno(stdin)) ){
+        conOut << 
+            "Nihongo Yet Another Open Shell "VER
+            " (c) 2001-13 by HAYAMA,Kaoru\n";
+        if( properties.get("debug") != NULL ){
+            conOut << "This version is built on " __DATE__ " " __TIME__ "\n";
+        }
     }
 
     NnDir::set_default_special_folder();
@@ -437,18 +440,22 @@ int main( int argc, char **argv )
     signal( SIGPIPE , SIG_IGN );
 #endif
 
-    /* DOS‘‹‚©‚ç‚Ì“ü—Í‚É]‚Á‚ÄŽÀs‚·‚é */
-    InteractiveShell intShell;
+    if( isatty(fileno(stdin)) ){
+        /* DOS‘‹‚©‚ç‚Ì“ü—Í‚É]‚Á‚ÄŽÀs‚·‚é */
+        InteractiveShell shell;
 
 #ifdef NYACUS
-    SetConsoleCtrlHandler( HandleRoutine , TRUE );
+        SetConsoleCtrlHandler( HandleRoutine , TRUE );
 #endif
-
-    globalHistoryObject = intShell.getHistoryObject();
-    load_history( globalHistoryObject );
-    intShell.mainloop();
-    save_history( globalHistoryObject );
-    globalHistoryObject = NULL;
+        globalHistoryObject = shell.getHistoryObject();
+        load_history( globalHistoryObject );
+        shell.mainloop();
+        save_history( globalHistoryObject );
+        globalHistoryObject = NULL;
+    }else{
+        ScriptShell shell(new StreamReader(stdin));
+        shell.mainloop();
+    }
     goodbye();
     return 0;
 }
