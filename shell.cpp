@@ -538,7 +538,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 
     arg0low = arg0;
     arg0low.downcase();
-    if( (func=(NnExecutable*)functions.get(arg0low)) != NULL ){
+    if( (func=(NnExecutable*)functions.get(arg0)) != NULL ){
         /* サブシェルを実行する */
         NnVector param;
         param.append( arg0.clone() );
