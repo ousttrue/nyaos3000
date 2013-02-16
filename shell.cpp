@@ -628,6 +628,7 @@ static bool isEscapeEnd( const char *p )
  */
 Status NyadosShell::readcommand( NnString &buffer )
 {
+    buffer.erase();
     if( current.empty() ){
 	NnString temp;
 	Status rc;

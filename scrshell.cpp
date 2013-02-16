@@ -38,7 +38,7 @@ int ScriptShell::goLabel( NnString &label )
         fr->getpos( start );
         for(;;){
             Status rc=this->readcommand(cmdline);
-            if( rc != TERMINATE ){
+            if( rc == TERMINATE ){
                 fr->setpos( start );
                 return 0;
             }
