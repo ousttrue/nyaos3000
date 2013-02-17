@@ -212,7 +212,7 @@ getch_replacement_with_flags_for_msvc (int flags)
       break;
     }
     for(DWORD i=0 ; i<dwRead ; ++i ){
-      if( ir[i].EventType != KEY_EVENT )
+      if( ir[i].EventType != KEY_EVENT || !ir[i].Event.KeyEvent.bKeyDown )
         continue;
 #ifdef BUILD_FOR_WCHAR
       ch = ir[i].Event.KeyEvent.uChar.UnicodeChar;
