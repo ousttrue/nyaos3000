@@ -146,6 +146,14 @@ getwch_replacement_with_flags_for_msvc (int flags)
 getch_replacement_with_flags_for_msvc (int flags)
 #endif
 {
+  enum{ SPOOL_SIZE=10 };
+  static int spool_buffer[ 10 ];
+  static DWORD spool_read=0 , spool_count=0;
+  if( spool_read < spool_count ){
+      return spool_buffer[ spool_read++ ];
+  }
+  spool_read = spool_count = 0;
+
   HANDLE hConin;
   DWORD dwPrevMode;
   BOOL bKey;
@@ -165,7 +173,7 @@ getch_replacement_with_flags_for_msvc (int flags)
   ch = InterlockedExchange(&succ_key_value, 0);
   if (ch != 0) return ch;
 
-  ENTER_THREAD_ATOMIC()
+  ENTER_THREAD_ATOMIC();
 
   bKey = FALSE;
   /* check whether stdin is console handle */
@@ -178,65 +186,79 @@ getch_replacement_with_flags_for_msvc (int flags)
   
   while(!bKey) {
     DWORD dwRead, ks;
-    INPUT_RECORD ir;
+    INPUT_RECORD ir[ SPOOL_SIZE ];
     int vk;
     BOOL b;
     
     SetConsoleMode(hConin, 0); /* set raw mode */
     for(;;) {
 #ifdef BUILD_FOR_WCHAR
-      b = ReadConsoleInputW(hConin, &ir, 1, &dwRead);
+      b = ReadConsoleInputW(hConin, ir, SPOOL_SIZE , &dwRead);
 #else
-      b = ReadConsoleInputA(hConin, &ir, 1, &dwRead);
+      b = ReadConsoleInputA(hConin, ir, SPOOL_SIZE , &dwRead);
 #endif
       if (b && dwRead > 0) {
-        if (ir.EventType == KEY_EVENT && ir.Event.KeyEvent.bKeyDown)
-          break;
+        for(DWORD i=0;i<dwRead;i++){
+          if (ir[i].EventType == KEY_EVENT && ir[i].Event.KeyEvent.bKeyDown){
+            goto keyevent;
+          }
+        }
       }
     }
+  keyevent:
     SetConsoleMode(hConin, dwPrevMode);
     if (!b) {
       ch = -1;
       break;
     }
+    for(DWORD i=0 ; i<dwRead ; ++i ){
+      if( ir[i].EventType != KEY_EVENT )
+        continue;
 #ifdef BUILD_FOR_WCHAR
-    ch = ir.Event.KeyEvent.uChar.UnicodeChar;
+      ch = ir[i].Event.KeyEvent.uChar.UnicodeChar;
 #else
-    ch = (unsigned char)(ir.Event.KeyEvent.uChar.AsciiChar);
+      ch = ir[i].Event.KeyEvent.uChar.AsciiChar;
 #endif
-    vk = (int)(unsigned)(ir.Event.KeyEvent.wVirtualKeyCode);
-    ks = ir.Event.KeyEvent.dwControlKeyState;
-    if (ch == 0 || vk == VK_RETURN || vk == VK_BACK || vk == VK_TAB || vk == VK_SPACE ) {
-      ch = lookup_keycode(vk, 0 /* ir.Event.KeyEvent.wVirtualScanCode */,
-                          ks & SHIFT_PRESSED,
-                          ks & (LEFT_CTRL_PRESSED|RIGHT_CTRL_PRESSED),
-                          ks & (LEFT_ALT_PRESSED|RIGHT_CTRL_PRESSED),
-                          ks & ENHANCED_KEY);
-      if ((ch & IN_NUMLOCKED) && !(ks & NUMLOCK_ON)) {
-        ch = 0;
-      }
-      if (ch & EXTRA_FLAGS_MASK) {
-        if ((ch & EXTRA_E0) && (flags & MY_GETCH_ENAHNCED_PREFIX_E0)) {
-          succ_key_value = ch & STRIP_EXTRA_FLAGS;
-          bKey = TRUE;
-          ch = 0xe0;
-          break;
+      vk = (int)(unsigned)(ir[i].Event.KeyEvent.wVirtualKeyCode);
+      ks = ir[i].Event.KeyEvent.dwControlKeyState;
+      if (ch == 0 || vk == VK_RETURN || vk == VK_BACK ||
+          vk == VK_TAB || vk == VK_SPACE )
+      {
+        ch = lookup_keycode(vk, 0 /* ir.Event.KeyEvent.wVirtualScanCode */,
+                            ks & SHIFT_PRESSED,
+                            ks & (LEFT_CTRL_PRESSED|RIGHT_CTRL_PRESSED),
+                            ks & (LEFT_ALT_PRESSED|RIGHT_CTRL_PRESSED),
+                            ks & ENHANCED_KEY);
+        if ((ch & IN_NUMLOCKED) && !(ks & NUMLOCK_ON)) {
+          ch = 0;
         }
-        else if ((ch & (EXTRA_E0|EXTRA_00))) {
-          succ_key_value = ch & STRIP_EXTRA_FLAGS;
-          bKey = TRUE;
-          ch = 0x00;
-          break;
+        if (ch & EXTRA_FLAGS_MASK) {
+          if ((ch & EXTRA_E0) && (flags & MY_GETCH_ENAHNCED_PREFIX_E0)) {
+            succ_key_value = ch & STRIP_EXTRA_FLAGS;
+            bKey = TRUE;
+            spool_buffer[ spool_count++ ] = 0xe0;
+            continue;
+          }
+          else if ((ch & (EXTRA_E0|EXTRA_00))) {
+            succ_key_value = ch & STRIP_EXTRA_FLAGS;
+            bKey = TRUE;
+            spool_buffer[ spool_count++ ] = 0x00;
+            continue;
+          }
         }
+        ch &= STRIP_EXTRA_FLAGS;
       }
-      ch &= STRIP_EXTRA_FLAGS;
+      if (ch != 0){
+        bKey = TRUE;
+        spool_buffer[ spool_count++ ] = ch;
+      }
     }
-    if (ch != 0) bKey = TRUE;
   }
 
-  LEAVE_THREAD_ATOMIC()
+  LEAVE_THREAD_ATOMIC();
 
-  return ch;
+  spool_read = 1;
+  return spool_buffer[0];
 }
 
 
@@ -283,3 +305,5 @@ main(int argc, char **argv)
 }
 
 #endif
+
+// vim:set sw=2 et:
