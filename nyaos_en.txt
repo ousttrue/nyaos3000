@@ -1409,6 +1409,15 @@ File/Directory Operation
 History
 =======
 
+3.3.5_0 (2013/02/16)
+    - The ^ is now regarded as the escape charactor like CMD.EXE.
+    - `for' and `assoc' are defined on standard _nya.
+    - Removed the fixed error message when CreateProcess has failed 
+      and the commandline is longer than 111 charactors.
+    - Fix: GOTO did not work.
+    - Fix: Only the functions with names in the lower case can be called.
+    - Cut messages for `command(s) | nyaos.exe'
+
 3.3.4_3 (2013/02/09)
     - Fix the problen that current directory name became SHORTFILE 
       NAME(8.3) when do "cd SHORTCUT.lnk".(WINDOWS)
@@ -1805,4 +1814,4 @@ Thanks to...
     Akinori Hattori(@hattya)                , gocho(@gocho)     ,
     Yohei Endo(@yoheie) , pepperP/Pink(@mugyu) ,
     Martin Hason        , @orange_clover    , @usaturn          ,
-    @turky              , @kyon_mm
+    @turky              , @kyon_mm          , Gad Brodai        ,

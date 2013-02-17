@@ -1633,6 +1633,16 @@ dir/w がエラーになります
 変更履歴
 ========
 
+3.3.5_0 (2013/02/16)
+    - キャレット(^)を CMD.EXE 同様にエスケープ文字として認識するようにした
+    - for,assoc を標準 _nya で関数定義
+    - コマンドラインが111文字以上の時にCreateProcess に失敗すると、エラー
+      メッセージが「Too long command line, or bad command or file name.」
+      になる謎仕様を削除
+    - goto が機能していなかった不具合を修正
+    - 小文字の関数しか呼べない不具合を修正
+    - `command(s) | nyaos.exe' の時に、メッセージを抑制するようにした。
+
 3.3.4_3 (2013/02/09)
     - cd SHORTCUT.lnk の時に、ディレクトリ名がショートファイル名に変わって
       しまう不具合を修正(WINDOWS)
@@ -2667,6 +2677,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     Akinori Hattori(@hattya)様             gocho(@gocho)様
     Yohei Endo(@yoheie)様                  pepperP/Pink(@mugyu)様
     Martin Hason 様   @orange_clover様     @usaturn様
-    @turky様          @kyon_mm様
+    @turky様          @kyon_mm様           Gad Brodai様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
