@@ -1633,6 +1633,9 @@ dir/w がエラーになります
 変更履歴
 ========
 
+3.3.5_1 (2013/02/18)
+    - Windows8 で日本語が入力できなかった問題を修正
+
 3.3.5_0 (2013/02/16)
     - キャレット(^)を CMD.EXE 同様にエスケープ文字として認識するようにした
     - for,assoc を標準 _nya で関数定義
@@ -2678,5 +2681,7 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     Yohei Endo(@yoheie)様                  pepperP/Pink(@mugyu)様
     Martin Hason 様   @orange_clover様     @usaturn様
     @turky様          @kyon_mm様           Gad Brodai様
+    中西 正彦様       @rltm様              @laugh_K様
+    @overthestardust様
 
 この場を借りて、お礼申し上げます。ありがとうございました。

@@ -1409,6 +1409,9 @@ File/Directory Operation
 History
 =======
 
+3.3.5_1 (2013/02/18)
+    - Fix: Japanese Charactors could not be typed on Windows-8.
+
 3.3.5_0 (2013/02/16)
     - The ^ is now regarded as the escape charactor like CMD.EXE.
     - `for' and `assoc' are defined on standard _nya.
@@ -1815,3 +1818,5 @@ Thanks to...
     Yohei Endo(@yoheie) , pepperP/Pink(@mugyu) ,
     Martin Hason        , @orange_clover    , @usaturn          ,
     @turky              , @kyon_mm          , Gad Brodai        ,
+    Masahiko NAKANISHI  , @rltm             , @laugh_K          ,    
+    @overthestardust
