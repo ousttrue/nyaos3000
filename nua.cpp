@@ -337,6 +337,63 @@ int nua_write(lua_State *L)
     return 0;
 }
 
+int nua_substring(lua_State *L)
+{
+    const char *s=lua_tostring(L,1);
+    int start=lua_tointeger(L,2)-1;
+    int end  =lua_isnumber(L,3) ? lua_tointeger(L,3)-1 : -1;
+
+    int len=0;
+    for(const char *p=s ; *p != '\0' ; ){
+        len++;
+        if( isKanji(*p) )
+            ++p;
+        if( *p == '\0' )
+            break;
+        ++p;
+    }
+    if( start < 0 ){
+        start = len + start + 1;
+        if( start < 0 )
+            start = 0;
+    }
+    if( end < 0 ){
+        end = len + end + 1;
+        if( end < 0 )
+            end = 0;
+    }
+    // printf("len=%d start=%d end=%d\n",len,start,end);
+    int count=0;
+    while( count < start ){
+        if( *s == '\0' ){
+            goto empty;
+        }
+        if( isKanji(*s) ){
+            if( *++s == '\0' )
+                goto empty;
+        }
+        ++s;
+        count++;
+    }
+    {
+        NnString buf;
+        while( count <= end && *s != '\0' ){
+            if( isKanji(*s) )
+                buf << *s++;
+            if( *s == '\0' )
+                break;
+            buf << *s++;
+            count++;
+        }
+        lua_pushstring(L,buf.chars());
+    }
+    return 1;
+empty:
+    lua_pushstring(L,"");
+    return 1;
+}
+
+
 int nua_default_complete(lua_State *L)
 {
     const char *basestring = lua_tostring(L,1);
@@ -512,6 +569,8 @@ int NyaosLua::init()
         lua_setfield(L,-2,"default_complete");
         lua_pushcfunction(L,nua_putenv);
         lua_setfield(L,-2,"putenv");
+        lua_pushcfunction(L,nua_substring);
+        lua_setfield(L,-2,"sub");
 
         lua_pushinteger(L, getpid() );
         lua_setfield(L,-2,"pid");
