@@ -337,9 +337,30 @@ int nua_write(lua_State *L)
     return 0;
 }
 
+int nua_len(lua_State *L)
+{
+    const char *s=lua_tostring(L,1);
+    if( s == NULL )
+        return 0;
+
+    int count=0;
+    while( *s != '\0' ){
+        ++count;
+        if( isKanji(*s) )
+            if( *++s == '\0' )
+                break;
+        ++s;
+    }
+    lua_pushinteger(L,count);
+    return 1;
+}
+
 int nua_substring(lua_State *L)
 {
     const char *s=lua_tostring(L,1);
+    if( s == NULL )
+        return 0;
+
     int start=lua_tointeger(L,2)-1;
     int end  =lua_isnumber(L,3) ? lua_tointeger(L,3)-1 : -1;
 
@@ -571,6 +592,8 @@ int NyaosLua::init()
         lua_setfield(L,-2,"putenv");
         lua_pushcfunction(L,nua_substring);
         lua_setfield(L,-2,"sub");
+        lua_pushcfunction(L,nua_len);
+        lua_setfield(L,-2,"len");
 
         lua_pushinteger(L, getpid() );
         lua_setfield(L,-2,"pid");
