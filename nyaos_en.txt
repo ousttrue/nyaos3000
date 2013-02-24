@@ -1,6 +1,6 @@
-           The Free Software 
-     Nihongo Yet Another Open Shell
-       2001-2013 (c) HAYAMA,Kaoru
+                              The Free Software 
+                        Nihongo Yet Another Open Shell
+                          2001-2013 (c) HAYAMA,Kaoru
 
 Feature
 =======
@@ -13,7 +13,8 @@ Feature
 - Cusotomizing key-binding
 - Quoting command's output with backquote-mark
 - Access from/to clipboard
-- Powered by Lua 5.1.4
+- Powered by Lua 5.2.1
+- Free Software. GNU General Public License
 
 NYAOS does not use registory. To uninstall, remove files only.
 
@@ -992,19 +993,18 @@ Required these tools
 
     (Windows)
         - mingw32-gcc.exe (GCC) 3.4.5 or later
-        - Lua 5.1.4
+        - Lua 5.2.1
     (OS/2)
         - emx/gcc 0.9d FIX 3 or later
         - GNU Make
-        - Lua 5.1.4
+        - Lua 5.2.1
 
 (1) Build the Lua
-        cd /path/to/lua-5.1.4
+        cd /path/to/lua-5.2.1
         make generic
 (2) Build the NYAOS
         cd /path/to/nyaos3k
         make LUAPATH=(LUA's PATH)
-
 
 
 Extension with Lua

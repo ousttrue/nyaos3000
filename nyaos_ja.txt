@@ -66,7 +66,7 @@ NYAOS --- Nihongo Yet Another Open Shell は、
     - キーカスタマイズ機能(bindkey命令)
     - 逆クォートによる、外部コマンド出力の引用機能
     - クリップボードとのアクセスも可能(Ctrl-K,Ctrl-Y)
-    - Lua 5.1.4 による動作のカスタマイズ
+    - Lua 5.2.1 による動作のカスタマイズ
 
 NYAOS はレジストリの類を利用しませんので、アンインストールはファイルを
 消すだけとなります。
@@ -1154,16 +1154,16 @@ Ctrl-V ESC で入力してください。
 
     (Windows)
         - mingw32-gcc.exe (GCC) 3.4.5
-        - Lua 5.1.4
+        - Lua 5.2.1
     (OS/2)
         - emx/gcc 0.9d FIX 3
         - GNU Make
-        - Lua 5.1.4
+        - Lua 5.2.1
 
 次の手順でビルトします。
 
     (1) Lua をソースビルドする
-            cd /path/to/lua-5.1.4
+            cd /path/to/lua-5.2.1
             make generic
 
     (2) NYAOS 本体をビルドする
