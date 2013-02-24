@@ -79,6 +79,9 @@ NYAOS.EXE を PATH の通ったディレクトリにおいて、実行してください。
 パッケージ添付の設定ファイル _nya は NYAOS.EXE と同じディレクトリに
 配置してください。
 
+OS/2 版の場合、0.9d 以降の emx.dll が LIBPATH の指定するディレクトリ
+にある必要があります。
+
 また、ユーザ定義の設定については、環境変数 USERPROFILE か HOME の指定する
 ディレクトリに _nya という同名の名前で作成してください。
 _nya には、CMD.EXE のコマンドファイルとは次の点が違います。
@@ -1560,20 +1563,14 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
     status に成否(0:成功,not 0:失敗)
     errmsg にメッセージが入ります。
 
-* splitknj - 日本語1文字単位の分割
+* nyaos.sub - string.sub の DBCS 対応版
 
-    文字列を1バイトではなく、1文字単位で分割して、各文字を配列に格納します。
+    $ lua_e "print(nyaos.sub('あいうえお',3,-2))"
+    うえ
 
-    lua_e "
-        local sample = [[あはソはいaひひふふふソ]]
-        local table = nyaos.splitknj(sample)
+* nyaos.len - string.len の DBCS 対応版
 
-        for i=1,#table do
-            print( table[i] )
-        end
-    "
-
-
+    $ lua_e "print(nyaos.len('あiいuうえooお') )"
 
 注意事項
 ========
@@ -1632,6 +1629,14 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.3.6_0 (2013/02/24)
+    - 内蔵 Lua の文字列リテラルを DBCS 対応化
+    - nyaos.sub , nyaos.len 追加
+    - nyaos.splitknj 削除
+    - _nya の中身を機能単位で分割して、_nya.d\* へ移動
+    - [OS/2] PMアプリが実行できない問題が見付かったので、emx.dll を
+      再び使用するようにした。
 
 3.3.5_1 (2013/02/18)
     - Windows8 で日本語が入力できなかった問題を修正

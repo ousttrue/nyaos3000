@@ -23,6 +23,8 @@ How to use
 Put _nya,which is packaged in zip-file, onto the same directory with nyaos.exe, 
 and run nyaos.exe.
 
+On OS/2 Warp, emx.dll (0.9d or later) are required in LIBPATH.
+
 Write on %USERPROFILE%\_nya or %HOME%\_nya what you want to define setting .
 
 Deferences between _nya and CMD.EXE's batch file.
@@ -1393,21 +1395,24 @@ File/Directory Operation
     At succeeding, status is 0
     At failure , status is not 0 and errmsg has an error message.
 
-* nyaos.splitknj 
+* nyaos.sub
 
-    split a string into table whose element is one charactor(shift-jis).
+    The DBCS version of string.sub
 
-    lua_e "
-        local sample = [[‚ ‚Íƒ\‚Í‚¢a‚Ð‚Ð‚Ó‚Ó‚Óƒ\]]
-        local table = nyaos.splitknj(sample)
+* nyaos.len
 
-        for i=1,#table do
-            print( table[i] )
-        end
-    "
+    The DBCS version of string.len
 
 History
 =======
+
+3.3.6_0 (2013/02/24)
+    - Support DBCS String literal on builtin-Lua.
+    - Add nyaos.sub/len : DBCS version of Lua's string.sub/len
+    - Remove nyaos.splitknj function
+    - Move some functions from _nya to _nya.d\*
+    - [OS/2] Now emx.dll are required again because the problem are 
+      found that PM applications can not be called.
 
 3.3.5_1 (2013/02/18)
     - Fix: Japanese Charactors could not be typed on Windows-8.
