@@ -199,11 +199,7 @@ void filesize2str( filesize_t n , NnString &buffer )
  */
 static void dir_files( const NnVector &list , int option , Writer &out )
 {
-    if( option & OPT_ONE ){
-	for(int i=0 ; i<list.size() ; ++i ){
-	    out << ((NnFileStat*)list.const_at(i))->name() << '\n';
-	}
-    }else if( option & OPT_LONG ){
+    if( option & OPT_LONG ){
 	/*** ロングフォーマット ***/
 	if( option & OPT_COLOR )
 	    out << ls_end_code ;
@@ -245,6 +241,10 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 		out << '*';
 	    }
 	    out << '\n';
+	}
+    }else if( option & OPT_ONE ){
+	for(int i=0 ; i<list.size() ; ++i ){
+	    out << ((NnFileStat*)list.const_at(i))->name() << '\n';
 	}
     }else{
 	/*** 格子状フォーマット ***/
