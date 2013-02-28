@@ -42,12 +42,21 @@ static void stamp_conv( time_t time1 , NnTimeStamp &stamp_ )
     struct tm *tm1;
 
     tm1 = localtime( &time1 );
-    stamp_.second = tm1->tm_sec  ;
-    stamp_.minute = tm1->tm_min  ;
-    stamp_.hour   = tm1->tm_hour ;
-    stamp_.day    = tm1->tm_mday ;
-    stamp_.month  = tm1->tm_mon + 1;
-    stamp_.year   = tm1->tm_year + 1900 ;
+    if( tm1 != NULL ){
+        stamp_.second = tm1->tm_sec  ;
+        stamp_.minute = tm1->tm_min  ;
+        stamp_.hour   = tm1->tm_hour ;
+        stamp_.day    = tm1->tm_mday ;
+        stamp_.month  = tm1->tm_mon + 1;
+        stamp_.year   = tm1->tm_year + 1900 ;
+    }else{
+        stamp_.second = 0;
+        stamp_.minute = 0;
+        stamp_.hour   = 0;
+        stamp_.day    = 0;
+        stamp_.month  = 1;
+        stamp_.year   = 1972 ;
+    }
 }
 
 /** 「...\」→「..\..\」 DOS,OS/2 の為 */
