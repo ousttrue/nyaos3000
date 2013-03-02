@@ -1406,6 +1406,10 @@ File/Directory Operation
 History
 =======
 
+3.3.6_1 (2013/03/01)
+    - Fixed: "ls -l | more" did not print with the long format.
+    - Fixed: Crashed at executing 'con' or 'prn'
+
 3.3.6_0 (2013/02/24)
     - Support DBCS String literal on builtin-Lua.
     - Add nyaos.sub/len : DBCS version of Lua's string.sub/len
@@ -1824,4 +1828,4 @@ Thanks to...
     Martin Hason        , @orange_clover    , @usaturn          ,
     @turky              , @kyon_mm          , Gad Brodai        ,
     Masahiko NAKANISHI  , @rltm             , @laugh_K          ,    
-    @overthestardust
+    @overthestardust    , DeaR(@nayuri_aohime)

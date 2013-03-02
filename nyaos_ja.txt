@@ -1630,6 +1630,10 @@ dir/w がエラーになります
 変更履歴
 ========
 
+3.3.6_1 (2013/03/01)
+    - リダイレクトすると、ls -l がロングフォーマットにならない不具合を修正
+    - CON や PRN をコマンド名として実行すると落ちる不具合を修正
+
 3.3.6_0 (2013/02/24)
     - 内蔵 Lua の文字列リテラルを DBCS 対応化
     - nyaos.sub , nyaos.len 追加
@@ -2687,6 +2691,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     Martin Hason 様   @orange_clover様     @usaturn様
     @turky様          @kyon_mm様           Gad Brodai様
     中西 正彦様       @rltm様              @laugh_K様
-    @overthestardust様
+    @overthestardust様                     DeaR(@nayuri_aohime)様
 
 この場を借りて、お礼申し上げます。ありがとうございました。
