@@ -395,6 +395,12 @@ Status GetLine::yank(int)
     NnString killbuffer;
 
     Console::readClipBoard( killbuffer );
+
+    if( killbuffer.at( killbuffer.length()-1 ) == '\n' )
+        killbuffer.chop();
+    if( killbuffer.at( killbuffer.length()-1 ) == '\r' )
+        killbuffer.chop();
+
     insertHere( killbuffer.chars() );
     
     return NEXTCHAR;
