@@ -47,7 +47,10 @@ public:
             WORD wflags ,
             VARIANT *argv ,
             int argc ,
-            VARIANT &result );
+            VARIANT &result ,
+            HRESULT *hr=0,
+            char **error_info=0 
+            );
     int const_load(void *L,void (*setter)(void *,const char *,VARIANT &));
 
     int ok() const { return pApplication != NULL ; }

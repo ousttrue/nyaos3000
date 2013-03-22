@@ -189,7 +189,13 @@ static void lua2variants( lua_State *L , int i , Variants &args )
         break;
     case LUA_TSTRING:
     default:
-        args.add_as_string( lua_tostring(L,i) );
+        {
+            const char *s=lua_tostring(L,i);
+            if( s != NULL )
+                args.add_as_string( s );
+            else
+                args.add_as_null();
+        }
         break;
     }
 }
@@ -212,8 +218,20 @@ static int put_property(lua_State *L)
     Variants args;  lua2variants(L,3,args);
     VARIANT result; VariantInit(&result);
 
-    (**u).invoke( member_name , DISPATCH_PROPERTYPUT , args , args.size() , result );
-    return 0;
+    char *error_info=0;
+    (**u).invoke( member_name , DISPATCH_PROPERTYPUT , 
+                  args , args.size() , result , NULL , &error_info );
+    if( error_info != 0 ){
+        lua_pushnil(L);
+        lua_pushstring(L,error_info);
+        DBG( puts("error_info=") );
+        DBG( puts(error_info) );
+        delete[]error_info;
+        return 2;
+    }else{
+        lua_pushboolean(L,1);
+        return 1;
+    }
 }
 
 static int return_self(lua_State *L)
@@ -419,6 +437,60 @@ static void push_activexmember(lua_State *L,ActiveXMember *member)
     lua_setmetatable(L,-2);
 }
 
+// 「self:Item("key") = val」 ができないため
+// かわりに
+// 「self:__put__("Item","key",val)」
+// ==「self.__put__(self,"Item","key",val)」を提供
+static int put__(lua_State *L)
+{
+    if( lua_gettop(L) < 4 ){
+        lua_pushnil(L);
+        lua_pushstring(L,"__put__ requires 4 arguments.");
+        return 2;
+    }
+    DBG( puts("[CALL] __put__") );
+    ActiveXObject **u=static_cast<ActiveXObject**>(
+            luaL_checkudata(L,1,"ActiveXObject") );
+    if( u == NULL || !(**u).ok() ){
+        set_nyaos_error(L,"Invalid Object. Expected <ActiveXObject>");
+        lua_pushnil(L);
+        lua_pushstring(L,"Invalid Object. Expected <ActiveXObject>");
+        return 2;
+    }
+    const char *name=lua_tostring(L,2);
+    if( name == NULL ){
+        lua_pushnil(L);
+        lua_pushstring(L,"method name not found");
+        return 2;
+    }
+    ActiveXMember member(**u,name);
+    if( ! member.ok() ){
+        lua_pushnil(L);
+        lua_pushstring(L,"method not found");
+        return 2;
+    }
+
+    Variants args;
+    lua2variants(L,4,args);
+    lua2variants(L,3,args);
+    VARIANT result; VariantInit(&result);
+
+    char *error_info=0;
+    (**u).invoke( name , DISPATCH_PROPERTYPUT , 
+                  args , args.size() , result , NULL , &error_info );
+    if( error_info != 0 ){
+        lua_pushnil(L);
+        lua_pushstring(L,error_info);
+        DBG( puts("error_info=") );
+        DBG( puts(error_info) );
+        delete[]error_info;
+        return 2;
+    }else{
+        lua_pushboolean(L,1);
+        return 1;
+    }
+}
+
 static int find_member(lua_State *L)
 {
     DBG( puts("[CALL] find_member") );
@@ -431,6 +503,10 @@ static int find_member(lua_State *L)
         return 2;
     }
     const char *member_name=lua_tostring(L,2);
+    if( strcmp(member_name,"__put__")==0 ){
+        lua_pushcfunction(L,put__);
+        return 1;
+    }
     ActiveXMember *member=new ActiveXMember(**u,member_name);
     if( member == NULL ){
         lua_pushnil(L);

@@ -249,13 +249,16 @@ int ActiveXObject::invoke(
         WORD wflags ,
         VARIANT *argv ,
         int argc ,
-        VARIANT &result )
+        VARIANT &result ,
+        HRESULT *hr,
+        char **error_info 
+        )
 {
     ActiveXMember method( *this , name );
     if( ! method.ok() )
         return -1;
 
-    return method.invoke(wflags,argv,argc,result);
+    return method.invoke(wflags,argv,argc,result,hr,error_info);
 }
 
 void Variants::grow()
