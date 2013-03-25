@@ -507,6 +507,10 @@ static int find_member(lua_State *L)
         lua_pushcfunction(L,put__);
         return 1;
     }
+    if( strcmp(member_name,"__iter__")==0 ){
+        lua_pushcfunction(L,make_iterator);
+        return 1;
+    }
     ActiveXMember *member=new ActiveXMember(**u,member_name);
     if( member == NULL ){
         lua_pushnil(L);
