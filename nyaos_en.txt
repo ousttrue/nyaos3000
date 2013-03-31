@@ -1273,13 +1273,28 @@ Tools
     local word=nyaos.get_active_object("Word.Application")
     word:Quit()
 
-* nyaos.const_load - import constants from COM (only on Windows)
+- COMObject.__const__ - load constraints from COM (only on Windows)
 
-    local excel=nyaos.create_object("Excel.Application")
-    local excel_const=nyaos.const_load(excel)
-    for key,val in pairs(excel_const) do
-        print(key.."="..val)
+    local excel = nyaos.create_object('Excel.Application')
+    for key,val in pairs(excel.__const__) do
+        print(key .. "=>" .. val , type(val))
     end
+
+- COMObject:__iter__ - enumerate the items in collection of COMObject
+  (only on Windows)
+
+    local shell = nyaos.create_object("WScript.Shell")
+    for e in shell.SpecialFolders:__iter__() do
+        print(e)
+    end
+
+- COMObject:__put__ - set property of COMObject (only on Windows)
+
+    local shell=nyaos.create_object("WScript.Shell")
+    local sysEnv=shell:Environment("System")
+    -- instead of sysEnv:Item("VARNAME") = "VALUE"
+    sysEnv:__put__("Item","VARNAME","VALUE")
+
 - nyaos.getkey() - get keycode typed
 
     lua_e "print(nyaos.getkey())"
@@ -1405,6 +1420,14 @@ File/Directory Operation
 
 History
 =======
+
+3.3.7_0 (2013/03/31)
+    - Since COMObject:Item("key")=val is not available,
+      provide COMObject:__put__("Item","key",val)
+    - Be able to enumerate the items in collection of COM-object
+      (ex: for e in COMObject:__iter__() do ... end )
+    - Be able to load COM's constraints with COMObject.__const__
+      (same as nyaos.const_load which was removed from documents)
 
 3.3.6_1 (2013/03/01)
     - Fixed: "ls -l | more" did not print with the long format.
