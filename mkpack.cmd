@@ -4,9 +4,9 @@ if not '%1' == '' goto main
     goto exit
 :main
 if not '%OS%' == 'Windows_NT' goto OS2
-    zip nyaos-%1-win.zip nyaos.exe nyaos*.txt _nya _nya.d\*.lua _nya.d\*.ny
+    zip -r nyaos-%1-win.zip nyaos.exe nyaos*.txt _nya _nya.d\* -x _nya.d\.hg*
     hg archive -t zip nyaos-%1-src.zip
     goto exit
 :OS2
-    zip nyaos-%1-os2.zip nyaos.exe _nya nyaos*.txt _nya.d\*.lua _nya.d\*.ny
+    zip -r nyaos-%1-os2.zip nyaos.exe nyaos*.txt _nya _nya.d\* -x _nya.d\.hg*
 :exit
