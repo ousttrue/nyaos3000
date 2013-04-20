@@ -15,6 +15,7 @@
 #include "getline.h"
 #include "nua.h"
 #include "mysystem.h"
+#include "ntcons.h"
 
 // #define TRACE 1
 
@@ -809,6 +810,10 @@ int NyadosShell::interpret1( const NnString &statement )
 
     if( cmdline.length()==2 && cmdline.at(1)==':' && isalpha(cmdline.at(0) & 0xFF) ){
 	NnDir::chdrive( cmdline.at(0) );
+        NnString title("NYAOS - ") , currdir;
+        NnDir::getcwd( currdir );
+        title << currdir ;
+        Console::setConsoleTitle( title.chars() );
         return 0;
     }else if( cmdline.at(0) == ':' ){
         NnString label( cmdline.chars()+1 );
