@@ -1421,6 +1421,10 @@ File/Directory Operation
 History
 =======
 
+3.3.7_1 (2013/04/23)
+    - Fixed: The Window's title text was not updated at changing 
+      drive with `X:' (Windows)
+
 3.3.7_0 (2013/03/31)
     - Since COMObject:Item("key")=val is not available,
       provide COMObject:__put__("Item","key",val)
