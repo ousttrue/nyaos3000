@@ -22,6 +22,7 @@ enum {
     OPT_COLOR = 0x10 , 
     OPT_ALL2  = 0x20 , // -A
     OPT_HUMAN = 0x40 ,
+    OPT_SI    = 0x80 ,
 };
 
 # define LS_LEFT  "\033["
@@ -214,12 +215,13 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 	    const NnFileStat *st=(const NnFileStat*)list.const_at(i);
 
 	    NnString &filesize_str = filesize_list[ i ];
-	    if( option & OPT_HUMAN ){
+	    if( (option & OPT_HUMAN) || (option & OPT_SI) ){
 		char buffer[ 4 ];
+		int base = ( (option & OPT_SI) ? 1000 : 1024 );
 		int u;
 		double size=st->size();
 		for( u=0 ; size>=1000 ; ++u )
-		    size /= 1024;
+		    size /= base;
 		if( size == 0 || size >= 10 ){
 		    sprintf( buffer , "%3.f" , size );
 		}else{
@@ -487,6 +489,9 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                 }else if( strcmp(p,"color=never")==0 ){
                     /* ÉJÉâÅ[Çó}êßÇ∑ÇÈ */
                     option &= ~OPT_COLOR;
+                }else if( strcmp(p,"si")==0 ){
+                    option &=~OPT_HUMAN;
+                    option |= OPT_SI;
                 }else{
                     conErr << path.chars() << ": not such option.\n";
                     return 0;
@@ -501,6 +506,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                     case 'x': option &=~OPT_ONE  ; break;
                     case 'R': option |= OPT_REC  ; break;
                     case 'h':
+                        option &=~OPT_SI;
                         option |= OPT_HUMAN;
                         break;
                     case 'r':
