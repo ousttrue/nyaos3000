@@ -355,6 +355,14 @@ int nua_len(lua_State *L)
     return 1;
 }
 
+static int nua_getcwd(lua_State *L)
+{
+    NnString cwd;
+    NnDir::getcwd(cwd);
+    lua_pushstring( L , cwd.chars() );
+    return 1;
+}
+
 int nua_substring(lua_State *L)
 {
     const char *s=lua_tostring(L,1);
@@ -594,6 +602,8 @@ int NyaosLua::init()
         lua_setfield(L,-2,"sub");
         lua_pushcfunction(L,nua_len);
         lua_setfield(L,-2,"len");
+        lua_pushcfunction(L,nua_getcwd);
+        lua_setfield(L,-2,"currentdir");
 
         lua_pushinteger(L, getpid() );
         lua_setfield(L,-2,"pid");
