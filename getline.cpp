@@ -155,6 +155,9 @@ Status GetLine::operator() ( NnString &result )
                         ++count;
                         for(int i=start ; i<=n && rc==NEXTCHAR ;i++){
                             switch( lua_type(L,i) ){
+                            default: // include nil
+                                --count;
+                                break;
                             case LUA_TBOOLEAN:
                                 rc = lua_toboolean(L,i) ? NEXTLINE : CANCEL;
                                 break;
