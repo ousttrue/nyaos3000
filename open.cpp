@@ -30,7 +30,7 @@ static void the_open( const char *fname , const char *action )
     fn.slash2yen();
     _fullpath( path , fn.chars() , sizeof(path) );
 
-    int err=(int)ShellExecute(NULL,action,path,NULL,NULL,SW_SHOW );
+    int err=(int)(INT_PTR)ShellExecute(NULL,action,path,NULL,NULL,SW_SHOW );
     if( err < 32 ){
 	conErr << fn << ": can't open the object as " << action 
 	    << " (" << err << ").\n";
