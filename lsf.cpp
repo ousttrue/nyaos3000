@@ -204,6 +204,19 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 	if( option & OPT_COLOR )
 	    out << ls_end_code ;
 	
+	NnString *filesize_list=new NnString[ list.size() ];
+	int filesize_max=1;
+	for(int i=0 ; i<list.size() ; ++i ){
+	    const NnFileStat *st=(const NnFileStat*)list.const_at(i);
+
+	    NnString &filesize_str = filesize_list[ i ];
+	    filesize2str( st->size() , filesize_str );
+
+	    int len=filesize_str.length();
+	    if( len > filesize_max )
+		filesize_max = len;
+	}
+
 	for(int i=0 ; i<list.size() ; ++i ){
 	    char buffer[ 1024 ];
 	    const NnFileStat *st=(const NnFileStat*)list.const_at(i);
@@ -215,11 +228,9 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 		<< (canExe ? 'x' : '-' )
 		<< ' ';
 
-            NnString filesize_str;
-            filesize2str( st->size() , filesize_str );
-	    
-	    sprintf( buffer , "%8s %04d-%02d-%02d %02d:%02d ",
-		    filesize_str.chars() ,
+	    sprintf( buffer , "%*s %04d-%02d-%02d %02d:%02d ",
+		    filesize_max ,
+		    filesize_list[ i ].chars() ,
 		    st->stamp().year ,
 		    st->stamp().month ,
 		    st->stamp().day ,
@@ -242,6 +253,7 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 	    }
 	    out << '\n';
 	}
+	delete[]filesize_list;
     }else if( option & OPT_ONE ){
 	for(int i=0 ; i<list.size() ; ++i ){
 	    out << ((NnFileStat*)list.const_at(i))->name() << '\n';
