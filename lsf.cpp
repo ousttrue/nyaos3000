@@ -21,6 +21,7 @@ enum {
     OPT_REC   = 0x8 ,
     OPT_COLOR = 0x10 , 
     OPT_ALL2  = 0x20 , // -A
+    OPT_HUMAN = 0x40 ,
 };
 
 # define LS_LEFT  "\033["
@@ -199,6 +200,9 @@ void filesize2str( filesize_t n , NnString &buffer )
  */
 static void dir_files( const NnVector &list , int option , Writer &out )
 {
+    static const char unit_list[]={
+        0, 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'
+    };
     if( option & OPT_LONG ){
 	/*** ロングフォーマット ***/
 	if( option & OPT_COLOR )
@@ -210,7 +214,21 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 	    const NnFileStat *st=(const NnFileStat*)list.const_at(i);
 
 	    NnString &filesize_str = filesize_list[ i ];
-	    filesize2str( st->size() , filesize_str );
+	    if( option & OPT_HUMAN ){
+		char buffer[ 4 ];
+		int u;
+		double size=st->size();
+		for( u=0 ; size>=1000 ; ++u )
+		    size /= 1024;
+		if( size == 0 || size >= 10 ){
+		    sprintf( buffer , "%3.f" , size );
+		}else{
+		    sprintf( buffer , "%.1f" , size );
+		}
+		filesize_str << buffer << unit_list[ u ];
+	    }else {
+		filesize2str( st->size() , filesize_str );
+	    }
 
 	    int len=filesize_str.length();
 	    if( len > filesize_max )
@@ -482,6 +500,9 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                     case '1': option |= OPT_ONE  ; break;
                     case 'x': option &=~OPT_ONE  ; break;
                     case 'R': option |= OPT_REC  ; break;
+                    case 'h':
+                        option |= OPT_HUMAN;
+                        break;
                     case 'r':
                         filecmpr.set_reverse(1) ;
                         break;
