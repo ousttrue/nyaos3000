@@ -258,7 +258,7 @@ bindkey
 
 キー名称には次のようなものがあります。
 
-    BACKSPACE       BACKTAB         CTRL_SPACE
+    BACKSPACE       CTRL_SPACE
     CENTER          CTRL_A          CTRL_AT         CTRL_B
     CTRL_C          CTRL_CENTER     CTRL_D          CTRL_DEL
     CTRL_DOWN       CTRL_E          CTRL_END        CTRL_F
@@ -283,8 +283,7 @@ bindkey
     SHIFT_F1        SHIFT_F10       SHIFT_F11       SHIFT_F12
     SHIFT_F2        SHIFT_F3        SHIFT_F4        SHIFT_F5
     SHIFT_F6        SHIFT_F7        SHIFT_F8        SHIFT_F9
-                    SPACE           TAB             UP
-(以下、OS/2 のみ)
+    SHIFT_TAB       SPACE           TAB             UP
     ALT_0           ALT_1           ALT_2           ALT_3
     ALT_4           ALT_5           ALT_6           ALT_7
     ALT_8           ALT_9           ALT_A           ALT_B
@@ -305,7 +304,7 @@ bindkey
     ALT_RIGHT_QUOTE ALT_S           ALT_SEMICOLON   ALT_SLASH
     ALT_SPACE       ALT_T           ALT_TAB         ALT_U
     ALT_UP          ALT_V           ALT_W           ALT_X
-    ALT_Y           ALT_Z           BACKSPACE       BACKTAB
+    ALT_Y           ALT_Z           BACKSPACE
 
 ここにないものについては、アスキーコードを10進数で指定できます。
 アスキーコードを持たず、スキャンコードしか持っていないものは、
@@ -467,6 +466,8 @@ ls [オプション] [ファイル名]
     -t 最終更新日時でソートする。
     -r ソート順を逆にする。
     -S サイズでソートする。
+    -h ファイルサイズに単位を付けて表示 (1024倍毎に K,M,G…)
+    --si ファイルサイズに単位を付けて表示 (1000倍毎に K,M,G…)
 
     --color       
     --color=always  常にカラー出力する 
@@ -1576,6 +1577,10 @@ NYAOS のコマンドラインを実行し、標準出力に出力されるものを戻り値として
     status に成否(0:成功,not 0:失敗)
     errmsg にメッセージが入ります。
 
+* nyaos.currentdir - カレントディレクトリを取得
+
+    lua_e "print(nyaos.currentdir())"
+
 * nyaos.sub - string.sub の DBCS 対応版
 
     $ lua_e "print(nyaos.sub('あいうえお',3,-2))"
@@ -1642,6 +1647,18 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.3.8_0 (2013/05/03)
+    - bindkey 等で CTRL_LEFT,CTRL_RIGHT 等一部のキーに機能を設定できなかった
+      不具合を修正
+    - nyaos.keyhook に登録されている関数が return nil を実行すると、一般のキー
+      入力が不能に陥ってしまう不具合を修正
+    - Shift + TAB の bindkey で使うキー名称を BACKTAB から SHIFT_TAB へ変更
+    - Lua関数 nyaos.currentdir() を実装
+    - ls -l のファイルサイズの幅が 8 桁固定だと、MB とか GB なファイルがある
+      と表示が乱れるので動的に幅を変更 ※
+    - ls にオプション -h , --si を追加 ※
+    (※ Akinori Hattori氏コードをマージ)
 
 3.3.7_1 (2013/04/23)
     - x: によるドライブ移動で、ウインドウのタイトルバーにカレントドライブ
@@ -2717,5 +2734,6 @@ Nihongo Yet Another Open Shell (NYAOS) はフリーソフトウェアです。
     @turky様          @kyon_mm様           Gad Brodai様
     中西 正彦様       @rltm様              @laugh_K様
     @overthestardust様                     DeaR(@nayuri_aohime)様
+    @h_east様
 
 この場を借りて、お礼申し上げます。ありがとうございました。

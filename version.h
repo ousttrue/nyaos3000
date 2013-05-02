@@ -1,3 +1,3 @@
 #ifndef VER
-#define VER "3.3.7_1"
+#define VER "3.3.8_0"
 #endif

@@ -197,6 +197,7 @@ Customize the key-binding.
 
 KEYNAME is one of these.
 
+    BACKSPACE       CTRL_SPACE
     CENTER          CTRL_A          CTRL_AT         CTRL_B
     CTRL_C          CTRL_CENTER     CTRL_D          CTRL_DEL
     CTRL_DOWN       CTRL_E          CTRL_END        CTRL_F
@@ -221,7 +222,28 @@ KEYNAME is one of these.
     SHIFT_F1        SHIFT_F10       SHIFT_F11       SHIFT_F12
     SHIFT_F2        SHIFT_F3        SHIFT_F4        SHIFT_F5
     SHIFT_F6        SHIFT_F7        SHIFT_F8        SHIFT_F9
-    SPACE           TAB             UP
+    SHIFT_TAB       SPACE           TAB             UP
+    ALT_0           ALT_1           ALT_2           ALT_3
+    ALT_4           ALT_5           ALT_6           ALT_7
+    ALT_8           ALT_9           ALT_A           ALT_B
+    ALT_BACKSLASH   ALT_BACKSPACE   ALT_C           ALT_COMMA
+    ALT_D           ALT_DEL         ALT_DOWN        ALT_E
+    ALT_END         ALT_EQUAL       ALT_ESC         ALT_F
+    ALT_F1          ALT_F10         ALT_F11         ALT_F12
+    ALT_F2          ALT_F3          ALT_F4          ALT_F5
+    ALT_F6          ALT_F7          ALT_F8          ALT_F9
+    ALT_G           ALT_H           ALT_HOME        ALT_I
+    ALT_INS         ALT_J           ALT_K           ALT_L
+    ALT_LEFT        ALT_LEFT_BRACKET                ALT_LEFT_QUOTE
+    ALT_M           ALT_MINUS       ALT_N           ALT_O
+    ALT_P           ALT_PAD_ASTERISK                ALT_PAD_ENTER
+    ALT_PAD_MINUS   ALT_PAD_PLUS    ALT_PAD_SLASH   ALT_PAGEDOWN
+    ALT_PAGEUP      ALT_PERIOD      ALT_Q           ALT_R
+    ALT_RETURN      ALT_RIGHT       ALT_RIGHT_BRACKET
+    ALT_RIGHT_QUOTE ALT_S           ALT_SEMICOLON   ALT_SLASH
+    ALT_SPACE       ALT_T           ALT_TAB         ALT_U
+    ALT_UP          ALT_V           ALT_W           ALT_X
+    ALT_Y           ALT_Z           BACKSPACE
 
 Instead of keyname, you can write asciicode or scancode+256
 
@@ -354,6 +376,8 @@ option usage
     -t sort by update-date.
     -r sort reversely
     -S sort by size.
+    -h with -l, print sizes in human readable format (e.g., 1K 234M 2G)
+    --si likewise, but use powers of 1000 not 1024
 
     --color
     --color=always  print with color always
@@ -1410,6 +1434,10 @@ File/Directory Operation
     At succeeding, status is 0
     At failure , status is not 0 and errmsg has an error message.
 
+* nyaos.currentdir - get the current working directory
+
+    lua_e "print(nyaos.currentdir())"
+
 * nyaos.sub
 
     The DBCS version of string.sub
@@ -1420,6 +1448,16 @@ File/Directory Operation
 
 History
 =======
+
+3.3.8_0 (2013/05/03)
+    - Fixed: Could not assign functions with the `bindkey' command to 
+      some keys for example CTRL_LEFT,CTRL_RIGTH and so on.
+    - Fixed: Once Lua-function assigned to nyaos.keyhook returns nil,
+      no Lua-function assigned key did not work.
+    - New Lua function: nyaos.currentdir()
+    - The width for the file size on `ls -l' is automatically changed. (*)
+    - ls's new option: -h,--si (*)
+    (* Thanks to Mr.Akinori Hattori's codes!)
 
 3.3.7_1 (2013/04/23)
     - Fixed: The Window's title text was not updated at changing 
@@ -1856,3 +1894,4 @@ Thanks to...
     @turky              , @kyon_mm          , Gad Brodai        ,
     Masahiko NAKANISHI  , @rltm             , @laugh_K          ,    
     @overthestardust    , DeaR(@nayuri_aohime)
+    @h_east
