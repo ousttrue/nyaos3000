@@ -15,6 +15,7 @@
 #endif
 #include <conio.h>
 #include <stdio.h>
+#include <ctype.h>
 
 /* header */
 int getch_replacement_for_msvc(void);
@@ -107,27 +108,50 @@ static struct vkmap extra_keymap_msvc[] = {
  { -1 , -1, 0, 0, 0, 0, 0 }
 };
 
+static int ALT_ALPHABET[]=
+{
+  0,
+  0x11e, 0x130, 0x12e, 0x120, 0x112, 0x121, 0x122, 0x123, 0x117, 0x124,
+  0x125, 0x126, 0x132, 0x131, 0x118, 0x119, 0x110, 0x113, 0x11f, 0x114,
+  0x116, 0x12f, 0x111, 0x12d, 0x115, 0x12c 
+};
+
+static int ALT_NUMBER[]=
+{
+  0x181, 0x178, 0x179, 0x17a, 0x17b, 0x17c, 0x17d, 0x17e, 0x17f, 0x180
+};
+
 static
 int lookup_keycode(int vkey, int scan, int shift, int ctrl, int alt, int enhkey)
 {
-  int ch;
   const struct vkmap *vk;
   
-  for(ch=0, vk=&extra_keymap_msvc[0]; vk->vk != -1; ++vk) {
+  for( vk=extra_keymap_msvc ; vk->vk != -1; ++vk) {
     int match_vkey = vk->vk && vk->vk == vkey;
     int match_scan = vk->scan && vk->scan == (scan & SCAN_CODE_MASK);
     int match_enhstate = (enhkey && (vk->scan & SCAN_ENH)) || !enhkey;
     if ( (match_vkey || match_scan) && match_enhstate) {
-      ch = alt ? ctrl ? vk->key_ctrl_alt
-                      : vk->key_alt
-               : ctrl ? vk->key_ctrl
+      return alt ? ctrl ? vk->key_ctrl_alt
+                        : vk->key_alt
+                 : ctrl ? vk->key_ctrl
                       : shift ? vk->key_shift
                               : vk->key;
-      break;
     }
+  }
+  return 0;
+}
+
+// for ALT-0~9,A~Z
+static int lookup_keycode_alt_alnum(int ch)
+{
+  if( isalpha(ch & 0xFF) ){
+    return ALT_ALPHABET[ ch & 0x1F ];
+  }else if( isdigit(ch & 0xFF) ){
+    return ALT_NUMBER[ ch - '0' ];
   }
   return ch;
 }
+
 
 
 #ifdef BUILD_FOR_WCHAR
@@ -227,7 +251,7 @@ getch_replacement_with_flags_for_msvc (int flags)
         ch = lookup_keycode(vk, 0 /* ir.Event.KeyEvent.wVirtualScanCode */,
                             ks & SHIFT_PRESSED,
                             ks & (LEFT_CTRL_PRESSED|RIGHT_CTRL_PRESSED),
-                            ks & (LEFT_ALT_PRESSED|RIGHT_CTRL_PRESSED),
+                            ks & (LEFT_ALT_PRESSED|RIGHT_ALT_PRESSED),
                             ks & ENHANCED_KEY);
         if ((ch & IN_NUMLOCKED) && !(ks & NUMLOCK_ON)) {
           ch = 0;
@@ -247,12 +271,20 @@ getch_replacement_with_flags_for_msvc (int flags)
           }
         }
         ch &= STRIP_EXTRA_FLAGS;
+      }else if( ks & (LEFT_ALT_PRESSED|RIGHT_ALT_PRESSED) ){
+        ch = lookup_keycode_alt_alnum(ch);
+        if( ch > 0xFF ){
+          succ_key_value = (ch & STRIP_EXTRA_FLAGS);
+          bKey = TRUE;
+          spool_buffer[ spool_count++ ] = 0x00;
+          continue;
+        }
       }
       if (ch != 0){
         bKey = TRUE;
         spool_buffer[ spool_count++ ] = ch;
       }
-    }
+    } // loop for event
   }
 
   LEAVE_THREAD_ATOMIC();
