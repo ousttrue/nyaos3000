@@ -23,6 +23,7 @@ enum {
     OPT_ALL2  = 0x20 , // -A
     OPT_HUMAN = 0x40 ,
     OPT_SI    = 0x80 ,
+    OPT_UNBAR = 0x100 , // -_
 };
 
 # define LS_LEFT  "\033["
@@ -429,11 +430,13 @@ static void dir1( const char *dirname ,
         {
             delete st;
         }else if( ( st->name().startsWith(".") ||
-              st->name().startsWith("_") ||
               st->isHidden() ) && 
             (option & OPT_ALL)==0 )
         {
 	    delete st;
+        }else if( st->name().startsWith("_") &&
+                (option & (OPT_ALL | OPT_ALL2 | OPT_UNBAR))==0 ){
+            delete st;
 	}else{
 	    list.append( st );
 	}
@@ -505,6 +508,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                     case '1': option |= OPT_ONE  ; break;
                     case 'x': option &=~OPT_ONE  ; break;
                     case 'R': option |= OPT_REC  ; break;
+                    case '_': option |= OPT_UNBAR; break;
                     case 'h':
                         option &=~OPT_SI;
                         option |= OPT_HUMAN;
