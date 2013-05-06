@@ -369,6 +369,7 @@ built-in ls(list)
 
 option usage
     -a all files including files starting with dot and underscore, and attributed hidden.
+    -_ print files starting with underscore.
     -l long format
     -1 list one file per line
     -x list entries by lines instead of by columns
@@ -1448,6 +1449,10 @@ File/Directory Operation
 
 History
 =======
+
+3.3.8_1 (2013/05/06)
+    - ls's new option:`-_' : print files starting with _
+    - Fixed: Cound not assign functions to keys: ALT_0~9 ALT-A~z.
 
 3.3.8_0 (2013/05/03)
     - Fixed: Could not assign functions with the `bindkey' command to 
