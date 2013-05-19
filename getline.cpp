@@ -508,6 +508,8 @@ Status GetLine::i_search(int key)
    NnString hint;
    int history_pos = history.size()-2;
    NnString history_found;
+   NnString buffer_save=this->buffer.chars();
+   int position_save=this->pos;
 
    for(;;)
    {
@@ -566,6 +568,12 @@ Status GetLine::i_search(int key)
        {
            ime_toggle(key);
            continue;
+       }else if( key == CTRL('G') ){
+           replace_all_repaint( buffer_save );
+           if( position_save < this->buffer.length() ){
+               this->backward_(this->buffer.length() - position_save);
+           }
+           return NEXTCHAR;
        }
        else
        {
