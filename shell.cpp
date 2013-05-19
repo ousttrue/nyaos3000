@@ -528,7 +528,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
     replace.splitTo( arg0 , argv );
 
     /* ŠÖ”’è‹`•¶ */
-    if( arg0.endsWith("{") ){
+    if( arg0.length() >=2 && arg0.endsWith("{") ){
 	sub_brace_start( *this , arg0 , argv );
         goto exit;
     }
