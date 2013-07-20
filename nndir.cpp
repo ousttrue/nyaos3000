@@ -269,6 +269,7 @@ int NnDir::getcwd( NnString &pwd )
  */
 void NnDir::f2b( const char *sp , NnString &dst )
 {
+    const char *sp_ = sp;
     int prevchar=0;
     while( *sp != '\0' ){
 	if( isKanji(*sp & 255) ){
@@ -279,7 +280,7 @@ void NnDir::f2b( const char *sp , NnString &dst )
 	    dst << *sp++;
 	}else{
 	    if( *sp == '/' || *sp == '\\' ){
-		if( prevchar != '\\' )
+                if( prevchar != '\\' || sp == sp_+1 )
 		    dst << '\\';
 		prevchar = '\\';
 		++sp;
