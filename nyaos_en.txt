@@ -1450,6 +1450,13 @@ File/Directory Operation
 History
 =======
 
+3.3.8_2 (2013/07/24)
+    - Fixed: Could not quit incremental search by CTRL-R with CTRL-G
+    - Fixed: Considered `{' without the name and `}' as the function 
+      block beginning.
+    - Fixed: Could not chdir to the directory pointed with UNC-Path
+      (Thanks to @nocd5)
+
 3.3.8_1 (2013/05/06)
     - ls's new option:`-_' : print files starting with _
     - Fixed: Cound not assign functions to keys: ALT_0~9 ALT-A~z.

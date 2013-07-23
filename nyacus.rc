@@ -2,8 +2,8 @@
 
 LUACAT ICON luacat.ico
 VS_VERSION_INFO    VERSIONINFO 
-FILEVERSION        3,3,8,1
-PRODUCTVERSION     3,3,8,1
+FILEVERSION        3,3,8,2
+PRODUCTVERSION     3,3,8,2
 FILEFLAGSMASK      VS_FFI_FILEFLAGSMASK 
 FILEFLAGS          0x00000000L
 FILEOS             VOS__WINDOWS32
@@ -20,11 +20,11 @@ BEGIN
         BEGIN
             VALUE "CompanyName",      "NYAOS.ORG"
             VALUE "FileDescription",  "Extended Commandline Shell"
-            VALUE "FileVersion",      "3.3.8_1\0"
+            VALUE "FileVersion",      "3.3.8_2\0"
             VALUE "LegalCopyright",   "Copyright (C) 2001-2013 HAYAMA,Kaoru\0"
             VALUE "OriginalFilename", "NYAOS.EXE\0"
             VALUE "ProductName",      "Nihongo Yet Another Open Shell\0"
-            VALUE "ProductVersion",   "3.3.8_1\0"
+            VALUE "ProductVersion",   "3.3.8_2\0"
         END 
     END
 END
