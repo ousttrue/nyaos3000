@@ -532,7 +532,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
 	    NnVector temp;
 	    fnexplode( path.chars() , temp );
 	    if( temp.size() <= 0 ){
-		NnFileStat *st=NnFileStat::stat( path );
+		NnFileStat *st=NnFileStat::getstat( path );
 		if( st == NULL ){
 		    conErr << path << ": not found.\n";
 		    return 0;

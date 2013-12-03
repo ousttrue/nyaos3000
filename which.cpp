@@ -11,7 +11,7 @@
  */
 static int is_file( const NnString &path )
 {
-    NnFileStat *st = NnFileStat::stat( path );
+    NnFileStat *st = NnFileStat::getstat( path );
     if( st == NULL ){
         return 0;
     }else if( st->isDir() ){

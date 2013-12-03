@@ -56,7 +56,7 @@ public:
 
     virtual int compare( const NnSortable &another ) const ;
 
-    static NnFileStat *stat( const NnString &name );
+    static NnFileStat *getstat( const NnString &name );
 };
 
 int fnexplode( const char *path , NnVector &list );

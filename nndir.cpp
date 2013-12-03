@@ -521,7 +521,7 @@ void NnDir::set_default_special_folder()
 
 NnHash NnDir::specialFolder;
 
-NnFileStat *NnFileStat::stat(const NnString &name)
+NnFileStat *NnFileStat::getstat(const NnString &name)
 {
     NnTimeStamp stamp1;
 #ifdef __MINGW32__
