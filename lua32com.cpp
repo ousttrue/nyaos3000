@@ -437,6 +437,61 @@ static void push_activexmember(lua_State *L,ActiveXMember *member)
     lua_setmetatable(L,-2);
 }
 
+// 仕組み上、引数付きプロパティーの取得ができないため
+// かわりに
+// 「self:__get__("Item","key")」を提供する
+
+static int get__(lua_State *L)
+{
+    if( lua_gettop(L) < 3 ){
+        lua_pushnil(L);
+        lua_pushstring(L,"__get__ requires 3 arguments.");
+        return 2;
+    }
+    DBG( puts("[CALL] __get__") );
+    ActiveXObject **u=static_cast<ActiveXObject**>(
+            luaL_checkudata(L,1,"ActiveXObject") );
+    if( u == NULL || !(**u).ok() ){
+        set_nyaos_error(L,"Invalid Object. Expected <ActiveXObject>");
+        lua_pushnil(L);
+        lua_pushstring(L,"Invalid Object. Expected <ActiveXObject>");
+        return 2;
+    }
+    const char *name=lua_tostring(L,2);
+    if( name == NULL ){
+        lua_pushnil(L);
+        lua_pushstring(L,"method name not found");
+        return 2;
+    }
+    ActiveXMember member(**u,name);
+    if( ! member.ok() ){
+        lua_pushnil(L);
+        lua_pushstring(L,"method not found");
+        return 2;
+    }
+
+    Variants args;
+    for(int i=lua_gettop(L) ; i>=3 ; --i ){
+        lua2variants(L,i,args);
+    }
+    VARIANT result; VariantInit(&result);
+
+    char *error_info=0;
+    (**u).invoke( name , DISPATCH_PROPERTYGET , 
+                  args , args.size() , result , NULL , &error_info );
+    if( error_info != 0 ){
+        lua_pushnil(L);
+        lua_pushstring(L,error_info);
+        DBG( puts("error_info=") );
+        DBG( puts(error_info) );
+        delete[]error_info;
+        return 2;
+    }else{
+        lua_pushboolean(L,1);
+        return variant2lua(result,L);
+    }
+}
+
 // 「self:Item("key") = val」 ができないため
 // かわりに
 // 「self:__put__("Item","key",val)」
@@ -506,6 +561,10 @@ static int find_member(lua_State *L)
     const char *member_name=lua_tostring(L,2);
     if( strcmp(member_name,"__put__")==0 ){
         lua_pushcfunction(L,put__);
+        return 1;
+    }
+    if( strcmp(member_name,"__get__")==0 ){
+        lua_pushcfunction(L,get__);
         return 1;
     }
     if( strcmp(member_name,"__iter__")==0 ){
