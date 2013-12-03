@@ -5,8 +5,6 @@ L=$(LUAPATH)/src/
 # for dynamic link
 DLUAPATH=../lua-5.2_Win32_dllw4_lib
 
-RM=cmd /c del
-
 .SUFFIXES : .cpp .obj .exe .h .res .rc .cpp .h .o
 
 .cpp.obj :
