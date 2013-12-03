@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #ifndef __EMX__
-#  include <dir.h>
+#  include <io.h>
 #endif
 #include <errno.h>
 

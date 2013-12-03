@@ -15,7 +15,6 @@
 #  include <os2.h>
 #else
 #  include <direct.h>
-#  include <dir.h>
 #endif
 
 #include "nndir.h"

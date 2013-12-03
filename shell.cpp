@@ -3,7 +3,7 @@
 #include <ctype.h>
 #include <string.h>
 #ifndef __EMX__
-#  include <dir.h>
+#  include <io.h>
 #endif
 #include <errno.h>
 
