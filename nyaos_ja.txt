@@ -1475,6 +1475,12 @@ NYAOS の直接の動作には影響しませんが、ツールとして次のような関数を提供しています
     -- instead of sysEnv:Item("VARNAME") = "VALUE"
     sysEnv:__put__("Item","VARNAME","VALUE")
 
+* COMObject:__get__ - 引数付きのプロパティーを取得する(Windowsのみ)
+
+    local shell=nyaos.create_object("WScript.Shell")
+    local sysEnv=shell:Environment("System")
+    print(sysEnv:__get__("Item","VARNAME")
+
 * nyaos.getkey - 一文字キー入力を行う
 
     lua_e "print(nyaos.getkey())"
@@ -1648,6 +1654,12 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.3.8_3 (2013/12/25)
+    - COM の引数付きプロパティー参照を関数風に呼び出せない(引数が渡らない)
+      問題の暫定対応のため、__get__ を用意
+    - gpath.lua で、非管理者で実行した時など、
+      設定失敗した場合にエラーメッセージを出すようにした。
 
 3.3.8_2 (2013/07/24)
     - インクリメンタルサーチ(CTRL-R)に中止機能(CTRL-G)が抜けていたので追加

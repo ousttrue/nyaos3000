@@ -1320,6 +1320,12 @@ Tools
     -- instead of sysEnv:Item("VARNAME") = "VALUE"
     sysEnv:__put__("Item","VARNAME","VALUE")
 
+* COMObject:__get__ - get property with parameters (only on Windows)
+
+    local shell=nyaos.create_object("WScript.Shell")
+    local sysEnv=shell:Environment("System")
+    print(sysEnv:__get__("Item","VARNAME")
+
 - nyaos.getkey() - get keycode typed
 
     lua_e "print(nyaos.getkey())"
@@ -1449,6 +1455,11 @@ File/Directory Operation
 
 History
 =======
+
+3.3.8_3 (2013/12/25)
+    - <COMObject>:__get__ method to property with parameter
+      because they can not be refer like function.
+    - Say message when gpath.lua failed.
 
 3.3.8_2 (2013/07/24)
     - Fixed: Could not quit incremental search by CTRL-R with CTRL-G
