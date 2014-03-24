@@ -607,6 +607,8 @@ static int countQuote( const char *p )
             quote = !quote;
         }
         escape = (!escape && !quote && *p=='^');
+        if( !escape && isKanji(*p) )
+            ++p;
     }
     return qc;
 }
@@ -616,6 +618,8 @@ static bool isEscapeEnd( const char *p )
     bool escape = false;
     while( *p != '\0' ){
         escape = (!escape && *p == '^');
+        if( !escape && isKanji(*p) )
+            ++p;
         ++p;
     }
     return escape;
