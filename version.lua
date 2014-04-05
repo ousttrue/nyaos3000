@@ -39,7 +39,7 @@ BEGIN
             VALUE "CompanyName",      "NYAOS.ORG"
             VALUE "FileDescription",  "Extended Commandline Shell"
             VALUE "FileVersion",      "%s\0"
-            VALUE "LegalCopyright",   "Copyright (C) 2001-2013 HAYAMA,Kaoru\0"
+            VALUE "LegalCopyright",   "Copyright (C) 2001-2014 HAYAMA,Kaoru\0"
             VALUE "OriginalFilename", "NYAOS.EXE\0"
             VALUE "ProductName",      "Nihongo Yet Another Open Shell\0"
             VALUE "ProductVersion",   "%s\0"

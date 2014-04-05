@@ -1,6 +1,6 @@
                               The Free Software 
                         Nihongo Yet Another Open Shell
-                          2001-2013 (c) HAYAMA,Kaoru
+                          2001-2014 (c) HAYAMA,Kaoru
 
 Feature
 =======
@@ -1455,6 +1455,10 @@ File/Directory Operation
 
 History
 =======
+
+3.3.8_4 (2014/04/05)
+    - Fix the bug to regard the second byte of Double-Bytes-Charactor's
+      0x5E as the escape-charactor ^ . (Thanks to Akinori Hattori)
 
 3.3.8_3 (2013/12/25)
     - <COMObject>:__get__ method to property with parameter

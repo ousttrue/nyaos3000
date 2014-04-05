@@ -4,7 +4,7 @@
      ┻┗┛┗━┛┻　┻┗━┛┗━┛
            The Free Software
      Nihongo Yet Another Open Shell
-  Copyright (C) 2001-2013 HAYAMA,Kaoru
+  Copyright (C) 2001-2014 HAYAMA,Kaoru
 
 目次
 ====
@@ -1654,6 +1654,10 @@ dir/w がエラーになります
 
 変更履歴
 ========
+
+3.8.8_4 (2014/04/05)
+    - 漢字の 2 バイト目の 0x5E を ^ と認識してしまう問題を修正
+      (Thanks to Akinori Hattori)
 
 3.3.8_3 (2013/12/25)
     - COM の引数付きプロパティー参照を関数風に呼び出せない(引数が渡らない)
