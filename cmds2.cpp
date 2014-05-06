@@ -357,11 +357,24 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
     int equalPos=argv.findOf( "=" );
     if( equalPos < 0 ){
 	/* 「set ENV」のみ → 指定した環境変数の内容を表示. */
-	conOut << argv << '=' << getEnv(argv.chars(),"") << '\n';
+        NnString name(argv);
+        name.dequote();
+	conOut << name << '=' << getEnv(name.chars(),"") << '\n';
 	return 0;
     }
     NnString name( argv.chars() , equalPos );  name.upcase();
     NnString value( argv.chars() + equalPos + 1 );
+    if( name.at(0) == '"' ){
+        // cut opening quotation
+        name.shift();
+        // cut closing quotation and spaces
+        while( value.length() > 0 && isSpace(value.at( value.length()-1 )) ){
+            value.chop();
+        }
+        if( value.length() > 0 && value.at( value.length()-1 ) == '"' ){
+            value.chop();
+        }
+    }
 
     if( value.length() == 0 ){
 	/*** 「set ENV=」→ 環境変数 ENV を削除する ***/
