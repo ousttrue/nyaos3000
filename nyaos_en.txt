@@ -1456,6 +1456,10 @@ File/Directory Operation
 History
 =======
 
+3.3.9_0 (2014/05/06)
+    - Support to quote the equation all in 'set' statement like CMD.EXE.
+      For example: SET "FOO=BAR"
+
 3.3.8_4 (2014/04/05)
     - Fix the bug to regard the second byte of Double-Bytes-Charactor's
       0x5E as the escape-charactor ^ . (Thanks to Akinori Hattori)
