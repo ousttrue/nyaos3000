@@ -410,7 +410,7 @@ int main( int argc, char **argv )
     if( isatty(fileno(stdin)) ){
         conOut << 
             "Nihongo Yet Another Open Shell "VER
-            " (c) 2001-13 by HAYAMA,Kaoru\n";
+            " (c) 2001-14 by HAYAMA,Kaoru\n";
         if( properties.get("debug") != NULL ){
             conOut << "This version is built on " __DATE__ " " __TIME__ "\n";
         }
