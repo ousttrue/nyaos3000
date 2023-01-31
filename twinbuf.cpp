@@ -8,10 +8,10 @@ enum{
     INIT_BUFSIZE = 160,
 };
 
-/* ‰º’[ƒ‹[ƒ`ƒ“ */
+/* ä¸‹ç«¯ãƒ«ãƒ¼ãƒãƒ³ */
 int TwinBuffer::makeroom(int at,int size)
 {
-    /* ƒoƒbƒtƒ@ƒTƒCƒY‚ª¬‚³‚¢‚æ‚¤‚Å‚ ‚ê‚ÎAL‚°‚é */
+    /* ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºãŒå°ã•ã„ã‚ˆã†ã§ã‚ã‚Œã°ã€åºƒã’ã‚‹ */
     if( len+size > max ){
         max = len+size+UNIT_BUFSIZE;
         char *tmp = (char*)realloc( strbuf, max+1 );
@@ -42,11 +42,11 @@ void TwinBuffer::delroom(int at,int size)
     strbuf[ len ] = '\0';
 }
 
-/* ‚P•¶š‘}“ü
- *      key - •¶š(>512:”{Šp•¶š‚Æ‚İ‚È‚·)
- *      pos - ‘}“üŒ…ˆÊ’u
+/* ï¼‘æ–‡å­—æŒ¿å…¥
+ *      key - æ–‡å­—(>512:å€è§’æ–‡å­—ã¨ã¿ãªã™)
+ *      pos - æŒ¿å…¥æ¡ä½ç½®
  * return
- *      ‘}“üƒoƒCƒg”(0`2) : 0 ‚Ì‚ÍƒGƒ‰[
+ *      æŒ¿å…¥ãƒã‚¤ãƒˆæ•°(0ï½2) : 0 ã®æ™‚ã¯ã‚¨ãƒ©ãƒ¼
  */
 int TwinBuffer::insert1(int key,int pos)
 {
@@ -65,7 +65,7 @@ int TwinBuffer::insert1(int key,int pos)
 
 	return 2;
     }else if( upperbyte != 0 ){
-        /* DBCS•¶š */
+        /* DBCSæ–‡å­— */
         if( makeroom(pos,2) == -1 )
             return 0;
         strbuf[ pos   ] = upperbyte;
@@ -85,10 +85,10 @@ int TwinBuffer::insert1(int key,int pos)
     }
 }
 
-/* ‚P•¶šíœ‚ğs‚¤B
- *      at - íœ‚·‚éŒ…ˆÊ’u
+/* ï¼‘æ–‡å­—å‰Šé™¤ã‚’è¡Œã†ã€‚
+ *      at - å‰Šé™¤ã™ã‚‹æ¡ä½ç½®
  * return
- *      íœƒoƒCƒg”
+ *      å‰Šé™¤ãƒã‚¤ãƒˆæ•°
  */
 int TwinBuffer::erase1(int at)
 {
@@ -99,8 +99,8 @@ int TwinBuffer::erase1(int at)
     return siz;
 }
 
-/* at Œ…–ÚˆÈ~‚ğíœ‚·‚éB
- *      at - íœŠJnŒ…ˆÊ’u
+/* at æ¡ç›®ä»¥é™ã‚’å‰Šé™¤ã™ã‚‹ã€‚
+ *      at - å‰Šé™¤é–‹å§‹æ¡ä½ç½®
  */
 void TwinBuffer::erase_line(int at)
 {
@@ -108,8 +108,8 @@ void TwinBuffer::erase_line(int at)
     strbuf[len=at] = '\0';
 }
 
-/* •¶š—ñ x ‚ğATwinBuffer ‚ÉŠi”[‚·‚éÛ‚É•K—v‚É‚È‚éƒTƒCƒY(Œ…”)‚ğZo‚·‚éB
- * ’ÊíA§Œä•¶š‚ª2Œ…‚Æ”‚¦‚ç‚ê‚é‘¼‚Í byte ‚Æ“¯‚¶B
+/* æ–‡å­—åˆ— x ã‚’ã€TwinBuffer ã«æ ¼ç´ã™ã‚‹éš›ã«å¿…è¦ã«ãªã‚‹ã‚µã‚¤ã‚º(æ¡æ•°)ã‚’ç®—å‡ºã™ã‚‹ã€‚
+ * é€šå¸¸ã€åˆ¶å¾¡æ–‡å­—ãŒ2æ¡ã¨æ•°ãˆã‚‰ã‚Œã‚‹ä»–ã¯ byte ã¨åŒã˜ã€‚
  */
 int TwinBuffer::strlen_ctrl(const char *x)
 {
@@ -123,11 +123,11 @@ int TwinBuffer::strlen_ctrl(const char *x)
     return len;
 }
 
-/* •¶š—ñ s ‚ğ at Œ…–Ú‚É‘}“ü‚·‚éB
- *      s - ‘}“ü•¶š—ñ
- *      at - ‘}“üˆÊ’u
+/* æ–‡å­—åˆ— s ã‚’ at æ¡ç›®ã«æŒ¿å…¥ã™ã‚‹ã€‚
+ *      s - æŒ¿å…¥æ–‡å­—åˆ—
+ *      at - æŒ¿å…¥ä½ç½®
  * return 
- *      ‘}“ü‚µ‚½ƒoƒCƒg”
+ *      æŒ¿å…¥ã—ãŸãƒã‚¤ãƒˆæ•°
  */
 int TwinBuffer::insert(const char *s,int at)
 {
@@ -158,7 +158,7 @@ int TwinBuffer::insert(const char *s,int at)
 	}else{
             atrbuf[ at ] = SBC;
             afterkanji = 0;
-	    /* ‰üs‚Ì—Ş‚Í‹ó”’‚É’¼‚µ‚Ä‚µ‚Ü‚¤ */
+	    /* æ”¹è¡Œã®é¡ã¯ç©ºç™½ã«ç›´ã—ã¦ã—ã¾ã† */
 	    if( *s == '\n' || *s == '\r' ){
 		strbuf[ at++ ] = ' ';
 		++s;
@@ -170,8 +170,8 @@ int TwinBuffer::insert(const char *s,int at)
     return len;
 }
 
-/* ‰Šú‰» 
- * return 0c¬Œ÷ , -1c¸”s
+/* åˆæœŸåŒ– 
+ * return 0â€¦æˆåŠŸ , -1â€¦å¤±æ•—
  */
 int TwinBuffer::init()
 {
@@ -199,10 +199,10 @@ void TwinBuffer::term()
 }
 
 
-/* at ‚©‚ç nchars ƒoƒCƒg•ª‚ğ string ‚Å’u‚«Š·‚é
+/* at ã‹ã‚‰ nchars ãƒã‚¤ãƒˆåˆ†ã‚’ string ã§ç½®ãæ›ã‚‹
  * return
- *      ’u‚«‚©‚¦‚é‚±‚Æ‚É‚æ‚é‘Œ¸’lB
- *      ƒGƒ‰[FEXCEPTIONS(-32768)
+ *      ç½®ãã‹ãˆã‚‹ã“ã¨ã«ã‚ˆã‚‹å¢—æ¸›å€¤ã€‚
+ *      ã‚¨ãƒ©ãƒ¼æ™‚ï¼šEXCEPTIONS(-32768)
  */
 int TwinBuffer::replace(int at,int nchars, const char *string )
 {
@@ -235,12 +235,12 @@ int TwinBuffer::replace(int at,int nchars, const char *string )
     return j-nchars;
 }
 
-/* ^x Œ`®‚Ì Ctrl ƒR[ƒh‚ğƒfƒR[ƒh‚·‚é.
- *	at - “Ç‚İo‚µŠJnˆÊ’u
- *	len - “Ç‚İo‚µƒTƒCƒY
- *	buffer - Ši”[æ
+/* ^x å½¢å¼ã® Ctrl ã‚³ãƒ¼ãƒ‰ã‚’ãƒ‡ã‚³ãƒ¼ãƒ‰ã™ã‚‹.
+ *	at - èª­ã¿å‡ºã—é–‹å§‹ä½ç½®
+ *	len - èª­ã¿å‡ºã—ã‚µã‚¤ã‚º
+ *	buffer - æ ¼ç´å…ˆ
  * return
- *	ƒfƒR[ƒhŒã‚ÌƒTƒCƒY.
+ *	ãƒ‡ã‚³ãƒ¼ãƒ‰å¾Œã®ã‚µã‚¤ã‚º.
  */
 int TwinBuffer::decode(int at , int len , NnString &buffer )
 {

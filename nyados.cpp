@@ -33,11 +33,11 @@ void nya_new_handler()
 #endif
 }
 
-/* -d ƒfƒoƒbƒOƒIƒvƒVƒ‡ƒ“
- *	argc , argv : main ‚Ìˆø”
- *	i : Œ»İ“Ç‚İæ‚è’†‚Ì argv ‚Ì“Yš
+/* -d ãƒ‡ãƒãƒƒã‚°ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+ *	argc , argv : main ã®å¼•æ•°
+ *	i : ç¾åœ¨èª­ã¿å–ã‚Šä¸­ã® argv ã®æ·»å­—
  * return
- *	í‚É 0 (Œp‘±)
+ *	å¸¸ã« 0 (ç¶™ç¶š)
  */
 static int opt_d( int , char **argv , int &i )
 {
@@ -54,12 +54,12 @@ static int opt_d( int , char **argv , int &i )
     }
     return 0;
 }
-/* -r _nya w’èƒIƒvƒVƒ‡ƒ“ˆ—
- *	argc , argv : main ‚Ìˆø”
- *	i : Œ»İ“Ç‚İæ‚è’†‚Ì argv ‚Ì“Yš
+/* -r _nya æŒ‡å®šã‚ªãƒ—ã‚·ãƒ§ãƒ³å‡¦ç†
+ *	argc , argv : main ã®å¼•æ•°
+ *	i : ç¾åœ¨èª­ã¿å–ã‚Šä¸­ã® argv ã®æ·»å­—
  * return
- *	0 : Œp‘± 
- *	not 0 : NYA*S ‚ğI—¹‚³‚¹‚é(main‚Ì–ß‚è’l+1‚ğ•Ô‚·)
+ *	0 : ç¶™ç¶š 
+ *	not 0 : NYA*S ã‚’çµ‚äº†ã•ã›ã‚‹(mainã®æˆ»ã‚Šå€¤+1ã‚’è¿”ã™)
  */
 static int opt_r( int argc , char **argv, int &i )
 {
@@ -74,12 +74,12 @@ static int opt_r( int argc , char **argv, int &i )
     rcfname = argv[++i];
     return 0;
 }
-/* -e 1sƒRƒ}ƒ“ƒh—pƒIƒvƒVƒ‡ƒ“ˆ—
- *	argc , argv : main ‚Ìˆø”
- *	i : Œ»İ“Ç‚İæ‚è’†‚Ì argv ‚Ì“Yš
+/* -e 1è¡Œã‚³ãƒãƒ³ãƒ‰ç”¨ã‚ªãƒ—ã‚·ãƒ§ãƒ³å‡¦ç†
+ *	argc , argv : main ã®å¼•æ•°
+ *	i : ç¾åœ¨èª­ã¿å–ã‚Šä¸­ã® argv ã®æ·»å­—
  * return
- *	0 : Œp‘± 
- *	not 0 : NYA*S ‚ğI—¹‚³‚¹‚é(main‚Ì–ß‚è’l+1‚ğ•Ô‚·)
+ *	0 : ç¶™ç¶š 
+ *	not 0 : NYA*S ã‚’çµ‚äº†ã•ã›ã‚‹(mainã®æˆ»ã‚Šå€¤+1ã‚’è¿”ã™)
  */
 static int opt_e( int argc , char **argv , int &i )
 {
@@ -92,8 +92,8 @@ static int opt_e( int argc , char **argv , int &i )
     return 1;
 }
 
-/* -E 1sLuaƒRƒ}ƒ“ƒh—pƒIƒvƒVƒ‡ƒ“ˆ—
- * -F ƒtƒ@ƒCƒ‹“Ç‚İ‚İƒIƒvƒVƒ‡ƒ“ˆ—
+/* -E 1è¡ŒLuaã‚³ãƒãƒ³ãƒ‰ç”¨ã‚ªãƒ—ã‚·ãƒ§ãƒ³å‡¦ç†
+ * -F ãƒ•ã‚¡ã‚¤ãƒ«èª­ã¿è¾¼ã¿ã‚ªãƒ—ã‚·ãƒ§ãƒ³å‡¦ç†
  */
 static int opt_EF( int argc , char **argv , int &i )
 {
@@ -132,12 +132,12 @@ static int opt_EF( int argc , char **argv , int &i )
     return 2;
 }
 
-/* -f ƒXƒNƒŠƒvƒgÀs—pƒIƒvƒVƒ‡ƒ“ˆ—
- *	argc , argv : main ‚Ìˆø”
- *	i : Œ»İ“Ç‚İæ‚è’†‚Ì argv ‚Ì“Yš
+/* -f ã‚¹ã‚¯ãƒªãƒ—ãƒˆå®Ÿè¡Œç”¨ã‚ªãƒ—ã‚·ãƒ§ãƒ³å‡¦ç†
+ *	argc , argv : main ã®å¼•æ•°
+ *	i : ç¾åœ¨èª­ã¿å–ã‚Šä¸­ã® argv ã®æ·»å­—
  * return
- *	0 : Œp‘± 
- *	not 0 : NYA*S ‚ğI—¹‚³‚¹‚é(main‚Ì–ß‚è’l+1‚ğ•Ô‚·)
+ *	0 : ç¶™ç¶š 
+ *	not 0 : NYA*S ã‚’çµ‚äº†ã•ã›ã‚‹(mainã®æˆ»ã‚Šå€¤+1ã‚’è¿”ã™)
  */
 static int opt_f( int argc , char **argv , int &i )
 {
@@ -173,12 +173,12 @@ static int opt_f( int argc , char **argv , int &i )
 }
 
 #ifdef NYACUS
-/* -t ƒRƒ“ƒ\[ƒ‹‚Ì’¼Ú‚ÌƒRƒ“ƒgƒ[ƒ‹‚ğ—}§‚µA
- *    ANSIƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX‚ğ‚»‚Ì‚Ü‚Üo—Í‚·‚é
- *	i : Œ»İ“Ç‚İæ‚è’†‚Ì argv ‚Ì“Yš
+/* -t ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã®ç›´æ¥ã®ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚’æŠ‘åˆ¶ã—ã€
+ *    ANSIã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’ãã®ã¾ã¾å‡ºåŠ›ã™ã‚‹
+ *	i : ç¾åœ¨èª­ã¿å–ã‚Šä¸­ã® argv ã®æ·»å­—
  * return
- *	0 : Œp‘± 
- *	not 0 : NYA*S ‚ğI—¹‚³‚¹‚é(main‚Ì–ß‚è’l+1‚ğ•Ô‚·)
+ *	0 : ç¶™ç¶š 
+ *	not 0 : NYA*S ã‚’çµ‚äº†ã•ã›ã‚‹(mainã®æˆ»ã‚Šå€¤+1ã‚’è¿”ã™)
  */
 static int opt_t( int , char ** , int & )
 {
@@ -243,7 +243,7 @@ void set_nyaos_argv_version( int argc , char **argv )
         lua_pushstring(L,argv[i]); /* [4] */
         lua_settable(L,-3);
     }
-    /* argv ‚ğ nyaos ‚ÌƒtƒB[ƒ‹ƒh‚É“o˜^‚·‚é */
+    /* argv ã‚’ nyaos ã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã«ç™»éŒ²ã™ã‚‹ */
     lua_setfield(L,-2,"argv");
     lua_pushstring(L,VER);
     lua_setfield(L,-2,"version");
@@ -271,8 +271,8 @@ static void save_history( History *hisObj )
 	    if( histsize !=0 && (histfrom=hisObj->size() - histsize)<0 )
 		histfrom = 0;
         }
-        /* ‹­§I—¹AƒXƒ^ƒbƒNƒgƒbƒv‚É‹óƒqƒXƒgƒŠ‚ª“ü‚Á‚Ä‚¢‚é‚Ì‚Å
-         * íœ‚µ‚Ä‚¨‚­ */
+        /* å¼·åˆ¶çµ‚äº†æ™‚ã€ã‚¹ã‚¿ãƒƒã‚¯ãƒˆãƒƒãƒ—ã«ç©ºãƒ’ã‚¹ãƒˆãƒªãŒå…¥ã£ã¦ã„ã‚‹ã®ã§
+         * å‰Šé™¤ã—ã¦ãŠã */
         History1 *top=hisObj->top();
         if( top != NULL && top->body().empty() ){
             hisObj->pop();
@@ -288,7 +288,7 @@ static void save_history( History *hisObj )
                 int i=0, j=0;
                 int size=hisObj->size(), size2=hisObj2.size();
 
-                /* æ“ª‚Ìˆê’v•”•ª‚ğ“Ç‚İ”ò‚Î‚· */
+                /* å…ˆé ­ã®ä¸€è‡´éƒ¨åˆ†ã‚’èª­ã¿é£›ã°ã™ */
                 while(i<size && j<size2){
                     if((*hisObj)[i]->compare(*hisObj2[j]) == 0){
                         i++; j++;
@@ -298,7 +298,7 @@ static void save_history( History *hisObj )
                 }
                 int startIndex=i;
 
-                /* ƒ}[ƒW‚·‚é */
+                /* ãƒãƒ¼ã‚¸ã™ã‚‹ */
                 while(i<size && j<size2){
                     History1 *history=(*hisObj)[i];
                     History1 *history2=hisObj2[j];
@@ -319,13 +319,13 @@ static void save_history( History *hisObj )
                 for( ; j<size2 ; j++ )
                     newHisObj.append(new History1(*hisObj2[j]));
 
-                /* newHisObj‚©‚çhisObj‚ÉƒRƒs[‚·‚é */
+                /* newHisObjã‹ã‚‰hisObjã«ã‚³ãƒ”ãƒ¼ã™ã‚‹ */
                 for(int k=startIndex ; k<size ; k++ )
                     hisObj->drop();
                 for(int k=0 ; k < newHisObj.size() ; k++ )
                     hisObj->append(newHisObj[k]);
                 while(newHisObj.size()>0)
-                    newHisObj.pop(); // delete‚Í‚µ‚È‚¢
+                    newHisObj.pop(); // deleteã¯ã—ãªã„
             }
         }
 
@@ -409,7 +409,7 @@ int main( int argc, char **argv )
 
     if( isatty(fileno(stdin)) ){
         conOut << 
-            "Nihongo Yet Another Open Shell "VER
+            "Nihongo Yet Another Open Shell " VER
             " (c) 2001-14 by HAYAMA,Kaoru\n";
         if( properties.get("debug") != NULL ){
             conOut << "This version is built on " __DATE__ " " __TIME__ "\n";
@@ -418,7 +418,7 @@ int main( int argc, char **argv )
 
     NnDir::set_default_special_folder();
 
-    /* _nya ‚ğÀs‚·‚é */
+    /* _nya ã‚’å®Ÿè¡Œã™ã‚‹ */
     if( rcfname.empty() ){
 #ifdef NYACUS
         char execname[ FILENAME_MAX ];
@@ -441,7 +441,7 @@ int main( int argc, char **argv )
 #endif
 
     if( isatty(fileno(stdin)) ){
-        /* DOS‘‹‚©‚ç‚Ì“ü—Í‚É]‚Á‚ÄÀs‚·‚é */
+        /* DOSçª“ã‹ã‚‰ã®å…¥åŠ›ã«å¾“ã£ã¦å®Ÿè¡Œã™ã‚‹ */
         InteractiveShell shell;
 
 #ifdef NYACUS

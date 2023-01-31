@@ -1,18 +1,18 @@
 /* NnHash :
- *   •¶š—ñ(NnString,char*)‚¾‚¯‚ğƒL[‚Æ‚Å‚«‚éƒnƒbƒVƒ…ƒe[ƒuƒ‹B
- *   •¶š—ñ‚ÉŠÖ˜A•t‚¯‚Ä“o˜^‚·‚éƒIƒuƒWƒFƒNƒg‚Í NnObject ‚Ì
- *   ”h¶ƒNƒ‰ƒX‚Å‚È‚¯‚ê‚Î‚È‚ç‚È‚¢B
+ *   æ–‡å­—åˆ—(NnString,char*)ã ã‘ã‚’ã‚­ãƒ¼ã¨ã§ãã‚‹ãƒãƒƒã‚·ãƒ¥ãƒ†ãƒ¼ãƒ–ãƒ«ã€‚
+ *   æ–‡å­—åˆ—ã«é–¢é€£ä»˜ã‘ã¦ç™»éŒ²ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ NnObject ã®
+ *   æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã§ãªã‘ã‚Œã°ãªã‚‰ãªã„ã€‚
  */
 #ifndef NNHASH_H
 #define NNHASH_H
 
 #include "nnstring.h"
 
-/** ƒnƒbƒVƒ…ƒe[ƒuƒ‹‚ÌƒIƒuƒWƒFƒNƒg */
+/** ãƒãƒƒã‚·ãƒ¥ãƒ†ãƒ¼ãƒ–ãƒ«ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ */
 class NnHash : public NnObject {
 public:
     class Each;
-    /** ƒL[‚Æ’l‚ÌƒyƒA‚ğ•Û‚·‚éƒIƒuƒWƒFƒNƒg  */
+    /** ã‚­ãƒ¼ã¨å€¤ã®ãƒšã‚¢ã‚’ä¿æŒã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ  */
     class Pair : public NnObject {
 	Pair *next_;
 	NnString key_;
@@ -27,39 +27,39 @@ public:
     public:
 	~Pair();
 
-	/** ƒL[‚ğ•Ô‚· */
+	/** ã‚­ãƒ¼ã‚’è¿”ã™ */
 	NnString &key()  { return key_;   }
-	/** ƒL[‚ÉŠÖ˜A‚Â‚¯‚ç‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğ•Ô‚· */
+	/** ã‚­ãƒ¼ã«é–¢é€£ã¤ã‘ã‚‰ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¿”ã™ */
 	NnObject *value(){ return value_; }
 
 	friend class Each;
 	friend class NnHash;
     };
-    /* ƒCƒ^ƒŒ[ƒ^ */
+    /* ã‚¤ã‚¿ãƒ¬ãƒ¼ã‚¿ */
     class Each : public ::NnEnum {
 	const NnHash &hash;
 	Pair  *ptr;
 	int index;
 	void nextindex();
     public:
-	/** ƒRƒ“ƒXƒgƒ‰ƒNƒ^F—ñ‹“‚³‚ê‚éƒnƒbƒVƒ…ƒe[ƒuƒ‹‚ğw’è‚·‚é */
+	/** ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ï¼šåˆ—æŒ™ã•ã‚Œã‚‹ãƒãƒƒã‚·ãƒ¥ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’æŒ‡å®šã™ã‚‹ */
 	Each( const NnHash &hash );
 
-	/** Œ»İ·‚µ‚Ä‚¢‚éAƒL[‚ÆƒIƒuƒWƒFƒNƒg‚ÌƒyƒA(Pair)‚Ö‚Ì
-	 *  ƒ|ƒCƒ“ƒ^‚ğ•Ô‚·B–ß‚è’l‚ÌŒ^‚ª NnObject* ‚È‚Ì‚ÍA
-	 *  SuperƒNƒ‰ƒX‚Ì NnEnum ‚ÆŒ^‚ğ‡‚í‚¹‚é‚½‚ßB
-	 *  ‚³‚·‚×‚«ƒyƒA‚ª‚È‚¢ê‡‚Í NULL ‚ª•Ô‚éB
+	/** ç¾åœ¨å·®ã—ã¦ã„ã‚‹ã€ã‚­ãƒ¼ã¨ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ãƒšã‚¢(Pair)ã¸ã®
+	 *  ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™ã€‚æˆ»ã‚Šå€¤ã®å‹ãŒ NnObject* ãªã®ã¯ã€
+	 *  Superã‚¯ãƒ©ã‚¹ã® NnEnum ã¨å‹ã‚’åˆã‚ã›ã‚‹ãŸã‚ã€‚
+	 *  ã•ã™ã¹ããƒšã‚¢ãŒãªã„å ´åˆã¯ NULL ãŒè¿”ã‚‹ã€‚
 	 */
 	virtual   NnObject *operator *();
 
-	/** Ÿ‚Ì—v‘f‚ÖˆÚ“®‚·‚éB‚à‚Í‚â—v‘f‚ª‚È‚¢ê‡‚ÍA
-	 *  operator * ‚É‚Ä NULL ‚ª•Ô‚éB
+	/** æ¬¡ã®è¦ç´ ã¸ç§»å‹•ã™ã‚‹ã€‚ã‚‚ã¯ã‚„è¦ç´ ãŒãªã„å ´åˆã¯ã€
+	 *  operator * ã«ã¦ NULL ãŒè¿”ã‚‹ã€‚
 	 */
 	virtual   void      operator++();
 
-	/** Œ»İ·‚µ‚Ä‚¢‚éA—v‘f‚ÖƒAƒNƒZƒX‚·‚é
-	 *  ƒL[‚Ìê‡F        (*this)->key()    (NnString&Œ^)
-	 *  ƒIƒuƒWƒFƒNƒg‚Ìê‡F(*this)->value()  (NnObject*Œ^)
+	/** ç¾åœ¨å·®ã—ã¦ã„ã‚‹ã€è¦ç´ ã¸ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹
+	 *  ã‚­ãƒ¼ã®å ´åˆï¼š        (*this)->key()    (NnString&å‹)
+	 *  ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®å ´åˆï¼š(*this)->value()  (NnObject*å‹)
 	 */
 	Pair *operator->(){ return ptr; }
 	friend class NnHash;
@@ -70,25 +70,25 @@ private:
     int init();
 public:
     int put_(const NnString &key, NnObject *obj);
-    /** key ‚ÉŠÖ˜A‚Â‚¯‚ç‚ê‚½ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ•Ô‚·B
-     *  ‘¶İ‚µ‚È‚¯‚ê‚ÎANULL ‚ğ•Ô‚·B
+    /** key ã«é–¢é€£ã¤ã‘ã‚‰ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™ã€‚
+     *  å­˜åœ¨ã—ãªã‘ã‚Œã°ã€NULL ã‚’è¿”ã™ã€‚
      */
     NnObject *get(const NnString &key);
     NnObject *get(const char *key);
 
-    /** key ‚ÉŠÖ˜A‚Â‚¯‚ÄAobj ‚ğ“o˜^‚·‚éB
-     *  obj ‚Ì deleteŒ ‚Í NnHash “à‚ÉˆÚ“®‚·‚éB
+    /** key ã«é–¢é€£ã¤ã‘ã¦ã€obj ã‚’ç™»éŒ²ã™ã‚‹ã€‚
+     *  obj ã® deleteæ¨©ã¯ NnHash å†…ã«ç§»å‹•ã™ã‚‹ã€‚
      */
     int  put(const NnString &key, NnObject *obj)
 	{ return obj ? put_(key,obj) : -3 ; }
 
-    /** key ‚ÉŠÖ˜A•t‚¯‚ç‚ê‚½ƒIƒuƒWƒFƒNƒg‚ğíœ‚·‚éB
-     *  ƒIƒuƒWƒFƒNƒg‚Í delete ‚³‚ê‚é
+    /** key ã«é–¢é€£ä»˜ã‘ã‚‰ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤ã™ã‚‹ã€‚
+     *  ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ delete ã•ã‚Œã‚‹
      */
     void remove(const NnString &key)
 	{ put_(key,0); }
 
-    /** ƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+    /** ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
     NnHash(int s=256) : table(0) , size(s) { }
     NnHash( const NnHash & );
     ~NnHash();

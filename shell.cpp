@@ -21,7 +21,7 @@
 
 extern NnHash properties;
 
-/* ƒGƒCƒŠƒAƒX‚ğ•Û‚·‚éƒnƒbƒVƒ…ƒe[ƒuƒ‹ */
+/* ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã‚’ä¿æŒã™ã‚‹ãƒãƒƒã‚·ãƒ¥ãƒ†ãƒ¼ãƒ–ãƒ« */
 NnHash aliases;
 NnHash functions;
 
@@ -73,7 +73,7 @@ static void semi2spc( NnString::Iter &it , NnString &value )
 
 int VariableFilter::lookup( NnString &name_ , NnString &value )
 {
-    /* •Ï”–¼‚©‚ç .length ‚â .suffix ‚È‚Ç‚ÌŠg’£•”•ª‚ğæ“¾‚·‚é */
+    /* å¤‰æ•°åã‹ã‚‰ .length ã‚„ .suffix ãªã©ã®æ‹¡å¼µéƒ¨åˆ†ã‚’å–å¾—ã™ã‚‹ */
 
     NnString name,from,to;
     name_.splitTo(name,from,"/");
@@ -101,7 +101,7 @@ int VariableFilter::lookup( NnString &name_ , NnString &value )
     
     NnString *s = (NnString*)properties.get(lowname) ;
     if( s != NULL ){
-	/* ƒIƒvƒVƒ‡ƒ“’è‹`‚³‚ê‚Ä‚¢‚½ê‡ */
+	/* ã‚ªãƒ—ã‚·ãƒ§ãƒ³å®šç¾©ã•ã‚Œã¦ã„ãŸå ´åˆ */
 	if( suffix.compare("defined") == 0 ){
 	    value = "1";
 	}else if( suffix.compare("length") == 0 ){
@@ -118,7 +118,7 @@ int VariableFilter::lookup( NnString &name_ , NnString &value )
     }
     const char *p=getEnv(upname.chars(),NULL);
     if( p != NULL ){
-	/* ŠÂ‹«•Ï”’è‹`‚³‚ê‚Ä‚¢‚é */
+	/* ç’°å¢ƒå¤‰æ•°å®šç¾©ã•ã‚Œã¦ã„ã‚‹æ™‚ */
 	if( suffix.compare("defined") == 0 ){
 	    value = "2";
 	}else if( suffix.compare("length") == 0 ){
@@ -134,7 +134,7 @@ int VariableFilter::lookup( NnString &name_ , NnString &value )
 	}
 	return 0;
     }
-    /* ‰½‚à’è‹`‚³‚ê‚Ä‚¢‚È‚¢ */
+    /* ä½•ã‚‚å®šç¾©ã•ã‚Œã¦ã„ãªã„æ™‚ */
     if( suffix.compare("defined") == 0 ){
 	value = "0";
     }else if( suffix.compare("length") == 0 ){
@@ -147,7 +147,7 @@ int VariableFilter::lookup( NnString &name_ , NnString &value )
     return 0;
 }
 
-/* %0 %1 %2 ‚È‚Ç‚Ìˆø”“WŠJ—p */
+/* %0 %1 %2 ãªã©ã®å¼•æ•°å±•é–‹ç”¨ */
 void VariableFilter::cnv_digit( NnString::Iter &p , NnString &result )
 {
     const NnString *value;
@@ -166,7 +166,7 @@ void VariableFilter::cnv_digit( NnString::Iter &p , NnString &result )
         result << orgstr;
 }
 
-/* %* $* ‚È‚Ç‚Ì“WŠJ—p */
+/* %* $* ãªã©ã®å±•é–‹ç”¨ */
 void VariableFilter::cnv_asterisk( NnString::Iter &p , NnString &result )
 {
     for(int j=1;j< shell.argc();j++){
@@ -242,10 +242,10 @@ void VariableFilter::filter( NnString::Iter &p , NnString &result )
 }
 
 
-/* ƒRƒ}ƒ“ƒh–¼‚©‚çŠÖ˜A•t‚¯ƒRƒ}ƒ“ƒh‚ğæ“¾‚·‚éB
- *      p - ƒRƒ}ƒ“ƒh–¼
+/* ã‚³ãƒãƒ³ãƒ‰åã‹ã‚‰é–¢é€£ä»˜ã‘ã‚³ãƒãƒ³ãƒ‰ã‚’å–å¾—ã™ã‚‹ã€‚
+ *      p - ã‚³ãƒãƒ³ãƒ‰å
  * return
- *      ÀsƒRƒ}ƒ“ƒh(–³‚¢ê‡‚Í NULL )
+ *      å®Ÿè¡Œã‚³ãƒãƒ³ãƒ‰(ç„¡ã„å ´åˆã¯ NULL )
  */
 static NnString *getInterpretor( const char *p )
 {
@@ -258,10 +258,10 @@ static NnString *getInterpretor( const char *p )
     return (NnString*)DosShell::executableSuffix.get(suffix);
 }
 
-/* ‹ó”’‚ÌŒã‚Ìu-v‚ğ u/v‚Ö
- * u/v‚ğu\\v‚É’u‚«Š·‚¦‚é.
- *	src (i) : Œ³•¶š—ñ
- *	dst (i) : •ÏŠ·Œã
+/* ç©ºç™½ã®å¾Œã®ã€Œ-ã€ã‚’ ã€Œ/ã€ã¸
+ * ã€Œ/ã€ã‚’ã€Œ\\ã€ã«ç½®ãæ›ãˆã‚‹.
+ *	src (i) : å…ƒæ–‡å­—åˆ—
+ *	dst (i) : å¤‰æ›å¾Œ
  */
 static void cnv_sla_opt( const NnString &src , NnString &dst )
 {
@@ -282,11 +282,11 @@ static void cnv_sla_opt( const NnString &src , NnString &dst )
     }
 }
 
-/* $n ‚ğ“WŠJ‚·‚éB
- *      p       - '$' ‚ÌˆÊ’u
- *      param   - ˆø”ƒŠƒXƒg($1‚È‚Ç‚ÌŒ³ƒlƒ^)
- *      argv    - ˆø”‚ğ‘S‚Ä˜AŒ‹‚µ‚½‚à‚Ì
- *      replace - Œ‹‰Ê
+/* $n ã‚’å±•é–‹ã™ã‚‹ã€‚
+ *      p       - '$' ã®ä½ç½®
+ *      param   - å¼•æ•°ãƒªã‚¹ãƒˆ($1ãªã©ã®å…ƒãƒã‚¿)
+ *      argv    - å¼•æ•°ã‚’å…¨ã¦é€£çµã—ãŸã‚‚ã®
+ *      replace - çµæœ
  */
 static void dollar( const char *&p , const NnVector &param ,
                     const NnString &argv , NnString &replace )
@@ -305,13 +305,13 @@ static void dollar( const char *&p , const NnVector &param ,
 
     case '0':case '1':case '2':case '3':case '4':
     case '5':case '6':case '7':case '8':case '9':
-	/* $1,$2 ‚È‚Ç */
+	/* $1,$2 ãªã© */
 	int n=(int)strtol(p+1,(char**)&p,10); 
 	const NnString *s=(const NnString*)param.const_at(n);
 	if( s != NULL )
 	    replace << *s;
 	if( *p == '*' ){
-	    /* u$1*v‚È‚Ç */
+	    /* ã€Œ$1*ã€ãªã© */
 	    while( ++n < param.size() )
 		replace << ' ' << *(const NnString*)param.const_at(n);
 	    ++p ;
@@ -336,14 +336,14 @@ int OneLineShell::operator !() const
     return 0;
 }
 
-/* ƒGƒCƒŠƒAƒX—p‚É $ ˆø”‚ğ’uŠ·‚·‚é
- *    aliasValue - ƒGƒCƒŠƒAƒX‚Ì’è‹`•¶š—ñ
- *    param   - ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Ìƒpƒ‰ƒ[ƒ^”z—ñ
- *    argv    - •ªŠ„‘O‚Ì param
- *    replace - ’uŠ·Œ‹‰Ê‚ğŠi”[‚·‚éƒoƒbƒtƒ@
+/* ã‚¨ã‚¤ãƒªã‚¢ã‚¹ç”¨ã« $ å¼•æ•°ã‚’ç½®æ›ã™ã‚‹
+ *    aliasValue - ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã®å®šç¾©æ–‡å­—åˆ—
+ *    param   - ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿é…åˆ—
+ *    argv    - åˆ†å‰²å‰ã® param
+ *    replace - ç½®æ›çµæœã‚’æ ¼ç´ã™ã‚‹ãƒãƒƒãƒ•ã‚¡
  * return
- *    1 - $ ‚É‚æ‚é’uŠ·‚ª‚ ‚Á‚½
- *    0 - $ ‚É‚æ‚é’uŠ·‚Í‚È‚©‚Á‚½
+ *    1 - $ ã«ã‚ˆã‚‹ç½®æ›ãŒã‚ã£ãŸ
+ *    0 - $ ã«ã‚ˆã‚‹ç½®æ›ã¯ãªã‹ã£ãŸ
  */
 static int replaceDollars( const NnString *aliasValue ,
 			    const NnVector &param ,
@@ -368,10 +368,10 @@ int sub_brace_start( NyadosShell &bshell ,
 int sub_brace_erase( NyadosShell &bshell , 
 		     const NnString &arg1 );
 
-/* ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒtƒBƒ‹ƒ^[(ƒtƒbƒN‰ÓŠ‚ª•¡”‚ ‚é‚Ì‚ÅŠÖ”‰»)
- *    hookname - ƒtƒbƒN–¼ "filter" "filter2" 
- *    source - ƒtƒBƒ‹ƒ^[‘O•¶š—ñ
- *    result - ƒtƒBƒ‹ƒ^[Œ‹‰ÊŠi”[æ
+/* ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼(ãƒ•ãƒƒã‚¯ç®‡æ‰€ãŒè¤‡æ•°ã‚ã‚‹ã®ã§é–¢æ•°åŒ–)
+ *    hookname - ãƒ•ãƒƒã‚¯å "filter" "filter2" 
+ *    source - ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼å‰æ–‡å­—åˆ—
+ *    result - ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼çµæœæ ¼ç´å…ˆ
  */
 static void filter_with_lua(
         const char *hookname,
@@ -391,12 +391,12 @@ static void filter_with_lua(
 }
 
 
-/* LuaŠÖ”‚Ì–ß‚è’l‚ğ“K“–‚ÉA®”–ß‚è’l‚É‚·‚éB
- *     nil   Ë 0 (¬Œ÷ˆµ‚¢)
- *     true  Ë 0 (¬Œ÷ˆµ‚¢)
- *     false Ë 1 (ƒGƒ‰[ˆµ‚¢)
- *     ®”       (‚»‚Ì‚Ü‚Ü)
- *     ‚»‚Ì‘¼ Ë  (¬Œ÷ˆµ‚¢)
+/* Luaé–¢æ•°ã®æˆ»ã‚Šå€¤ã‚’é©å½“ã«ã€æ•´æ•°æˆ»ã‚Šå€¤ã«ã™ã‚‹ã€‚
+ *     nil   â‡’ 0 (æˆåŠŸæ‰±ã„)
+ *     true  â‡’ 0 (æˆåŠŸæ‰±ã„)
+ *     false â‡’ 1 (ã‚¨ãƒ©ãƒ¼æ‰±ã„)
+ *     æ•´æ•°       (ãã®ã¾ã¾)
+ *     ãã®ä»– â‡’  (æˆåŠŸæ‰±ã„)
  */
 static int lua2exitStatus( lua_State *L )
 {
@@ -420,13 +420,13 @@ void NyadosShell::setExitStatus(int n)
     properties.put( "errorlevel" , errorlevel );
 }
 
-/* nyaos.command2 ‚É’è‹`‚³‚ê‚½ Lua ƒRƒ}ƒ“ƒh‚É‡’v‚·‚ê‚ÎŒÄ‚Ño‚·
- *    cmdname - ƒRƒ}ƒ“ƒh–¼
- *    params  - ƒpƒ‰ƒ[ƒ^•¶š—ñ
- *    status  - –ß‚è’l‚ğŠi”[‚·‚é•Ï”
+/* nyaos.command2 ã«å®šç¾©ã•ã‚ŒãŸ Lua ã‚³ãƒãƒ³ãƒ‰ã«åˆè‡´ã™ã‚Œã°å‘¼ã³å‡ºã™
+ *    cmdname - ã‚³ãƒãƒ³ãƒ‰å
+ *    params  - ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—
+ *    status  - æˆ»ã‚Šå€¤ã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°
  * return
- *    1 - ŒÄ‚Ño‚µ‚½
- *    0 - ‡’v‚·‚éƒRƒ}ƒ“ƒh‚È‚µ
+ *    1 - å‘¼ã³å‡ºã—ãŸ
+ *    0 - åˆè‡´ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ãªã—
  */
 static int call_nyaos_command2( const char *cmdname , const char *params , int &status )
 {
@@ -448,14 +448,14 @@ static int call_nyaos_command2( const char *cmdname , const char *params , int &
     }
 }
 
-/* nyaos.command ‚É’è‹`‚³‚ê‚½ Lua ƒRƒ}ƒ“ƒh‚É‡’v‚·‚ê‚ÎŒÄ‚Ño‚·
- *    cmdname - ƒRƒ}ƒ“ƒh–¼
- *    params  - ƒpƒ‰ƒ[ƒ^•¶š—ñ
- *    status  - –ß‚è’l‚ğŠi”[‚·‚é•Ï”
+/* nyaos.command ã«å®šç¾©ã•ã‚ŒãŸ Lua ã‚³ãƒãƒ³ãƒ‰ã«åˆè‡´ã™ã‚Œã°å‘¼ã³å‡ºã™
+ *    cmdname - ã‚³ãƒãƒ³ãƒ‰å
+ *    params  - ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿æ–‡å­—åˆ—
+ *    status  - æˆ»ã‚Šå€¤ã‚’æ ¼ç´ã™ã‚‹å¤‰æ•°
  * return
- *    1 - ŒÄ‚Ño‚µ‚½
- *    0 - ‡’v‚·‚éƒRƒ}ƒ“ƒh‚È‚µ
- *   -1 - ƒGƒ‰[
+ *    1 - å‘¼ã³å‡ºã—ãŸ
+ *    0 - åˆè‡´ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ãªã—
+ *   -1 - ã‚¨ãƒ©ãƒ¼
  */
 static int call_nyaos_command( const char *cmdname , const char *params , int &status )
 {
@@ -498,11 +498,11 @@ static int call_nyaos_command( const char *cmdname , const char *params , int &s
 }
 
 
-/* u ;v“™‚Å‹æØ‚ç‚ê‚½Œã‚Ì‚PƒRƒ}ƒ“ƒh‚ğÀs‚·‚éB
- * (interpret1 ‚©‚çŒÄ‚Ño‚³‚ê‚Ü‚·)
- *	replace - ƒRƒ}ƒ“ƒh
- *	wait != 0 ƒRƒ}ƒ“ƒhI—¹‚ğ‘Ò‚Â
- *	     == 0 ƒRƒ}ƒ“ƒh‚ğƒoƒbƒNƒOƒ‰ƒEƒ“ƒh‚ÅÀs‚³‚¹‚é
+/* ã€Œ ;ã€ç­‰ã§åŒºåˆ‡ã‚‰ã‚ŒãŸå¾Œã®ï¼‘ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ã€‚
+ * (interpret1 ã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã¾ã™)
+ *	replace - ã‚³ãƒãƒ³ãƒ‰
+ *	wait != 0 ã‚³ãƒãƒ³ãƒ‰çµ‚äº†ã‚’å¾…ã¤
+ *	     == 0 ã‚³ãƒãƒ³ãƒ‰ã‚’ãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã§å®Ÿè¡Œã•ã›ã‚‹
  * return
  *      0
  */
@@ -517,22 +517,22 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
     VariableFilter variable_filter( *this );
     NyadosCommand *cmdp = NULL;
 
-    /* •W€“üo—Í‚ÌƒZ[ƒu */
+    /* æ¨™æº–å…¥å‡ºåŠ›ã®ã‚»ãƒ¼ãƒ– */
     Writer *save_out = conOut_;
     Writer *save_err = conErr_;
     Reader *save_in  = conIn_;
 
-    /* ŠÂ‹«•Ï”“WŠJ */
+    /* ç’°å¢ƒå¤‰æ•°å±•é–‹ */
     variable_filter( replace );
     NnString arg0 , argv , arg0low ;
     replace.splitTo( arg0 , argv );
 
-    /* ŠÖ”’è‹`•¶ */
+    /* é–¢æ•°å®šç¾©æ–‡ */
     if( arg0.length() >=2 && arg0.endsWith("{") ){
 	sub_brace_start( *this , arg0 , argv );
         goto exit;
     }
-    if( arg0.endsWith("{}") && arg0.length() >=3 ){ /* ŠÖ”íœ */
+    if( arg0.endsWith("{}") && arg0.length() >=3 ){ /* é–¢æ•°å‰Šé™¤ */
         sub_brace_erase( *this , arg0 );
         goto exit;
     }
@@ -540,7 +540,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
     arg0low = arg0;
     arg0low.downcase();
     if( (func=(NnExecutable*)functions.get(arg0)) != NULL ){
-        /* ƒTƒuƒVƒFƒ‹‚ğÀs‚·‚é */
+        /* ã‚µãƒ–ã‚·ã‚§ãƒ«ã‚’å®Ÿè¡Œã™ã‚‹ */
         NnVector param;
         param.append( arg0.clone() );
         argv.splitTo( param );
@@ -550,7 +550,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
     }else if( call_nyaos_command( arg0low.chars() , argv.chars() , rv )){
         setExitStatus( rv );
     }else if( (cmdp=(NyadosCommand*)command.get( arg0low )) != NULL ){
-    /* “à‘ ƒRƒ}ƒ“ƒh‚ğÀs‚·‚é */
+    /* å†…è”µã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ */
         NnString argv2;
         if( explode4internal( argv , argv2 ) != 0 )
             goto exit;
@@ -562,7 +562,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
             goto exit;
         }
     }else{
-        /* ŠO•”ƒRƒ}ƒ“ƒh‚ğÀs‚·‚é */
+        /* å¤–éƒ¨ã‚³ãƒãƒ³ãƒ‰ã‚’å®Ÿè¡Œã™ã‚‹ */
         NnString cmdline2;
         if( explode4external( replace , cmdline2 ) != 0 )
             goto exit;
@@ -579,7 +579,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
 	::remove( heredocfn.chars() );
 	heredocfn.erase();
     }
-    // •W€o—Í/ƒGƒ‰[o—Í/“ü—Í‚ğŒ³‚É–ß‚·.
+    // æ¨™æº–å‡ºåŠ›/ã‚¨ãƒ©ãƒ¼å‡ºåŠ›/å…¥åŠ›ã‚’å…ƒã«æˆ»ã™.
     if( conOut_ != save_out ){
         delete conOut_;
         conOut_ = save_out;
@@ -595,7 +595,7 @@ int NyadosShell::interpret2( const NnString &replace_ , int wait )
     return rv;
 }
 
-/* •¶š—ñ’†‚Ì " ‚Ì”‚ğ”‚¦‚é */
+/* æ–‡å­—åˆ—ä¸­ã® " ã®æ•°ã‚’æ•°ãˆã‚‹ */
 static int countQuote( const char *p )
 {
     int qc=0;
@@ -627,9 +627,9 @@ static bool isEscapeEnd( const char *p )
 
 
 
-/* ƒ\[ƒX‚©‚çA‚PƒRƒ}ƒ“ƒh‚¸‚ÂØ‚èo‚·B
- * Ø‚èo‚µ‚½“à—e‚ÍŠî–{“I‚ÉƒqƒXƒgƒŠ’uŠ·‚³‚ê‚é‚¾‚¯‚ÅA‘¼‚Ì‰ÁH‚Í‚È‚¢B
- *    buffer - æ‚èo‚µ‚½ƒRƒ}ƒ“ƒh‚ğ“ü‚ê‚éƒoƒbƒtƒ@B
+/* ã‚½ãƒ¼ã‚¹ã‹ã‚‰ã€ï¼‘ã‚³ãƒãƒ³ãƒ‰ãšã¤åˆ‡ã‚Šå‡ºã™ã€‚
+ * åˆ‡ã‚Šå‡ºã—ãŸå†…å®¹ã¯åŸºæœ¬çš„ã«ãƒ’ã‚¹ãƒˆãƒªç½®æ›ã•ã‚Œã‚‹ã ã‘ã§ã€ä»–ã®åŠ å·¥ã¯ãªã„ã€‚
+ *    buffer - å–ã‚Šå‡ºã—ãŸã‚³ãƒãƒ³ãƒ‰ã‚’å…¥ã‚Œã‚‹ãƒãƒƒãƒ•ã‚¡ã€‚
  */
 Status NyadosShell::readcommand( NnString &buffer )
 {
@@ -638,7 +638,7 @@ Status NyadosShell::readcommand( NnString &buffer )
 	NnString temp;
 	Status rc;
 
-	/* Å‰‚Ì‚Psæ“¾ */
+	/* æœ€åˆã®ï¼‘è¡Œå–å¾— */
 	for(;;){
 	    rc=readline( current );
 	    if( rc == TERMINATE || rc == CANCEL )
@@ -647,7 +647,7 @@ Status NyadosShell::readcommand( NnString &buffer )
             current_.trim();
 	    if( current_.length() > 0 && ! current_.startsWith("#") )
 		break;
-	    /* ƒRƒƒ“ƒgs‚Ìê‡‚ÍA‚à‚¤ˆê“xæ“¾‚µ‚È‚¨‚µ */
+	    /* ã‚³ãƒ¡ãƒ³ãƒˆè¡Œã®å ´åˆã¯ã€ã‚‚ã†ä¸€åº¦å–å¾—ã—ãªãŠã— */
 	    current.erase();
 	}
 	for(;;){
@@ -666,13 +666,13 @@ Status NyadosShell::readcommand( NnString &buffer )
 		    isReplaceHistory = 0;
 		}
 
-		/* ƒqƒXƒgƒŠ‚ª‘¶İ‚·‚ê‚ÎAƒqƒXƒgƒŠ’uŠ·‚ğs‚¤ */
+		/* ãƒ’ã‚¹ãƒˆãƒªãŒå­˜åœ¨ã™ã‚Œã°ã€ãƒ’ã‚¹ãƒˆãƒªç½®æ›ã‚’è¡Œã† */
 		if( hisObj != NULL ){
 		    NnString result;
 		    if( preprocessHistory( *hisObj , current , result ) != 0 ){
 			fputs( result.chars() , stderr );
 			if( isReplaceHistory )
-			    hisObj->drop(); // “ü—Í©‘Ì‚ğíœ‚·‚é.
+			    hisObj->drop(); // å…¥åŠ›è‡ªä½“ã‚’å‰Šé™¤ã™ã‚‹.
 			return NEXTLINE;
 		    }
 		    if( isReplaceHistory ){
@@ -694,8 +694,8 @@ Status NyadosShell::readcommand( NnString &buffer )
 	    }else{
 		break;
 	    }
-	    /* Œp‘±s‚ª‚ ‚é‚Ì‚Å‚ ‚ê‚ÎA‘±‚¢‚Äæ“¾
-	     * (Œp‘±s‚É‚ÍAƒRƒƒ“ƒg‚Í‚ ‚è‚¦‚È‚¢‚à‚Ì‚Æ‚·‚é)
+	    /* ç¶™ç¶šè¡ŒãŒã‚ã‚‹ã®ã§ã‚ã‚Œã°ã€ç¶šã„ã¦å–å¾—
+	     * (ç¶™ç¶šè¡Œã«ã¯ã€ã‚³ãƒ¡ãƒ³ãƒˆã¯ã‚ã‚Šãˆãªã„ã‚‚ã®ã¨ã™ã‚‹)
 	     */
 	    temp.erase();
 	    rc = readline( temp );
@@ -713,12 +713,12 @@ Status NyadosShell::readcommand( NnString &buffer )
 	    break;
 	}
         if( !quote ){
-            /* ƒRƒ}ƒ“ƒhƒ^[ƒ~ƒl[ƒ^u ;v‚ª‚ ‚Á‚½! */
+            /* ã‚³ãƒãƒ³ãƒ‰ã‚¿ãƒ¼ãƒŸãƒãƒ¼ã‚¿ã€Œ ;ã€ãŒã‚ã£ãŸ! */
             if( !quote  && isSpace(current.at(i)) && current.at(i+1)==';' ){
                 current = current.chars()+i+2;
                 break;
             }
-            /* ƒRƒ}ƒ“ƒhƒ^[ƒ~ƒl[ƒ^u&v‚ª‚ ‚Á‚½! */
+            /* ã‚³ãƒãƒ³ãƒ‰ã‚¿ãƒ¼ãƒŸãƒãƒ¼ã‚¿ã€Œ&ã€ãŒã‚ã£ãŸ! */
             if( !quote  && prevchar != '>' && prevchar != '|' && current.at(i)=='&' ){
                 if( i+1 < current.length() && current.at(i+1) == '&' ){
                     buffer << "&&";
@@ -726,7 +726,7 @@ Status NyadosShell::readcommand( NnString &buffer )
                     continue;
                 }
                 if( i+1>=current.length() || current.at(i+1) != '&'  ){
-                    buffer << '&'; // ƒtƒ‰ƒO‚ÌˆÓ–¡‚Å‚í‚´‚Æc‚µ‚Ä‚¨‚­...
+                    buffer << '&'; // ãƒ•ãƒ©ã‚°ã®æ„å‘³ã§ã‚ã–ã¨æ®‹ã—ã¦ãŠã...
                     current = current.chars()+i+1;
                     break;
                 }
@@ -745,11 +745,11 @@ Status NyadosShell::readcommand( NnString &buffer )
     return NEXTLINE;
 }
 
-/* which ‚Ìƒ‰ƒbƒp[FƒpƒX‚É‹ó”’•¶š‚ªŠÜ‚Ü‚ê‚Ä‚¢‚éê‡Aˆø—p•„‚ÅˆÍ‚ŞB
- *	fn : ƒtƒ@ƒCƒ‹–¼
- *	fullpath : ƒtƒ‹ƒpƒX–¼
+/* which ã®ãƒ©ãƒƒãƒ‘ãƒ¼ï¼šãƒ‘ã‚¹ã«ç©ºç™½æ–‡å­—ãŒå«ã¾ã‚Œã¦ã„ã‚‹å ´åˆã€å¼•ç”¨ç¬¦ã§å›²ã‚€ã€‚
+ *	fn : ãƒ•ã‚¡ã‚¤ãƒ«å
+ *	fullpath : ãƒ•ãƒ«ãƒ‘ã‚¹å
  * return
- *	0: ¬Œ÷ , !0 : ¸”s
+ *	0: æˆåŠŸ , !0 : å¤±æ•—
  */
 static int which_pathquote( const char *fn , NnString &fullpath )
 {
@@ -763,12 +763,12 @@ static int which_pathquote( const char *fn , NnString &fullpath )
     return rc;
 }
 
-/* ƒCƒ“ƒ^[ƒvƒŠƒ^–¼‘}“ü
- *	 script - ƒXƒNƒŠƒvƒg–¼
- *	 argv   - ˆø”(ƒXƒNƒŠƒvƒg–¼‚æ‚èŒã‚Ìƒpƒ‰ƒ[ƒ^)
- *       buffer - ‘}“üæƒoƒbƒtƒ@
+/* ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ—ãƒªã‚¿åæŒ¿å…¥
+ *	 script - ã‚¹ã‚¯ãƒªãƒ—ãƒˆå
+ *	 argv   - å¼•æ•°(ã‚¹ã‚¯ãƒªãƒ—ãƒˆåã‚ˆã‚Šå¾Œã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿)
+ *       buffer - æŒ¿å…¥å…ˆãƒãƒƒãƒ•ã‚¡
  * return
- *       0 - ¬Œ÷ , !0 - ¸”s(replace •ÏX‚È‚µ)
+ *       0 - æˆåŠŸ , !0 - å¤±æ•—(replace å¤‰æ›´ãªã—)
  */
 static int insertInterpreter( const char *script ,
 			      const NnString &argv ,
@@ -776,14 +776,14 @@ static int insertInterpreter( const char *script ,
 {
     NnString *intnm=getInterpretor( script );
     if( intnm == NULL )
-	return 1; /* Šg’£qŠY“–‚È‚µ */
+	return 1; /* æ‹¡å¼µå­è©²å½“ãªã— */
 
-    /* ƒXƒNƒŠƒvƒg‚Ìƒtƒ‹ƒpƒX‚ğæ“¾‚·‚é */
+    /* ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®ãƒ•ãƒ«ãƒ‘ã‚¹ã‚’å–å¾—ã™ã‚‹ */
     NnString path;
     if( which_pathquote(script,path) != 0 ){
         path = script;
     }
-    /* $0 ` $9 ‚ğì‚Á‚Ä‚¨‚­ */
+    /* $0 ï½ $9 ã‚’ä½œã£ã¦ãŠã */
     NnVector param;
     param.append( path.clone() );
     argv.splitTo( param );
@@ -794,11 +794,11 @@ static int insertInterpreter( const char *script ,
     return 0;
 }
 
-/* ˆêsƒCƒ“ƒ^[ƒvƒŠƒ^.
- * Eˆø”•¶š—ñ(ƒRƒ}ƒ“ƒhs)‚ğ ; ‚Å•ªŠ„‚µA‚¨‚Ì‚¨‚Ì‚ğ interpret2 ‚Åˆ—‚·‚é.
- *      statement : ƒRƒ}ƒ“ƒhs
+/* ä¸€è¡Œã‚¤ãƒ³ã‚¿ãƒ¼ãƒ—ãƒªã‚¿.
+ * ãƒ»å¼•æ•°æ–‡å­—åˆ—(ã‚³ãƒãƒ³ãƒ‰è¡Œ)ã‚’ ; ã§åˆ†å‰²ã—ã€ãŠã®ãŠã®ã‚’ interpret2 ã§å‡¦ç†ã™ã‚‹.
+ *      statement : ã‚³ãƒãƒ³ãƒ‰è¡Œ
  * return
- *      0 Œp‘± -1 I—¹
+ *      0 ç¶™ç¶š -1 çµ‚äº†
  */
 int NyadosShell::interpret1( const NnString &statement )
 {
@@ -810,7 +810,7 @@ int NyadosShell::interpret1( const NnString &statement )
     cmdline.trim();
     if( cmdline.length() <= 0 )
         return 0;
-    /* ƒRƒƒ“ƒgˆ—‚Í readcommand ŠÖ”ƒŒƒxƒ‹‚Åˆ—Ï‚İ */
+    /* ã‚³ãƒ¡ãƒ³ãƒˆå‡¦ç†ã¯ readcommand é–¢æ•°ãƒ¬ãƒ™ãƒ«ã§å‡¦ç†æ¸ˆã¿ */
 
     if( cmdline.length()==2 && cmdline.at(1)==':' && isalpha(cmdline.at(0) & 0xFF) ){
 	NnDir::chdrive( cmdline.at(0) );
@@ -843,7 +843,7 @@ int NyadosShell::interpret1( const NnString &statement )
 	NnString cmds;
 	int dem=rest.splitTo(cmds,rest,"|","\"`");
 	if( rest.at(0) == '&' ){
-	    /* |& ‚É‘Î‚·‚é‘Î‰ */
+	    /* |& ã«å¯¾ã™ã‚‹å¯¾å¿œ */
 	    rest.shift();
 	    cmds << " 2>&1";
 	}
@@ -854,8 +854,8 @@ int NyadosShell::interpret1( const NnString &statement )
         arg0low.downcase();
         
 	NnString *aliasValue=(NnString*)aliases.get(arg0low);
-        if( aliasValue != NULL ){// ƒGƒCƒŠƒAƒX‚¾‚Á‚½B
-            /* ƒpƒ‰ƒ[ƒ^‚ğ•ª‰ğ‚·‚é */
+        if( aliasValue != NULL ){// ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã ã£ãŸã€‚
+            /* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’åˆ†è§£ã™ã‚‹ */
             NnVector param;
             NnString buffer;
 
@@ -925,10 +925,10 @@ int NyadosShell::interpret( const NnString &statement )
 }
 
 
-/* ƒVƒFƒ‹‚ÌƒƒCƒ“ƒ‹[ƒvB
- *	ƒVƒFƒ‹ƒRƒ}ƒ“ƒh‚Ìæ“¾æ‚Í readlineŠÖ”‚Æ‚µ‚Ä‰¼‘z‰»‚µ‚Ä‚ ‚éB
+/* ã‚·ã‚§ãƒ«ã®ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—ã€‚
+ *	ã‚·ã‚§ãƒ«ã‚³ãƒãƒ³ãƒ‰ã®å–å¾—å…ˆã¯ readlineé–¢æ•°ã¨ã—ã¦ä»®æƒ³åŒ–ã—ã¦ã‚ã‚‹ã€‚
  * return
- *	0:¬Œ÷ , -1:ƒlƒXƒg‚µ‰ß‚¬
+ *	0:æˆåŠŸ , -1:ãƒã‚¹ãƒˆã—éã
  */
 int NyadosShell::mainloop()
 {
@@ -986,7 +986,7 @@ int cmd_eval( NyadosShell &shell , const NnString &argv )
     return 0;
 }
 
-/* ƒVƒFƒ‹‚ÌƒIƒuƒWƒFƒNƒg‚ÌƒRƒ“ƒXƒgƒ‰ƒNƒ^ */
+/* ã‚·ã‚§ãƒ«ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 NyadosShell::NyadosShell( NyadosShell *parent )
 {
     const static struct Command {
@@ -1025,7 +1025,7 @@ NyadosShell::NyadosShell( NyadosShell *parent )
 	{ "{}"      , &cmd_function_list },
 	{ 0 , 0 },
     };
-    /* Ã“Iƒƒ“ƒo•Ï”‚ğˆê“x‚¾‚¯‰Šú‰»‚·‚é */
+    /* é™çš„ãƒ¡ãƒ³ãƒå¤‰æ•°ã‚’ä¸€åº¦ã ã‘åˆæœŸåŒ–ã™ã‚‹ */
     static int flag=1;
     if( flag ){
 	flag = 0;

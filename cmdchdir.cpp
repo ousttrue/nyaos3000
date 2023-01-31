@@ -1,4 +1,4 @@
-/* ƒfƒBƒŒƒNƒgƒŠ‘€ìŠÖŒW‚ÌƒRƒ}ƒ“ƒh‚Ì’è‹`ƒ\[ƒX */
+/* ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªæ“ä½œé–¢ä¿‚ã®ã‚³ãƒãƒ³ãƒ‰ã®å®šç¾©ã‚½ãƒ¼ã‚¹ */
 #include <ctype.h>
 #include <stdlib.h>
 #include "ntcons.h"
@@ -8,7 +8,7 @@
 NnVector dirstack;
 static NnString  prevdir , currdir ;
 
-/* ƒXƒ^ƒbƒN‚Ì“à—e‚ğ ~n ‚É”½‰f‚·‚é */
+/* ã‚¹ã‚¿ãƒƒã‚¯ã®å†…å®¹ã‚’ ~n ã«åæ˜ ã™ã‚‹ */
 static void chg_tilde()
 {
     int i;
@@ -23,10 +23,10 @@ static void chg_tilde()
     }
 }
 
-/* chdir ‚Ìƒ‰ƒbƒp[. ˆê‚Â‘O‚ÌƒfƒBƒŒƒNƒgƒŠ‚ğ‹L‰¯‚·‚é.
- *	dir - ˆÚ“®æƒfƒBƒŒƒNƒgƒŠ
+/* chdir ã®ãƒ©ãƒƒãƒ‘ãƒ¼. ä¸€ã¤å‰ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’è¨˜æ†¶ã™ã‚‹.
+ *	dir - ç§»å‹•å…ˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
  * return
- *	0 - ¬Œ÷ , not 0 - ¸”s
+ *	0 - æˆåŠŸ , not 0 - å¤±æ•—
  */
 static int chdir_( const NnString &dir )
 {
@@ -45,7 +45,7 @@ static int chdir_( const NnString &dir )
     return rc;
 }
 
-/* ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğƒXƒ^ƒbƒN‚Ö */
+/* ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ã‚¹ã‚¿ãƒƒã‚¯ã¸ */
 static void pushd_here()
 {
     NnString *cwd=new NnString();
@@ -53,11 +53,11 @@ static void pushd_here()
     dirstack.append( cwd );
 }
 
-/* ƒXƒ^ƒbƒNƒgƒbƒv‚ğƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚Ö 
+/* ã‚¹ã‚¿ãƒƒã‚¯ãƒˆãƒƒãƒ—ã‚’ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¸ 
  *    return 
- *	NULL: ¬Œ÷ 
- *      not NULL: ¸”s‚µ‚½‚ÌƒfƒBƒŒƒNƒgƒŠ–¼
- *          (ŒÄ‚Ño‚µŒ³‚É‚ÄAdelete ‚·‚é‚±‚Æ)
+ *	NULL: æˆåŠŸ 
+ *      not NULL: å¤±æ•—ã—ãŸæ™‚ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå
+ *          (å‘¼ã³å‡ºã—å…ƒã«ã¦ã€delete ã™ã‚‹ã“ã¨)
  */
 static NnString *popd_here()
 {
@@ -70,10 +70,10 @@ static NnString *popd_here()
     }
 }
 
-/* ƒXƒ^ƒbƒNƒgƒbƒv‚ÆƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğŒğŠ·
+/* ã‚¹ã‚¿ãƒƒã‚¯ãƒˆãƒƒãƒ—ã¨ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’äº¤æ›
  * return
- *	NULL - ¬Œ÷
- *	not NULL - ˆÚ“®‚Å‚«‚È‚©‚Á‚½ê‡‚ÌƒXƒ^ƒbƒNƒgƒbƒv
+ *	NULL - æˆåŠŸ
+ *	not NULL - ç§»å‹•ã§ããªã‹ã£ãŸå ´åˆã®ã‚¹ã‚¿ãƒƒã‚¯ãƒˆãƒƒãƒ—
  */
 static NnString *swap_here()
 {
@@ -88,7 +88,7 @@ static NnString *swap_here()
     return NULL;
 }
 
-/* “à‘ ƒRƒ}ƒ“ƒh dirs */
+/* å†…è”µã‚³ãƒãƒ³ãƒ‰ dirs */
 int cmd_dirs( NyadosShell &shell , const NnString & )
 {
     NnString cwd;
@@ -102,7 +102,7 @@ int cmd_dirs( NyadosShell &shell , const NnString & )
     return 0;
 }
 
-/* “à‘ ƒRƒ}ƒ“ƒh pushd */
+/* å†…è”µã‚³ãƒãƒ³ãƒ‰ pushd */
 int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
 {
     NnString argv(argv_);
@@ -120,7 +120,7 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
     }
 
     if( argv.empty() ){
-        /* ƒXƒ^ƒbƒNƒgƒbƒv‚ÌƒfƒBƒŒƒNƒgƒŠ‚ÆƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğ“ü‚ê‘Ö‚¦‚é */
+        /* ã‚¹ã‚¿ãƒƒã‚¯ãƒˆãƒƒãƒ—ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¨ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å…¥ã‚Œæ›¿ãˆã‚‹ */
         if( dirstack.size() < 1 ){
             if( here_flag ){
                 pushd_here();
@@ -141,11 +141,11 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
             }
         }
     }else if( argv.at(0) == '+' && isDigit(argv.at(1)) ){
-        /* ƒXƒ^ƒbƒN‚ğ +n Œ`®‚Åw’è‚·‚éBn ‰ñ‰ñ“]‚³‚¹‚é */
+        /* ã‚¹ã‚¿ãƒƒã‚¯ã‚’ +n å½¢å¼ã§æŒ‡å®šã™ã‚‹ã€‚n å›å›è»¢ã•ã›ã‚‹ */
         int n=atoi(argv.chars()+1);
         if( n > 0 ){
-            /* ––”ö‚ÉƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğ push ‚µ‚½“_‚ÅA
-             * ‚·‚Å‚Éˆê‰ñ“]ˆµ‚¢ 
+            /* æœ«å°¾ã«ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ push ã—ãŸæ™‚ç‚¹ã§ã€
+             * ã™ã§ã«ä¸€å›è»¢æ‰±ã„ 
              */
             pushd_here();
             while( --n > 0 )
@@ -158,9 +158,9 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
 	    }
         }
     }else{
-        /* Œ»İ‚ÌƒfƒBƒŒƒNƒgƒŠ‚ğƒXƒ^ƒbƒN‚É•Û‘¶ */
+        /* ç¾åœ¨ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ã‚¹ã‚¿ãƒƒã‚¯ã«ä¿å­˜ */
         pushd_here();
-        /* ƒfƒBƒŒƒNƒgƒŠ‚ğˆÚ“® */
+        /* ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ç§»å‹• */
         NyadosShell::dequote( argv );
 	if( chdir_( argv ) != 0 ){
 	    conErr << argv << ": no such directory.\n";
@@ -172,7 +172,7 @@ int cmd_pushd( NyadosShell &shell , const NnString &argv_ )
     return cmd_dirs(shell,argv);
 }
 
-/* “à‘ ƒRƒ}ƒ“ƒh popd ˆ—ƒ‹[ƒ`ƒ“  */
+/* å†…è”µã‚³ãƒãƒ³ãƒ‰ popd å‡¦ç†ãƒ«ãƒ¼ãƒãƒ³  */
 int cmd_popd( NyadosShell &shell , const NnString &argv )
 {
     if( dirstack.size() <= 0 ){
@@ -229,19 +229,19 @@ int cmd_pwd( NyadosShell &shell , const NnString & )
 }
 
 
-/* “à‘ ƒRƒ}ƒ“ƒh chdir ˆ—ƒ‹[ƒ`ƒ“ */
+/* å†…è”µã‚³ãƒãƒ³ãƒ‰ chdir å‡¦ç†ãƒ«ãƒ¼ãƒãƒ³ */
 int cmd_chdir( NyadosShell &shell , const NnString &argv )
 {
     int basedir=0;
     NnString newdir;
     if( argv.empty() ){
-	 /* ˆø”‚ª‹ó‚Ìê‡ */
+	 /* å¼•æ•°ãŒç©ºã®å ´åˆ */
 	if( getEnv("HOME") == NULL &&
             getEnv("USERPROFILE") == NULL )
 	    return cmd_pwd(shell,argv);
 	newdir = "~";
     }else if( argv.startsWith("-") ){
-	/* ƒIƒvƒVƒ‡ƒ“ˆ— */
+	/* ã‚ªãƒ—ã‚·ãƒ§ãƒ³å‡¦ç† */
 	NnString tmp , opt;
 
 	argv.splitTo( opt , tmp );
@@ -262,21 +262,21 @@ int cmd_chdir( NyadosShell &shell , const NnString &argv )
 	NyadosShell::dequote( argv.chars() , newdir );
     }
     
-    /* chdir ˆ— */
+    /* chdir å‡¦ç† */
     if( chdir_( newdir ) == 0 )
         return 0;
     
-    /* chdir ©‘Ì‚ª¸”s‚µ‚½ê‡A--basedir ƒIƒvƒVƒ‡ƒ“‚Åˆ—‚·‚éê‡‚ª‚ ‚é */
+    /* chdir è‡ªä½“ãŒå¤±æ•—ã—ãŸå ´åˆã€--basedir ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§å‡¦ç†ã™ã‚‹å ´åˆãŒã‚ã‚‹ */
     if( basedir ){
         int lastroot=NnDir::lastRoot( newdir.chars() );
         if( lastroot != -1 ){
             NnString bdir( newdir.chars() , lastroot );
-            bdir << "\\."; // rootƒfƒBƒŒƒNƒgƒŠ‘Îô
+            bdir << "\\."; // rootãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå¯¾ç­–
             if( chdir_( bdir ) == 0 )
                 return 0;
         }
     }
-    /* ƒGƒ‰[I—¹ */
+    /* ã‚¨ãƒ©ãƒ¼çµ‚äº† */
     conErr << newdir << ": no such file or directory.\n";
     return 0;
 }

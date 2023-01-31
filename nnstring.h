@@ -8,25 +8,25 @@
 class NnVector;
 
 /* letter_t :
- *   ãˆÊ 8bit = {0,-1} :  8bit•¶š(‰ºˆÊ8bit‚Ì‚İ—LŒø)
- *               ‚»‚Ì‘¼ : 16bit•¶š(‘Sbit—LŒø)
+ *   ä¸Šä½ 8bit = {0,-1} :  8bitæ–‡å­—(ä¸‹ä½8bitã®ã¿æœ‰åŠ¹)
+ *               ãã®ä»– : 16bitæ–‡å­—(å…¨bitæœ‰åŠ¹)
  */
 typedef unsigned short letter_t;
 
 /** NnString :
- *  EƒRƒ“ƒpƒNƒgwŒü‚Ì•¶š—ñƒIƒuƒWƒFƒNƒgB
+ *  ãƒ»ã‚³ãƒ³ãƒ‘ã‚¯ãƒˆæŒ‡å‘ã®æ–‡å­—åˆ—ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚
  *
- *  EƒŠƒtƒ@ƒŒƒ“ƒXƒJƒEƒ“ƒeƒBƒ“ƒO‚ÅA•¡”ƒCƒ“ƒXƒ^ƒ“ƒX‚É‚¨‚¢‚Ä‚àA
- *    “¯ˆê•¶š—ñ‚ğ‹¤—L‚µ‚Ä‚¢‚éB
+ *  ãƒ»ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹ã‚«ã‚¦ãƒ³ãƒ†ã‚£ãƒ³ã‚°ã§ã€è¤‡æ•°ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã«ãŠã„ã¦ã‚‚ã€
+ *    åŒä¸€æ–‡å­—åˆ—ã‚’å…±æœ‰ã—ã¦ã„ã‚‹ã€‚
  *
- *  EˆêƒIƒuƒWƒFƒNƒg‚Ìˆµ‚¢‚ª–Ê“|‚È“ñ€‰‰Zq(+)‚Í—pˆÓ‚µ‚Ä‚¢‚È‚¢B
- *    ‚©‚í‚è‚ÉA‘ã“ü‰‰Zq(+=)A‘}“ü‰‰Zq(<<)‚ğg—p‚·‚é‚±‚Æ‚ª‚Å‚«‚éB
- *    (Java‚ÌStringBuffer‚É‹ß‚¢)
+ *  ãƒ»ä¸€æ™‚ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ‰±ã„ãŒé¢å€’ãªäºŒé …æ¼”ç®—å­(+)ã¯ç”¨æ„ã—ã¦ã„ãªã„ã€‚
+ *    ã‹ã‚ã‚Šã«ã€ä»£å…¥æ¼”ç®—å­(+=)ã€æŒ¿å…¥æ¼”ç®—å­(<<)ã‚’ä½¿ç”¨ã™ã‚‹ã“ã¨ãŒã§ãã‚‹ã€‚
+ *    (Javaã®StringBufferã«è¿‘ã„)
  *
- *  Econst char* ‚Ö‚Ì•ÏŠ·‚ÍA–¾¦“I‚É chars() ƒƒ\ƒbƒh‚ğg‚Á‚Äs‚¤B
- *    ƒLƒƒƒXƒg‰‰Zq‚Ì‘½d’è‹`‚Ís‚Á‚Ä‚¢‚È‚¢B
+ *  ãƒ»const char* ã¸ã®å¤‰æ›ã¯ã€æ˜ç¤ºçš„ã« chars() ãƒ¡ã‚½ãƒƒãƒ‰ã‚’ä½¿ã£ã¦è¡Œã†ã€‚
+ *    ã‚­ãƒ£ã‚¹ãƒˆæ¼”ç®—å­ã®å¤šé‡å®šç¾©ã¯è¡Œã£ã¦ã„ãªã„ã€‚
  *
- *  ENnHash ‚ÌƒL[‚Æ‚µ‚Ä—p‚¢‚é‚±‚Æ‚ª‚Å‚«‚é—Bˆê‚ÌƒNƒ‰ƒXB
+ *  ãƒ»NnHash ã®ã‚­ãƒ¼ã¨ã—ã¦ç”¨ã„ã‚‹ã“ã¨ãŒã§ãã‚‹å”¯ä¸€ã®ã‚¯ãƒ©ã‚¹ã€‚
  */
 class NnString : public NnSortable { 
     struct Rep {
@@ -50,27 +50,27 @@ class NnString : public NnSortable {
     static int deq_(int ch);
 public:
     virtual ~NnString();
-    /** ƒIƒuƒWƒFƒNƒg object ‚Æ”äŠr‚µA‘å¬ŠÖŒW‚ğ•‰E—ëE³‚Ì”’l‚Å•Ô‚· */
+    /** ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ object ã¨æ¯”è¼ƒã—ã€å¤§å°é–¢ä¿‚ã‚’è² ãƒ»é›¶ãƒ»æ­£ã®æ•°å€¤ã§è¿”ã™ */
     virtual int compare( const NnSortable &object ) const;
     const char *repr() const { return this->chars(); }
 
-    /** ‹ó‚Å‰Šú‰»‚·‚é */
+    /** ç©ºã§åˆæœŸåŒ–ã™ã‚‹ */
     NnString() : rep(&zero) {}
-    /** •¶š—ñ s ‚Å‰Šú‰»‚·‚é */
+    /** æ–‡å­—åˆ— s ã§åˆæœŸåŒ–ã™ã‚‹ */
     NnString( const char *s ){ set(s); }
-    /** ƒ|ƒCƒ“ƒ^ s ‚æ‚è‚Ì size ƒoƒCƒg‚ÌƒoƒCƒg—ñ‚Å‰Šú‰»‚·‚é */
+    /** ãƒã‚¤ãƒ³ã‚¿ s ã‚ˆã‚Šã® size ãƒã‚¤ãƒˆã®ãƒã‚¤ãƒˆåˆ—ã§åˆæœŸåŒ–ã™ã‚‹ */
     NnString( const char *s , int size ){ set(s,size); }
-    /** •¶š—ñ ns ‚Å‰Šú‰»‚·‚é */
+    /** æ–‡å­—åˆ— ns ã§åˆæœŸåŒ–ã™ã‚‹ */
     NnString( const NnString &ns );
 
-    // ‘ã“ü‰‰Zq.
-    /** ƒ|ƒCƒ“ƒ^ s ‚æ‚è‚Ì size ƒoƒCƒg‚ÌƒoƒCƒg—ñ‚ğ‘ã“ü‚·‚é */
+    // ä»£å…¥æ¼”ç®—å­.
+    /** ãƒã‚¤ãƒ³ã‚¿ s ã‚ˆã‚Šã® size ãƒã‚¤ãƒˆã®ãƒã‚¤ãƒˆåˆ—ã‚’ä»£å…¥ã™ã‚‹ */
     int assign( const char *s , int size );
-    /** •¶š—ñ ns ‚ğ‘ã“ü‚·‚é */
+    /** æ–‡å­—åˆ— ns ã‚’ä»£å…¥ã™ã‚‹ */
     NnString &operator = ( const NnString &ns );
-    /** •¶š—ñ x ‚ğ‘ã“ü‚·‚é */
+    /** æ–‡å­—åˆ— x ã‚’ä»£å…¥ã™ã‚‹ */
     NnString &operator = ( const char *x );
-    /** •¶š c ‚ğ‘ã“ü‚·‚é */
+    /** æ–‡å­— c ã‚’ä»£å…¥ã™ã‚‹ */
     NnString &operator = ( char c ){ assign( &c , 1 ); return *this; }
 
     NnString &insertAt( int at , const char *s , int siz);
@@ -79,60 +79,60 @@ public:
     NnString &insertAt( int at , const NnString &ns )
 	{ return insertAt(at,ns.chars(),ns.length() ); }
 
-    /** •¶š c ‚ğ––”ö‚É’Ç‰Á‚·‚é */
+    /** æ–‡å­— c ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹ */
     NnString &operator += ( char c );
-    /** •¶š—ñ s ‚ğ––”ö‚É’Ç‰Á‚·‚é */
+    /** æ–‡å­—åˆ— s ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹ */
     NnString &operator += ( const char *s )
 	{ return insertAt( length(), s, strlen(s) ); }
-    /** •¶š—ñ ns ‚ğ––”ö‚É’Ç‰Á‚·‚é */
+    /** æ–‡å­—åˆ— ns ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹ */
     NnString &operator += ( const NnString &ns )
 	{ return insertAt( length(), ns ); }
 
-    /** •¶š c ‚ğ––”ö‚É’Ç‰Á‚·‚é */
+    /** æ–‡å­— c ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹ */
     NnString &operator << ( char c ){ return *this += c ; }
-    /** •¶š—ñ s ‚ğ––”ö‚É’Ç‰Á‚·‚é */
+    /** æ–‡å­—åˆ— s ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹ */
     NnString &operator << ( const char *s ){ return *this += s; }
-    /** •¶š—ñ ns ‚ğ––”ö‚É’Ç‰Á‚·‚é */
+    /** æ–‡å­—åˆ— ns ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹ */
     NnString &operator << ( const NnString &ns )
 	{ return insertAt( length() , ns ); }
-    /** ”’l‚ğ 10i•¶š—ñ‚Ö•ÏŠ·‚µ‚Ä––”ö‚É’Ç‰Á‚·‚é */
+    /** æ•°å€¤ã‚’ 10é€²æ–‡å­—åˆ—ã¸å¤‰æ›ã—ã¦æœ«å°¾ã«è¿½åŠ ã™ã‚‹ */
     NnString &addValueOf( int x );
     
-    /* Š¿š‚P•¶š */
+    /* æ¼¢å­—ï¼‘æ–‡å­— */
     NnString &operator << (letter_t s)
 	{ *this += (char)(s>>8) ; return *this += (char)(s & 255); }
 
-    // ƒŠƒ|[ƒgŠÖ”.
-    /** char*Œ^•¶š—ñ‚ğæ‚èo‚· */
+    // ãƒªãƒãƒ¼ãƒˆé–¢æ•°.
+    /** char*å‹æ–‡å­—åˆ—ã‚’å–ã‚Šå‡ºã™ */
     const char *chars()  const { return rep->buffer; }
-    /** ‹ó•¶š‚Å‚ ‚ê‚Î ^‚ğ•Ô‚· */
+    /** ç©ºæ–‡å­—ã§ã‚ã‚Œã° çœŸã‚’è¿”ã™ */
     int         empty()  const { return rep->length <= 0 ; }
-    /** •¶š—ñ‚Ì’·‚³‚ğ“¾‚é */
+    /** æ–‡å­—åˆ—ã®é•·ã•ã‚’å¾—ã‚‹ */
     int         length() const { return rep->length; }
-    /** nƒoƒCƒg–Ú‚Ì•¶š‚ğ“¾‚é */
+    /** nãƒã‚¤ãƒˆç›®ã®æ–‡å­—ã‚’å¾—ã‚‹ */
     char        at(int n) const { return rep->buffer[n]; }
     char        &operator[]( int n ) { return rep->buffer[n]; }
-    /** •¶š—ñ‚ğ‹ó‚É‚·‚é */
+    /** æ–‡å­—åˆ—ã‚’ç©ºã«ã™ã‚‹ */
     void        erase(){ reset(rep); }
 
-    /** •¶š—ñ s ‚Æ”äŠr‚µA‘å¬ŠÖŒW‚ğ•‰E—ëE³‚Ì”’l‚Å•Ô‚· */
+    /** æ–‡å­—åˆ— s ã¨æ¯”è¼ƒã—ã€å¤§å°é–¢ä¿‚ã‚’è² ãƒ»é›¶ãƒ»æ­£ã®æ•°å€¤ã§è¿”ã™ */
     virtual int compare( const char *s ) const;
-    /** •¶š—ñ s ‚Æ”äŠr‚µA‘å¬ŠÖŒW‚ğ•‰E—ëE³‚Ì”’l‚Å•Ô‚·
-     *  ‰p‘å•¶šE¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢ */
+    /** æ–‡å­—åˆ— s ã¨æ¯”è¼ƒã—ã€å¤§å°é–¢ä¿‚ã‚’è² ãƒ»é›¶ãƒ»æ­£ã®æ•°å€¤ã§è¿”ã™
+     *  è‹±å¤§æ–‡å­—ãƒ»å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„ */
     int icompare( const char *s ) const;
-    /** •¶š—ñ s ‚Æ”äŠr‚µA‘å¬ŠÖŒW‚ğ•‰E—ëE³‚Ì”’l‚Å•Ô‚·
-     *  ‰p‘å•¶šE¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢ */
+    /** æ–‡å­—åˆ— s ã¨æ¯”è¼ƒã—ã€å¤§å°é–¢ä¿‚ã‚’è² ãƒ»é›¶ãƒ»æ­£ã®æ•°å€¤ã§è¿”ã™
+     *  è‹±å¤§æ–‡å­—ãƒ»å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„ */
     int icompare( const NnString &ns ) const;
     
-    /** •¶š—ñ‚Ì‘OŒã‚Ì‹ó”’‚ğíœ‚·‚é */
+    /** æ–‡å­—åˆ—ã®å‰å¾Œã®ç©ºç™½ã‚’å‰Šé™¤ã™ã‚‹ */
     NnString &trim();
-    /** ––”ö‚Ì‚PƒoƒCƒg‚ğíœ‚·‚é */
+    /** æœ«å°¾ã®ï¼‘ãƒã‚¤ãƒˆã‚’å‰Šé™¤ã™ã‚‹ */
     void chop();
-    /** •¶š—ñ‚ğ len ƒoƒCƒg‚É‚µ‚Ä‚µ‚Ü‚¤(Ø‚é) */
+    /** æ–‡å­—åˆ—ã‚’ len ãƒã‚¤ãƒˆã«ã—ã¦ã—ã¾ã†(åˆ‡ã‚‹) */
     void chop(int len);
-    /** æ“ª‚Ì‚PƒoƒCƒg‚ğíœ‚·‚é */
+    /** å…ˆé ­ã®ï¼‘ãƒã‚¤ãƒˆã‚’å‰Šé™¤ã™ã‚‹ */
     void shift();
-    /** æ“ª‚É‚PƒoƒCƒg‚ğ‘}“ü‚·‚é */
+    /** å…ˆé ­ã«ï¼‘ãƒã‚¤ãƒˆã‚’æŒ¿å…¥ã™ã‚‹ */
     void unshift( char ch );
 
     void filter( int (*func)(int) );
@@ -149,35 +149,35 @@ public:
     void yen2slash(){ filter(b2f_); }
     void dequote(){   filter(deq_); }
 
-    /** •¶š—ñ‚ğ‹ó”’‚Å•ªŠ„‚·‚é */
+    /** æ–‡å­—åˆ—ã‚’ç©ºç™½ã§åˆ†å‰²ã™ã‚‹ */
     void splitTo( NnString &first , NnString &rest ) const ;
     int splitTo( NnString &first , NnString &rest , const char *dem , const char *quote="\"" , const char *escape="^" ) const;
     int splitTo( NnVector &vec ) const;
 
-    /** ––”ö‚Ì‚P•¶š(DBCSˆÓ¯)‚ÌãˆÊ‚Wƒrƒbƒg‚ğ•Ô‚· */
+    /** æœ«å°¾ã®ï¼‘æ–‡å­—(DBCSæ„è­˜)ã®ä¸Šä½ï¼˜ãƒ“ãƒƒãƒˆã‚’è¿”ã™ */
     int lastchar() const;
 
-    /** s ‚Ån‚Ü‚Á‚Ä‚¢‚ê‚Î ^‚ğ•Ô‚· */
+    /** s ã§å§‹ã¾ã£ã¦ã„ã‚Œã° çœŸã‚’è¿”ã™ */
     int   startsWith( const char *s     ) const;
     int   startsWith( const NnString &s ) const;
-    /** s ‚Ån‚Ü‚Á‚Ä‚¢‚ê‚ÎA^‚ğ•Ô‚·B‰p‘å•¶šE¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢ */
+    /** s ã§å§‹ã¾ã£ã¦ã„ã‚Œã°ã€çœŸã‚’è¿”ã™ã€‚è‹±å¤§æ–‡å­—ãƒ»å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„ */
     int  istartsWith( const char *s     ) const;
     int  istartsWith( const NnString &s ) const;
 
-    /** s ‚ÅI‚í‚Á‚Ä‚¢‚ê‚ÎA^‚ğ•Ô‚·B*/
+    /** s ã§çµ‚ã‚ã£ã¦ã„ã‚Œã°ã€çœŸã‚’è¿”ã™ã€‚*/
     int     endsWith( const char *s     ) const;
     int     endsWith( const NnString &s ) const;
-    /** s ‚ÅI‚í‚Á‚Ä‚¢‚ê‚ÎA^‚ğ•Ô‚·B‰p‘å•¶šE¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢B*/
+    /** s ã§çµ‚ã‚ã£ã¦ã„ã‚Œã°ã€çœŸã‚’è¿”ã™ã€‚è‹±å¤§æ–‡å­—ãƒ»å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„ã€‚*/
     int    iendsWith( const char *s     ) const;
     int    iendsWith( const NnString &s ) const;
-    /* func ‚Å”äŠr‚µ‚½Œ‹‰ÊAs ‚ÅI‚í‚Á‚Ä‚¢‚ê‚ÎA^‚ğ•Ô‚· */
+    /* func ã§æ¯”è¼ƒã—ãŸçµæœã€s ã§çµ‚ã‚ã£ã¦ã„ã‚Œã°ã€çœŸã‚’è¿”ã™ */
 #ifdef __DMC__
     int    endsWith( const char *s , int __CLIB func(const char *,const char *) ) const;
 #else
     int    endsWith( const char *s , int func(const char *,const char *) ) const;
 #endif
     
-    /** ƒnƒbƒVƒ…’l‚ğ•Ô‚· */
+    /** ãƒãƒƒã‚·ãƒ¥å€¤ã‚’è¿”ã™ */
     virtual unsigned hashValue() const;
     static unsigned hashValue(const char *s);
     virtual NnObject *clone() const;
@@ -191,11 +191,11 @@ public:
     int search( const NnString &target , int start=0 );
     void replace( const NnString &from , const NnString &to , NnString &result );
     
-    /* 1•¶š‰½‚ÅA•¶š—ñ‚ğ‘–¸‚·‚éƒ|ƒCƒ“ƒ^ */
+    /* 1æ–‡å­—ä½•ã§ã€æ–‡å­—åˆ—ã‚’èµ°æŸ»ã™ã‚‹ãƒã‚¤ãƒ³ã‚¿ */
     class Iter{
 	letter_t last;
     public:
-	const char *next; /* Ÿ‚ÌˆÊ’u‚ğw’è‚·‚éƒ|ƒCƒ“ƒ^‚ÍŒöŠJ‚µ‚Ä‚µ‚Ü‚¤ */
+	const char *next; /* æ¬¡ã®ä½ç½®ã‚’æŒ‡å®šã™ã‚‹ãƒã‚¤ãƒ³ã‚¿ã¯å…¬é–‹ã—ã¦ã—ã¾ã† */
 
 	void operator ++ (){
 	    if( isKanji(*next) ){
@@ -219,8 +219,8 @@ public:
     };
 };
 
-/* NnString ‚Æ“¯‚¶‚¾‚ªAcompare/sort/uniqÀ{‚ÌÛ‚ÉA‘å•¶šE¬•¶š‚ğ
- * ‹æ•Ê‚µ‚È‚¢B*/
+/* NnString ã¨åŒã˜ã ãŒã€compare/sort/uniqå®Ÿæ–½ã®éš›ã«ã€å¤§æ–‡å­—ãƒ»å°æ–‡å­—ã‚’
+ * åŒºåˆ¥ã—ãªã„ã€‚*/
 class NnStringIC : public NnString {
 public:
     NnStringIC( const char *s ) : NnString(s){}

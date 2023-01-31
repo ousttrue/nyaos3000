@@ -2,9 +2,9 @@
 #include "nnstring.h"
 #include "shell.h"
 
-/** buf ‚Ì’†‚É‹ó”’‚ª‚ ‚ê‚ÎAŠO‘¤‚ðˆø—p•„‚ÅˆÍ‚ÞB
- *	buf - Œ³•¶Žš—ñ
- *	dst - •ÏŠ·Œã•¶Žš—ñ
+/** buf ã®ä¸­ã«ç©ºç™½ãŒã‚ã‚Œã°ã€å¤–å´ã‚’å¼•ç”¨ç¬¦ã§å›²ã‚€ã€‚
+ *	buf - å…ƒæ–‡å­—åˆ—
+ *	dst - å¤‰æ›å¾Œæ–‡å­—åˆ—
  */
 void NyadosShell::enquote( const char *buf , NnString &dst )
 {
@@ -15,9 +15,9 @@ void NyadosShell::enquote( const char *buf , NnString &dst )
     }
 }
 
-/** •¶Žš—ñ p ‚©‚çAˆø—p•„‚ðœ‚­B‚½‚¾‚µA"" ‚Í " ‚É•ÏŠ·‚·‚éB
- *	p - Œ³•¶Žš—ñ
- *	result - •ÏŠ·Œã•¶Žš—ñ
+/** æ–‡å­—åˆ— p ã‹ã‚‰ã€å¼•ç”¨ç¬¦ã‚’é™¤ãã€‚ãŸã ã—ã€"" ã¯ " ã«å¤‰æ›ã™ã‚‹ã€‚
+ *	p - å…ƒæ–‡å­—åˆ—
+ *	result - å¤‰æ›å¾Œæ–‡å­—åˆ—
  */
 void NyadosShell::dequote( const char *p , NnString &result )
 {
@@ -46,15 +46,15 @@ void NyadosShell::dequote( NnString &result )
 }
 
 
-/* •¶Žš—ñ‚ð“Ç‚ÝŽæ‚éB
- * ˆø—p•„‚È‚Ç‚à”FŽ¯‚·‚éB
- *      sp - •¶Žš—ñæ“ªƒ|ƒCƒ“ƒ^
- *            ¨ŽÀsŒã‚ÍA––”ö‚ÌŽŸ‚Ì•¶ŽšˆÊ’u(‹ó”’,\0 ˆÊ’u‚Ö)
- *      token - •¶Žš—ñ‚ð“ü‚ê‚éæ
+/* æ–‡å­—åˆ—ã‚’èª­ã¿å–ã‚‹ã€‚
+ * å¼•ç”¨ç¬¦ãªã©ã‚‚èªè­˜ã™ã‚‹ã€‚
+ *      sp - æ–‡å­—åˆ—å…ˆé ­ãƒã‚¤ãƒ³ã‚¿
+ *            â†’å®Ÿè¡Œå¾Œã¯ã€æœ«å°¾ã®æ¬¡ã®æ–‡å­—ä½ç½®(ç©ºç™½,\0 ä½ç½®ã¸)
+ *      token - æ–‡å­—åˆ—ã‚’å…¥ã‚Œã‚‹å…ˆ
  * return
- *      0 - •’Ê
+ *      0 - æ™®é€š
  *      '<', '>','|'
- *      EOF - ––”ö
+ *      EOF - æœ«å°¾
  */
 int NyadosShell::readWord( const char *&sp , NnString &token )
 {
@@ -105,11 +105,11 @@ int NyadosShell::readWord( const char *&sp , NnString &token )
         ++sp;
     }
 }
-/* ƒXƒy[ƒX•¶Žš‚ðƒXƒLƒbƒv‚·‚é
- *	sp : •ÏŠ·‘OŒã‚Ì•¶Žš—ñ
+/* ã‚¹ãƒšãƒ¼ã‚¹æ–‡å­—ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹
+ *	sp : å¤‰æ›å‰å¾Œã®æ–‡å­—åˆ—
  * return
- *	0 : ¬Œ÷
- *	-1 : ƒXƒy[ƒXˆÈŠO‚Ì•¶Žš‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½B
+ *	0 : æˆåŠŸ
+ *	-1 : ã‚¹ãƒšãƒ¼ã‚¹ä»¥å¤–ã®æ–‡å­—ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã€‚
  */
 int NyadosShell::skipSpc( const char *&sp )
 {
@@ -122,10 +122,10 @@ int NyadosShell::skipSpc( const char *&sp )
     }
 }
 
-/* ƒŠƒ_ƒCƒŒƒNƒgæ‚ð“Ç‚ÝŽæ‚éB
- *      sp - '>' ‚È‚Ç‚Ì•¶Žš‚ÌŽŸ‚ðŽw‚µ‚Ä‚¢‚éƒ|ƒCƒ“ƒ^
- *           ¨ ŽÀsŒã‚Í––”ö‚ÌŽŸ‚Ì•¶ŽšˆÊ’u‚Ö(‹ó”’,\0)
- *      fn - ƒtƒ@ƒCƒ‹–¼
+/* ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆå…ˆã‚’èª­ã¿å–ã‚‹ã€‚
+ *      sp - '>' ãªã©ã®æ–‡å­—ã®æ¬¡ã‚’æŒ‡ã—ã¦ã„ã‚‹ãƒã‚¤ãƒ³ã‚¿
+ *           â†’ å®Ÿè¡Œå¾Œã¯æœ«å°¾ã®æ¬¡ã®æ–‡å­—ä½ç½®ã¸(ç©ºç™½,\0)
+ *      fn - ãƒ•ã‚¡ã‚¤ãƒ«å
  */
 void NyadosShell::readNextWord( const char *&sp , NnString &fn )
 {

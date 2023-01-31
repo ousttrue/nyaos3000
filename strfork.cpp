@@ -14,7 +14,7 @@ int strfork(const char *base,NnString &result)
     int quote=0;
     NnString::Iter p(base);
 
-    /* u{v‚æ‚è¶‚Ì•¶š—ñ‚ğA‚Ü‚¸‚ÍƒRƒs[ */
+    /* ã€Œ{ã€ã‚ˆã‚Šå·¦ã®æ–‡å­—åˆ—ã‚’ã€ã¾ãšã¯ã‚³ãƒ”ãƒ¼ */
     while( *p != '{'  || quote ){
 	if( *p == '\0' ){
 	    result = base;
@@ -30,7 +30,7 @@ int strfork(const char *base,NnString &result)
     NnVector array;
     NnString *one=new NnString(base,beforesize);
 
-    /* u}v‚Ü‚Å‚Ì•¶š—ñ‚ğƒRƒs[ */
+    /* ã€Œ}ã€ã¾ã§ã®æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ */
     for(;;){
 	if( *p == '}' && quote==0 )
 	    break;
@@ -51,7 +51,7 @@ int strfork(const char *base,NnString &result)
     ++p; // skip '}'
     result.erase();
 
-    /* ƒJƒ“ƒ}‚ªˆê‚Â‚à‚È‚¢‚ÍA{,} \•¶‚Å‚Í‚È‚¢ */
+    /* ã‚«ãƒ³ãƒãŒä¸€ã¤ã‚‚ãªã„æ™‚ã¯ã€{,} æ§‹æ–‡ã§ã¯ãªã„ */
     if( array.size() == 0 ){
 	result = base;
 	delete one;

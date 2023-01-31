@@ -74,7 +74,7 @@ Writer &AnsiConsoleWriter::write( char c )
 		    default_color = lastcolor ;
 
 		for(size_t i=0 ; i <= n ; ++i ){
-		    /* ANSI-ESC : BGR Ë * NT-CODE  : RGB ‚Ì•ÏŠ·ƒe[ƒuƒ‹ */
+		    /* ANSI-ESC : BGR â‡’ * NT-CODE  : RGB ã®å¤‰æ›ãƒ†ãƒ¼ãƒ–ãƒ« */
 		    static int cnv[]={ 0 , 4 , 2 , 6 , 1 , 5 , 3 , 7 };
 
 		    if( 30 <= param[i] && param[i] <= 37 ){
@@ -193,10 +193,10 @@ PipeWriter::~PipeWriter()
 FileWriter::FileWriter( const char *fn , const char *mode )
     : StreamWriter( fopen(fn,mode) )
 {
-    /* Borland C++ ‚Å‚ÍAÅ‰‚É‘‚«‚±‚Ş‚Ü‚ÅAƒtƒ@ƒCƒ‹ƒ|ƒCƒ“ƒ^‚ª
-     * ˆÚ“®‚µ‚È‚¢‚Ì‚ÅAdup2 ‚ğg‚¤ê‡‚ÍA
-     * –¾¦“I‚É lseek ‚ÅˆÚ“®‚³‚¹‚Ä‚â‚é•K—v‚ª‚ ‚éB
-     * (stdio ‚Æ io ‚ğ¬İ‚³‚¹‚Äg‚¤‚Ì‚Í–{—ˆ‚Íƒ_ƒ‚È‚Ì‚ÅA•¶‹å‚ÍŒ¾‚¦‚È‚¢c)
+    /* Borland C++ ã§ã¯ã€æœ€åˆã«æ›¸ãã“ã‚€ã¾ã§ã€ãƒ•ã‚¡ã‚¤ãƒ«ãƒã‚¤ãƒ³ã‚¿ãŒ
+     * ç§»å‹•ã—ãªã„ã®ã§ã€dup2 ã‚’ä½¿ã†å ´åˆã¯ã€
+     * æ˜ç¤ºçš„ã« lseek ã§ç§»å‹•ã•ã›ã¦ã‚„ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
+     * (stdio ã¨ io ã‚’æ··åœ¨ã•ã›ã¦ä½¿ã†ã®ã¯æœ¬æ¥ã¯ãƒ€ãƒ¡ãªã®ã§ã€æ–‡å¥ã¯è¨€ãˆãªã„â€¦)
      */
     if( this->ok() && *mode == 'a' )
 	fseek( fp() , 0 , SEEK_END );
@@ -208,11 +208,11 @@ FileWriter::~FileWriter()
         fclose( this->fp() );
 }
 
-/* •W€o—ÍE“ü—Í‚ğƒŠƒ_ƒCƒŒƒNƒg‚·‚é
- *      x - ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
+/* æ¨™æº–å‡ºåŠ›ãƒ»å…¥åŠ›ã‚’ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã™ã‚‹
+ *      x - ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
  * return
- *      0  : ¬Œ÷
- *      -1 : ¸”s
+ *      0  : æˆåŠŸ
+ *      -1 : å¤±æ•—
  */
 int Redirect::set(int x)
 {
@@ -235,7 +235,7 @@ void Redirect::close()
     }
 }
 
-/* ƒŠƒ_ƒCƒŒƒNƒg‚ğŒ³‚É–ß‚· */
+/* ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã‚’å…ƒã«æˆ»ã™ */
 void Redirect::reset()
 {
     if( original_fd != -1 ){
@@ -245,12 +245,12 @@ void Redirect::reset()
     }
 }
 
-/* ƒtƒ@ƒCƒ‹–¼‚ğw’è‚µ‚ÄAƒŠƒ_ƒCƒŒƒNƒg‚·‚éB
- *      fname - ƒtƒ@ƒCƒ‹–¼
- *      mode  - ƒ‚[ƒh
+/* ãƒ•ã‚¡ã‚¤ãƒ«åã‚’æŒ‡å®šã—ã¦ã€ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã™ã‚‹ã€‚
+ *      fname - ãƒ•ã‚¡ã‚¤ãƒ«å
+ *      mode  - ãƒ¢ãƒ¼ãƒ‰
  * return
- *      0 - ¬Œ÷
- *      -1 - ¸”s
+ *      0 - æˆåŠŸ
+ *      -1 - å¤±æ•—
  */
 int Redirect::switchTo( const NnString &fname , const char *mode  )
 {

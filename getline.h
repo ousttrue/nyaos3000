@@ -14,20 +14,20 @@
 #undef max
 
 class TwinBuffer {
-    char    *strbuf;    // “ü—Í•¶š—ñ ASCII/ShiftJISƒR[ƒh
-    char    *atrbuf;    // “ü—Í•¶š—ñ ‘®«ƒR[ƒh
-    int      len;	// “ü—Íbyte”
-    int      max;	// Œ»ƒoƒbƒtƒ@ƒTƒCƒY
+    char    *strbuf;    // å…¥åŠ›æ–‡å­—åˆ— ASCII/ShiftJISã‚³ãƒ¼ãƒ‰
+    char    *atrbuf;    // å…¥åŠ›æ–‡å­—åˆ— å±æ€§ã‚³ãƒ¼ãƒ‰
+    int      len;	// å…¥åŠ›byteæ•°
+    int      max;	// ç¾ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚º
     enum{
-        SBC ,		// ”¼Šp•¶š        SBCS •¶š
-        DBC1ST ,	// ”{Šp•¶š ¶‘¤ , DBCS •¶š ‘æ‚PƒoƒCƒg–Ú
-        DBC2ND ,	// ”{Šp•¶š ‰E‘¤ , DBCS •¶š ‘æ‚QƒoƒCƒg–Ú
+        SBC ,		// åŠè§’æ–‡å­—        SBCS æ–‡å­—
+        DBC1ST ,	// å€è§’æ–‡å­— å·¦å´ , DBCS æ–‡å­— ç¬¬ï¼‘ãƒã‚¤ãƒˆç›®
+        DBC2ND ,	// å€è§’æ–‡å­— å³å´ , DBCS æ–‡å­— ç¬¬ï¼’ãƒã‚¤ãƒˆç›®
     };
 public:
     const char *chars() const { return strbuf; }
     int      length() const { return len; }
-    int      makeroom(int at,int size);	      // at ‚©‚ç sizeƒoƒCƒg•ª‚ÌŒ…‚ğì‚éB
-    void     delroom(int at,int size);	      // at ‚©‚ç sizeƒoƒCƒg•ª‚ğíœ‚·‚éB
+    int      makeroom(int at,int size);	      // at ã‹ã‚‰ sizeãƒã‚¤ãƒˆåˆ†ã®æ¡ã‚’ä½œã‚‹ã€‚
+    void     delroom(int at,int size);	      // at ã‹ã‚‰ sizeãƒã‚¤ãƒˆåˆ†ã‚’å‰Šé™¤ã™ã‚‹ã€‚
     void     move(int at,int size,int dst);
     int      replace(int at,int nchars, const char *string );
     int      insert1(int key,int at);
@@ -51,16 +51,16 @@ public:
 
     static int strlen_ctrl(const char *s);
     static int isCtrl(int x){ return (x & ~0x1F )==0 ; }
-    /* ^x Œ`®‚É‚È‚Á‚Ä‚¢‚éCtrlƒR[ƒh‚ğƒfƒR[ƒh‚·‚é */
+    /* ^x å½¢å¼ã«ãªã£ã¦ã„ã‚‹Ctrlã‚³ãƒ¼ãƒ‰ã‚’ãƒ‡ã‚³ãƒ¼ãƒ‰ã™ã‚‹ */
     int decode(NnString &buffer);
     int decode(int at,int len,NnString &buffer);
 };
 
 struct Completion;
 
-/* KeyFunction ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚ ‚é‚Æ‚±‚ë‚Ìu‹@”\v‚ÍA
- * ©•ª‚Ìg‚í‚ê(ƒ}ƒbƒv)‚ğ’m‚Á‚Ä‚¢‚éB
- * •ª‚©‚ç‚È‚¢‚Ì‚ÍA‘Î‰‚·‚éƒL[‚ÆAƒoƒCƒ“ƒhƒ}ƒbƒv‚Ì‘¶İ‚¾‚¯.
+/* KeyFunction ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ã‚ã‚‹ã¨ã“ã‚ã®ã€Œæ©Ÿèƒ½ã€ã¯ã€
+ * è‡ªåˆ†ã®ä½¿ã‚ã‚Œæ™‚(ãƒãƒƒãƒ—)ã‚’çŸ¥ã£ã¦ã„ã‚‹ã€‚
+ * åˆ†ã‹ã‚‰ãªã„ã®ã¯ã€å¯¾å¿œã™ã‚‹ã‚­ãƒ¼ã¨ã€ãƒã‚¤ãƒ³ãƒ‰ãƒãƒƒãƒ—ã®å­˜åœ¨ã ã‘.
  */
 class KeyFunction : public NnObject {
     static int code_sub( const char *key , int start , int end );
@@ -71,8 +71,8 @@ protected:
     virtual int bind(int n)=0;
 public:
     enum { MAPSIZE = 512 };
-    /* ’ˆÓ:regist ‚µ‚½ƒCƒ“ƒXƒ^ƒ“ƒX‚ÍA
-     * Š—LŒ ‚ª KeyFunction ƒNƒ‰ƒX“à‚ÉˆÚ“®‚·‚é */
+    /* æ³¨æ„:regist ã—ãŸã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¯ã€
+     * æ‰€æœ‰æ¨©ãŒ KeyFunction ã‚¯ãƒ©ã‚¹å†…ã«ç§»å‹•ã™ã‚‹ */
     void regist();
     const NnString &funcName() const { return funcName_; }
     int bind(const char *keyName);
@@ -120,38 +120,38 @@ public:
 protected:
     int history_pointor;
     enum{ 
-        // ‰æ–Ê•BÀÛ‚Ég—p‚·‚é’l(width)‚ÍA‚±‚ê‚æ‚è -1 ­‚È‚¢’l.
+        // ç”»é¢å¹…ã€‚å®Ÿéš›ã«ä½¿ç”¨ã™ã‚‹å€¤(width)ã¯ã€ã“ã‚Œã‚ˆã‚Š -1 å°‘ãªã„å€¤.
         DEFAULT_WIDTH=80 , 
     };
     TwinBuffer buffer;
-    int pos;	// ƒJ[ƒ\ƒ‹ˆÊ’u(byte,Œ…ˆÊ’u)
-    int offset; // •\¦ˆÊ’uƒIƒtƒZƒbƒg
-    int width;  // •\¦•
+    int pos;	// ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®(byte,æ¡ä½ç½®)
+    int offset; // è¡¨ç¤ºä½ç½®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+    int width;  // è¡¨ç¤ºå¹…
 #ifdef PROMPT_SHIFT
-    int prompt_offset;  // ƒvƒƒ“ƒvƒg‚ÌƒIƒtƒZƒbƒg
-    int prompt_size; // ƒvƒƒ“ƒvƒg‚ÌƒTƒCƒY
+    int prompt_offset;  // ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+    int prompt_size; // ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã®ã‚µã‚¤ã‚º
 #endif
-    /* •\¦‚µ‚Ä‚¢‚éæ“ª‚Ìƒoƒbƒtƒ@ˆÊ’u‚ğ“¾‚é */
+    /* è¡¨ç¤ºã—ã¦ã„ã‚‹å…ˆé ­ã®ãƒãƒƒãƒ•ã‚¡ä½ç½®ã‚’å¾—ã‚‹ */
     int head() const { return offset; }
 
-    /* •\¦‚µ‚Ä‚¢‚éÅŒã”ö‚Ìƒoƒbƒtƒ@ˆÊ’u‚ğ“¾‚é */
+    /* è¡¨ç¤ºã—ã¦ã„ã‚‹æœ€å¾Œå°¾ã®ãƒãƒƒãƒ•ã‚¡ä½ç½®ã‚’å¾—ã‚‹ */
     int tail() const
         { return buffer.length() > offset+width ? offset+width : buffer.length(); }
 
-    virtual int  getkey()=0;		// ‰»HÏ‚İˆê•¶š“ü—Í.
-    virtual void putchr(int ch)=0;	// •¶š 1 byte•ª o—Í.
-    virtual void putbs(int n)=0;        // ƒJ[ƒ\ƒ‹‚ğŒã‘Ş‚³‚¹‚é.
-    virtual void start(){}		// •ÒWŠJn‚Ì‚ÉŒÄ‚Î‚ê‚éƒtƒbƒN.
-    virtual void end(){}	        // •ÒWI—¹‚ÌÄ‚ÉŒÄ‚Î‚ê‚éƒtƒbƒN.
+    virtual int  getkey()=0;		// åŒ–å·¥æ¸ˆã¿ä¸€æ–‡å­—å…¥åŠ›.
+    virtual void putchr(int ch)=0;	// æ–‡å­— 1 byteåˆ† å‡ºåŠ›.
+    virtual void putbs(int n)=0;        // ã‚«ãƒ¼ã‚½ãƒ«ã‚’å¾Œé€€ã•ã›ã‚‹.
+    virtual void start(){}		// ç·¨é›†é–‹å§‹ã®æ™‚ã«å‘¼ã°ã‚Œã‚‹ãƒ•ãƒƒã‚¯.
+    virtual void end(){}	        // ç·¨é›†çµ‚äº†ã®å†ã«å‘¼ã°ã‚Œã‚‹ãƒ•ãƒƒã‚¯.
     virtual void clear(){}
     virtual const char *getClipBoardValue(){ return NULL; }
     virtual int  makeCompletionList   ( const NnString &s , NnVector & );
     virtual int  makeTopCompletionList( const NnString &s , NnVector & );
 
-    void repaint_after(int rm=0);   // ƒJ[ƒ\ƒ‹ˆÈ~‚ğÄ•`‰æ
+    void repaint_after(int rm=0);   // ã‚«ãƒ¼ã‚½ãƒ«ä»¥é™ã‚’å†æç”»
     void replace_all_repaint( const NnString & );
 
-    /* •âŠ®ƒŠƒXƒgŠÖŒW */
+    /* è£œå®Œãƒªã‚¹ãƒˆé–¢ä¿‚ */
     virtual int prompt();
     void  setWidth( int w ){ width = w-1 ; }
 
@@ -161,7 +161,7 @@ protected:
         return buffer.length()-offset > width
                 ? width : buffer.length()-offset;
     }
-    NnString current_word(int &at,int &size); // ƒJ[ƒ\ƒ‹ˆÊ’u‚ğŠÜ‚Ş’PŒê‚ğ’Šo‚·‚é.
+    NnString current_word(int &at,int &size); // ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å«ã‚€å˜èªã‚’æŠ½å‡ºã™ã‚‹.
     void get_nline_nword(int m,int n,NnString &word);
     int seekWordForward(int &m,int &n,const NnString &word , NnString &found );
     int seekWordBackward(int &m,int &n,const NnString &word , NnString &found );
@@ -180,7 +180,7 @@ private:
     void replace_repaint_here( int size , const NnString &toStr );
     Status complete_vzlike(int direct);
 public:
-    // ƒRƒ}ƒ“ƒh.
+    // ã‚³ãƒãƒ³ãƒ‰.
     Status enter(int)    , cancel(int)    , do_nothing(int) , insert(int);
     Status foreward(int) , backward(int)  , goto_head(int)  , goto_tail(int);
     Status erase(int)    , backspace(int) , erase_line(int) , yank(int);
@@ -194,7 +194,7 @@ public:
     Status xscript(int) , ime_toggle(int) , i_search(int) ;
 private:
     int currKey;
-    int lastKey;				/* ‘O‰ñ‰Ÿ‚³‚ê‚½ƒL[ */
+    int lastKey;				/* å‰å›æŠ¼ã•ã‚ŒãŸã‚­ãƒ¼ */
 
     typedef Status (GetLine::*BindFunc)(int ch);
     static BindFunc bindmap[512];
@@ -215,7 +215,7 @@ public:
 
 class NnHash;
 
-// --- •’Ê‚ÌƒRƒ“ƒ\[ƒ‹Œo—R‚Ì“ü—Íƒ‹[ƒ`ƒ“ --- 
+// --- æ™®é€šã®ã‚³ãƒ³ã‚½ãƒ¼ãƒ«çµŒç”±ã®å…¥åŠ›ãƒ«ãƒ¼ãƒãƒ³ --- 
 class DosShell : public GetLine {
     NnString prompt_;
     NnString clear_;

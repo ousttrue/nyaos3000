@@ -2,18 +2,18 @@
 #include <shlobj.h>
 #include <stdio.h>
 
-static IShellLink *m_pShellLink;      // IShellLink‚Ö‚Ìƒ|ƒCƒ“ƒ^B
-static IPersistFile *m_pPersistFile;  // IPersistFile‚Ö‚Ìƒ|ƒCƒ“ƒ^B
+static IShellLink *m_pShellLink;      // IShellLinkã¸ã®ãƒã‚¤ãƒ³ã‚¿ã€‚
+static IPersistFile *m_pPersistFile;  // IPersistFileã¸ã®ãƒã‚¤ãƒ³ã‚¿ã€‚
 
 static BOOL CT_Filer2View_LinkInit()
 {
-    HRESULT hRes;//ŠeŒ‹‰ÊB
+    HRESULT hRes;//å„çµæžœã€‚
 
-    //@ƒƒ“ƒo•Ï”‚ð‰Šú‰»‚µ‚Ü‚·B
+    //ã€€ãƒ¡ãƒ³ãƒå¤‰æ•°ã‚’åˆæœŸåŒ–ã—ã¾ã™ã€‚
     m_pPersistFile = NULL;
     m_pShellLink = NULL;
 
-    //@‚Ü‚¸A‚n‚k‚d‚ðŽg‚¤‚½‚ß‚É‰Šú‰»‚µ‚Ä‚¨‚«‚Ü‚·B
+    //ã€€ã¾ãšã€ï¼¯ï¼¬ï¼¥ã‚’ä½¿ã†ãŸã‚ã«åˆæœŸåŒ–ã—ã¦ãŠãã¾ã™ã€‚
     hRes = ::CoInitialize( NULL );
 
     if( hRes == E_OUTOFMEMORY )
@@ -23,7 +23,7 @@ static BOOL CT_Filer2View_LinkInit()
     if( hRes == E_UNEXPECTED )
 	return FALSE;
 
-    //@‹ó‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX‚ð—pˆÓ‚µ‚Ü‚·B
+    //ã€€ç©ºã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã‚’ç”¨æ„ã—ã¾ã™ã€‚
     hRes = ::CoCreateInstance( CLSID_ShellLink, NULL,
     CLSCTX_INPROC_SERVER, IID_IShellLink, (LPVOID *)&m_pShellLink );
 
@@ -33,7 +33,7 @@ static BOOL CT_Filer2View_LinkInit()
 	return FALSE;
 
 
-    //@IPersistFile‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ðŽæ“¾‚µ‚Ü‚·B
+    //ã€€IPersistFileã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã—ã¾ã™ã€‚
     hRes = m_pShellLink->QueryInterface( IID_IPersistFile, (LPVOID *)&m_pPersistFile );
 
     if( hRes != S_OK )
@@ -44,11 +44,11 @@ static BOOL CT_Filer2View_LinkInit()
 
 static BOOL CT_Filer2View_UnInit()
 {
-    //@IPersistFile‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ð”jŠü‚µ‚Ü‚·B
+    //ã€€IPersistFileã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ç ´æ£„ã—ã¾ã™ã€‚
     if( m_pPersistFile != NULL )
 	m_pPersistFile->Release();
 
-    //@IShellLink‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ð”jŠü‚µ‚Ü‚·B
+    //ã€€IShellLinkã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’ç ´æ£„ã—ã¾ã™ã€‚
     if( m_pShellLink != NULL )
 	m_pShellLink->Release();
 
@@ -59,19 +59,19 @@ static BOOL CT_Filer2View_UnInit()
 
 static BOOL CT_Filer2View_Load(LPCTSTR p_pchFile)
 {
-    HRESULT hRes;//ŠeŒ‹‰ÊB
+    HRESULT hRes;//å„çµæžœã€‚
     OLECHAR ochLinkFile[MAX_PATH];
 
-    //@ƒ†ƒjƒR[ƒh‚É•ÏŠ·‚µ‚Ü‚·B
+    //ã€€ãƒ¦ãƒ‹ã‚³ãƒ¼ãƒ‰ã«å¤‰æ›ã—ã¾ã™ã€‚
     ::MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, p_pchFile, -1,
 			    ochLinkFile, MAX_PATH );
 
-    //@ƒVƒ‡[ƒgƒJƒbƒg‚ð“Ç‚Ýž‚Ý‚Ü‚·B
+    //ã€€ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã‚’èª­ã¿è¾¼ã¿ã¾ã™ã€‚
     hRes = m_pPersistFile->Load( ochLinkFile, STGM_READ );
     if( hRes != S_OK )
 	return FALSE;
 
-    //@ƒŠƒ“ƒN‚ðŒˆ’è‚µ‚Ü‚·B
+    //ã€€ãƒªãƒ³ã‚¯ã‚’æ±ºå®šã—ã¾ã™ã€‚
     hRes = m_pShellLink->Resolve( NULL, SLR_UPDATE );
     if( hRes != NOERROR )
 	return FALSE;

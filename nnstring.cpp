@@ -1,4 +1,4 @@
-/* Nihongo Nano Class Library `NnString' -- •¶š—ñƒNƒ‰ƒXÀ‘•ƒ\[ƒX */
+/* Nihongo Nano Class Library `NnString' -- æ–‡å­—åˆ—ã‚¯ãƒ©ã‚¹å®Ÿè£…ã‚½ãƒ¼ã‚¹ */
 #include <assert.h>
 #include <string.h>
 #include <ctype.h>
@@ -44,7 +44,7 @@ NnString::~NnString()
     reset(rep);
 }
 
-/* ‘ã“ü‰‰Zq(ŒöŠJ) */
+/* ä»£å…¥æ¼”ç®—å­(å…¬é–‹) */
 NnString &NnString::operator = ( const NnString &ns )
 {
     Rep *old=rep;
@@ -62,12 +62,12 @@ NnString &NnString::operator = ( const char *s )
     return *this;
 }
 
-/* ƒƒ‚ƒŠ—Ìˆæ(ƒAƒhƒŒƒX•ƒTƒCƒY)‚ğ•¶š—ñ‚É‘ã“ü.
- *      s - æ“ªƒAƒhƒŒƒX
- *      size - ƒTƒCƒY
+/* ãƒ¡ãƒ¢ãƒªé ˜åŸŸ(ã‚¢ãƒ‰ãƒ¬ã‚¹ï¼†ã‚µã‚¤ã‚º)ã‚’æ–‡å­—åˆ—ã«ä»£å…¥.
+ *      s - å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+ *      size - ã‚µã‚¤ã‚º
  * return
- *       0 - ‘ã“ü¬Œ÷
- *      -1 - ƒƒ‚ƒŠƒGƒ‰[ 
+ *       0 - ä»£å…¥æˆåŠŸ
+ *      -1 - ãƒ¡ãƒ¢ãƒªã‚¨ãƒ©ãƒ¼ 
  */
 int NnString::assign( const char *s , int size )
 {
@@ -80,10 +80,10 @@ int NnString::assign( const char *s , int size )
     }
 }
 
-/* •¶š—ñ s ‚Ì“à—e‚ğƒCƒ“ƒXƒ^ƒ“ƒX‚Éİ’è‚·‚éB
- *	s Œ³•¶š—ñ
+/* æ–‡å­—åˆ— s ã®å†…å®¹ã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã«è¨­å®šã™ã‚‹ã€‚
+ *	s å…ƒæ–‡å­—åˆ—
  * return
- *	0 : ¬Œ÷ , -1 : ¸”s
+ *	0 : æˆåŠŸ , -1 : å¤±æ•—
  */
 int NnString::set( const char *s )
 {
@@ -96,11 +96,11 @@ int NnString::set( const char *s )
 	return 0;
     }
 }
-/* s ` s+len ‚Ü‚Å‚Ì—Ìˆæ‚ğƒCƒ“ƒXƒ^ƒ“ƒX‚Éİ’è‚·‚éB
- *	s Œ³•¶š—ñ‚Ìæ“ªƒAƒhƒŒƒX
- *	len Œ³•¶š—ñ‚Ì’·‚³
+/* s ï½ s+len ã¾ã§ã®é ˜åŸŸã‚’ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã«è¨­å®šã™ã‚‹ã€‚
+ *	s å…ƒæ–‡å­—åˆ—ã®å…ˆé ­ã‚¢ãƒ‰ãƒ¬ã‚¹
+ *	len å…ƒæ–‡å­—åˆ—ã®é•·ã•
  * return
- *	0 : ¬Œ÷ , -1 : ¸”s
+ *	0 : æˆåŠŸ , -1 : å¤±æ•—
  */
 int NnString::set( const char *s , int len )
 {
@@ -124,10 +124,10 @@ int NnString::set( const char *s , int len )
     return 0;
 }
 
-/* ‚à‚µ•¶š—ñ–{‘Ì‚ª‘¼‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Æ‹¤—p‚µ‚Ä‚¢‚½‚çA
- * “Æ—§‚³‚¹A•¶š—ñ–{‘Ì‚ğ•ÏX‰Â”\‚É‚·‚éB
+/* ã‚‚ã—æ–‡å­—åˆ—æœ¬ä½“ãŒä»–ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã¨å…±ç”¨ã—ã¦ã„ãŸã‚‰ã€
+ * ç‹¬ç«‹ã•ã›ã€æ–‡å­—åˆ—æœ¬ä½“ã‚’å¤‰æ›´å¯èƒ½ã«ã™ã‚‹ã€‚
  * return
- *	0 : ¬Œ÷ , -1 : ¸”s
+ *	0 : æˆåŠŸ , -1 : å¤±æ•—
  */
 int NnString::independ()
 {
@@ -141,30 +141,30 @@ int NnString::independ()
     return 0;
 }
 
-/* LEN•¶š•ª’Ç‰Á‚µ‚Ä‚à‰Â”\‚È‚æ‚¤‚É—Ìˆæ‚ğŠm•Û‚·‚éB
- * Šm•ÛÏ‚İ‚Ì—Ìˆæ‚Å‘«‚è‚éê‡‚Í‰½‚à‚µ‚È‚¢B
- *	len ‘‰Á•¶š”
+/* LENæ–‡å­—åˆ†è¿½åŠ ã—ã¦ã‚‚å¯èƒ½ãªã‚ˆã†ã«é ˜åŸŸã‚’ç¢ºä¿ã™ã‚‹ã€‚
+ * ç¢ºä¿æ¸ˆã¿ã®é ˜åŸŸã§è¶³ã‚Šã‚‹å ´åˆã¯ä½•ã‚‚ã—ãªã„ã€‚
+ *	len å¢—åŠ æ–‡å­—æ•°
  * return
- *	0 : ¬Œ÷ , -1 : ¸”s
+ *	0 : æˆåŠŸ , -1 : å¤±æ•—
  */
 int NnString::grow( int growsize )
 {
     return keep( rep->length + growsize );
 }
 
-/* Å’á len •¶š“ü‚é‚¾‚¯‚Ì—Ìˆæ‚ğŠm•Û‚·‚é
- *      len Šm•Û•¶š”
+/* æœ€ä½ len æ–‡å­—å…¥ã‚‹ã ã‘ã®é ˜åŸŸã‚’ç¢ºä¿ã™ã‚‹
+ *      len ç¢ºä¿æ–‡å­—æ•°
  * return
- *      0 : ¬Œ÷ , -1 : ƒƒ‚ƒŠ[ƒGƒ‰[
+ *      0 : æˆåŠŸ , -1 : ãƒ¡ãƒ¢ãƒªãƒ¼ã‚¨ãƒ©ãƒ¼
  */
 int NnString::keep( int len )
 {
     if( len < 0 || len >= INT_MAX ){
         return -1;
     }
-    /* keep ‚ğÀs‚·‚é
-     * ¨ •¶š—ñ‚É•ÏX‚ğ‰Á‚¦‚é.
-     * ¨ •¡»‰»‚µ‚È‚¯‚ê‚Î‚¢‚¯‚È‚¢
+    /* keep ã‚’å®Ÿè¡Œã™ã‚‹
+     * â†’ æ–‡å­—åˆ—ã«å¤‰æ›´ã‚’åŠ ãˆã‚‹.
+     * â†’ è¤‡è£½åŒ–ã—ãªã‘ã‚Œã°ã„ã‘ãªã„
      */
     if( independ() != 0 )
         return -1;
@@ -172,7 +172,7 @@ int NnString::keep( int len )
     if( len <= rep->max )
         return 0;
     
-    // ŒÇ—§‚µ‚Ä‚¢‚éê‡‚ÅA—e—Ê‚ª‘«‚è‚È‚¢ê‡‚Í‘«‚·.
+    // å­¤ç«‹ã—ã¦ã„ã‚‹å ´åˆã§ã€å®¹é‡ãŒè¶³ã‚Šãªã„å ´åˆã¯è¶³ã™.
     int newmax = len + INCSIZ ;
     assert( rep != NULL );
     Rep *newrep = (Rep*)( rep != ZEROSTR ? realloc( rep, sizeof(Rep)+newmax )
@@ -203,10 +203,10 @@ NnString &NnString::insertAt( int at , const char *s , int siz)
 
 NnString &NnString::operator += ( char c )
 {
-    /* '\0' ‚â -1 ‚ğ–³‹‚·‚é‚Ì‚ÍA‚±‚ê‚ç‚Í‚PƒoƒCƒg•¶š‚ª
-     * ‚QƒoƒCƒgƒR[ƒh‚ÉŠg’£‚³‚ê‚½‚Æ‚«‚ÌãˆÊƒoƒCƒg‚Æ‚È‚è‚¦‚é
-     * ƒR[ƒh‚¾‚©‚çB‚±‚ê‚ğ–³‹‚³‚¹‚é‚±‚Æ‚ÅAoperator << 
-     * (letter_t) ‚ÌÀ‘•‚ªŠÈ’P‚É‚È‚Á‚Ä‚¢‚éB
+    /* '\0' ã‚„ -1 ã‚’ç„¡è¦–ã™ã‚‹ã®ã¯ã€ã“ã‚Œã‚‰ã¯ï¼‘ãƒã‚¤ãƒˆæ–‡å­—ãŒ
+     * ï¼’ãƒã‚¤ãƒˆã‚³ãƒ¼ãƒ‰ã«æ‹¡å¼µã•ã‚ŒãŸã¨ãã®ä¸Šä½ãƒã‚¤ãƒˆã¨ãªã‚Šãˆã‚‹
+     * ã‚³ãƒ¼ãƒ‰ã ã‹ã‚‰ã€‚ã“ã‚Œã‚’ç„¡è¦–ã•ã›ã‚‹ã“ã¨ã§ã€operator << 
+     * (letter_t) ã®å®Ÿè£…ãŒç°¡å˜ã«ãªã£ã¦ã„ã‚‹ã€‚
      */
     if( c == '\0' || c == -1 )
 	return *this;
@@ -251,12 +251,12 @@ NnString &NnString::trim()
     int i,j;
     independ();
 
-    /* Œã‚ë‚ÌƒXƒy[ƒX‚ğœ‚­ */
+    /* å¾Œã‚ã®ã‚¹ãƒšãƒ¼ã‚¹ã‚’é™¤ã */
     for( i=length()-1 ; i >= 0  && isSpace(rep->buffer[i]) ; --i )
 	;
     rep->buffer[ rep->length = i+1] = '\0';
 
-    /* ‘O‚ÌƒXƒy[ƒX‚ğœ‚­ */
+    /* å‰ã®ã‚¹ãƒšãƒ¼ã‚¹ã‚’é™¤ã */
     for( i=0 ; i < length() && isSpace(rep->buffer[i]) ; i++ )
 	;
     if( i >= 1 ){
@@ -403,14 +403,14 @@ int NnString::splitTo( NnString &first , NnString &rest , const char *dem , cons
     return rc;
 }
 
-/* ‚»‚Ìs‚ª“Á’èƒL[ƒ[ƒh‚Ån‚Ü‚é‚©”»’è‚·‚éB
- * startsWith  c ‘å•¶š/¬•¶š‚ğ‹æ•Ê‚·‚éB
- * iStartsWith c ‘å•¶š/¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢B
- *      line - s
- *      keyword - ƒL[ƒ[ƒh
+/* ãã®è¡ŒãŒç‰¹å®šã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã§å§‹ã¾ã‚‹ã‹åˆ¤å®šã™ã‚‹ã€‚
+ * startsWith  â€¦ å¤§æ–‡å­—/å°æ–‡å­—ã‚’åŒºåˆ¥ã™ã‚‹ã€‚
+ * iStartsWith â€¦ å¤§æ–‡å­—/å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„ã€‚
+ *      line - è¡Œ
+ *      keyword - ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰
  * return
- *      not 0 - ŠÜ‚Ü‚ê‚é
- *      0 - ŠÜ‚Ü‚ê‚È‚¢
+ *      not 0 - å«ã¾ã‚Œã‚‹
+ *      0 - å«ã¾ã‚Œãªã„
  */
 int NnString::startsWith( const char *s ) const
 {
@@ -435,15 +435,15 @@ int NnString::endsWith( const char *s , int func(const char *,const char *) ) co
     return i==length()-len1 && (*func)(chars()+i,s)==0;
 
 }
-/* ‚»‚Ìs‚ª“Á’èƒL[ƒ[ƒh‚ÅI‚í‚é‚©”»’è‚·‚éB
- * ƒL[ƒ[ƒh‚Í‘å•¶šE¬•¶š‚ğ–â‚í‚È‚¢
- * endWith  c ‘å•¶š/¬•¶š‚ğ‹æ•Ê‚·‚éB
- * iendWith c ‘å•¶š/¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢B
- *      line - s
- *      keyword - ƒL[ƒ[ƒh
+/* ãã®è¡ŒãŒç‰¹å®šã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã§çµ‚ã‚ã‚‹ã‹åˆ¤å®šã™ã‚‹ã€‚
+ * ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã¯å¤§æ–‡å­—ãƒ»å°æ–‡å­—ã‚’å•ã‚ãªã„
+ * endWith  â€¦ å¤§æ–‡å­—/å°æ–‡å­—ã‚’åŒºåˆ¥ã™ã‚‹ã€‚
+ * iendWith â€¦ å¤§æ–‡å­—/å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„ã€‚
+ *      line - è¡Œ
+ *      keyword - ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰
  * return
- *      not 0 - ŠÜ‚Ü‚ê‚é
- *      0 - ŠÜ‚Ü‚ê‚È‚¢
+ *      not 0 - å«ã¾ã‚Œã‚‹
+ *      0 - å«ã¾ã‚Œãªã„
  */
 int NnString::endsWith( const char *s ) const
 {
@@ -473,7 +473,7 @@ int  NnString::startsWith( const NnString &s ) const
     return startsWith( s.chars() );
 }
 
-/* ––”ö‚Ì•¶š‚ğ•Ô‚·. “ú–{Œê‘Î‰.
+/* æœ«å°¾ã®æ–‡å­—ã‚’è¿”ã™. æ—¥æœ¬èªå¯¾å¿œ.
  */
 int  NnString::lastchar() const
 {
@@ -511,10 +511,10 @@ unsigned NnStringIC::hashValue() const
     return sum;
 }
 
-/* p ‚Ì i •¶šˆÈ~‚ÅA•¶š—ñ dem ‚ÉŠÜ‚Ü‚ê‚é•¶š‚ªŒ»‚ê‚éÅ‰‚ÌˆÊ’u‚ğ•Ô‚·.
- * (strcspn ‚Æ‚Ù‚Ú“¯‚¶:“ú–{Œê‘Î‰)
+/* p ã® i æ–‡å­—ä»¥é™ã§ã€æ–‡å­—åˆ— dem ã«å«ã¾ã‚Œã‚‹æ–‡å­—ãŒç¾ã‚Œã‚‹æœ€åˆã®ä½ç½®ã‚’è¿”ã™.
+ * (strcspn ã¨ã»ã¼åŒã˜:æ—¥æœ¬èªå¯¾å¿œ)
  * return
- *      dem‚ÉŠÜ‚Ü‚ê‚é•¶š‚Ì“oêˆÊ’u - p‚Ìæ“ª‚Ì’·‚³
+ *      demã«å«ã¾ã‚Œã‚‹æ–‡å­—ã®ç™»å ´ä½ç½® - pã®å…ˆé ­ã®é•·ã•
  */
 int NnString::findOf(const char *p,const char *dem,int i)
 {
@@ -540,9 +540,9 @@ int NnString::findOf(const char *p,const char *dem,int i)
     return -1;
 }
 
-/* p ‚Ì i •¶šˆÈ~‚ÅA•¶š—ñ dem ‚ÉŠÜ‚Ü‚ê‚é•¶š‚ªŒ»‚ê‚éÅŒã‚ÌˆÊ’u‚ğ•Ô‚·.
+/* p ã® i æ–‡å­—ä»¥é™ã§ã€æ–‡å­—åˆ— dem ã«å«ã¾ã‚Œã‚‹æ–‡å­—ãŒç¾ã‚Œã‚‹æœ€å¾Œã®ä½ç½®ã‚’è¿”ã™.
  * return
- *      dem‚ÉŠÜ‚Ü‚ê‚é•¶š‚ÌÅŒã‚Ì“oêˆÊ’u - p‚Ìæ“ª‚Ì’·‚³
+ *      demã«å«ã¾ã‚Œã‚‹æ–‡å­—ã®æœ€å¾Œã®ç™»å ´ä½ç½® - pã®å…ˆé ­ã®é•·ã•
  */
 int NnString::findLastOf(const char *p,const char *dem,int startIndex)
 {
@@ -554,7 +554,7 @@ int NnString::findLastOf(const char *p,const char *dem,int startIndex)
     return result;
 }
 
-/* x ‚ğ10i”•¶š—ñ‚Ö•ÏŠ·‚µ‚ÄA––”ö‚É‰Á‚¦‚é. */
+/* x ã‚’10é€²æ•°æ–‡å­—åˆ—ã¸å¤‰æ›ã—ã¦ã€æœ«å°¾ã«åŠ ãˆã‚‹. */
 NnString &NnString::addValueOf( int x )
 {
     if( x < 0 ){

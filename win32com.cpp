@@ -66,7 +66,7 @@ ActiveXObject::ActiveXObject(const char *name,bool isNewInstance)
 
     Unicode className(name);
 
-    /* �N���XID�擾 */
+    /* クラスID取得 */
     construct_error_ = CLSIDFromProgID( className , &clsid );
     if( FAILED(construct_error_) ){
 #ifdef DEBUG
@@ -76,7 +76,7 @@ ActiveXObject::ActiveXObject(const char *name,bool isNewInstance)
     }
 
     if( isNewInstance ){ // create_object
-        /* �C���X�^���X�쐬 */
+        /* インスタンス作成 */
         construct_error_ = CoCreateInstance(
                 clsid ,
                 NULL ,
@@ -180,7 +180,7 @@ ActiveXMember::ActiveXMember( ActiveXObject &instance , const char *name ) : ins
     Unicode methodName(name);
 
     this->construct_error_ = instance.getIDispatch()->GetIDsOfNames(
-            IID_NULL , /* �����̂��߂̗\��t�B�[���h */
+            IID_NULL , /* 将来のための予約フィールド */
             &methodName ,
             1 ,
             LOCALE_USER_DEFAULT , 

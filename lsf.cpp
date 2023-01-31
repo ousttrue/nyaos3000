@@ -4,7 +4,7 @@
 #include "shell.h"
 #include "nnvector.h"
 #include "nndir.h"
-#include "getline.h" /* DosShell.executableSuffix ‚Ì‚½‚ß‚Ì‚İ */
+#include "getline.h" /* DosShell.executableSuffix ã®ãŸã‚ã®ã¿ */
 #include "nnhash.h"
 #ifdef NYACUS
 #  include "ntcons.h" 
@@ -41,7 +41,7 @@ static NnString ls_end_code ;
 
 volatile int ctrl_c=0;
 
-/* CTRL-C ‚ª‰Ÿ‚³‚ê‚½‚Ìƒnƒ“ƒhƒ‹ */
+/* CTRL-C ãŒæŠ¼ã•ã‚ŒãŸæ™‚ã®ãƒãƒ³ãƒ‰ãƒ« */
 #ifdef __EMX__
 static void handle_ctrl_c(int sig)
 {
@@ -61,21 +61,21 @@ static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
 #endif
 
 
-/* ŠÂ‹«•Ï” LS_COLORS ‚Ì“à—e‚ğ“Ç‚İæ‚Á‚ÄAls ‚ÌFİ’è‚É”½‰f‚³‚¹‚é.
- *	err : ƒGƒ‰[‚Ìo—Íæ
+/* ç’°å¢ƒå¤‰æ•° LS_COLORS ã®å†…å®¹ã‚’èª­ã¿å–ã£ã¦ã€ls ã®è‰²è¨­å®šã«åæ˜ ã•ã›ã‚‹.
+ *	err : ã‚¨ãƒ©ãƒ¼ã®å‡ºåŠ›å…ˆ
  * return
- *	0 : ¬Œ÷
- *	1 : ƒGƒ‰[
+ *	0 : æˆåŠŸ
+ *	1 : ã‚¨ãƒ©ãƒ¼
  */
 static int env_to_color( Writer &err )
 {
-    ls_normal_file      = LS_LEFT "1;37" LS_RIGHT ; /* ”’ */
-    ls_directory        = LS_LEFT "1;32" LS_RIGHT ; /* —Î */
-    ls_system_file      = LS_LEFT "0;31" LS_RIGHT ; /* ˆÃ‚¢Ô */
-    ls_hidden_file      = LS_LEFT "0;34" LS_RIGHT ; /* ˆÃ‚¢Â */
-    ls_executable_file  = LS_LEFT "1;35" LS_RIGHT ; /* ‡ */
-    ls_read_only_file   = LS_LEFT "1;33" LS_RIGHT ; /* ‰© */
-    ls_end_code         = LS_LEFT "0"    LS_RIGHT ; /* ŠDF */
+    ls_normal_file      = LS_LEFT "1;37" LS_RIGHT ; /* ç™½ */
+    ls_directory        = LS_LEFT "1;32" LS_RIGHT ; /* ç·‘ */
+    ls_system_file      = LS_LEFT "0;31" LS_RIGHT ; /* æš—ã„èµ¤ */
+    ls_hidden_file      = LS_LEFT "0;34" LS_RIGHT ; /* æš—ã„é’ */
+    ls_executable_file  = LS_LEFT "1;35" LS_RIGHT ; /* ç´« */
+    ls_read_only_file   = LS_LEFT "1;33" LS_RIGHT ; /* é»„ */
+    ls_end_code         = LS_LEFT "0"    LS_RIGHT ; /* ç°è‰² */
 
     NnString env,one;
 
@@ -121,7 +121,7 @@ static int isExecutable( const NnString &path )
 {
     const char *env=getenv("PATHEXT");
     if( env != NULL ){
-	/* ŠÂ‹«•Ï” PATHENV ‚ª’è‹`‚³‚ê‚Ä‚¢‚é‚Æ‚« */
+	/* ç’°å¢ƒå¤‰æ•° PATHENV ãŒå®šç¾©ã•ã‚Œã¦ã„ã‚‹ã¨ã */
 	NnString env1(env);
 	NnString suffix;
 
@@ -130,7 +130,7 @@ static int isExecutable( const NnString &path )
 		return 1;
 	}
     }else{
-	/* –¢’è‹`‚Ì‚Æ‚« */
+	/* æœªå®šç¾©ã®ã¨ã */
 	if( path.iendsWith(".EXE") ||
 	    path.iendsWith(".COM") ||
 	    path.iendsWith(".BAT") )
@@ -138,10 +138,10 @@ static int isExecutable( const NnString &path )
 	    return 1;
 	}
     }
-    /* suffix •¶‚Å’è‹`‚³‚ê‚½Šg’£q‚ğŒŸõ */
+    /* suffix æ–‡ã§å®šç¾©ã•ã‚ŒãŸæ‹¡å¼µå­ã‚’æ¤œç´¢ */
     int lastdot=path.findLastOf("/\\.");
     if( lastdot == -1  ||  path.at(lastdot) != '.' )
-	return 0; /* Šg’£q‚È‚µ */
+	return 0; /* æ‹¡å¼µå­ãªã— */
 
     if( DosShell::executableSuffix.get(path.chars()+lastdot+1) != NULL )
 	return 1;
@@ -183,8 +183,8 @@ static int maxlength( const NnVector &list )
     return max;
 }
 
-/* sprintf ‚ª long long Œ^‚ğƒTƒ|[ƒg‚·‚é‚Ì‚ÍAC99 ˆÈ~‚Å‚ ‚é‚½‚ßA
- * ©‘O‚ÅA•¶š—ñ‰»ŠÖ”‚ğì‚ç‚Ë‚Î‚È‚ç‚È‚©‚Á‚½
+/* sprintf ãŒ long long å‹ã‚’ã‚µãƒãƒ¼ãƒˆã™ã‚‹ã®ã¯ã€C99 ä»¥é™ã§ã‚ã‚‹ãŸã‚ã€
+ * è‡ªå‰ã§ã€æ–‡å­—åˆ—åŒ–é–¢æ•°ã‚’ä½œã‚‰ã­ã°ãªã‚‰ãªã‹ã£ãŸ
  */
 void filesize2str( filesize_t n , NnString &buffer )
 {
@@ -195,10 +195,10 @@ void filesize2str( filesize_t n , NnString &buffer )
     buffer << "0123456789"[ n ];
 }
 
-/* ƒtƒ@ƒCƒ‹‚Ìˆê——‚ğŠiqó‚Éo—Í‚·‚é.
- *	list   (i) NnFileStat ‚Ì”z—ñ
- *	option (i) ƒIƒvƒVƒ‡ƒ“
- *	out    (i) o—Íæ
+/* ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¸€è¦§ã‚’æ ¼å­çŠ¶ã«å‡ºåŠ›ã™ã‚‹.
+ *	list   (i) NnFileStat ã®é…åˆ—
+ *	option (i) ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+ *	out    (i) å‡ºåŠ›å…ˆ
  */
 static void dir_files( const NnVector &list , int option , Writer &out )
 {
@@ -206,7 +206,7 @@ static void dir_files( const NnVector &list , int option , Writer &out )
         0, 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'
     };
     if( option & OPT_LONG ){
-	/*** ƒƒ“ƒOƒtƒH[ƒ}ƒbƒg ***/
+	/*** ãƒ­ãƒ³ã‚°ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ ***/
 	if( option & OPT_COLOR )
 	    out << ls_end_code ;
 	
@@ -280,7 +280,7 @@ static void dir_files( const NnVector &list , int option , Writer &out )
 	    out << ((NnFileStat*)list.const_at(i))->name() << '\n';
 	}
     }else{
-	/*** ŠiqóƒtƒH[ƒ}ƒbƒg ***/
+	/*** æ ¼å­çŠ¶ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ ***/
 	int max = maxlength(list);
         NnString *env_width=(NnString*)properties.get("width");
         int screen_width=80;
@@ -336,7 +336,7 @@ static void dir_files( const NnVector &list , int option , Writer &out )
     }
 }
 
-/* ƒ\[ƒg‚Ì‚½‚ß‚Éƒtƒ@ƒCƒ‹‚ğ”äŠr‚·‚éŠÖ”ƒIƒuƒWƒFƒNƒg */
+/* ã‚½ãƒ¼ãƒˆã®ãŸã‚ã«ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¯”è¼ƒã™ã‚‹é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ */
 class NnFileComparer : public NnComparer {
 public:
     enum NnCompareType {
@@ -356,7 +356,7 @@ public:
     int operator()( const NnObject *left , const NnObject *right );
 };
 
-/* ƒtƒ@ƒCƒ‹‚Ìƒ\[ƒg‡‚ğŒˆ‚ß‚é”äŠrŠÖ” */
+/* ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚½ãƒ¼ãƒˆé †ã‚’æ±ºã‚ã‚‹æ¯”è¼ƒé–¢æ•° */
 int NnFileComparer::operator()( const NnObject *left_ ,
 			        const NnObject *right_ )
 {
@@ -368,7 +368,7 @@ int NnFileComparer::operator()( const NnObject *left_ ,
 
     int diff;
     switch( type ){
-    default: /* COMPARE_WITH_NAME ŠÜ‚Ş */
+    default: /* COMPARE_WITH_NAME å«ã‚€ */
 	diff =  left->name().compare( right->name() );
 	break;
     case COMPARE_WITH_TIME:
@@ -381,13 +381,13 @@ int NnFileComparer::operator()( const NnObject *left_ ,
     return reverse ? -diff : diff ;
 }
 
-/* ‚PƒfƒBƒŒƒNƒgƒŠ‚ğƒŠƒXƒg•\¦‚·‚é.
- *	dirname (i) ƒfƒBƒŒƒNƒgƒŠ–¼
- *	option  (i) OPT_xxxx ‚Ì OR ‚©‚ç‚È‚éƒIƒvƒVƒ‡ƒ“
- *      filecmpr(i) ƒ\[ƒg‚Åƒtƒ@ƒCƒ‹‚ğ”äŠr‚·‚éŠÖ”ƒIƒuƒWƒFƒNƒg
- *	dirs    (o) (option & OPT_REC)!=0 ‚ÌA–{”z—ñ––”ö‚É
- *                  ‰ºˆÊƒfƒBƒŒƒNƒgƒŠ‚ª’Ç‹L‚³‚ê‚é
- *	out     (o) o—Íæ
+/* ï¼‘ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’ãƒªã‚¹ãƒˆè¡¨ç¤ºã™ã‚‹.
+ *	dirname (i) ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå
+ *	option  (i) OPT_xxxx ã® OR ã‹ã‚‰ãªã‚‹ã‚ªãƒ—ã‚·ãƒ§ãƒ³
+ *      filecmpr(i) ã‚½ãƒ¼ãƒˆã§ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¯”è¼ƒã™ã‚‹é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+ *	dirs    (o) (option & OPT_REC)!=0 ã®æ™‚ã€æœ¬é…åˆ—æœ«å°¾ã«
+ *                  ä¸‹ä½ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒè¿½è¨˜ã•ã‚Œã‚‹
+ *	out     (o) å‡ºåŠ›å…ˆ
  */
 static void dir1( const char *dirname ,
 		  int option ,
@@ -407,7 +407,7 @@ static void dir1( const char *dirname ,
     for( NnDir dir(wildcard) ; dir.more() ; dir.next() ){
 	NnFileStat *st=dir.stat();
 
-	/* -R ƒIƒvƒVƒ‡ƒ“‚ª‚Â‚¢‚Ä‚¢‚é‚Æ‚«‚ÍA‰ºˆÊƒtƒHƒ‹ƒ_[‚ğƒŠƒXƒg‚É‰Á‚¦‚é.*/
+	/* -R ã‚ªãƒ—ã‚·ãƒ§ãƒ³ãŒã¤ã„ã¦ã„ã‚‹ã¨ãã¯ã€ä¸‹ä½ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼ã‚’ãƒªã‚¹ãƒˆã«åŠ ãˆã‚‹.*/
 	if( (option & OPT_REC) != 0 &&
 	    st->isDir() && 
 	    !st->name().startsWith(".") )
@@ -464,7 +464,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
     signal( SIGPIPE , handle_ctrl_c );
 #endif
 
-    /* o—Íæ‚ª’[––‚Ì‚ÍƒJƒ‰[‚ğƒfƒtƒHƒ‹ƒg‚Æ‚·‚é */
+    /* å‡ºåŠ›å…ˆãŒç«¯æœ«ã®æ™‚ã¯ã‚«ãƒ©ãƒ¼ã‚’ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã¨ã™ã‚‹ */
     if( conOut.isatty() ){
         option |= OPT_COLOR;
     }else{
@@ -483,14 +483,14 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
                 if( strcmp(p,"color=always")==0 ||
                     strcmp(p,"color"       )==0 )
                 {
-                    /* ’[––ˆÈŠO‚É‘Î‚µ‚Ä‚àAí‚ÉƒJƒ‰[o—Í‚·‚é */
+                    /* ç«¯æœ«ä»¥å¤–ã«å¯¾ã—ã¦ã‚‚ã€å¸¸ã«ã‚«ãƒ©ãƒ¼å‡ºåŠ›ã™ã‚‹ */
                     option |= OPT_COLOR;
                 }else if( strcmp(p,"color=auto")==0 ||
                           strcmp(p,"color=tty" )==0 ){
-                    /* ƒIƒvƒVƒ‡ƒ“–³‚µ‚Æ“™‰¿: ‰½‚à‚µ‚È‚¢ */
+                    /* ã‚ªãƒ—ã‚·ãƒ§ãƒ³ç„¡ã—ã¨ç­‰ä¾¡: ä½•ã‚‚ã—ãªã„ */
                     ;
                 }else if( strcmp(p,"color=never")==0 ){
-                    /* ƒJƒ‰[‚ğ—}§‚·‚é */
+                    /* ã‚«ãƒ©ãƒ¼ã‚’æŠ‘åˆ¶ã™ã‚‹ */
                     option &= ~OPT_COLOR;
                 }else if( strcmp(p,"si")==0 ){
                     option &=~OPT_HUMAN;
@@ -563,7 +563,7 @@ int cmd_ls( NyadosShell &shell , const NnString &argv )
     if( files.size() > 0 && dirs.size() > 0 )
 	conOut << '\n';
     
-    /* ’ˆÓFdirs.size ‚Í“®“I‚É•Ï‚í‚é(ŠÖ”“à•”‚Å‘‚¦‚é)ê‡‚ª‚ ‚é */
+    /* æ³¨æ„ï¼šdirs.size ã¯å‹•çš„ã«å¤‰ã‚ã‚‹(é–¢æ•°å†…éƒ¨ã§å¢—ãˆã‚‹)å ´åˆãŒã‚ã‚‹ */
     for( i=0 ; i < dirs.size() ; ++i ){
         if( ! conOut.ok() ){
             break;

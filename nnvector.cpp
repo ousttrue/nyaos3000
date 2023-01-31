@@ -2,10 +2,10 @@
 #include "nnstring.h"
 #include "NnVector.h"
 
-/* ”z—ñ‚ðŠg’£‚·‚éB
- *	n : VƒTƒCƒY
+/* é…åˆ—ã‚’æ‹¡å¼µã™ã‚‹ã€‚
+ *	n : æ–°ã‚µã‚¤ã‚º
  * return
- *	0 ... ¬Œ÷ , -1 ... Ž¸”s
+ *	0 ... æˆåŠŸ , -1 ... å¤±æ•—
  */
 int NnVector::grow(int n)
 {
@@ -22,7 +22,7 @@ int NnVector::grow(int n)
     return 0;
 }
 
-/* ƒfƒXƒgƒ‰ƒNƒ^ */
+/* ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ */
 NnVector::~NnVector()
 {
     if( array ){
@@ -32,12 +32,12 @@ NnVector::~NnVector()
     }
 }
 
-/* —v‘f‚ð––”ö‚É’Ç‰Á‚·‚é.
- *      obj - ’Ç‰Á‚·‚éƒIƒuƒWƒFƒNƒg
+/* è¦ç´ ã‚’æœ«å°¾ã«è¿½åŠ ã™ã‚‹.
+ *      obj - è¿½åŠ ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
  * return
- *	0 ... ¬Œ÷ 
- *     -1 ... ƒƒ‚ƒŠŠm•ÛŽ¸”s
- *     -2 ... ƒpƒ‰ƒ[ƒ^ƒGƒ‰[(obj ‚ª NULL)
+ *	0 ... æˆåŠŸ 
+ *     -1 ... ãƒ¡ãƒ¢ãƒªç¢ºä¿å¤±æ•—
+ *     -2 ... ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚¨ãƒ©ãƒ¼(obj ãŒ NULL)
  */
 int NnVector::append( NnObject *obj )
 {
@@ -52,11 +52,11 @@ int NnVector::append( NnObject *obj )
     return 0;
 }
 
-/* qsort x NnSortable* Œü‚¯”äŠrŠÖ”.
- *      x —v‘f1(NnObject*‚Ö‚Ìƒ|ƒCƒ“ƒ^)
- *      y —v‘f2(NnObject*‚Ö‚Ìƒ|ƒCƒ“ƒ^)
+/* qsort x NnSortable* å‘ã‘æ¯”è¼ƒé–¢æ•°.
+ *      x è¦ç´ 1(NnObject*ã¸ã®ãƒã‚¤ãƒ³ã‚¿)
+ *      y è¦ç´ 2(NnObject*ã¸ã®ãƒã‚¤ãƒ³ã‚¿)
  * return
- *      ‘å¬ŠÖŒW‚ð•\‚·®”’l(x-y‚É‘Š“–)
+ *      å¤§å°é–¢ä¿‚ã‚’è¡¨ã™æ•´æ•°å€¤(x-yã«ç›¸å½“)
  */
 static int 
 compare(const void *x,const void *y)
@@ -71,9 +71,9 @@ compare(const void *x,const void *y)
     return xs->compare(*ys);
 }
 
-/* ƒ\[ƒg‚ðs‚¤.
- * ENnSortable ‚ÌƒCƒ“ƒXƒ^ƒ“ƒX‚Å‚È‚¢‚à‚Ì‚ÍA
- * E”z—ñ‚Ì‘S—v‘f‚ª NnSortable* ‚Å‚ ‚é‚±‚Æ‚ªŽg—pðŒB
+/* ã‚½ãƒ¼ãƒˆã‚’è¡Œã†.
+ * ãƒ»NnSortable ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã§ãªã„ã‚‚ã®ã¯ã€
+ * ãƒ»é…åˆ—ã®å…¨è¦ç´ ãŒ NnSortable* ã§ã‚ã‚‹ã“ã¨ãŒä½¿ç”¨æ¡ä»¶ã€‚
  */
 void NnVector::sort()
 {
@@ -81,8 +81,8 @@ void NnVector::sort()
         qsort( array , this->size() , sizeof(NnObject*) , &compare );
 }
 
-/* ƒ\[ƒg‚ðs‚¤B”äŠr‚Íˆø”‚ÌŠÖ”ƒIƒuƒWƒFƒNƒg‚Ås‚¤.
- * (ƒAƒ‹ƒSƒŠƒYƒ€‚Í selection sort o(n^2) :ŠÈ’P‚¾‚ªA—]‚è‘¬‚­‚È‚¢)
+/* ã‚½ãƒ¼ãƒˆã‚’è¡Œã†ã€‚æ¯”è¼ƒã¯å¼•æ•°ã®é–¢æ•°ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§è¡Œã†.
+ * (ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã¯ selection sort o(n^2) :ç°¡å˜ã ãŒã€ä½™ã‚Šé€Ÿããªã„)
  */
 void NnVector::sort( NnComparer &comparer )
 {
@@ -100,11 +100,11 @@ void NnVector::sort( NnComparer &comparer )
     }
 }
 
-/* at”Ô–Ú‚Ì—v‘f‚ðœ‚«AŒã‚ð‚Â‚ß‚éB
- * ŽÀsŒãAsize() ‚Í 1 Œ¸‚éB
- *      at - Žæ‚èœ‚­ˆÊ’u
+/* atç•ªç›®ã®è¦ç´ ã‚’é™¤ãã€å¾Œã‚’ã¤ã‚ã‚‹ã€‚
+ * å®Ÿè¡Œå¾Œã€size() ã¯ 1 æ¸›ã‚‹ã€‚
+ *      at - å–ã‚Šé™¤ãä½ç½®
  * return
- *      œ‚¢‚½ƒIƒuƒWƒFƒNƒg(delete‚Í‚µ‚Ä‚¢‚È‚¢)
+ *      é™¤ã„ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ(deleteã¯ã—ã¦ã„ãªã„)
  */
 NnObject *NnVector::removeAt( int at )
 {
@@ -119,10 +119,10 @@ NnObject *NnVector::removeAt( int at )
     return rc;
 }
 
-/* d•¡ƒIƒuƒWƒFƒNƒg‚ðíœ‚·‚éB
- * ‰º‹L‚ÌðŒ‚ð–ž‚½‚·•K—v‚ª‚ ‚éB
- * E”z—ñ‚Ì‘S—v‘f‚ª NULL ‚© NnSortable* ‚Å‚ ‚éB
- * EŽ–‘O‚É sort() ‚ðŽÀŽ{‚µ‚Ä‚¢‚éB
+/* é‡è¤‡ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å‰Šé™¤ã™ã‚‹ã€‚
+ * ä¸‹è¨˜ã®æ¡ä»¶ã‚’æº€ãŸã™å¿…è¦ãŒã‚ã‚‹ã€‚
+ * ãƒ»é…åˆ—ã®å…¨è¦ç´ ãŒ NULL ã‹ NnSortable* ã§ã‚ã‚‹ã€‚
+ * ãƒ»äº‹å‰ã« sort() ã‚’å®Ÿæ–½ã—ã¦ã„ã‚‹ã€‚
  */
 void NnVector::uniq()
 {
@@ -166,13 +166,13 @@ NnObject *NnVector::clone() const
     return result;
 }
 
-/* NnString ‚Ìƒƒ\ƒbƒh‚¾‚ªANnVector ‚ª—˜—p‚³‚ê‚éŽž‚µ‚©A
- * Žg‚í‚ê‚È‚¢‚Ì‚ÅA‚±‚¿‚ç‚Ìƒ\[ƒX‚É“ü‚ê‚Ä‚¨‚­ */
+/* NnString ã®ãƒ¡ã‚½ãƒƒãƒ‰ã ãŒã€NnVector ãŒåˆ©ç”¨ã•ã‚Œã‚‹æ™‚ã—ã‹ã€
+ * ä½¿ã‚ã‚Œãªã„ã®ã§ã€ã“ã¡ã‚‰ã®ã‚½ãƒ¼ã‚¹ã«å…¥ã‚Œã¦ãŠã */
 
-/* •¶Žš—ñ‚ð‹ó”’‚Å•ªŠ„‚µ‚ÄA”z—ñ‚ÉŠi”[‚·‚é.
- *    param Ši”[æ
+/* æ–‡å­—åˆ—ã‚’ç©ºç™½ã§åˆ†å‰²ã—ã¦ã€é…åˆ—ã«æ ¼ç´ã™ã‚‹.
+ *    param æ ¼ç´å…ˆ
  * return
- *    •ªŠ„”
+ *    åˆ†å‰²æ•°
  */
 int NnString::splitTo( NnVector &param ) const
 {

@@ -36,10 +36,10 @@ void History1::touch_()
     this->stamp_ = ymd;
 }
 
-/* ƒqƒXƒgƒŠ‚Ì’†‚©‚çA“Á’è•¶š—ñ‚ğŠÜ‚ñ‚¾s‚ğæ‚èo‚·
- *	key - ŒŸõƒL[
- *	line - ƒqƒbƒg‚µ‚½s
- * return 0 - Œ©‚Â‚©‚Á‚½ , -1 - Œ©‚Â‚©‚ç‚È‚©‚Á‚½.
+/* ãƒ’ã‚¹ãƒˆãƒªã®ä¸­ã‹ã‚‰ã€ç‰¹å®šæ–‡å­—åˆ—ã‚’å«ã‚“ã è¡Œã‚’å–ã‚Šå‡ºã™
+ *	key - æ¤œç´¢ã‚­ãƒ¼
+ *	line - ãƒ’ãƒƒãƒˆã—ãŸè¡Œ
+ * return 0 - è¦‹ã¤ã‹ã£ãŸ , -1 - è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ.
  */
 int History::seekLineHas( const NnString &key , History1 &line )
 {
@@ -53,10 +53,10 @@ int History::seekLineHas( const NnString &key , History1 &line )
     }
     return -1;
 }
-/* ƒqƒXƒgƒŠ‚Ì’†‚©‚çA“Á’è•¶š—ñ‚©‚çn‚Ü‚Á‚½s‚ğæ‚èo‚·
- *	key - ŒŸõƒL[
- *	line - ƒqƒbƒg‚µ‚½s
- * return 0 - Œ©‚Â‚©‚Á‚½ , -1 - Œ©‚Â‚©‚ç‚È‚©‚Á‚½.
+/* ãƒ’ã‚¹ãƒˆãƒªã®ä¸­ã‹ã‚‰ã€ç‰¹å®šæ–‡å­—åˆ—ã‹ã‚‰å§‹ã¾ã£ãŸè¡Œã‚’å–ã‚Šå‡ºã™
+ *	key - æ¤œç´¢ã‚­ãƒ¼
+ *	line - ãƒ’ãƒƒãƒˆã—ãŸè¡Œ
+ * return 0 - è¦‹ã¤ã‹ã£ãŸ , -1 - è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ.
  */
 int History::seekLineStartsWith( const NnString &key , History1 &line )
 {
@@ -71,12 +71,12 @@ int History::seekLineStartsWith( const NnString &key , History1 &line )
     return -1;
 }
 
-/* •¶š—ñ‚©‚çƒqƒXƒgƒŠ‹L†‚ğŒŸo‚µ‚ÄA’uŠ·‚ğs‚¤B
- *      hisObj - ƒqƒXƒgƒŠƒIƒuƒWƒFƒNƒg
- *      src - Œ³•¶š—ñ
- *      dst - ’uŠ·Œ‹‰Ê‚ğ“ü‚ê‚éæ or ƒGƒ‰[•¶š—ñ
+/* æ–‡å­—åˆ—ã‹ã‚‰ãƒ’ã‚¹ãƒˆãƒªè¨˜å·ã‚’æ¤œå‡ºã—ã¦ã€ç½®æ›ã‚’è¡Œã†ã€‚
+ *      hisObj - ãƒ’ã‚¹ãƒˆãƒªã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+ *      src - å…ƒæ–‡å­—åˆ—
+ *      dst - ç½®æ›çµæœã‚’å…¥ã‚Œã‚‹å…ˆ or ã‚¨ãƒ©ãƒ¼æ–‡å­—åˆ—
  * return
- *	0 - ³íI—¹ , -1 - ƒGƒ‰[
+ *	0 - æ­£å¸¸çµ‚äº† , -1 - ã‚¨ãƒ©ãƒ¼
  */
 int preprocessHistory( History &hisObj , const NnString &src , NnString &dst )
 {
@@ -187,7 +187,7 @@ History1 *History::operator[](int at)
 	return NULL;
     if( at >= 0 )
         return (History1 *)this->at(at);
-    /* at ‚ª•‰‚Ìê‡ */
+    /* at ãŒè² ã®å ´åˆ */
     at += size();
     if( at < 0 )
 	return NULL;

@@ -437,9 +437,9 @@ static void push_activexmember(lua_State *L,ActiveXMember *member)
     lua_setmetatable(L,-2);
 }
 
-// d‘g‚İãAˆø”•t‚«ƒvƒƒpƒeƒB[‚Ìæ“¾‚ª‚Å‚«‚È‚¢‚½‚ß
-// ‚©‚í‚è‚É
-// uself:__get__("Item","key")v‚ğ’ñ‹Ÿ‚·‚é
+// ä»•çµ„ã¿ä¸Šã€å¼•æ•°ä»˜ããƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼ã®å–å¾—ãŒã§ããªã„ãŸã‚
+// ã‹ã‚ã‚Šã«
+// ã€Œself:__get__("Item","key")ã€ã‚’æä¾›ã™ã‚‹
 
 static int get__(lua_State *L)
 {
@@ -492,10 +492,10 @@ static int get__(lua_State *L)
     }
 }
 
-// uself:Item("key") = valv ‚ª‚Å‚«‚È‚¢‚½‚ß
-// ‚©‚í‚è‚É
-// uself:__put__("Item","key",val)v
-// ==uself.__put__(self,"Item","key",val)v‚ğ’ñ‹Ÿ
+// ã€Œself:Item("key") = valã€ ãŒã§ããªã„ãŸã‚
+// ã‹ã‚ã‚Šã«
+// ã€Œself:__put__("Item","key",val)ã€
+// ==ã€Œself.__put__(self,"Item","key",val)ã€ã‚’æä¾›
 static int put__(lua_State *L)
 {
     if( lua_gettop(L) < 4 ){

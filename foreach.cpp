@@ -16,7 +16,7 @@ Status BufferedShell::readline( NnString &line )
 
 extern NnHash properties;
 
-/* ––”ö‚ªA‘Î‰‚·‚é'{'‚Ì‚È‚¢'}' ‚Å‚ ‚ê‚Î^‚ğ•Ô‚·. */
+/* æœ«å°¾ãŒã€å¯¾å¿œã™ã‚‹'{'ã®ãªã„'}' ã§ã‚ã‚Œã°çœŸã‚’è¿”ã™. */
 static int end_with_unmatched_closing_brace( const NnString &s )
 {
     int nest=0;
@@ -31,15 +31,15 @@ static int end_with_unmatched_closing_brace( const NnString &s )
     return lastchar=='}' && nest < 0 ;
 }
 
-/* foreach ‚È‚ÇA“Á’è‚ÌƒL[ƒ[ƒh‚Ü‚Å‚Ì•¡•¶‚ğ BufferedShell ‚Ö“Ç‚İ‚±‚Ş
- *  	shell  - “ü—ÍŒ³ƒVƒFƒ‹(ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“EƒXƒNƒŠƒvƒg‚È‚Ç)
- *	bShell - o—ÍæƒVƒFƒ‹
- *	prompt - ƒvƒƒ“ƒvƒg
- *	startKeyword - ƒuƒƒbƒNŠJnƒL[ƒ[ƒh(ƒlƒXƒg—p)
- *	endKeyword - ƒuƒƒbƒNI—¹ƒL[ƒ[ƒh
+/* foreach ãªã©ã€ç‰¹å®šã®ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã¾ã§ã®è¤‡æ–‡ã‚’ BufferedShell ã¸èª­ã¿ã“ã‚€
+ *  	shell  - å…¥åŠ›å…ƒã‚·ã‚§ãƒ«(ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ãƒ»ã‚¹ã‚¯ãƒªãƒ—ãƒˆãªã©)
+ *	bShell - å‡ºåŠ›å…ˆã‚·ã‚§ãƒ«
+ *	prompt - ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆ
+ *	startKeyword - ãƒ–ãƒ­ãƒƒã‚¯é–‹å§‹ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰(ãƒã‚¹ãƒˆç”¨)
+ *	endKeyword - ãƒ–ãƒ­ãƒƒã‚¯çµ‚äº†ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰
  * return
- *       0 - À{
- *      -1 - ƒLƒƒƒ“ƒZƒ‹
+ *       0 - å®Ÿæ–½
+ *      -1 - ã‚­ãƒ£ãƒ³ã‚»ãƒ«
  */
 static int loadToBufferedShell( NyadosShell   &shell ,
 				 BufferedShell &bShell ,
@@ -56,7 +56,7 @@ static int loadToBufferedShell( NyadosShell   &shell ,
         NnString arg1,left;
         cmdline.splitTo( arg1 , left );
 	if( strcmp(startKeyword,"{") == 0 ){
-	    /* ’†Š‡ŒÊŒ`®‚ÌƒuƒƒbƒN\•¶‚Ì */
+	    /* ä¸­æ‹¬å¼§å½¢å¼ã®ãƒ–ãƒ­ãƒƒã‚¯æ§‹æ–‡ã®æ™‚ */
 	    if( end_with_unmatched_closing_brace(cmdline) && --nest <= 0 ){
 		cmdline.chop();
 		bShell.append( (NnString*)cmdline.clone() );
@@ -65,14 +65,14 @@ static int loadToBufferedShell( NyadosShell   &shell ,
 	    if( arg1.endsWith(startKeyword) )
 		++nest;
 	}else{
-	    /* ƒL[ƒ[ƒhŒ`®‚ÌƒuƒƒbƒN\•¶‚Ì */
+	    /* ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰å½¢å¼ã®ãƒ–ãƒ­ãƒƒã‚¯æ§‹æ–‡ã®æ™‚ */
 	    if( arg1.icompare(endKeyword)==0 && --nest <= 0 )
 		break;
 	    if( arg1.icompare(startKeyword)==0 )
 		++nest;
 	}
-	/* ƒuƒƒbƒN\•¶‚ª’†Š‡ŒÊ‚Ì‚ÆAƒL[ƒ[ƒh‚Ì‚Å
-	 * ƒuƒƒbƒN‚Ì‹«ŠE‚Ì”»’è‚ğ•Ï‚¦‚é */
+	/* ãƒ–ãƒ­ãƒƒã‚¯æ§‹æ–‡ãŒä¸­æ‹¬å¼§ã®æ™‚ã¨ã€ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã®æ™‚ã§
+	 * ãƒ–ãƒ­ãƒƒã‚¯ã®å¢ƒç•Œã®åˆ¤å®šã‚’å¤‰ãˆã‚‹ */
         bShell.append( (NnString*)cmdline.clone() );
         cmdline.erase();
     }
@@ -98,7 +98,7 @@ int NnExecutable_BufferedShell::operator()( const NnVector &args )
     return shell_->mainloop();
 }
 
-/* ŠÖ”‚Ìˆê——”­su{}v */
+/* é–¢æ•°ã®ä¸€è¦§ç™ºè¡Œã€Œ{}ã€ */
 int cmd_function_list( NyadosShell &shell , const NnString &argv )
 {
     for( NnHash::Each e(functions) ; e.more() ; ++e ){
@@ -114,7 +114,7 @@ int cmd_function_list( NyadosShell &shell , const NnString &argv )
     return 0;
 }
 
-/* ŠÖ”íœ */
+/* é–¢æ•°å‰Šé™¤ */
 int sub_brace_erase( NyadosShell &shell , const NnString &arg1 )
 {
     NnString funcname(arg1);
@@ -126,18 +126,18 @@ int sub_brace_erase( NyadosShell &shell , const NnString &arg1 )
     return 0;
 }
 
-/* ŠÖ”éŒ¾ */
+/* é–¢æ•°å®£è¨€ */
 int sub_brace_start( NyadosShell &shell , 
 		     const NnString &arg1 ,
 		     const NnString &argv )
 {
-    /* u{v•”•ª‚ğíœ‚µ‚ÄAŠÖ”–¼‚ğæ“¾‚·‚é */
+    /* ã€Œ{ã€éƒ¨åˆ†ã‚’å‰Šé™¤ã—ã¦ã€é–¢æ•°åã‚’å–å¾—ã™ã‚‹ */
     NnString funcname(arg1);
     funcname.chop(); 
 
     BufferedShell *bShell=new BufferedShell();
     if( argv.length() > 0 ){
-	/* ˆø”•”•ª‚ª‚ ‚ê‚ÎAŠÖ”“à\•¶‚Ìˆê•”‚Æ‚İ‚È‚· */
+	/* å¼•æ•°éƒ¨åˆ†ãŒã‚ã‚Œã°ã€é–¢æ•°å†…æ§‹æ–‡ã®ä¸€éƒ¨ã¨ã¿ãªã™ */
 	bShell->append( (NnString*)argv.clone() );
     }
     if( loadToBufferedShell( shell, *bShell , "brace>" , "{" , "}" ) == 0 ){
@@ -148,7 +148,7 @@ int sub_brace_start( NyadosShell &shell ,
 
 int cmd_foreach( NyadosShell &shell , const NnString &argv )
 {
-    /* ƒpƒ‰ƒ[ƒ^•ªÍ */
+    /* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿åˆ†æ */
     NnString varname,rest;
     argv.splitTo(varname,rest);
     if( varname.empty() ){
@@ -157,7 +157,7 @@ int cmd_foreach( NyadosShell &shell , const NnString &argv )
     }
     varname.downcase();
 
-    /* ƒoƒbƒtƒ@‚É foreach ` end ‚Ü‚Å‚Ì•¶š—ñ‚ğ‚½‚ß‚é */
+    /* ãƒãƒƒãƒ•ã‚¡ã« foreach ï½ end ã¾ã§ã®æ–‡å­—åˆ—ã‚’ãŸã‚ã‚‹ */
     BufferedShell bshell;
     if( loadToBufferedShell( shell , bshell , "foreach>" , "foreach" , "end" ) != 0 )
         return 0;
@@ -165,7 +165,7 @@ int cmd_foreach( NyadosShell &shell , const NnString &argv )
     NnString *orgstr=(NnString*)properties.get( varname );
     NnString *savevar=(NnString*)( orgstr != NULL ? orgstr->clone() : NULL );
 
-    /* ƒŠƒXƒg‚Ì‘OŒã‚ÌŠ‡ŒÊ‚ğæ‚èœ‚­ */
+    /* ãƒªã‚¹ãƒˆã®å‰å¾Œã®æ‹¬å¼§ã‚’å–ã‚Šé™¤ã */
     rest.trim();
     if( rest.startsWith("(") )
 	rest.shift();
@@ -173,7 +173,7 @@ int cmd_foreach( NyadosShell &shell , const NnString &argv )
 	rest.chop();
     rest.trim();
 
-    /* ˆø”“WŠJ */
+    /* å¼•æ•°å±•é–‹ */
     NnVector list;
     for(;;){
         NnString arg1;
@@ -182,7 +182,7 @@ int cmd_foreach( NyadosShell &shell , const NnString &argv )
         if( arg1.empty() )
             break;
         
-        /* ƒƒCƒ‹ƒhƒJ[ƒh“WŠJ */
+        /* ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰å±•é–‹ */
         NnVector sublist;
         if( fnexplode( arg1.chars() , sublist ) != 0 )
             goto memerror;
@@ -208,7 +208,7 @@ int cmd_foreach( NyadosShell &shell , const NnString &argv )
 	bshell.setArgv(param);
     }
 
-    /* ƒRƒ}ƒ“ƒhÀs */
+    /* ã‚³ãƒãƒ³ãƒ‰å®Ÿè¡Œ */
     for(int i=0 ; i<list.size() ; i++){
         properties.put( varname , list.at(i)->clone() );
         bshell.mainloop();

@@ -134,7 +134,7 @@ public:
     NnStrFilter(){}
     void operator()( NnString &target );
 };
-/* 環境変数・シェル変数展開用フィルター */
+/* 迺ｰ蠅�螟画焚繝ｻ繧ｷ繧ｧ繝ｫ螟画焚螻暮幕逕ｨ繝輔ぅ繝ｫ繧ｿ繝ｼ */
 class VariableFilter : public NnStrFilter {
     NyadosShell &shell;
 

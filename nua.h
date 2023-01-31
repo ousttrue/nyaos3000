@@ -1,6 +1,7 @@
 #ifndef NUA_H
 #define NUA_H
 
+#include <Windows.h>
 #include "nnlua.h"
 #include "nnvector.h"
 

@@ -17,14 +17,14 @@ int NnPair::compare( const NnSortable &x ) const
     return first()->compare( *((const NnPair&)x).first() );
 }
 
-/* ŠÂ‹«•Ï”‚Ì•âŠ®‚ğs‚¤.
- *    startpos c ŠÂ‹«•Ï”•\Œ»ŠJnˆÊ’u('%'‚ÌˆÊ’u)
- *    endpos   c “¯––”ö(‚È‚¢‚Í •‰)
- *    wildcard c “WŠJ‘O•¶š—ñ‘S‘Ì
- *    array    c •âŠ®Œó•â‚ğ“ü‚ê‚é”z—ñ
+/* ç’°å¢ƒå¤‰æ•°ã®è£œå®Œã‚’è¡Œã†.
+ *    startpos â€¦ ç’°å¢ƒå¤‰æ•°è¡¨ç¾é–‹å§‹ä½ç½®('%'ã®ä½ç½®)
+ *    endpos   â€¦ åŒæœ«å°¾(ãªã„æ™‚ã¯ è² )
+ *    wildcard â€¦ å±•é–‹å‰æ–‡å­—åˆ—å…¨ä½“
+ *    array    â€¦ è£œå®Œå€™è£œã‚’å…¥ã‚Œã‚‹é…åˆ—
  * return
- *     >=0 •âŠ®Œó•â”.
- *     < 0 ŠÂ‹«•Ï”‚Ì•âŠ®‚Ì•K—v‚Í‚È‚­Aˆ—‚Æ‚µ‚Ä‚Í“WŠJ‚µ‚½‚¾‚¯.
+ *     >=0 è£œå®Œå€™è£œæ•°.
+ *     < 0 ç’°å¢ƒå¤‰æ•°ã®è£œå®Œã®å¿…è¦ã¯ãªãã€å‡¦ç†ã¨ã—ã¦ã¯å±•é–‹ã—ãŸã ã‘.
  */
 static int expand_environemnt_variable(
 	int startpos , 
@@ -35,7 +35,7 @@ static int expand_environemnt_variable(
 {
     NnString name;
     if( endpos >= 0 ){
-	/* ŠÂ‹«•Ï”–¼‚ªŠ®Œ‹‚µ‚Ä‚¢‚é‚Ì‚ÅA“WŠJ‚·‚é‚Ì‚İ */
+	/* ç’°å¢ƒå¤‰æ•°åãŒå®Œçµã—ã¦ã„ã‚‹ã®ã§ã€å±•é–‹ã™ã‚‹ã®ã¿ */
 	name.assign( wildcard.chars()+startpos+1 , endpos-startpos-1 );
 	const char *value=getEnv( name.chars() , NULL );
 	if( value != NULL ){
@@ -45,7 +45,7 @@ static int expand_environemnt_variable(
 	}
 	return -1;
     }else{
-	/* ŠÂ‹«•Ï”–¼‚ªŠ®Œ‹‚µ‚Ä‚¢‚È‚¢ ¨ ŠÂ‹«•Ï”–¼‚ğ•âŠ®‚Ì‘ÎÛ‚Æ‚·‚é */
+	/* ç’°å¢ƒå¤‰æ•°åãŒå®Œçµã—ã¦ã„ãªã„ â†’ ç’°å¢ƒå¤‰æ•°åã‚’è£œå®Œã®å¯¾è±¡ã¨ã™ã‚‹ */
 	name = wildcard.chars()+startpos+1 ;
 	name.upcase();
 	for( char **p=environ ; *p != NULL ; ++p ){
@@ -78,15 +78,15 @@ static int nondir_filter( NnDir &dir , void *xt )
 }
 
 
-/* •âŠ®Œó•âƒŠƒXƒg‚ğì¬‚·‚é.
- *      region  ƒpƒX‚ğŠÜ‚Ş”ÍˆÍ(ˆø—p•„ŠÜ‚Ş)
- *      array   Œó•âƒŠƒXƒg‚ğ“ü‚ê‚éæ
+/* è£œå®Œå€™è£œãƒªã‚¹ãƒˆã‚’ä½œæˆã™ã‚‹.
+ *      region  ãƒ‘ã‚¹ã‚’å«ã‚€ç¯„å›²(å¼•ç”¨ç¬¦å«ã‚€)
+ *      array   å€™è£œãƒªã‚¹ãƒˆã‚’å…¥ã‚Œã‚‹å…ˆ
  * return
- *      Œó•â”
+ *      å€™è£œæ•°
  */
 int GetLine::makeCompletionList( const NnString &region, NnVector &array )
 {
-    /* ƒfƒBƒŒƒNƒgƒŠ‚ğ”rœ‚·‚éƒRƒ}ƒ“ƒh‚©‚Ç‚¤‚©‚ğ”»’è‚·‚é */
+    /* ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æ’é™¤ã™ã‚‹ã‚³ãƒãƒ³ãƒ‰ã‹ã©ã†ã‹ã‚’åˆ¤å®šã™ã‚‹ */
     int directory_only=0;
     static const char *command_for_dironly[]={
         "cd ","pushd ",NULL
@@ -106,22 +106,22 @@ int GetLine::makeCompletionListCore( const NnString &region, NnVector &array ,
     int i;
     NnString path;
 
-    /* ˆø—p•„‚ğ‘S‚Äíœ‚·‚é */
+    /* å¼•ç”¨ç¬¦ã‚’å…¨ã¦å‰Šé™¤ã™ã‚‹ */
     path = region;
     path.dequote();
 
     int lastroot=NnDir::lastRoot( path.chars() );
     char rootchar=( lastroot != -1 && path.at(lastroot)=='/' ? '/' : '\\' );
 
-    /* ƒƒCƒ‹ƒhƒJ[ƒh•¶š—ñ‚Ìì¬ */
+    /* ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰æ–‡å­—åˆ—ã®ä½œæˆ */
     NnString wildcard;
     NnDir::f2b( path.chars() , wildcard );
     if( wildcard.at(0) == '~' && 
 	(isalnum(wildcard.at(1) & 255) || wildcard.at(1)=='_' ) && 
 	lastroot == -1 )
     {
-	/* ~ ‚Ån‚Ü‚èAƒ‹[ƒg‚ªŠÜ‚Ü‚ê‚Ä‚¨‚ç‚¸A“ñ•¶š–Ú‚É‰p”š‚ª‚ ‚éê‡‚Í
-	 * •sŠ®‘S‚È“ÁêƒtƒHƒ‹ƒ_[–¼‚ª“ü‚Á‚Ä‚¢‚é‚Æ‚İ‚È‚·B
+	/* ~ ã§å§‹ã¾ã‚Šã€ãƒ«ãƒ¼ãƒˆãŒå«ã¾ã‚Œã¦ãŠã‚‰ãšã€äºŒæ–‡å­—ç›®ã«è‹±æ•°å­—ãŒã‚ã‚‹å ´åˆã¯
+	 * ä¸å®Œå…¨ãªç‰¹æ®Šãƒ•ã‚©ãƒ«ãƒ€ãƒ¼åãŒå…¥ã£ã¦ã„ã‚‹ã¨ã¿ãªã™ã€‚
 	 */
 	wildcard.shift();
 	for( NnHash::Each itr(NnDir::specialFolder) ; *itr != NULL ; ++itr ){
@@ -133,24 +133,24 @@ int GetLine::makeCompletionListCore( const NnString &region, NnVector &array ,
 	}
 	return array.size();
     }
-    /* ƒpƒX‚ÉŠÂ‹«•Ï”‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½‚ç•ÏŠ·‚µ‚Ä‚¨‚­ */
-    /* %c% Œ`®‚ÌŠÂ‹«•Ï”•\‹L */
+    /* ãƒ‘ã‚¹ã«ç’°å¢ƒå¤‰æ•°ãŒå«ã¾ã‚Œã¦ã„ãŸã‚‰å¤‰æ›ã—ã¦ãŠã */
+    /* %â€¦% å½¢å¼ã®ç’°å¢ƒå¤‰æ•°è¡¨è¨˜ */
     if( (i=wildcard.findOf("%")) >= 0 ){
 	int j=wildcard.findOf("%",i+1);
 	int result = expand_environemnt_variable(i,j,"%",wildcard,array);
 	if( result >= 0 )
 	    return result;
     }
-    /* $c Œ`®‚ÌŠÂ‹«•Ï”•\‹L */
+    /* $â€¦ å½¢å¼ã®ç’°å¢ƒå¤‰æ•°è¡¨è¨˜ */
     if( (i=wildcard.findOf("$")) >= 0 ){
 	int result;
 	if( wildcard.at(i+1) == '{' ){
-	    /* ${c} Œ`® */
+	    /* ${â€¦} å½¢å¼ */
 	    result = expand_environemnt_variable(
 		    i+1, wildcard.findOf("}",i+2),
 		    "}", wildcard,array );
 	}else{
-	    /* $c Œ`® */
+	    /* $â€¦ å½¢å¼ */
 	    result = expand_environemnt_variable(
 		    i, wildcard.findOf(" \t",i+1),
 		    "",wildcard,array );
@@ -165,23 +165,23 @@ int GetLine::makeCompletionListCore( const NnString &region, NnVector &array ,
     else
 	wildcard += '*';
 
-    /* ƒfƒBƒŒƒNƒgƒŠ•”•ª‚ğ’Šo‚·‚é */
+    /* ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨åˆ†ã‚’æŠ½å‡ºã™ã‚‹ */
     NnString basename;
     if( lastroot >= 0 )
         basename.assign( path.chars() , lastroot+1 );
   
-    /* Œó•â‚ğì¬‚·‚é */
+    /* å€™è£œã‚’ä½œæˆã™ã‚‹ */
     i=0;
     for( NnDir dir(wildcard) ; dir.more() ; dir.next() ){
-        // u.vu..v‚ğ”rœ‚·‚é.
+        // ã€Œ.ã€ã€Œ..ã€ã‚’æ’é™¤ã™ã‚‹.
         if(    dir->at(0) == '.' 
             && (    dir->at(1) == '\0'
                 || (dir->at(1) == '.' && dir->at(2)=='\0' ) )){
             continue;
         }
-        // ƒƒ“ƒOƒtƒ@ƒCƒ‹–¼‚Íƒ}ƒbƒ`‚µ‚È‚¢‚ªAƒVƒ‡[ƒgƒtƒ@ƒCƒ‹–¼‚ªƒ}ƒbƒ`
-        // ‚µ‚Ä‚µ‚Ü‚¤ƒP[ƒX‚ğ”rœ‚·‚é.
-	// (‚½‚¾‚µAƒƒCƒ‹ƒhƒJ[ƒh‚ğu–¾¦“I‚Év—˜—p‚µ‚Ä‚¢‚éê‡‚Íœ‚­)
+        // ãƒ­ãƒ³ã‚°ãƒ•ã‚¡ã‚¤ãƒ«åã¯ãƒãƒƒãƒã—ãªã„ãŒã€ã‚·ãƒ§ãƒ¼ãƒˆãƒ•ã‚¡ã‚¤ãƒ«åãŒãƒãƒƒãƒ
+        // ã—ã¦ã—ã¾ã†ã‚±ãƒ¼ã‚¹ã‚’æ’é™¤ã™ã‚‹.
+	// (ãŸã ã—ã€ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰ã‚’ã€Œæ˜ç¤ºçš„ã«ã€åˆ©ç”¨ã—ã¦ã„ã‚‹å ´åˆã¯é™¤ã)
         if( strnicmp( dir.name() , path.chars() +(lastroot+1)
                     , path.length()-(lastroot+1) ) != 0 
 	    && ! has_wildcard )
@@ -198,7 +198,7 @@ int GetLine::makeCompletionListCore( const NnString &region, NnVector &array ,
         if( dir.isDir() )
             *name += rootchar;
         if( array.append( 
-                // [ ‘S•âŠ®•¶š—ñ , ƒˆƒtƒ@ƒCƒ‹–¼(”ñƒfƒBƒŒƒNƒgƒŠ•”•ª) ] ‚ÌƒyƒA.
+                // [ å…¨è£œå®Œæ–‡å­—åˆ— , ç´”ç²‹ãƒ•ã‚¡ã‚¤ãƒ«å(éãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨åˆ†) ] ã®ãƒšã‚¢.
 		new NnPair(name,new NnString(name->chars()+basename.length() )) 
 	    ) != 0 )
 	{
@@ -209,20 +209,20 @@ int GetLine::makeCompletionListCore( const NnString &region, NnVector &array ,
     }
     return i;
 }
-/* ƒRƒ}ƒ“ƒh–¼•âŠ®Œó•âƒŠƒXƒg‚ğì¬‚·‚é.
- * (–{ƒNƒ‰ƒX‚Å‚ÍAmakeCompletionList ‚Æ“¯‚¶B“¯ƒƒ\ƒbƒh‚Í”h¶ƒNƒ‰ƒX‚Å
- *  ƒI[ƒo[ƒ‰ƒCƒh‚³‚ê‚é)
- *      region - ‘ÎÛ‚Ì•¶š—ñ
- *      array - •âŠ®Œó•â‚ª“ü‚éƒxƒNƒ^[
+/* ã‚³ãƒãƒ³ãƒ‰åè£œå®Œå€™è£œãƒªã‚¹ãƒˆã‚’ä½œæˆã™ã‚‹.
+ * (æœ¬ã‚¯ãƒ©ã‚¹ã§ã¯ã€makeCompletionList ã¨åŒã˜ã€‚åŒãƒ¡ã‚½ãƒƒãƒ‰ã¯æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã§
+ *  ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã•ã‚Œã‚‹)
+ *      region - å¯¾è±¡ã®æ–‡å­—åˆ—
+ *      array - è£œå®Œå€™è£œãŒå…¥ã‚‹ãƒ™ã‚¯ã‚¿ãƒ¼
  * return
- *      Œó•â”
+ *      å€™è£œæ•°
  */
 int GetLine::makeTopCompletionList( const NnString &region , NnVector &array )
 {
     return makeCompletionListCore( region , array );
 }
 
-/* •¶š—ñ s1 ‚Æ •¶š—ñ s2 ‚Æ‚Ì‹¤’Ê•”•ª‚Ì’·‚³‚ğ“¾‚é */
+/* æ–‡å­—åˆ— s1 ã¨ æ–‡å­—åˆ— s2 ã¨ã®å…±é€šéƒ¨åˆ†ã®é•·ã•ã‚’å¾—ã‚‹ */
 static int sameLength(const char *s1 , const char *s2)
 {
     int len=0;
@@ -253,18 +253,18 @@ struct Completion {
     int at , size , n ;
     NnVector list ;
 
-    /* ƒfƒBƒŒƒNƒgƒŠ–¼“™‚ğŠÜ‚Ü‚È‚¢ƒtƒ@ƒCƒ‹–¼(ƒŠƒXƒg•\¦‚Ì‚½‚ß‚Ég‚¤) */
+    /* ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªåç­‰ã‚’å«ã¾ãªã„ãƒ•ã‚¡ã‚¤ãƒ«å(ãƒªã‚¹ãƒˆè¡¨ç¤ºã®ãŸã‚ã«ä½¿ã†) */
     NnString &name_of(int n){
 	return *(NnString*)((NnPair*)list.at(n))->second_or_first();
     }
-    /* ƒtƒ‹ƒpƒX–¼(å‚ÉÀÛ‚Ì•âŠ®‘€ì‚Ì‚½‚ß‚Ég‚¤) */
+    /* ãƒ•ãƒ«ãƒ‘ã‚¹å(ä¸»ã«å®Ÿéš›ã®è£œå®Œæ“ä½œã®ãŸã‚ã«ä½¿ã†) */
     NnString &path_of(int n){
         return *(NnString*)((NnPair*)list.at(n))->first();  
     }
     int maxlen();
 };
 
-/* Œó•âƒŠƒXƒg‚ÌÅ‘åƒTƒCƒY‚ğ“¾‚é */
+/* å€™è£œãƒªã‚¹ãƒˆã®æœ€å¤§ã‚µã‚¤ã‚ºã‚’å¾—ã‚‹ */
 int Completion::maxlen()
 {
     int max=0;
@@ -277,11 +277,11 @@ int Completion::maxlen()
 }
 
 
-/* ƒJ[ƒ\ƒ‹ˆÊ’u‚Ì•¶š—ñ‚ğ“Ç‚İ‚Æ‚Á‚ÄAŒó•â‚ğ‹“‚°‚é.
- *      r - •âŠ®ó‹µ
+/* ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã®æ–‡å­—åˆ—ã‚’èª­ã¿ã¨ã£ã¦ã€å€™è£œã‚’æŒ™ã’ã‚‹.
+ *      r - è£œå®ŒçŠ¶æ³
  * return
- *    >=0 : Œó•â”
- *    -1  : ’PŒê‚ª‚È‚¢.
+ *    >=0 : å€™è£œæ•°
+ *    -1  : å˜èªãŒãªã„.
  */
 int GetLine::read_complete_list( Completion &r )
 {
@@ -292,15 +292,15 @@ int GetLine::read_complete_list( Completion &r )
     r.n = 0;
     NyaosLua L("complete");
     if( L.ok() && lua_isfunction(L,-1) ){
-        /* ‘æˆêˆø”Fƒx[ƒX•¶š—ñ */
+        /* ç¬¬ä¸€å¼•æ•°ï¼šãƒ™ãƒ¼ã‚¹æ–‡å­—åˆ— */
         NnString word( r.word );
         word.dequote();
         lua_pushstring( L , word.chars() );
 
-        /* ‘æ“ñˆø”F•¶š—ñŠJnˆÊ’u */
+        /* ç¬¬äºŒå¼•æ•°ï¼šæ–‡å­—åˆ—é–‹å§‹ä½ç½® */
         lua_pushinteger( L , r.at );
 
-        /* ‘æOˆø”F•â‘«î•ñ */
+        /* ç¬¬ä¸‰å¼•æ•°ï¼šè£œè¶³æƒ…å ± */
         lua_newtable( L );
         lua_pushstring( L , buffer.chars() ); 
         lua_setfield( L , -2 , "text" );
@@ -336,7 +336,7 @@ int GetLine::read_complete_list( Completion &r )
                         }
                         lua_pop(L,2);
                     }
-                    lua_pop(L,1); /* drop each value(next‚ğg‚¤‚Ì–ñ‘©–) */
+                    lua_pop(L,1); /* drop each value(nextã‚’ä½¿ã†æ™‚ã®ç´„æŸäº‹) */
                 }
             }else if( ! lua_isnil(L,-1) ){
                 r.list.append( new NnPair( new NnString(
@@ -349,7 +349,7 @@ int GetLine::read_complete_list( Completion &r )
             lua_pop(L,1); /* drop error message */
         }
     }else{
-        // •âŠ®ƒŠƒXƒgì¬
+        // è£œå®Œãƒªã‚¹ãƒˆä½œæˆ
         if( r.at == 0 ){
             makeTopCompletionList( r.word , r.list );
         }else{
@@ -359,12 +359,12 @@ int GetLine::read_complete_list( Completion &r )
     return r.n = r.list.size();
 }
 
-/* ƒJ[ƒ\ƒ‹ˆÊ’u`size•¶š‘O‚Ü‚Å‚Ì•”•ª‚Ì’uŠ· & Ä•\¦‚ğs‚¤B
- *	size - ’uŠ·Œ³ƒTƒCƒY
- *	match - ’uŠ·•¶š—ñ
- * ğŒ
- * Esize < match.length() ‚Å‚ ‚é•K—v‚ª‚ ‚éB
- * EƒJ[ƒ\ƒ‹‚Í at+size ‚ÌˆÊ’u‚É‚ ‚é‚±‚Æ‚ª•K—v
+/* ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ï½sizeæ–‡å­—å‰ã¾ã§ã®éƒ¨åˆ†ã®ç½®æ› & å†è¡¨ç¤ºã‚’è¡Œã†ã€‚
+ *	size - ç½®æ›å…ƒã‚µã‚¤ã‚º
+ *	match - ç½®æ›æ–‡å­—åˆ—
+ * æ¡ä»¶
+ * ãƒ»size < match.length() ã§ã‚ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
+ * ãƒ»ã‚«ãƒ¼ã‚½ãƒ«ã¯ at+size ã®ä½ç½®ã«ã‚ã‚‹ã“ã¨ãŒå¿…è¦
  */
 void GetLine::replace_repaint_here( int size , const NnString &match )
 {
@@ -373,9 +373,9 @@ void GetLine::replace_repaint_here( int size , const NnString &match )
     int oldpos=pos;
     pos += match.length() - size ;
 
-    // •\¦‚ÌXV.
+    // è¡¨ç¤ºã®æ›´æ–°.
     if( pos >= offset+width ){
-        // ƒJ[ƒ\ƒ‹ˆÊ’u‚ªƒEƒCƒ“ƒhƒEŠO‚É‚ ‚é‚Æ‚«.
+        // ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ãŒã‚¦ã‚¤ãƒ³ãƒ‰ã‚¦å¤–ã«ã‚ã‚‹ã¨ã.
         putbs( oldpos-offset );
         offset = pos-width;
         puts_between(offset,pos);
@@ -390,7 +390,7 @@ void GetLine::replace_repaint_here( int size , const NnString &match )
 }
 
 
-/* •âŠ®ƒL[ ‘Î‰ƒƒ\ƒbƒh
+/* è£œå®Œã‚­ãƒ¼ å¯¾å¿œãƒ¡ã‚½ãƒƒãƒ‰
  */
 Status GetLine::complete(int)
 {
@@ -403,34 +403,34 @@ Status GetLine::complete(int)
     if( comp.word.findOf(" \t\r\n!") != -1 )
 	hasSpace = 1;
 
-    // •âŠ®Œó•â‚Ì‘æˆêŒó•â‚ğ‚Æ‚è‚ ‚¦‚¸ƒoƒbƒtƒ@‚ÖƒRƒs[.
+    // è£œå®Œå€™è£œã®ç¬¬ä¸€å€™è£œã‚’ã¨ã‚Šã‚ãˆãšãƒãƒƒãƒ•ã‚¡ã¸ã‚³ãƒ”ãƒ¼.
     NnString match=comp.path_of(0);
     if( strchr( match.chars() , ' ' ) != NULL || comp.word.at(0) == '"' )
 	hasSpace = 1;
 
-    // Œó•â‚ª•¡”‚ ‚éê‡‚ÍA
-    // “ñ”Ô–ÚˆÈ~‚ÌŒó•â‚Æ”äŠr‚µ‚Ä‚ä‚«A‹¤’Ê•”•ª‚¾‚¯‚ğc‚µ‚Ä‚ä‚­.
+    // å€™è£œãŒè¤‡æ•°ã‚ã‚‹å ´åˆã¯ã€
+    // äºŒç•ªç›®ä»¥é™ã®å€™è£œã¨æ¯”è¼ƒã—ã¦ã‚†ãã€å…±é€šéƒ¨åˆ†ã ã‘ã‚’æ®‹ã—ã¦ã‚†ã.
     for( i=1; i < n ; ++i ){
 	if( strchr( comp.path_of(i).chars() , ' ' ) != NULL )
 	    hasSpace = 1;
 	match.chop( sameLength( comp.path_of(i).chars() , match.chars() )); 
     }
 
-    // (Šî–{“I‚É‚ ‚è‚¦‚È‚¢‚ª)A•âŠ®Œó•â‚Ì•û‚ªAŒ³•¶š—ñ‚æ‚è’Z‚¢ê‡‚Í
-    // ‰½‚à‚¹‚¸I—¹‚·‚éB
+    // (åŸºæœ¬çš„ã«ã‚ã‚Šãˆãªã„ãŒ)ã€è£œå®Œå€™è£œã®æ–¹ãŒã€å…ƒæ–‡å­—åˆ—ã‚ˆã‚ŠçŸ­ã„å ´åˆã¯
+    // ä½•ã‚‚ã›ãšçµ‚äº†ã™ã‚‹ã€‚
     if( match.length() < comp.size && ! hasSpace )
 	return NEXTCHAR;
     
-    // ƒƒCƒ‹ƒhƒJ[ƒh•âŠ®‚µ‚½‚Æ‚«‚ÉAŒó•â‚Ì‹¤’Ê•”‚ª‘S‚­‚È‚¢ê‡A
-    // ˆø—p•„‚¾‚¯‚É‚È‚é‚Ì‚ğ–h‚®c
+    // ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰è£œå®Œã—ãŸã¨ãã«ã€å€™è£œã®å…±é€šéƒ¨ãŒå…¨ããªã„å ´åˆã€
+    // å¼•ç”¨ç¬¦ã ã‘ã«ãªã‚‹ã®ã‚’é˜²ãâ€¦
     if( match.length() == 0 )
 	return NEXTCHAR;
     
 #ifdef NYACUS
-    /* ƒVƒ‡[ƒgƒJƒbƒg“WŠJ */
+    /* ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆå±•é–‹ */
     if( n==1 && comp.path_of(0).iendsWith(".lnk") && properties.get("lnkexp") != NULL )
     {
-	/* Œó•â‚ªˆê‚Â‚ÅA‚»‚ê‚ªƒVƒ‡[ƒgƒJƒbƒg‚Ìê‡ */
+	/* å€™è£œãŒä¸€ã¤ã§ã€ãã‚ŒãŒã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆã®å ´åˆ */
 
 	char buffer[ FILENAME_MAX ];
 	if( read_shortcut( comp.path_of(0).chars() , buffer , sizeof(buffer)-1 ) == 0 ){
@@ -445,7 +445,7 @@ Status GetLine::complete(int)
     }
 #endif
 
-    // ‹ó”’‚ğŠÜ‚Ş‚Æ‚«Aæ“ª‚Éh‚ğ“ü‚ê‚éB
+    // ç©ºç™½ã‚’å«ã‚€ã¨ãã€å…ˆé ­ã«â€ã‚’å…¥ã‚Œã‚‹ã€‚
     if( hasSpace ){
 	if( match.at(0)=='~' ){
 	    for(int i=1; match.at(i) != '\0' ; ++i ){
@@ -459,13 +459,13 @@ Status GetLine::complete(int)
 	}
     }
 
-    if( n==1 && match.length() > 0 ){ // Œó•â‚ªˆê‚Â‚µ‚©‚È‚¢ê‡‚Íc
+    if( n==1 && match.length() > 0 ){ // å€™è£œãŒä¸€ã¤ã—ã‹ãªã„å ´åˆã¯â€¦
 	int tail=match.lastchar();
-	// ‹ó”’‚ª‚ ‚éê‡‚ÍAˆø—p•„‚ğ•Â‚¶‚éB
+	// ç©ºç™½ãŒã‚ã‚‹å ´åˆã¯ã€å¼•ç”¨ç¬¦ã‚’é–‰ã˜ã‚‹ã€‚
 	if( hasSpace )
 	    match += '"';
 	if( tail != '\\' && tail != '/' ){
-	    // ”ñƒfƒBƒŒƒNƒgƒŠ‚Ìê‡‚ÍA––”ö‚É‹ó”’‚ğ“ü‚ê‚éB
+	    // éãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®å ´åˆã¯ã€æœ«å°¾ã«ç©ºç™½ã‚’å…¥ã‚Œã‚‹ã€‚
 	    match += ' ';
         }else{
             currKey = -1;
@@ -518,7 +518,7 @@ void GetLine::listing_( Completion &comp )
 
 Status GetLine::listing(int)
 {
-    // ”í•âŠ®•¶š—ñ‚ğ”²‚«o‚·.
+    // è¢«è£œå®Œæ–‡å­—åˆ—ã‚’æŠœãå‡ºã™.
     Completion comp;
 
     if( read_complete_list(comp) <= 0 )
@@ -564,13 +564,13 @@ Status GetLine::complete_vzlike(int direct)
 	    baseSize--;
 	
 	if( pos - baseSize < offset ){
-	    /* ’PŒê‚Ìæ“ª‚ª‰æ–Ê’[‚æ‚è‘O‚É‚È‚Á‚Ä‚µ‚Ü‚Á‚Ä‚¢‚é */
+	    /* å˜èªã®å…ˆé ­ãŒç”»é¢ç«¯ã‚ˆã‚Šå‰ã«ãªã£ã¦ã—ã¾ã£ã¦ã„ã‚‹ */
 	    bs = pos-offset ;
-	    /* ‰æ–Ê’[‚Ü‚ÅƒJ[ƒ\ƒ‹‚ğ–ß‚· */
+	    /* ç”»é¢ç«¯ã¾ã§ã‚«ãƒ¼ã‚½ãƒ«ã‚’æˆ»ã™ */
 	}else{
-	    /* ’PŒê‚Ìæ“ª‚Í‰æ–Êã‚ÉŒ©‚¦‚Ä‚¢‚é */
+	    /* å˜èªã®å…ˆé ­ã¯ç”»é¢ä¸Šã«è¦‹ãˆã¦ã„ã‚‹ */
 	    bs = baseSize;
-	    /* ’PŒê’[‚Ü‚ÅƒJ[ƒ\ƒ‹‚ğ–ß‚· */
+	    /* å˜èªç«¯ã¾ã§ã‚«ãƒ¼ã‚½ãƒ«ã‚’æˆ»ã™ */
 	}
 	putbs( bs );
 	pos      -= bs ;
@@ -593,31 +593,31 @@ Status GetLine::complete_vzlike(int direct)
 	    if(    which_command(key) == &GetLine::complete_next 
 		|| which_command(key) == &GetLine::next 
 		|| which_command(key) == &GetLine::vz_next ){
-		/* ŸŒó•â */
+		/* æ¬¡å€™è£œ */
 		if( ++i >= comp.list.size() ) 
 		    i=0;
 	    }else if(  which_command(key) == &GetLine::complete_prev 
 		    || which_command(key) == &GetLine::previous
 		    || which_command(key) == &GetLine::vz_previous ){
-		/* ‘OŒó•â */
+		/* å‰å€™è£œ */
 		if( --i < 0 )
 		    i=comp.list.size()-1;
 	    }else if(   which_command(key) == &GetLine::erase_all 
 		     || which_command(key) == &GetLine::abort ){
-		/* ƒLƒƒƒ“ƒZƒ‹ */
+		/* ã‚­ãƒ£ãƒ³ã‚»ãƒ« */
 		eraseSeal( sealSize );
-		/* ƒJ[ƒ\ƒ‹ˆÊ’u‚ğ–ß‚· */
+		/* ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’æˆ»ã™ */
 		while( bs-- > 0 )
 		   putchr( buffer[pos++] );
 		return NEXTCHAR;
 	    }else if(   which_command(key) == &GetLine::erase_or_listing
 		     || which_command(key) == &GetLine::listing 
 		     || which_command(key) == &GetLine::complete_or_listing ){
-		/* ƒŠƒXƒgo—Í */
+		/* ãƒªã‚¹ãƒˆå‡ºåŠ› */
 		listing_( comp );
 		sealSize = 0;
 		continue;
-	    }else{ /* Šm’è */
+	    }else{ /* ç¢ºå®š */
 		break;
 	    }
 	}
@@ -634,7 +634,7 @@ Status GetLine::complete_vzlike(int direct)
 	putchr(buffer[pos++]);
     }
 
-    /* size•¶š—ñ‘O`ƒJ[ƒ\ƒ‹ˆÊ’u‚Ü‚Å‚ğ’uŠ·‚µ‚Ä‚­‚ê‚é */
+    /* sizeæ–‡å­—åˆ—å‰ï½ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã¾ã§ã‚’ç½®æ›ã—ã¦ãã‚Œã‚‹ */
     replace_repaint_here( comp.size , buf );
     if( which_command(key) != &GetLine::enter )
 	return interpret(key);
@@ -642,7 +642,7 @@ Status GetLine::complete_vzlike(int direct)
     return NEXTCHAR;
 }
 
-/* ƒ^ƒuƒL[‚Ìˆ—B•âŠ®‚·‚é‚©AƒŠƒXƒg‚ğo‚·B
+/* ã‚¿ãƒ–ã‚­ãƒ¼ã®å‡¦ç†ã€‚è£œå®Œã™ã‚‹ã‹ã€ãƒªã‚¹ãƒˆã‚’å‡ºã™ã€‚
  */
 Status GetLine::complete_or_listing(int key)
 {

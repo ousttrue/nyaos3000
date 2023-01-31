@@ -88,21 +88,21 @@ static int remove_quote_and_caret(int c)
     return (c=='^' || c=='"') ? '\0' : c;
 }
 
-/* ‘ã‘ÖspawnBspawn‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX‚ğ NNƒ‰ƒCƒuƒ‰ƒŠ‚É“K‚µ‚½Œ`‚Å’ñ‹Ÿ‚·‚éB
- *      args - ƒpƒ‰ƒ[ƒ^
- *      wait - MYP_WAIT   : ƒvƒƒZƒXI—¹‚ğ‘Ò‚Â
- *             MYP_NOWAIT or MYP_PIPE : ƒvƒƒZƒXI—¹‚ğ‘Ò‚½‚È‚¢
- *      result - ƒvƒƒZƒX‚Ì–ß‚è’l or ID or ƒnƒ“ƒhƒ‹‚ªŠi”[‚³‚ê‚é
+/* ä»£æ›¿spawnã€‚spawnã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã‚’ NNãƒ©ã‚¤ãƒ–ãƒ©ãƒªã«é©ã—ãŸå½¢ã§æä¾›ã™ã‚‹ã€‚
+ *      args - ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+ *      wait - MYP_WAIT   : ãƒ—ãƒ­ã‚»ã‚¹çµ‚äº†ã‚’å¾…ã¤
+ *             MYP_NOWAIT or MYP_PIPE : ãƒ—ãƒ­ã‚»ã‚¹çµ‚äº†ã‚’å¾…ãŸãªã„
+ *      result - ãƒ—ãƒ­ã‚»ã‚¹ã®æˆ»ã‚Šå€¤ or ID or ãƒãƒ³ãƒ‰ãƒ«ãŒæ ¼ç´ã•ã‚Œã‚‹
  * return
- *      0  - ¬Œ÷
- *      -1 - ¸”s
+ *      0  - æˆåŠŸ
+ *      -1 - å¤±æ•—
  */
 static int mySpawn( 
         const NnVector     &args ,
         mysystem_process_t wait  ,
         mysystem_result_t  &result )
 {
-    /* ƒRƒ}ƒ“ƒh–¼‚©‚çAƒ_ƒuƒ‹ƒNƒH[ƒg‚ÆƒLƒƒƒŒƒbƒg‚ğœ‚­ */
+    /* ã‚³ãƒãƒ³ãƒ‰åã‹ã‚‰ã€ãƒ€ãƒ–ãƒ«ã‚¯ã‚©ãƒ¼ãƒˆã¨ã‚­ãƒ£ãƒ¬ãƒƒãƒˆã‚’é™¤ã */
     NnString cmdname(args.const_at(0)->repr());
     cmdname.filter(remove_quote_and_caret);
 
@@ -198,10 +198,10 @@ static int mySpawn(
                         const_cast<CHAR*>(cmdline.chars()) ,
                         NULL, 
                         NULL,
-                        TRUE, /* eƒvƒƒZƒX‚Ìî•ñ‚ğŒp³‚·‚é‚©H */
-                        0,    /* ì¬ƒtƒ‰ƒOH */
-                        NULL, /* ŠÂ‹«•Ï”‚Ìƒ|ƒCƒ“ƒ^ */
-                        NULL, /* ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ */
+                        TRUE, /* è¦ªãƒ—ãƒ­ã‚»ã‚¹ã®æƒ…å ±ã‚’ç¶™æ‰¿ã™ã‚‹ã‹ï¼Ÿ */
+                        0,    /* ä½œæˆãƒ•ãƒ©ã‚°ï¼Ÿ */
+                        NULL, /* ç’°å¢ƒå¤‰æ•°ã®ãƒã‚¤ãƒ³ã‚¿ */
+                        NULL, /* ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª */
                         &si,
                         &pi) )
     {
@@ -209,18 +209,18 @@ static int mySpawn(
         return -1;
     }
     switch( wait ){
-    case MYP_WAIT: /* ƒvƒƒZƒXI—¹‚ğ‘Ò‚Â */
+    case MYP_WAIT: /* ãƒ—ãƒ­ã‚»ã‚¹çµ‚äº†ã‚’å¾…ã¤ */
         WaitForSingleObject(pi.hProcess,INFINITE); 
         GetExitCodeProcess(pi.hProcess,&result.rc);
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
         break;
-    case MYP_NOWAIT: /* ƒvƒƒZƒXI—¹‚ğ‘Ò‚½‚È‚¢ */
+    case MYP_NOWAIT: /* ãƒ—ãƒ­ã‚»ã‚¹çµ‚äº†ã‚’å¾…ãŸãªã„ */
         result.pid = pi.dwProcessId ;
         CloseHandle(pi.hProcess);
         CloseHandle(pi.hThread);
         break;
-    case MYP_PIPE: /* ‚±‚±‚Å‚Í‘Ò‚½‚È‚¢‚ªAŒÄ‚Ño‚µŒ³‚Å‘Ò‚Â */
+    case MYP_PIPE: /* ã“ã“ã§ã¯å¾…ãŸãªã„ãŒã€å‘¼ã³å‡ºã—å…ƒã§å¾…ã¤ */
         result.phandle = pi.hProcess ;
         CloseHandle(pi.hThread);
         break;
@@ -232,16 +232,16 @@ static int mySpawn(
     return 0;
 }
 
-/* ƒŠƒ_ƒCƒŒƒNƒg•”•ª‚ğ‰ğÍ‚·‚éB
- *    - >> ‚Å‚ ‚ê‚ÎAƒAƒyƒ“ƒhƒ‚[ƒh‚Å‚ ‚é‚±‚Æ‚ğŒŸo‚·‚é
+/* ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆéƒ¨åˆ†ã‚’è§£æã™ã‚‹ã€‚
+ *    - >> ã§ã‚ã‚Œã°ã€ã‚¢ãƒšãƒ³ãƒ‰ãƒ¢ãƒ¼ãƒ‰ã§ã‚ã‚‹ã“ã¨ã‚’æ¤œå‡ºã™ã‚‹
  * 
- *  cmdline - ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Ö‚Ìƒ|ƒCƒ“ƒ^
- *            Å‰‚Ìu>v‚Ìuãv‚É‚ ‚é‚±‚Æ‚ğ‘z’è
- *  redirect - “Ç‚İæ‚èŒ‹‰Ê‚ğŠi”[‚·‚éƒIƒuƒWƒFƒNƒg
+ *  cmdline - ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã¸ã®ãƒã‚¤ãƒ³ã‚¿
+ *            æœ€åˆã®ã€Œ>ã€ã®ã€Œä¸Šã€ã«ã‚ã‚‹ã“ã¨ã‚’æƒ³å®š
+ *  redirect - èª­ã¿å–ã‚Šçµæœã‚’æ ¼ç´ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
  *
  * return
- *    0  : ¬Œ÷
- *    -1 : ¸”s
+ *    0  : æˆåŠŸ
+ *    -1 : å¤±æ•—
  *  */
 static int parseRedirect( const char *&cmdline , Redirect &redirect )
 {
@@ -258,12 +258,12 @@ static int parseRedirect( const char *&cmdline , Redirect &redirect )
     return 0;
 }
 
-/* ƒŠƒ_ƒCƒŒƒNƒg‚Ì > ‚Ì‰E‘¤ˆÚs‚Ìˆ—‚ğs‚¤.
- *	sp : > ‚ÌŸ‚ÌˆÊ’u
- *	redirect : ƒŠƒ_ƒCƒŒƒNƒgƒIƒuƒWƒFƒNƒg
+/* ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã® > ã®å³å´ç§»è¡Œã®å‡¦ç†ã‚’è¡Œã†.
+ *	sp : > ã®æ¬¡ã®ä½ç½®
+ *	redirect : ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
  * return
- *      0  : ¬Œ÷
- *      -1 : ¸”s
+ *      0  : æˆåŠŸ
+ *      -1 : å¤±æ•—
  */
 static int after_lessthan( const char *&sp , Redirect &redirect )
 {
@@ -277,16 +277,16 @@ static int after_lessthan( const char *&sp , Redirect &redirect )
         if( redirect.switchTo( "nul", "w" ) != 0 )
             return -1;
     }else{
-	/* n> ƒtƒ@ƒCƒ‹–¼ */
+	/* n> ãƒ•ã‚¡ã‚¤ãƒ«å */
         if( parseRedirect( sp , redirect ) != 0 )
             return -1;
     }
     return 0;
 }
 
-/* ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ğ | ‚Å•ªŠ„‚µ‚ÄAƒxƒNƒ^[‚ÉŠeƒRƒ}ƒ“ƒh‚ğ‘ã“ü‚·‚é
- *	cmdline - ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“
- *	vector - Še—v‘f‚ª“ü‚é”z—ñ
+/* ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã‚’ | ã§åˆ†å‰²ã—ã¦ã€ãƒ™ã‚¯ã‚¿ãƒ¼ã«å„ã‚³ãƒãƒ³ãƒ‰ã‚’ä»£å…¥ã™ã‚‹
+ *	cmdline - ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³
+ *	vector - å„è¦ç´ ãŒå…¥ã‚‹é…åˆ—
  */
 static void devidePipes( const char *cmdline , NnVector &vector )
 {
@@ -295,14 +295,14 @@ static void devidePipes( const char *cmdline , NnVector &vector )
 	vector.append( one.clone() );
 }
 
-/* ƒŠƒ_ƒCƒŒƒNƒgˆ—•t‚«‚PƒRƒ}ƒ“ƒhˆ—ƒ‹[ƒ`ƒ“
- *	cmdline - ƒRƒ}ƒ“ƒh
+/* ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆå‡¦ç†ä»˜ãï¼‘ã‚³ãƒãƒ³ãƒ‰å‡¦ç†ãƒ«ãƒ¼ãƒãƒ³
+ *	cmdline - ã‚³ãƒãƒ³ãƒ‰
  *	wait - MYP_WAIT / MYP_NOWAIT / MYP_PIPE
- *	result - ƒRƒ}ƒ“ƒh‚ÌÀsŒ‹‰Ê‚ğŠi”[‚·‚éæ
- *	error_fname - ƒGƒ‰[‚É‚È‚Á‚½‚É•\¦‚·‚éƒRƒ}ƒ“ƒh–¼‚ğ“ü‚ê‚éŠí
+ *	result - ã‚³ãƒãƒ³ãƒ‰ã®å®Ÿè¡Œçµæœã‚’æ ¼ç´ã™ã‚‹å…ˆ
+ *	error_fname - ã‚¨ãƒ©ãƒ¼ã«ãªã£ãŸæ™‚ã«è¡¨ç¤ºã™ã‚‹ã‚³ãƒãƒ³ãƒ‰åã‚’å…¥ã‚Œã‚‹å™¨
  * return
- *        0 : ¬Œ÷
- *       -1 : ƒŠƒ_ƒCƒŒƒNƒg¸”s.
+ *        0 : æˆåŠŸ
+ *       -1 : ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆå¤±æ•—.
  */
 static int do_one_command( 
         const char *cmdline ,
@@ -362,8 +362,8 @@ static int do_one_command(
     return rc;
 }
 
-/* system‘ã‘ÖŠÖ”iƒpƒCƒvƒ‰ƒCƒ“ˆ—j
- *	cmdline - ƒRƒ}ƒ“ƒh•¶š—ñ	
+/* systemä»£æ›¿é–¢æ•°ï¼ˆãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³å‡¦ç†ï¼‰
+ *	cmdline - ã‚³ãƒãƒ³ãƒ‰æ–‡å­—åˆ—	
  */
 static int do_pipeline(
         const char *cmdline ,
@@ -383,8 +383,8 @@ static int do_pipeline(
         NnString error_fname;
 
         if( pipefd0 != -1 ){
-	    // ƒpƒCƒvƒ‰ƒCƒ“‚ªŠù‚Éì‚ç‚ê‚Ä‚¢‚éê‡A
-	    // “ü—Í‘¤‚ğ•W€“ü—Í‚Ö’£‚é•K—v‚ª‚ ‚é
+	    // ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ãŒæ—¢ã«ä½œã‚‰ã‚Œã¦ã„ã‚‹å ´åˆã€
+	    // å…¥åŠ›å´ã‚’æ¨™æº–å…¥åŠ›ã¸å¼µã‚‹å¿…è¦ãŒã‚ã‚‹
             if( save0 == -1  )
 		save0 = dup( 0 );
             dup2( pipefd0 , 0 );
@@ -392,8 +392,8 @@ static int do_pipeline(
             pipefd0 = -1;
         }
         if( i < pipeSet.size() - 1 ){
-	    /* ƒpƒCƒvƒ‰ƒCƒ“‚Ì––”ö‚Å‚È‚¢ƒRƒ}ƒ“ƒh‚Ìê‡A
-	     * •W€o—Í‚Ìæ‚ğAƒpƒCƒv‚Ìˆê•û‚É‚·‚é•K—v‚ª‚ ‚é
+	    /* ãƒ‘ã‚¤ãƒ—ãƒ©ã‚¤ãƒ³ã®æœ«å°¾ã§ãªã„ã‚³ãƒãƒ³ãƒ‰ã®å ´åˆã€
+	     * æ¨™æº–å‡ºåŠ›ã®å…ˆã‚’ã€ãƒ‘ã‚¤ãƒ—ã®ä¸€æ–¹ã«ã™ã‚‹å¿…è¦ãŒã‚ã‚‹
 	     */
             int handles[2];
 
@@ -446,14 +446,14 @@ int mySystem( const char *cmdline , int wait )
 
 }
 
-/* CMD.EXE ‚ğg‚í‚È‚¢ popen ŠÖ”‘Š“–
- *    cmdname : ƒRƒ}ƒ“ƒh–¼
+/* CMD.EXE ã‚’ä½¿ã‚ãªã„ popen é–¢æ•°ç›¸å½“
+ *    cmdname : ã‚³ãƒãƒ³ãƒ‰å
  *    mode : "r" or "w"
- *    phandle : ƒvƒƒZƒXƒnƒ“ƒhƒ‹
+ *    phandle : ãƒ—ãƒ­ã‚»ã‚¹ãƒãƒ³ãƒ‰ãƒ«
  * return
- *    -1 : ƒpƒCƒv¶¬¸”s
- *    -2 : spawn ¸”s
- *    others : ƒtƒ@ƒCƒ‹ƒnƒ“ƒhƒ‹
+ *    -1 : ãƒ‘ã‚¤ãƒ—ç”Ÿæˆå¤±æ•—
+ *    -2 : spawn å¤±æ•—
+ *    others : ãƒ•ã‚¡ã‚¤ãƒ«ãƒãƒ³ãƒ‰ãƒ«
  */
 int myPopen(const char *cmdline , const char *mode , phandle_t *phandle )
 {

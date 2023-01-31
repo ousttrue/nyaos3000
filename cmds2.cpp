@@ -26,7 +26,7 @@ int cmd_bindkey( NyadosShell &shell, const NnString &argv )
     while( left.splitTo(funcname,left) , !funcname.empty() ){
 	switch( GetLine::bindkey( keystr.chars() , funcname.chars() ) ){
 	case 0:
-	    /* ¬Œ÷‚µ‚½‚ÍAƒŠƒXƒg•\¦—p‚ÌƒnƒbƒVƒ…‚É‚à“o˜^‚·‚é */
+	    /* æˆåŠŸã—ãŸæ™‚ã¯ã€ãƒªã‚¹ãƒˆè¡¨ç¤ºç”¨ã®ãƒãƒƒã‚·ãƒ¥ã«ã‚‚ç™»éŒ²ã™ã‚‹ */
 	    keystr.upcase();
 	    funcname.downcase();
 	    mapping.put( keystr , new NnString(funcname) );
@@ -58,33 +58,33 @@ int cmd_endif( NyadosShell &shell , const NnString & )
     return 0;
 }
 
-/* ‚»‚Ìs‚ª endif ƒL[ƒ[ƒh‚ğŠÜ‚Ş‚©”»’è‚·‚é.
- *      line - s
+/* ãã®è¡ŒãŒ endif ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã‚’å«ã‚€ã‹åˆ¤å®šã™ã‚‹.
+ *      line - è¡Œ
  * return
- *      not 0 c endif ß‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é
- *      0 c ŠÜ‚Ü‚ê‚È‚¢
+ *      not 0 â€¦ endif ç¯€ãŒå«ã¾ã‚Œã¦ã„ã‚‹
+ *      0 â€¦ å«ã¾ã‚Œãªã„
  */
 static int has_keyword_endif( const NnString &line )
 {
     return line.istartsWith("endif");
 }
 
-/* ‚»‚Ìs‚ª else ƒL[ƒ[ƒh‚ğŠÜ‚Ş‚©”»’è‚·‚é.
- *      line - s
+/* ãã®è¡ŒãŒ else ã‚­ãƒ¼ãƒ¯ãƒ¼ãƒ‰ã‚’å«ã‚€ã‹åˆ¤å®šã™ã‚‹.
+ *      line - è¡Œ
  * return
- *      not 0 c else ß‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é
- *      0 c ŠÜ‚Ü‚ê‚È‚¢
+ *      not 0 â€¦ else ç¯€ãŒå«ã¾ã‚Œã¦ã„ã‚‹
+ *      0 â€¦ å«ã¾ã‚Œãªã„
  */
 static int has_keyword_else( const NnString &line )
 {
     return line.istartsWith("else");
 }
 
-/* ‚»‚Ìs‚É if ` then ß‚ª“ü‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©”»’è‚·‚é.
- *      line - s
+/* ãã®è¡Œã« if ï½ then ç¯€ãŒå…¥ã£ã¦ã„ã‚‹ã‹ã©ã†ã‹åˆ¤å®šã™ã‚‹.
+ *      line - è¡Œ
  * return
- *      not 0 c if ` then ß‚ªŠÜ‚Ü‚ê‚Ä‚¢‚é
- *      0 c ŠÜ‚Ü‚ê‚È‚¢
+ *      not 0 â€¦ if ï½ then ç¯€ãŒå«ã¾ã‚Œã¦ã„ã‚‹
+ *      0 â€¦ å«ã¾ã‚Œãªã„
  */
 static int has_keyword_if_then( const NnString &line )
 {
@@ -143,13 +143,13 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
         left.splitTo( arg1 , left );
     }
     if( arg1.icompare("exist")==0 ){
-        /* exist ‰‰Zq */
+        /* exist æ¼”ç®—å­ */
         left.splitTo( arg1 , left );
 	NyadosShell::dequote( arg1 );
         if( NnDir::access( arg1.chars() )==0 )
             flag = !flag;
     }else if( arg1.icompare("errorlevel")==0 ){
-        /* errorlevel ‰‰Zq */
+        /* errorlevel æ¼”ç®—å­ */
         left.splitTo( arg1 , left );
         if( shell.exitStatus() >= atoi( arg1.chars() ) )
             flag = !flag;
@@ -162,7 +162,7 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
             && (statBuf.st_mode & S_IFMT)==S_IFDIR )
             flag = !flag;
 #endif
-    /* == ‰‰Zq‚¾‚¯‚Í‘OŒã‚É‹ó”’‚Ì‚È‚¢g‚í‚ê•û‚ª‚ ‚é */
+    /* == æ¼”ç®—å­ã ã‘ã¯å‰å¾Œã«ç©ºç™½ã®ãªã„ä½¿ã‚ã‚Œæ–¹ãŒã‚ã‚‹ */
     }else if( (temp=strstr(arg1.chars(),"==")) != NULL  ){
         NnString lhs( arg1.chars() , (size_t)(temp-arg1.chars()) );
         NnString rhs;
@@ -176,7 +176,7 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
         if( lhs.compare(rhs) == 0 )
             flag = !flag;
     }else{
-        /* == or != ‰‰Zq */
+        /* == or != æ¼”ç®—å­ */
         NnString lhs(arg1),rhs;
 
         left.splitTo(arg1,left);
@@ -218,17 +218,17 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
     }
     NnString then,then_left;
     left.splitTo( then , then_left );
-    if( flag ){ /* ğŒ¬—§ */
+    if( flag ){ /* æ¡ä»¶æˆç«‹æ™‚ */
         if( stricmp( then.chars() , "then") != 0 )
             return shell.interpret( left );
-        /* then ß‚Ìê‡‚ÍA‚»‚Ì‚Ü‚ÜŸ‚Ìs‚Öˆ—‚ğˆÚs‚³‚¹‚é */
+        /* then ç¯€ã®å ´åˆã¯ã€ãã®ã¾ã¾æ¬¡ã®è¡Œã¸å‡¦ç†ã‚’ç§»è¡Œã•ã›ã‚‹ */
         shell.nesting.append( new NnString("then>") );
 	if( ! then_left.empty() ){
 	    shell.interpret( then_left );
 	}
-    }else{ /* ğŒ•s¬—§ */
+    }else{ /* æ¡ä»¶ä¸æˆç«‹æ™‚ */
         if( stricmp( then.chars() , "then") == 0 ){
-            /* else ‚Ü‚ÅƒlƒXƒg‚ğƒXƒLƒbƒv‚·‚éB*/
+            /* else ã¾ã§ãƒã‚¹ãƒˆã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ã€‚*/
             NnString line;
             int nest=0;
             shell.nesting.append( new NnString("skip:then>") );
@@ -263,9 +263,9 @@ int cmd_if( NyadosShell &shell, const NnString &argv )
     return 0;
 }
 
-/* ”z—ñ‚ÉA•¶š—ñ‚ğ‰Á‚¦‚éB“¯ˆê•¶š—ñ‚ª‚ ‚éê‡‚Í’Ç‰Á‚µ‚È‚¢.
- *      list - ”z—ñ
- *      ele - •¶š—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^(Š—LŒ ˆÏ÷)
+/* é…åˆ—ã«ã€æ–‡å­—åˆ—ã‚’åŠ ãˆã‚‹ã€‚åŒä¸€æ–‡å­—åˆ—ãŒã‚ã‚‹å ´åˆã¯è¿½åŠ ã—ãªã„.
+ *      list - é…åˆ—
+ *      ele - æ–‡å­—åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿(æ‰€æœ‰æ¨©å§”è­²)
  */
 static void appendArray( NnVector &list , NnString *ele )
 {
@@ -278,9 +278,9 @@ static void appendArray( NnVector &list , NnString *ele )
     list.append( ele );
 }
 
-/* ”z—ñ‚©‚çA“Á’è•¶š—ñ‚ğœ‚­
- *      list - ”z—ñ
- *      ele - •¶š—ñ‚Ö‚Ìƒ|ƒCƒ“ƒ^(Š—LŒ ˆÏ÷)
+/* é…åˆ—ã‹ã‚‰ã€ç‰¹å®šæ–‡å­—åˆ—ã‚’é™¤ã
+ *      list - é…åˆ—
+ *      ele - æ–‡å­—åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿(æ‰€æœ‰æ¨©å§”è­²)
  */
 static void removeArray( NnVector &list , NnString *ele )
 {
@@ -295,11 +295,11 @@ static void removeArray( NnVector &list , NnString *ele )
 }
 
 
-/* ”z—ñ‚ÉA•¶š—ñ‚ğ‰Á‚¦‚é/œ‚­B“¯ˆê•¶š—ñ‚Í‹É—Íœ‹‚·‚éB
- * •¶š—ñ‚Íu;v‚Å‹æØ‚Á‚ÄAŠe—v‘f•Ê‚É’Ç‰Á/œ‹‚·‚éB
- *      list - ”z—ñ
- *      env - •¶š—ñ
- *      func - ’Ç‰ÁEœ‹ŠÖ”‚Ìƒ|ƒCƒ“ƒ^
+/* é…åˆ—ã«ã€æ–‡å­—åˆ—ã‚’åŠ ãˆã‚‹/é™¤ãã€‚åŒä¸€æ–‡å­—åˆ—ã¯æ¥µåŠ›é™¤å»ã™ã‚‹ã€‚
+ * æ–‡å­—åˆ—ã¯ã€Œ;ã€ã§åŒºåˆ‡ã£ã¦ã€å„è¦ç´ åˆ¥ã«è¿½åŠ /é™¤å»ã™ã‚‹ã€‚
+ *      list - é…åˆ—
+ *      env - æ–‡å­—åˆ—
+ *      func - è¿½åŠ ãƒ»é™¤å»é–¢æ•°ã®ãƒã‚¤ãƒ³ã‚¿
  */
 static void manipArray( NnVector &list , const char *env ,
                         void (*func)( NnVector &, NnString *) )
@@ -314,9 +314,9 @@ static void manipArray( NnVector &list , const char *env ,
 }
 
 
-/* ”z—ñ‚Ì“à—e‚ğu;v‚ÅŒq‚¢‚Å˜AŒ‹‚·‚é
- *      list - ”z—ñ
- *      result - Œ‹‰Ê•¶š—ñ
+/* é…åˆ—ã®å†…å®¹ã‚’ã€Œ;ã€ã§ç¹‹ã„ã§é€£çµã™ã‚‹
+ *      list - é…åˆ—
+ *      result - çµæœæ–‡å­—åˆ—
  */
 static void joinArray( NnVector &list , NnString &result )
 {
@@ -328,9 +328,9 @@ static void joinArray( NnVector &list , NnString &result )
     }
 }
 
-/* putenv ‚Ìƒ‰ƒbƒp[(ƒƒ‚ƒŠƒŠ[ƒN‰ñ”ğ—p)
- *      name    ŠÂ‹«•Ï”–¼
- *      value   ’l
+/* putenv ã®ãƒ©ãƒƒãƒ‘ãƒ¼(ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯å›é¿ç”¨)
+ *      name    ç’°å¢ƒå¤‰æ•°å
+ *      value   å€¤
  */
 void putenv_( const NnString &name , const NnString &value)
 {
@@ -342,10 +342,10 @@ void putenv_( const NnString &name , const NnString &value)
     envList.put( name , env );
 }
 
-/* ŠÂ‹«•Ï”‚ğƒZƒbƒg
- *	argv	uXXX=YYYvŒ`®‚Ì•¶š—ñ
+/* ç’°å¢ƒå¤‰æ•°ã‚’ã‚»ãƒƒãƒˆ
+ *	argv	ã€ŒXXX=YYYã€å½¢å¼ã®æ–‡å­—åˆ—
  * return
- *	í‚É 0 (ƒCƒ“ƒ^[ƒvƒŠƒ^‚ğI—¹‚³‚¹‚È‚¢)
+ *	å¸¸ã« 0 (ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ—ãƒªã‚¿ã‚’çµ‚äº†ã•ã›ãªã„)
  */
 int cmd_set( NyadosShell &shell , const NnString &argv )
 {
@@ -356,7 +356,7 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
     }
     int equalPos=argv.findOf( "=" );
     if( equalPos < 0 ){
-	/* uset ENVv‚Ì‚İ ¨ w’è‚µ‚½ŠÂ‹«•Ï”‚Ì“à—e‚ğ•\¦. */
+	/* ã€Œset ENVã€ã®ã¿ â†’ æŒ‡å®šã—ãŸç’°å¢ƒå¤‰æ•°ã®å†…å®¹ã‚’è¡¨ç¤º. */
         NnString name(argv);
         name.dequote();
 	conOut << name << '=' << getEnv(name.chars(),"") << '\n';
@@ -377,11 +377,11 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
     }
 
     if( value.length() == 0 ){
-	/*** uset ENV=v¨ ŠÂ‹«•Ï” ENV ‚ğíœ‚·‚é ***/
+	/*** ã€Œset ENV=ã€â†’ ç’°å¢ƒå¤‰æ•° ENV ã‚’å‰Šé™¤ã™ã‚‹ ***/
         static NnString null;
         putenv_( name , null );
     }else if( name.endsWith("+") ){
-	/*** uset ENV+=VALUEv ***/
+	/*** ã€Œset ENV+=VALUEã€ ***/
 	NnVector list;
 	NnString newval;
         NnString value_;
@@ -397,7 +397,7 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
 	joinArray( list , newval );
         putenv_( name , newval );
     }else if( name.endsWith("-") ){
-	/***uset ENV-=VALUEv***/
+	/***ã€Œset ENV-=VALUEã€***/
 	name.chop();
 	const char *oldval=getEnv(name.chars());
 	if( oldval != NULL ){
@@ -417,15 +417,15 @@ int cmd_set( NyadosShell &shell , const NnString &argv )
         NyadosShell::dequote(value.chars(),value_);
         putenv_( name , value_ );
     }else{
-	/*** uset ENV=VALUEv‚»‚Ì‚Ü‚Ü‘ã“ü‚·‚é ***/
+	/*** ã€Œset ENV=VALUEã€ãã®ã¾ã¾ä»£å…¥ã™ã‚‹ ***/
         putenv_( name , value );
     }
     return 0;
 }
 
-/* ƒCƒ“ƒ^[ƒvƒŠƒ^‚ÌI—¹
+/* ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ—ãƒªã‚¿ã®çµ‚äº†
  * return
- *	í‚É 1 (I—¹‚ğˆÓ–¡‚·‚é)
+ *	å¸¸ã« 1 (çµ‚äº†ã‚’æ„å‘³ã™ã‚‹)
  */
 int cmd_exit( NyadosShell & , const NnString & )
 {  

@@ -7,8 +7,8 @@
 #include <ctype.h>
 
 #ifndef NYACUS
-/* Œ»İ‚Í NYACUS ‚Å‚Ì‚İ xscript ƒTƒ|[ƒg
- * ‚¢‚¸‚ê‚ÍA‘¼‚Ìƒvƒ‰ƒbƒgƒtƒH[ƒ€‚Å‚àƒTƒ|[ƒg‚µ‚½‚¢.
+/* ç¾åœ¨ã¯ NYACUS ã§ã®ã¿ xscript ã‚µãƒãƒ¼ãƒˆ
+ * ã„ãšã‚Œã¯ã€ä»–ã®ãƒ—ãƒ©ãƒƒãƒˆãƒ•ã‚©ãƒ¼ãƒ ã§ã‚‚ã‚µãƒãƒ¼ãƒˆã—ãŸã„.
  * */
 Status GetLine::xscript(int)
 {
@@ -27,7 +27,7 @@ public:
     const COORD &cursor() const { return cursor_; }
     int cursor_x() const { return cursor_.X; }
     int cursor_y() const { return cursor_.Y; }
-    /* Œ»İ•\¦‚³‚ê‚Ä‚¢‚é—Ìˆæ‚ÌsˆÊ’u */
+    /* ç¾åœ¨è¡¨ç¤ºã•ã‚Œã¦ã„ã‚‹é ˜åŸŸã®è¡Œä½ç½® */
     int top()    const { return top_; }
     int bottom() const { return bottom_; }
 
@@ -49,8 +49,8 @@ int KeyFunctionXScript::bind(int n)
 }
 void KeyFunctionXScript::init()
 {
-    /* bind ƒRƒ}ƒ“ƒh‚ÅƒJƒXƒ^ƒ}ƒCƒY‚Å‚«‚é‚æ‚¤‚ÉA
-     * ‹@”\–¼‚ÆA‹@”\ƒR[ƒh‚ÌŠÖ˜A•t‚¯‚ğs‚¤
+    /* bind ã‚³ãƒãƒ³ãƒ‰ã§ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºã§ãã‚‹ã‚ˆã†ã«ã€
+     * æ©Ÿèƒ½åã¨ã€æ©Ÿèƒ½ã‚³ãƒ¼ãƒ‰ã®é–¢é€£ä»˜ã‘ã‚’è¡Œã†
      */
     (new KeyFunctionXScript("xscript:none"         ,XK_NOBOUND ))->regist();
     (new KeyFunctionXScript("xscript:previous"     ,XK_UP      ))->regist();
@@ -66,11 +66,11 @@ void KeyFunctionXScript::init()
     (new KeyFunctionXScript("xscript:copy"         ,XK_COPY    ))->regist();
     (new KeyFunctionXScript("xscript:leave"        ,XK_LEAVE   ))->regist();
 
-    /* ƒL[ƒ}ƒbƒv‚ğ‘S‚ÄA‹@”\‚È‚µ‚É‰Šú‰»‚·‚é */
+    /* ã‚­ãƒ¼ãƒãƒƒãƒ—ã‚’å…¨ã¦ã€æ©Ÿèƒ½ãªã—ã«åˆæœŸåŒ–ã™ã‚‹ */
     for(size_t i=0;i<numof(map);++i)
         map[i] = XK_NOBOUND;
 
-    /* ‹@”\ƒR[ƒh‚ğÀÛ‚ÉƒL[‚É•R•t‚¯‚é */
+    /* æ©Ÿèƒ½ã‚³ãƒ¼ãƒ‰ã‚’å®Ÿéš›ã«ã‚­ãƒ¼ã«ç´ä»˜ã‘ã‚‹ */
     if( KeyFunction::bind("CTRL_HOME","xscript:heaven") ||
         KeyFunction::bind("HOME"     ,"xscript:head") ||
         KeyFunction::bind("CTRL_A"   ,"xscript:head") ||
@@ -99,7 +99,7 @@ void KeyFunctionXScript::init()
         KeyFunction::bind("CTRL_G"   ,"xscript:leave") ||
         KeyFunction::bind("ESCAPE"   ,"xscript:leave")  )
     {
-        /* ‚±‚ÌƒGƒ‰[‚ÍƒL[–¼Ì‚ªŠÔˆá‚Á‚Ä‚¢‚é‚Éo—Í‚³‚ê‚é */
+        /* ã“ã®ã‚¨ãƒ©ãƒ¼ã¯ã‚­ãƒ¼åç§°ãŒé–“é•ã£ã¦ã„ã‚‹æ™‚ã«å‡ºåŠ›ã•ã‚Œã‚‹ */
         conErr << "internal runtime error: bad default binding.\n";
     }
 }
@@ -155,14 +155,14 @@ void XScript::invartPoint( const COORD &cursor)
     ::WriteConsoleOutputAttribute( hConsoleOutput, &attr, 1, cursor, &size);
 }
 
-/* ˆê•¶š‚ğƒL[ƒ{[ƒh‚©‚ç“ü—Í‚µA‚»‚ê‚ğ‹@”\ƒR[ƒh‚Ö•ÏŠ·‚·‚é */
+/* ä¸€æ–‡å­—ã‚’ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‹ã‚‰å…¥åŠ›ã—ã€ãã‚Œã‚’æ©Ÿèƒ½ã‚³ãƒ¼ãƒ‰ã¸å¤‰æ›ã™ã‚‹ */
 KeyFunctionXScript::XScriptFuncCode XScript::inputFuncCode()
 {
     int ch = Console::getkey();
     if( (unsigned)ch >= KeyFunction::MAPSIZE )
         return  KeyFunctionXScript::XK_NOBOUND ;
 
-    /* ƒL[ Ë ‹@”\ƒR[ƒh•ÏŠ· */
+    /* ã‚­ãƒ¼ â‡’ æ©Ÿèƒ½ã‚³ãƒ¼ãƒ‰å¤‰æ› */
     return KeyFunctionXScript::map[ ch ];
 }
 
@@ -191,7 +191,7 @@ void XScript::loop()
 	    start = end = cursor;
 	}
 
-	//ƒJ[ƒ\ƒ‹‚ÌˆÚ“®
+	//ã‚«ãƒ¼ã‚½ãƒ«ã®ç§»å‹•
 	switch( code ){
         case KeyFunctionXScript::XK_CTRLHOME:
 	    cursor.X = cursor.Y = 0;
@@ -234,17 +234,17 @@ void XScript::loop()
 	}
         Console::locate( cursor.X , cursor.Y );
 
-	// ‘I‘ğˆ—.
+	// é¸æŠå‡¦ç†.
         if( Console::getShiftKey() & Console::SHIFT ){
-	    if( !isSelecting){ /* –¢‘I‘ğ¨‘I‘ğó‘Ô */
-		SetConsoleTitle( "XScript[Selectingc]");
+	    if( !isSelecting){ /* æœªé¸æŠâ†’é¸æŠçŠ¶æ…‹ */
+		SetConsoleTitle( "XScript[Selectingâ€¦]");
 		isSelecting = true;
 		end = cursor;
 		invartRect();
-	    }else{ /* ‘I‘ğ‚µ‚½‚Ü‚ÜA—Ìˆæ‚ğˆÚ“® */
+	    }else{ /* é¸æŠã—ãŸã¾ã¾ã€é ˜åŸŸã‚’ç§»å‹• */
 		expandTo( cursor );
 	    }
-	}else{ //”ñ‘I‘ğ
+	}else{ //éé¸æŠ
 	    if( isSelecting){
 		SetConsoleTitle( "XScript");
 		isSelecting = false;
@@ -259,8 +259,8 @@ exit:
     SetConsoleTitle( title );
 }
 
-/* ‹éŒ`—Ìˆæw’è‚Ìˆ×‚É¶ã‚Ìƒ|ƒCƒ“ƒg‚Æ‰E‰º‚Ìƒ|ƒCƒ“ƒg‚ğ·‚·‚æ‚¤‚É
- * À•W‚ğƒ\[ƒg‚·‚é.
+/* çŸ©å½¢é ˜åŸŸæŒ‡å®šã®ç‚ºã«å·¦ä¸Šã®ãƒã‚¤ãƒ³ãƒˆã¨å³ä¸‹ã®ãƒã‚¤ãƒ³ãƒˆã‚’å·®ã™ã‚ˆã†ã«
+ * åº§æ¨™ã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹.
  */
 static void sortCoord( 
         int &x0, int &y0 ,
@@ -280,7 +280,7 @@ static void sortCoord(
     }
 }
 
-/* w’è‚µ‚½‹éŒ`—Ìˆæ‚ğ”½“]‚³‚¹‚é */
+/* æŒ‡å®šã—ãŸçŸ©å½¢é ˜åŸŸã‚’åè»¢ã•ã›ã‚‹ */
 void XScript::invartRect(int x0,int y0,int x1,int y1)
 {
     COORD cursor;
@@ -290,7 +290,7 @@ void XScript::invartRect(int x0,int y0,int x1,int y1)
 	    invartPoint( cursor );
 }
 
-/* ‹éŒ`—Ìˆæ‚ğ”½“]‚³‚¹‚é */
+/* çŸ©å½¢é ˜åŸŸã‚’åè»¢ã•ã›ã‚‹ */
 void XScript::invartRect()
 {
     int x0, x1, y0, y1;
@@ -299,10 +299,10 @@ void XScript::invartRect()
     invartRect(x0,y0,x1+1,y1+1);
 }
 
-/* ‘I‘ğ—Ìˆæ‚ğŠg‘å or k¬ */
+/* é¸æŠé ˜åŸŸã‚’æ‹¡å¤§ or ç¸®å° */
 void XScript::expandTo( const COORD &cursor )
 {
-    /* ‘I‘ğ—Ìˆæ‚ª 2s or 2Œ…ˆÈã·‚ª‚ ‚é‚ÍA‘f’¼‚É•\¦‚µ‚È‚¨‚µ */
+    /* é¸æŠé ˜åŸŸãŒ 2è¡Œ or 2æ¡ä»¥ä¸Šå·®ãŒã‚ã‚‹æ™‚ã¯ã€ç´ ç›´ã«è¡¨ç¤ºã—ãªãŠã— */
     if( end.X - cursor.X > 1 || cursor.X - end.X > 1 ||
 	end.Y - cursor.Y > 1 || cursor.Y - end.Y > 1 )
     {
@@ -311,7 +311,7 @@ void XScript::expandTo( const COORD &cursor )
 	invartRect();
 	return;
     }
-    /* x •ûŒü‚ÅˆÚ“® */
+    /* x æ–¹å‘ã§ç§»å‹• */
     if( cursor.X != end.X ){
 	int x0=0, x1=0, y0=0, y1=0;
 	if( cursor.X < end.X ){
@@ -335,7 +335,7 @@ void XScript::expandTo( const COORD &cursor )
         invartRect(x0,y0,x1,y1+1);
 	end.X = cursor.X;
     }
-    /* y •ûŒü‚ÅˆÚ“®‚·‚é */
+    /* y æ–¹å‘ã§ç§»å‹•ã™ã‚‹ */
     if( cursor.Y!=end.Y){
 	int x0=0, x1=0, y0=0, y1=0;
 	if( cursor.Y<end.Y){
@@ -371,7 +371,7 @@ void XScript::copyToClipboard()
 
     sortCoord(x0,y0,x1,y1,start,end);
 
-    /* “]‘——p‚Ì•¶š—ñ‚ğ¶¬‚·‚éB */
+    /* è»¢é€ç”¨ã®æ–‡å­—åˆ—ã‚’ç”Ÿæˆã™ã‚‹ã€‚ */
     for( cursor.Y=y0 ; cursor.Y <= y1; ++cursor.Y ){
         char line[10000];
 
@@ -396,7 +396,7 @@ void XScript::copyToClipboard()
         buffer << "\r\n";
     }
 
-    /* ƒNƒŠƒbƒvƒ{[ƒh‚É“]‘— */
+    /* ã‚¯ãƒªãƒƒãƒ—ãƒœãƒ¼ãƒ‰ã«è»¢é€ */
     Console::writeClipBoard( buffer.chars() , buffer.length() );
 }
 

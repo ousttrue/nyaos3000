@@ -99,7 +99,7 @@ public:
 
     NnFileStat *stat() const { return new NnFileStat(name_,attr_,size_,stamp_);}
 
-    // ŠeŽí VFAT —pƒc[ƒ‹W.
+    // å„ç¨® VFAT ç”¨ãƒ„ãƒ¼ãƒ«é›†.
     static void f2b( const char * , NnString & );
     static void filter( const char * , NnString & );
     static int  getcwd( NnString &pwd );

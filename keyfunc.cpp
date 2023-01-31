@@ -1,5 +1,5 @@
-/* ˆês“ü—Íƒ‚ƒWƒ…[ƒ‹ Getline ‚Å‚ÌA
- * ƒL[‚ÉƒoƒCƒ“ƒh‚³‚ê‚éƒRƒ}ƒ“ƒh‚Ì“®ì‚ğ‹Lq
+/* ä¸€è¡Œå…¥åŠ›ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« Getline ã§ã®ã€
+ * ã‚­ãƒ¼ã«ãƒã‚¤ãƒ³ãƒ‰ã•ã‚Œã‚‹ã‚³ãƒãƒ³ãƒ‰ã®å‹•ä½œã‚’è¨˜è¿°
  */
 
 #include <ctype.h>
@@ -11,7 +11,7 @@
 #  include <windows.h>
 #endif
 
-/* ƒRƒ}ƒ“ƒhFCTRL-AFƒJ[ƒ\ƒ‹‚ğæ“ª‚ÖˆÚ“®‚³‚¹‚éB*/
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Aï¼šã‚«ãƒ¼ã‚½ãƒ«ã‚’å…ˆé ­ã¸ç§»å‹•ã•ã›ã‚‹ã€‚*/
 Status GetLine::goto_head(int)
 {
     putbs( pos-offset );
@@ -31,7 +31,7 @@ void GetLine::backward_( int n )
     }
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-BFƒJ[ƒ\ƒ‹‚ğˆê‚Â‘O‚ÉˆÚ“®‚³‚¹‚éB*/
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Bï¼šã‚«ãƒ¼ã‚½ãƒ«ã‚’ä¸€ã¤å‰ã«ç§»å‹•ã•ã›ã‚‹ã€‚*/
 Status GetLine::backward(int)
 {
     if( pos > 0 )
@@ -44,7 +44,7 @@ Status GetLine::backward_word(int)
     int top=0;
     int i=0;
     for(;;){
-	for(;;){ /* ‹ó”’‚ÌƒXƒLƒbƒv */
+	for(;;){ /* ç©ºç™½ã®ã‚¹ã‚­ãƒƒãƒ— */
 	    if( i >= pos )
 		goto exit;
 	    if( !isspace(buffer[i] & 255) )
@@ -52,7 +52,7 @@ Status GetLine::backward_word(int)
 	    ++i;
 	}
 	top = i;
-	for(;;){ /* ’PŒê‚ÌƒXƒLƒbƒv */
+	for(;;){ /* å˜èªã®ã‚¹ã‚­ãƒƒãƒ— */
 	    if( i >= pos )
 		goto exit;
 	    if( isspace( buffer[i] & 255) )
@@ -67,23 +67,23 @@ Status GetLine::backward_word(int)
 }
 
 
-/* ƒRƒ}ƒ“ƒhFCTRL-CF“ü—ÍƒLƒƒƒ“ƒZƒ‹‚·‚é‚ªA•\¦‚ÍÁ‚³‚È‚¢ */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Cï¼šå…¥åŠ›ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã™ã‚‹ãŒã€è¡¨ç¤ºã¯æ¶ˆã•ãªã„ */
 Status GetLine::abort(int)
 {
     buffer.erase_line(0);
     return CANCEL;
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-DFƒJ[ƒ\ƒ‹ã‚Ì•¶š‚ğíœ‚·‚é‚©A•âŠ®‘ÎÛˆê——‚ğo‚· */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Dï¼šã‚«ãƒ¼ã‚½ãƒ«ä¸Šã®æ–‡å­—ã‚’å‰Šé™¤ã™ã‚‹ã‹ã€è£œå®Œå¯¾è±¡ä¸€è¦§ã‚’å‡ºã™ */
 Status GetLine::erase_or_listing(int key)
 {
     return pos == buffer.length() ? this->listing(key) : this->erase(key);
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-DF
- *     “ü—Í•¶š” 0 •¶š¨ EOF ‚Æ‚İ‚È‚µ‚ÄI—¹
- *     s––”ö ¨ •âŠ®‘ÎÛˆê——
- *     ‚»‚Ì‘¼ ¨ ’Pƒíœ
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Dï¼š
+ *     å…¥åŠ›æ–‡å­—æ•° 0 æ–‡å­—â†’ EOF ã¨ã¿ãªã—ã¦çµ‚äº†
+ *     è¡Œæœ«å°¾ â†’ è£œå®Œå¯¾è±¡ä¸€è¦§
+ *     ãã®ä»– â†’ å˜ç´”å‰Šé™¤
  */
 Status GetLine::erase_listing_or_bye(int key)
 {
@@ -96,11 +96,11 @@ Status GetLine::erase_listing_or_bye(int key)
 }
 
 
-/* ƒRƒ}ƒ“ƒhFCTRL-EFƒJ[ƒ\ƒ‹‚ğ––”ö‚ÖˆÚ“®‚³‚¹‚éB*/
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Eï¼šã‚«ãƒ¼ã‚½ãƒ«ã‚’æœ«å°¾ã¸ç§»å‹•ã•ã›ã‚‹ã€‚*/
 Status GetLine::goto_tail(int)
 {
     if( buffer.length()+1-offset >= width ){
-        // ˆê”ÔÅŒã”ö[width-1]‚É‚Í‹ó”’•¶š‚ª•K—v.
+        // ä¸€ç•ªæœ€å¾Œå°¾[width-1]ã«ã¯ç©ºç™½æ–‡å­—ãŒå¿…è¦.
         putbs( pos-offset );
         offset = buffer.length()+1-width;
         puts_between( offset , buffer.length() );
@@ -113,14 +113,14 @@ Status GetLine::goto_tail(int)
     return NEXTCHAR;
 }
 
-/* n Œ…•ªƒJ[ƒ\ƒ‹‚ği‚ß‚é */
+/* n æ¡åˆ†ã‚«ãƒ¼ã‚½ãƒ«ã‚’é€²ã‚ã‚‹ */
 void GetLine::foreward_(int n)
 {
     int oldpos = pos;
     pos += n;
     int nxtpos = pos + buffer.sizeAt(pos);
     if( nxtpos-offset >= width ){
-        // ƒXƒNƒ[ƒ‹
+        // ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
         putbs( oldpos-offset );
         offset = nxtpos-width;
         puts_between( offset , nxtpos );
@@ -131,7 +131,7 @@ void GetLine::foreward_(int n)
     repaint_after();
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-FFƒJ[ƒ\ƒ‹‰EˆÚ“® */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Fï¼šã‚«ãƒ¼ã‚½ãƒ«å³ç§»å‹• */
 Status GetLine::foreward(int)
 {
     if( pos < buffer.length() )
@@ -151,7 +151,7 @@ Status GetLine::foreward_word(int)
 }
 
 
-/* ƒRƒ}ƒ“ƒhFCTRL-HFƒoƒbƒNƒXƒy[ƒX */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Hï¼šãƒãƒƒã‚¯ã‚¹ãƒšãƒ¼ã‚¹ */
 Status GetLine::backspace(int key)
 {
     if( pos <= 0 )
@@ -171,7 +171,7 @@ void GetLine::savekillring( int from , int to )
     Console::writeClipBoard( killbuffer.chars() , killbuffer.length() );
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-KFƒJ[ƒ\ƒ‹ˆÈ~‚Ì•¶š‚ğíœ‚·‚éB*/
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Kï¼šã‚«ãƒ¼ã‚½ãƒ«ä»¥é™ã®æ–‡å­—ã‚’å‰Šé™¤ã™ã‚‹ã€‚*/
 Status GetLine::erase_line(int)
 {
     savekillring( pos , buffer.length() );
@@ -180,7 +180,7 @@ Status GetLine::erase_line(int)
     return NEXTCHAR;
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-LF‰æ–Ê‚ğƒNƒŠƒA‚·‚é */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Lï¼šç”»é¢ã‚’ã‚¯ãƒªã‚¢ã™ã‚‹ */
 Status GetLine::cls(int)
 {
     clear();
@@ -192,13 +192,13 @@ Status GetLine::cls(int)
     return NEXTCHAR;
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-MF“ü—Í */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Mï¼šå…¥åŠ› */
 Status GetLine::enter(int)
 {
     return NEXTLINE;
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL_NFƒqƒXƒgƒŠQÆi–¢—ˆ•ûŒüj*/
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL_Nï¼šãƒ’ã‚¹ãƒˆãƒªå‚ç…§ï¼ˆæœªæ¥æ–¹å‘ï¼‰*/
 Status GetLine::next(int)
 {
     if( history.size() <= 0 )
@@ -216,7 +216,7 @@ Status GetLine::next(int)
 }
 
 
-/* ƒRƒ}ƒ“ƒhFCTRL-PFƒqƒXƒgƒŠQÆ */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Pï¼šãƒ’ã‚¹ãƒˆãƒªå‚ç…§ */
 Status GetLine::previous(int)
 {
     if( history.size() <= 0 )
@@ -233,13 +233,13 @@ Status GetLine::previous(int)
     return NEXTCHAR;
 }
 
-/* ƒRƒ}ƒ“ƒhFVz ƒ‰ƒCƒN‚ÈƒqƒXƒgƒŠQÆi–¢—ˆj*/
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šVz ãƒ©ã‚¤ã‚¯ãªãƒ’ã‚¹ãƒˆãƒªå‚ç…§ï¼ˆæœªæ¥ï¼‰*/
 Status GetLine::vz_next(int key)
 {
     return this->vz_previous(key);
 }
 
-/* ƒRƒ}ƒ“ƒhFVz ƒ‰ƒCƒN‚ÈƒqƒXƒgƒŠQÆi‰ß‹j */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šVz ãƒ©ã‚¤ã‚¯ãªãƒ’ã‚¹ãƒˆãƒªå‚ç…§ï¼ˆéå»ï¼‰ */
 Status GetLine::vz_previous(int key)
 {
     int at,size;
@@ -254,10 +254,10 @@ Status GetLine::vz_previous(int key)
     int n=0;
     int sealsize=0;
     NnString temp;
-    /*** s’PˆÊ‚ÌŒŸõ ***/
+    /*** è¡Œå˜ä½ã®æ¤œç´¢ ***/
     if( at <= 0 ){
 	buffer.decode(temp);
-        /* s’PˆÊ‚Ì Vz ƒ‰ƒCƒN‚ÈƒqƒXƒgƒŠQÆ */
+        /* è¡Œå˜ä½ã® Vz ãƒ©ã‚¤ã‚¯ãªãƒ’ã‚¹ãƒˆãƒªå‚ç…§ */
         if( ( which_command(key) == &GetLine::vz_previous
             ? seekLineForward(m,temp.chars() )
             : seekLineBackward(m,temp.chars() ) ) < 0 )
@@ -266,18 +266,18 @@ Status GetLine::vz_previous(int key)
             sealsize = printSeal( history[m]->body().chars()+buffer.length() , sealsize );
             key=getkey();
             if( which_command(key) == &GetLine::vz_previous ){
-		/* Ÿ‚É“ü—Í‚³‚ê‚½ƒRƒ}ƒ“ƒh‚ª‰ß‹ŒŸõ‚Ìê‡ */
+		/* æ¬¡ã«å…¥åŠ›ã•ã‚ŒãŸã‚³ãƒãƒ³ãƒ‰ãŒéå»æ¤œç´¢ã®å ´åˆ */
                 if( seekLineForward(m,temp.chars() ) < 0 )
-                    break; /* ”­Œ©‚Å‚«‚È‚©‚Á‚½ê‡AI—¹ */
+                    break; /* ç™ºè¦‹ã§ããªã‹ã£ãŸå ´åˆã€çµ‚äº† */
             }else if( which_command(key) == &GetLine::vz_next ){
-		/* Ÿ‚É“ü—Í‚³‚ê‚½ƒRƒ}ƒ“ƒh‚ª–¢—ˆŒŸõ‚Ìê‡ */
+		/* æ¬¡ã«å…¥åŠ›ã•ã‚ŒãŸã‚³ãƒãƒ³ãƒ‰ãŒæœªæ¥æ¤œç´¢ã®å ´åˆ */
                 if( seekLineBackward(m,temp.chars() ) < 0 )
                     break;
             }else{
-		/* Ÿ‚É“ü—Í‚³‚ê‚½ƒRƒ}ƒ“ƒh‚ªŒŸõˆÈŠO‚¾‚Á‚½ê‡ */
+		/* æ¬¡ã«å…¥åŠ›ã•ã‚ŒãŸã‚³ãƒãƒ³ãƒ‰ãŒæ¤œç´¢ä»¥å¤–ã ã£ãŸå ´åˆ */
 		eraseSeal( sealsize );
                 insertHere( history[m]->body().chars()+buffer.length() );
-		/* “ü—Í‚³‚ê‚½ƒL[©‘Ì‚ğ‰ğß‚µ’¼‚µ‚ÄI—¹ */
+		/* å…¥åŠ›ã•ã‚ŒãŸã‚­ãƒ¼è‡ªä½“ã‚’è§£é‡ˆã—ç›´ã—ã¦çµ‚äº† */
                 return interpret(key);
             }
         }
@@ -285,29 +285,29 @@ Status GetLine::vz_previous(int key)
         return NEXTCHAR;
     }
     
-    /*** ’PŒê’PˆÊ‚ÌŒŸõ ***/
+    /*** å˜èªå˜ä½ã®æ¤œç´¢ ***/
     if( ( which_command(key) == &GetLine::vz_previous
         ? seekWordForward(m,n,curword,found) 
         : seekWordBackward(m,n,curword,found) ) < 0 )
     {
-	/* ˆê‚Â‚àƒ}ƒbƒ`‚µ‚È‚¢ê‡‚Í‰½‚à‚¹‚¸‚ÉI—¹‚·‚é */
+	/* ä¸€ã¤ã‚‚ãƒãƒƒãƒã—ãªã„å ´åˆã¯ä½•ã‚‚ã›ãšã«çµ‚äº†ã™ã‚‹ */
         return NEXTCHAR;
     }
 
     for(;;){
-        /* ’PŒê’PˆÊ‚ÌƒqƒXƒgƒŠQÆ */
+        /* å˜èªå˜ä½ã®ãƒ’ã‚¹ãƒˆãƒªå‚ç…§ */
         sealsize = printSeal( found.chars() + curword.length() , sealsize );
         key=getkey();
         if( which_command(key) == &GetLine::vz_previous ){
-	    /* Ÿ‚É“ü—Í‚µ‚½ƒL[‚ÍAŸŒŸõ */
+	    /* æ¬¡ã«å…¥åŠ›ã—ãŸã‚­ãƒ¼ã¯ã€æ¬¡æ¤œç´¢ */
             if( seekWordForward(m,n,curword,found) < 0 )
                 break;
         }else if( which_command(key) == &GetLine::vz_next ){
-	    /* Ÿ‚É“ü—Í‚µ‚½ƒL[‚ÍA‘OŒŸõ */
+	    /* æ¬¡ã«å…¥åŠ›ã—ãŸã‚­ãƒ¼ã¯ã€å‰æ¤œç´¢ */
             if( seekWordBackward(m,n,curword,found) < 0 )
                 break;
         }else{
-	    /* ‚¢‚¸‚ê‚Å‚à‚È‚¢cŠm’è•ƒL[“ü—Í */
+	    /* ã„ãšã‚Œã§ã‚‚ãªã„â€¦ç¢ºå®šï¼†ã‚­ãƒ¼å…¥åŠ› */
 	    eraseSeal( sealsize );
             insertHere( found.chars() + curword.length() );
             return interpret(key);
@@ -317,7 +317,7 @@ Status GetLine::vz_previous(int key)
     return NEXTCHAR;
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-TF’¼‘O‚Ì•¶š‚ğ“ü‚ê‘Ö‚¦‚éB*/
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Tï¼šç›´å‰ã®æ–‡å­—ã‚’å…¥ã‚Œæ›¿ãˆã‚‹ã€‚*/
 Status GetLine::swap_char(int)
 {
     char tmp[ 4 ];
@@ -342,7 +342,7 @@ Status GetLine::swap_char(int)
 
     return NEXTCHAR;
 }
-/* ƒRƒ}ƒ“ƒhFCTRL-UFæ“ª‚©‚çƒJ[ƒ\ƒ‹’¼‘O‚Ü‚Å‚ğíœ */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Uï¼šå…ˆé ­ã‹ã‚‰ã‚«ãƒ¼ã‚½ãƒ«ç›´å‰ã¾ã§ã‚’å‰Šé™¤ */
 Status GetLine::erase_before(int)
 {
     putbs( pos - head() );
@@ -354,13 +354,13 @@ Status GetLine::erase_before(int)
     return NEXTCHAR;
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-VFƒRƒ“ƒgƒ[ƒ‹ƒL[‚ğ‘}“ü‚·‚é */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Vï¼šã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚­ãƒ¼ã‚’æŒ¿å…¥ã™ã‚‹ */
 Status GetLine::insert_ctrl(int)
 {
     return insert(getkey());
 }
 
-/* ƒRƒ}ƒ“ƒhFCtrl-WFƒJ[ƒ\ƒ‹’¼‘O‚Ì’PŒê‚ğÁ‹ */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCtrl-Wï¼šã‚«ãƒ¼ã‚½ãƒ«ç›´å‰ã®å˜èªã‚’æ¶ˆå» */
 Status GetLine::erase_word(int)
 {
     if( pos <= 0 )
@@ -389,7 +389,7 @@ Status GetLine::erase_word(int)
     return NEXTCHAR;
 }
 
-/* ƒRƒ}ƒ“ƒhFCTRL-YFƒy[ƒXƒg */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Yï¼šãƒšãƒ¼ã‚¹ãƒˆ */
 Status GetLine::yank(int)
 {
     NnString killbuffer;
@@ -407,19 +407,19 @@ Status GetLine::yank(int)
 }
 
 
-/* ƒRƒ}ƒ“ƒhFCTRL-ZFNYA*OSI—¹ */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCTRL-Zï¼šNYA*OSçµ‚äº† */
 Status GetLine::bye(int)
 {
     return TERMINATE;
 }
 
-/* ƒRƒ}ƒ“ƒhFCtrl-[F‘S•¶š‚ğíœ‚·‚é */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šCtrl-[ï¼šå…¨æ–‡å­—ã‚’å‰Šé™¤ã™ã‚‹ */
 Status GetLine::erase_all(int)
 {
-    /* ƒJ[ƒ\ƒ‹ˆÈ~‚Ì•¶š‚ğÁ‚· */
+    /* ã‚«ãƒ¼ã‚½ãƒ«ä»¥é™ã®æ–‡å­—ã‚’æ¶ˆã™ */
     putspc( tail() - pos );
     putbs( tail() - head() );
-    /* ƒJ[ƒ\ƒ‹ˆÈ‘O‚Ì•¶š‚ğÁ‚µ‚ÄAƒvƒƒ“ƒvƒg‚Ì’¼Œã‚ÖƒJ[ƒ\ƒ‹‚ğˆÚ“® */
+    /* ã‚«ãƒ¼ã‚½ãƒ«ä»¥å‰ã®æ–‡å­—ã‚’æ¶ˆã—ã¦ã€ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã®ç›´å¾Œã¸ã‚«ãƒ¼ã‚½ãƒ«ã‚’ç§»å‹• */
     putbs( putspc( pos - head() ) );
     
     offset = pos = 0;
@@ -428,13 +428,13 @@ Status GetLine::erase_all(int)
 }
 
 
-/* ƒRƒ}ƒ“ƒhF“ü—Í–³‹ */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šå…¥åŠ›ç„¡è¦– */
 Status GetLine::do_nothing(int)
 {
     return NEXTCHAR;
 }
 
-/* ƒRƒ}ƒ“ƒhF•\¦‰Â”\•¶š‚ğ‘}“ü‚·‚é */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šè¡¨ç¤ºå¯èƒ½æ–‡å­—ã‚’æŒ¿å…¥ã™ã‚‹ */
 Status GetLine::insert(int key)
 {
     int oldpos = pos;
@@ -444,9 +444,9 @@ Status GetLine::insert(int key)
     }
     pos += size1;
     int nxtpos = pos + buffer.sizeAt(pos);
-    // •\¦‚ÌXV.
+    // è¡¨ç¤ºã®æ›´æ–°.
     if( nxtpos-offset > width ){
-        // ‰E’[‚ğ’´‚¦‚»‚¤‚È‚Æ‚«.
+        // å³ç«¯ã‚’è¶…ãˆãã†ãªã¨ã.
         putbs( oldpos-offset );
         offset = nxtpos-width;
         puts_between( offset , nxtpos );
@@ -458,7 +458,7 @@ Status GetLine::insert(int key)
     return NEXTCHAR;
 }
 
-/* ƒRƒ}ƒ“ƒhFDELFƒJ[ƒ\ƒ‹ã‚Ì•¶š‚ğíœ */
+/* ã‚³ãƒãƒ³ãƒ‰ï¼šDELï¼šã‚«ãƒ¼ã‚½ãƒ«ä¸Šã®æ–‡å­—ã‚’å‰Šé™¤ */
 Status GetLine::erase(int)
 {
     repaint_after( buffer.erase1(pos) );
@@ -468,8 +468,8 @@ Status GetLine::erase(int)
 Status GetLine::ime_toggle(int)
 {
 #ifdef NYACUS
-  /* ƒL[’“üŒ‹‰Ê‚ğ”½‰f‚³‚¹‚é‚½‚ß‚Ì‘Ò‚¿ièŒ³‚ÌŠÂ‹«‚Å‚Í’P‚È‚é Yield ˆµ‚¢‚Ì 
-     0 ‚Å‚à–â‘è‚È‚³‚»‚¤‚¾‚Á‚½BŠÂ‹«‚É‚æ‚Á‚Ä‚Í‚à‚Á‚Æ‘å‚«‚ß‚Ì’l‚ª‚¢‚é‚©‚àj */
+  /* ã‚­ãƒ¼æ³¨å…¥çµæœã‚’åæ˜ ã•ã›ã‚‹ãŸã‚ã®å¾…ã¡ï¼ˆæ‰‹å…ƒã®ç’°å¢ƒã§ã¯å˜ãªã‚‹ Yield æ‰±ã„ã® 
+     0 ã§ã‚‚å•é¡Œãªã•ãã†ã ã£ãŸã€‚ç’°å¢ƒã«ã‚ˆã£ã¦ã¯ã‚‚ã£ã¨å¤§ãã‚ã®å€¤ãŒã„ã‚‹ã‹ã‚‚ï¼‰ */
   const DWORD dwYieldMSecForKey = 1;
   
   keybd_event(VK_MENU, 0 /* 0x38 */, 0, 0);                 /* down Alt */

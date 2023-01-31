@@ -1,7 +1,7 @@
 #ifndef CONST_H
 #define CONST_H
 
-// コマンドの戻り値
+// 繧ｳ繝槭Φ繝峨�ｮ謌ｻ繧雁､
 typedef enum {
     NEXTCHAR  ,
     NEXTLINE  ,

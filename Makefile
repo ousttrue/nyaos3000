@@ -56,10 +56,10 @@ nyaos.exe : $(OBJS)
 endif
 	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
 
-# ƒƒCƒ“ƒ‹[ƒ`ƒ“
+# ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒãƒ³
 nyados.$(O)   : nyados.cpp   nnstring.h getline.h version.h
 
-# ˆês“ü—Í
+# ä¸€è¡Œå…¥åŠ›
 twinbuf.$(O)  : twinbuf.cpp  getline.h
 getline.$(O)  : getline.cpp  getline.h nnstring.h
 getline2.$(O) : getline2.cpp getline.h
@@ -68,7 +68,7 @@ keyfunc.$(O) : keyfunc.cpp getline.h
 dosshell.$(O) : dosshell.cpp getline.h
 xscript.$(O) : xscript.cpp
 
-# ƒCƒ“ƒ^ƒvƒŠƒ^ˆ—
+# ã‚¤ãƒ³ã‚¿ãƒ—ãƒªã‚¿å‡¦ç†
 shell.$(O)    : shell.cpp    shell.h 
 shell4.$(O)   : shell4.cpp   shell.h nnstring.h
 scrshell.$(O) : scrshell.cpp shell.h
@@ -76,14 +76,14 @@ ishell.$(O)   : ishell.cpp   shell.h ishell.h
 mysystem.$(O) : mysystem.cpp nnstring.h
 shellstr.$(O) : shellstr.cpp
 
-# ŒÂ•ÊƒRƒ}ƒ“ƒhˆ—
+# å€‹åˆ¥ã‚³ãƒãƒ³ãƒ‰å‡¦ç†
 cmds1.$(O) : cmds1.cpp shell.h nnstring.h
 cmds2.$(O) : cmds2.cpp shell.h nnstring.h
 cmdchdir.$(O) : cmdchdir.cpp shell.h nnstring.h nndir.h
 foreach.$(O) : foreach.cpp shell.h
 lsf.$(O) : lsf.cpp
 
-# ‹¤’Êƒ‰ƒCƒuƒ‰ƒŠ
+# å…±é€šãƒ©ã‚¤ãƒ–ãƒ©ãƒª
 nnstring.$(O)  : nnstring.cpp  nnstring.h  nnobject.h
 nnvector.$(O)  : nnvector.cpp  nnvector.h  nnobject.h
 nnhash.$(O) : nnhash.cpp nnhash.h nnobject.h
@@ -91,7 +91,7 @@ strfork.$(O) : strfork.cpp
 nnlua.$(O) : nnlua.cpp nnlua.h
 dbcs.$(O) : dbcs.cpp
 
-# ŠÂ‹«ˆË‘¶ƒ‰ƒCƒuƒ‰ƒŠ
+# ç’°å¢ƒä¾å­˜ãƒ©ã‚¤ãƒ–ãƒ©ãƒª
 writer.$(O) : writer.cpp    writer.h
 reader.$(O) : reader.cpp    reader.h
 nndir.$(O) : nndir.cpp nndir.h
@@ -105,7 +105,7 @@ win32com.$(O) : win32com.cpp win32com.h
 nua.$(O) : nua.cpp nua.h nnlua.h
 luautil.$(O) : luautil.cpp
 
-# ƒŠƒ\[ƒX
+# ãƒªã‚½ãƒ¼ã‚¹
 nyacusrc.$(O)  : nyacus.rc luacat.ico
 	windres --output-format=coff -o $@ $<
 

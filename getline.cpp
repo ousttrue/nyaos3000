@@ -23,28 +23,28 @@ Status GetLine::interpret(int key)
     return (this->*this->which_command(key))(key);
 }
 
-/* ƒoƒbƒtƒ@ã‚Ì‚ ‚é”ÍˆÍ‚ğ•\¦‚·‚éB
- * ––”ö‚Å”{Šp•¶š‚ª•ª’f‚³‚ê‚é‚Æ‚«‚Íƒ_ƒ~[•¶š‚ª•\¦‚³‚ê‚éB
- *      from - •\¦ŠJnˆÊ’u(ƒoƒbƒtƒ@ã‚Å‚ÌˆÊ’u)
- *      to   - •\¦I—¹ˆÊ’u(ƒoƒbƒtƒ@ã‚Å‚ÌˆÊ’u)
- * [from,to-1]‚ª•\¦‚³‚ê‚éB
+/* ãƒãƒƒãƒ•ã‚¡ä¸Šã®ã‚ã‚‹ç¯„å›²ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
+ * æœ«å°¾ã§å€è§’æ–‡å­—ãŒåˆ†æ–­ã•ã‚Œã‚‹ã¨ãã¯ãƒ€ãƒŸãƒ¼æ–‡å­—ãŒè¡¨ç¤ºã•ã‚Œã‚‹ã€‚
+ *      from - è¡¨ç¤ºé–‹å§‹ä½ç½®(ãƒãƒƒãƒ•ã‚¡ä¸Šã§ã®ä½ç½®)
+ *      to   - è¡¨ç¤ºçµ‚äº†ä½ç½®(ãƒãƒƒãƒ•ã‚¡ä¸Šã§ã®ä½ç½®)
+ * [from,to-1]ãŒè¡¨ç¤ºã•ã‚Œã‚‹ã€‚
  * return
- *      •\¦‚µ‚½•¶š‚ÌƒoƒCƒg”(Œ…”)
+ *      è¡¨ç¤ºã—ãŸæ–‡å­—ã®ãƒã‚¤ãƒˆæ•°(æ¡æ•°)
  */
 int GetLine::puts_between(int from,int to)
 {
     if( from <  offset )         from = offset;
     if( to   >  offset+width )   to   = offset+width;
 
-    /* 1•¶š–Ú */
+    /* 1æ–‡å­—ç›® */
     if( to-from > 0 )
         putchr( buffer.isKnj2(from) ? '^' : buffer[ from ] );
 
-    /* 2•¶š–Ú`n-1•¶š–Ú */
+    /* 2æ–‡å­—ç›®ï½n-1æ–‡å­—ç›® */
     for(int i=from+1 ; i < to-1 ; i++)
         putchr( buffer[i] );
 
-    /* n•¶š–Ú */
+    /* næ–‡å­—ç›® */
     if( to-from > 1 )
         putchr( buffer.isKnj1(to-1) ? '$' : buffer[to-1] );
     
@@ -59,7 +59,7 @@ int GetLine::putspc(int n)
 }
 
 
-/* ƒJ[ƒ\ƒ‹ˆÈ~‚ğÄ•`‰æ */
+/* ã‚«ãƒ¼ã‚½ãƒ«ä»¥é™ã‚’å†æç”» */
 void GetLine::repaint_after(int rm)
 {
     int bs=puts_between(pos,buffer.length());
@@ -71,10 +71,10 @@ void GetLine::repaint_after(int rm)
 }
 
 
-/* ƒJ[ƒ\ƒ‹ˆÊ’u‚É•¶š—ñ‚ğ‘}“ü‚µA•\¦‚ğXV‚·‚éB
- *      s - •¶š—ñ
+/* ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã«æ–‡å­—åˆ—ã‚’æŒ¿å…¥ã—ã€è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
+ *      s - æ–‡å­—åˆ—
  * return
- *      ‘}“üƒoƒCƒg”
+ *      æŒ¿å…¥ãƒã‚¤ãƒˆæ•°
  */
 int GetLine::insertHere( const char *s )
 {
@@ -83,12 +83,12 @@ int GetLine::insertHere( const char *s )
         return 0; // memory allocation error.
 
     if( pos+n < offset+width ){
-        // ‘}“ü•¶š—ñ‚Ì––”ö‚ª‰æ–Ê•‚Éû‚Ü‚éê‡A‚»‚Ì‚Ü‚Ü•\¦‚·‚é.
+        // æŒ¿å…¥æ–‡å­—åˆ—ã®æœ«å°¾ãŒç”»é¢å¹…ã«åã¾ã‚‹å ´åˆã€ãã®ã¾ã¾è¡¨ç¤ºã™ã‚‹.
         pos += puts_between( pos , pos+n );
         repaint_after();
     }else{
-        /* ‘}“ü•¶š—ñ‚Ì––”ö‚ª‰æ–Ê•‚ğ’´‚¦‚éê‡
-         * æ“ª‚ğŒvZ‚µ‚È‚¨‚µ‚ÄA‘S‘Ì‚ğ•\¦‚µ‚È‚¨‚·B
+        /* æŒ¿å…¥æ–‡å­—åˆ—ã®æœ«å°¾ãŒç”»é¢å¹…ã‚’è¶…ãˆã‚‹å ´åˆ
+         * å…ˆé ­ã‚’è¨ˆç®—ã—ãªãŠã—ã¦ã€å…¨ä½“ã‚’è¡¨ç¤ºã—ãªãŠã™ã€‚
          */
         putbs( pos-offset );
         offset = (pos+=n)-width;
@@ -97,12 +97,12 @@ int GetLine::insertHere( const char *s )
     return n;
 }
 
-/* ˆês“ü—ÍƒƒCƒ“ŠÖ”(1).
- *	result - [in] “ü—Í‚ÌƒfƒtƒHƒ‹ƒg’l [out] “ü—ÍŒ‹‰Ê
+/* ä¸€è¡Œå…¥åŠ›ãƒ¡ã‚¤ãƒ³é–¢æ•°(1).
+ *	result - [in] å…¥åŠ›ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ [out] å…¥åŠ›çµæœ
  * return
- *	0ˆÈã - •¶š—ñ‚Ì’·‚³
- *	-1    - ƒLƒƒƒ“ƒZƒ‹‚³‚ê‚½
- *	-2    - ‚»‚Ì‘¼‚ÌƒGƒ‰[
+ *	0ä»¥ä¸Š - æ–‡å­—åˆ—ã®é•·ã•
+ *	-1    - ã‚­ãƒ£ãƒ³ã‚»ãƒ«ã•ã‚ŒãŸ
+ *	-2    - ãã®ä»–ã®ã‚¨ãƒ©ãƒ¼
  */
 Status GetLine::operator() ( NnString &result )
 {
@@ -116,12 +116,12 @@ Status GetLine::operator() ( NnString &result )
     NnString foo;
     history << foo;
 
-    start(); /* © ƒvƒƒ“ƒvƒg‚ª•\¦‚³‚ê‚é */
+    start(); /* â† ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆãŒè¡¨ç¤ºã•ã‚Œã‚‹ */
 
-    /* ƒfƒtƒHƒ‹ƒg’l‚ª‚ ‚éê‡ */
+    /* ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ãŒã‚ã‚‹å ´åˆ */
     if( result.length() > 0 ){
         if( buffer.insert( result.chars(),0 ) > 0 ){
-            // ‘}“ü‚ª¬Œ÷‚µ‚½ê‡‚Ì‚İ:
+            // æŒ¿å…¥ãŒæˆåŠŸã—ãŸå ´åˆã®ã¿:
             if( (pos=buffer.length()) >= width )
                 offset = buffer.length()-width;
         
@@ -149,9 +149,9 @@ Status GetLine::operator() ( NnString &result )
                 lua_setfield(L,-2,"text"); /* [nyaos,keyhook,T] */
 
                 if( lua_pcall(L,1,LUA_MULTRET,0) == 0 ){
-                    /* keyhook ‚Ü‚Å‚ª pop ‚³‚ê [nyaos,r1,r2...] */
+                    /* keyhook ã¾ã§ãŒ pop ã•ã‚Œ [nyaos,r1,r2...] */
                     int n=lua_gettop(L);
-                    if( n >= start ){ /* ˆø” 0 ŒÂ */
+                    if( n >= start ){ /* å¼•æ•° 0 å€‹ */
                         ++count;
                         for(int i=start ; i<=n && rc==NEXTCHAR ;i++){
                             switch( lua_type(L,i) ){
@@ -196,7 +196,7 @@ Status GetLine::operator() ( NnString &result )
                     }
                 }else{
                     /* messaging error */
-                    /* keyhook ‚Ü‚Å‚ª pop ‚³‚ê [nyaos,message] */
+                    /* keyhook ã¾ã§ãŒ pop ã•ã‚Œ [nyaos,message] */
                     putchr('\n');
                     const char *p=lua_tostring(L,-1);
                     while( p != NULL && *p != '\0' ){
@@ -247,19 +247,19 @@ Status GetLine::operator() ( NnString &result )
 
 void GetLine::replace_all_repaint( const NnString &s )
 {
-    // ƒvƒƒ“ƒvƒg’¼Œã‚ÉƒJ[ƒ\ƒ‹‚ğ–ß‚·.
+    // ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆç›´å¾Œã«ã‚«ãƒ¼ã‚½ãƒ«ã‚’æˆ»ã™.
     putbs( pos-offset );
 
-    // ‚»‚ê‚Ü‚Å‚Ì•\¦•¶š”‚ğƒJƒEƒ“ƒg.
+    // ãã‚Œã¾ã§ã®è¡¨ç¤ºæ–‡å­—æ•°ã‚’ã‚«ã‚¦ãƒ³ãƒˆ.
     int clearSize=printedSize();
 
-    // Œ»İ‚ÌƒqƒXƒgƒŠƒJ[ƒ\ƒ‹‚Ì“à—e‚ğ•ÒW“à—e‚Æ’u‚«Š·‚¦‚é.
+    // ç¾åœ¨ã®ãƒ’ã‚¹ãƒˆãƒªã‚«ãƒ¼ã‚½ãƒ«ã®å†…å®¹ã‚’ç·¨é›†å†…å®¹ã¨ç½®ãæ›ãˆã‚‹.
     buffer.replace( 0,buffer.length(),s.chars() );
 
     pos = buffer.length();
     offset = 0;
 
-    // •\¦•‚æ‚è‚à•¶š”‚ª‘å‚«‚¯‚ê‚ÎA•\¦ƒgƒbƒv‚ğ‚¸‚ç‚·.
+    // è¡¨ç¤ºå¹…ã‚ˆã‚Šã‚‚æ–‡å­—æ•°ãŒå¤§ãã‘ã‚Œã°ã€è¡¨ç¤ºãƒˆãƒƒãƒ—ã‚’ãšã‚‰ã™.
     if( pos+1 >= width )
         offset = pos+1-width;
     
@@ -271,10 +271,10 @@ void GetLine::replace_all_repaint( const NnString &s )
     putbs(diff);
 }
 
-/* ’PŒê‚ğ’Šo‚·‚é
- *      m - sˆÊ’u
- *      n - Œê”ˆÊ’u
- *      word - ŒŸõ’PŒê
+/* å˜èªã‚’æŠ½å‡ºã™ã‚‹
+ *      m - è¡Œä½ç½®
+ *      n - èªæ•°ä½ç½®
+ *      word - æ¤œç´¢å˜èª
  */
 void GetLine::get_nline_nword(int m,int n,NnString &word)
 {
@@ -287,9 +287,9 @@ void GetLine::get_nline_nword(int m,int n,NnString &word)
     }
 }
 
-/* s’PˆÊ‚ÅƒqƒXƒgƒŠ‚ğŒŸõ‚·‚é
- *      m - ƒqƒXƒgƒŠ”Ô†
- *      line - ŒŸõƒL[
+/* è¡Œå˜ä½ã§ãƒ’ã‚¹ãƒˆãƒªã‚’æ¤œç´¢ã™ã‚‹
+ *      m - ãƒ’ã‚¹ãƒˆãƒªç•ªå·
+ *      line - æ¤œç´¢ã‚­ãƒ¼
  */
 int GetLine::seekLineForward(int &m, const char *line)
 {
@@ -300,9 +300,9 @@ int GetLine::seekLineForward(int &m, const char *line)
             return 0;
     }
 }
-/* s’PˆÊ‚ÅƒqƒXƒgƒŠ‚ğŒŸõ‚·‚é
- *      m - ƒqƒXƒgƒŠ”Ô†
- *      line - ŒŸõƒL[
+/* è¡Œå˜ä½ã§ãƒ’ã‚¹ãƒˆãƒªã‚’æ¤œç´¢ã™ã‚‹
+ *      m - ãƒ’ã‚¹ãƒˆãƒªç•ªå·
+ *      line - æ¤œç´¢ã‚­ãƒ¼
  */
 int GetLine::seekLineBackward(int &m, const char *line )
 {
@@ -314,19 +314,19 @@ int GetLine::seekLineBackward(int &m, const char *line )
     }
 }
 
-/* ’PŒê‚ğŒŸõ‚·‚é
- *      m - sˆÊ’u
- *      n - Œê”ˆÊ’u
- *      word - ŒŸõ’PŒê
+/* å˜èªã‚’æ¤œç´¢ã™ã‚‹
+ *      m - è¡Œä½ç½®
+ *      n - èªæ•°ä½ç½®
+ *      word - æ¤œç´¢å˜èª
  * return
- *      0 - Œ©‚Â‚©‚Á‚½
- *      -1 - Œ©‚Â‚©‚ç‚È‚©‚Á‚½
+ *      0 - è¦‹ã¤ã‹ã£ãŸ
+ *      -1 - è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
  */
 int GetLine::seekWordForward(int &m,int &n,const NnString &word , NnString &found)
 {
     for(;;){
         get_nline_nword(m,++n,found);
-        if( found.empty() ){ /* ––”ö‚ÉˆÚ“® */
+        if( found.empty() ){ /* æœ«å°¾ã«ç§»å‹• */
             if( --m < 0 )
                 return -1;
             n=0;
@@ -361,13 +361,13 @@ static int count_words(const NnString &line)
     }
 }
 
-/* –¢—ˆ•ûŒü‚Ö’PŒê‚ğŒŸõ‚·‚é
- *      m - sˆÊ’u
- *      n - Œê”ˆÊ’u
- *      word - ŒŸõ’PŒê
+/* æœªæ¥æ–¹å‘ã¸å˜èªã‚’æ¤œç´¢ã™ã‚‹
+ *      m - è¡Œä½ç½®
+ *      n - èªæ•°ä½ç½®
+ *      word - æ¤œç´¢å˜èª
  * return
- *      0 - Œ©‚Â‚©‚Á‚½
- *      -1 - Œ©‚Â‚©‚ç‚È‚©‚Á‚½
+ *      0 - è¦‹ã¤ã‹ã£ãŸ
+ *      -1 - è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸ
  */
 int GetLine::seekWordBackward(int &m,int &n,const NnString &word,NnString &found)
 {
@@ -383,7 +383,7 @@ int GetLine::seekWordBackward(int &m,int &n,const NnString &word,NnString &found
     }
 }
 
-/* printSeal ‚Å•\¦‚µ‚½ƒV[ƒ‹‚ğÁ‚· */
+/* printSeal ã§è¡¨ç¤ºã—ãŸã‚·ãƒ¼ãƒ«ã‚’æ¶ˆã™ */
 void GetLine::eraseSeal( int sealsize )
 {
     putbs( sealsize );
@@ -393,22 +393,22 @@ void GetLine::eraseSeal( int sealsize )
     repaint_after(sealsize);
 }
 
-/* ƒJ[ƒ\ƒ‹ˆÊ’u‚©‚çƒV[ƒ‹‚ğ•\¦‚·‚éB
- * ƒV[ƒ‹‚Í repaint_after ‚ğÀs‚·‚é‚±‚Æ‚ÅÁ‹‚Å‚«‚éB
- *      seal •\¦‚·‚éƒV[ƒ‹
- *      sealsize  ‘O‰ñ‚Ì•\¦‚µ‚½ƒV[ƒ‹ƒTƒCƒY
- *           (ã‘‚«‚Å‚«‚È‚©‚Á‚½•”•ª‚ğ‹ó”’‚É‚·‚é)
+/* ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‹ã‚‰ã‚·ãƒ¼ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
+ * ã‚·ãƒ¼ãƒ«ã¯ repaint_after ã‚’å®Ÿè¡Œã™ã‚‹ã“ã¨ã§æ¶ˆå»ã§ãã‚‹ã€‚
+ *      seal è¡¨ç¤ºã™ã‚‹ã‚·ãƒ¼ãƒ«
+ *      sealsize  å‰å›ã®è¡¨ç¤ºã—ãŸã‚·ãƒ¼ãƒ«ã‚µã‚¤ã‚º
+ *           (ä¸Šæ›¸ãã§ããªã‹ã£ãŸéƒ¨åˆ†ã‚’ç©ºç™½ã«ã™ã‚‹)
  * return
- *      ƒV[ƒ‹ƒTƒCƒY
+ *      ã‚·ãƒ¼ãƒ«ã‚µã‚¤ã‚º
  */
 int GetLine::printSeal( const char *seal , int sealsize )
 {
     putbs( sealsize );
     int seallen = TwinBuffer::strlen_ctrl(seal);
     if( width+offset < pos + seallen ){
-        /* ƒV[ƒ‹‚ğ•\¦‚·‚é‹óŠÔ‚ª‚È‚¢ê‡‚ÍA
-         * ¶‚Ö“K“–‚ÉƒXƒNƒ[ƒ‹‚³‚¹‚éB
-         *    Œ³X offset < pos < offset+width < pos + seallen
+        /* ã‚·ãƒ¼ãƒ«ã‚’è¡¨ç¤ºã™ã‚‹ç©ºé–“ãŒãªã„å ´åˆã¯ã€
+         * å·¦ã¸é©å½“ã«ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«ã•ã›ã‚‹ã€‚
+         *    å…ƒã€… offset < pos < offset+width < pos + seallen
          */
         putbs( pos - offset );
         offset = pos + seallen - width;
@@ -449,12 +449,12 @@ GetLine::~GetLine(){}
 
 int GetLine::prompt(){ return 0;}
 
-/* ƒJ[ƒ\ƒ‹ã‚Ì’PŒê‚Ì”ÍˆÍæ“¾.
+/* ã‚«ãƒ¼ã‚½ãƒ«ä¸Šã®å˜èªã®ç¯„å›²å–å¾—.
  * out:
- *	at - ’PŒê‚Ìæ“ª
- *	size - ’PŒê‚Ì’·‚³
+ *	at - å˜èªã®å…ˆé ­
+ *	size - å˜èªã®é•·ã•
  * return:
- *	•¶š—ñ©g
+ *	æ–‡å­—åˆ—è‡ªèº«
  */
 NnString GetLine::current_word(int &at,int &size)
 {
@@ -469,10 +469,10 @@ NnString GetLine::current_word(int &at,int &size)
     int j=0;
     at = 0;
     for(;;){
-        for(;;){ /* ‹ó”’‚ÌƒXƒLƒbƒv */
+        for(;;){ /* ç©ºç™½ã®ã‚¹ã‚­ãƒƒãƒ— */
             if( j >= pos ){
-		/* ‚±‚±‚Í goto done ‚Å‚Í‚È‚­Aat ‚ğ•ÏX‚³‚¹‚é‚×‚­A
-		 * break ‚É‚µ‚Ä‚¨‚©‚È‚­‚Ä‚Í‚¢‚¯‚È‚¢ */
+		/* ã“ã“ã¯ goto done ã§ã¯ãªãã€at ã‚’å¤‰æ›´ã•ã›ã‚‹ã¹ãã€
+		 * break ã«ã—ã¦ãŠã‹ãªãã¦ã¯ã„ã‘ãªã„ */
 		break;
 	    }
             if( ! isSpace(buffer[j] & 255) && strchr(dem,buffer[j] & 255) == NULL )
@@ -502,7 +502,7 @@ NnString GetLine::current_word(int &at,int &size)
     return result;
 }
 
-// —š—ğ‚ÌƒCƒ“ƒNƒŠƒƒ“ƒ^ƒ‹ƒT[ƒ`
+// å±¥æ­´ã®ã‚¤ãƒ³ã‚¯ãƒªãƒ¡ãƒ³ã‚¿ãƒ«ã‚µãƒ¼ãƒ
 Status GetLine::i_search(int key)
 {
    NnString hint;
@@ -526,14 +526,14 @@ Status GetLine::i_search(int key)
        if( which_command(key) == &GetLine::erase_all
            || which_command(key) == &GetLine::abort )
        {
-           // ƒLƒƒƒ“ƒZƒ‹
+           // ã‚­ãƒ£ãƒ³ã‚»ãƒ«
            return CANCEL;
        }
        else if( which_command(key) == &GetLine::complete_next
              || which_command(key) == &GetLine::next
              || which_command(key) == &GetLine::vz_next )
        {
-           // Ÿ‚ÌŒó•â
+           // æ¬¡ã®å€™è£œ
            new_hint = hint;
            search_offset = 1;
            search_step = 1;
@@ -543,20 +543,20 @@ Status GetLine::i_search(int key)
              || which_command(key) == &GetLine::vz_previous
              || which_command(key) == &GetLine::i_search )
        {
-           // ‘O‚ÌŒó•â
+           // å‰ã®å€™è£œ
            new_hint = hint;
            search_offset = -1;
            search_step = -1;
        }
        else if( which_command(key) == &GetLine::backspace )
        {
-           // ƒoƒbƒNƒXƒy[ƒX
+           // ãƒãƒƒã‚¯ã‚¹ãƒšãƒ¼ã‚¹
            new_hint = hint;
            new_hint.chop();
        }
        else if( which_command(key) == &GetLine::insert )
        {
-           // •¶š“ü—Í
+           // æ–‡å­—å…¥åŠ›
            new_hint = hint;
            if( key > 255 ){
                new_hint << (char)(key>>8) << (char)(key & 0xFF);

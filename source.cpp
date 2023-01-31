@@ -1,4 +1,4 @@
-#include <unistd.h>
+// #include <unistd.h>
 #include "nua.h"
 #include "source.h"
 #include "reader.h"
@@ -12,7 +12,7 @@ struct ReaderAndBuffer {
     NnString line;
 };
 
-/* Lua ‚©‚çƒ\[ƒX‚ð“Ç‚Þ‚½‚ß‚ÌƒR[ƒ‹ƒoƒbƒNŠÖ” */
+/* Lua ã‹ã‚‰ã‚½ãƒ¼ã‚¹ã‚’èª­ã‚€ãŸã‚ã®ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•° */
 static const char *reader_for_lua(lua_State *L , void *data , size_t *size )
 {
     ReaderAndBuffer *rb = (ReaderAndBuffer*)data;
@@ -23,7 +23,7 @@ static const char *reader_for_lua(lua_State *L , void *data , size_t *size )
     return rb->line.chars();
 }
 
-/* ’Êíƒ\[ƒXELuaƒ\[ƒX‹¤’Ê“Ç‚Ýž‚Ýˆ— */
+/* é€šå¸¸ã‚½ãƒ¼ã‚¹ãƒ»Luaã‚½ãƒ¼ã‚¹å…±é€šèª­ã¿è¾¼ã¿å‡¦ç† */
 static int do_source( const NnString &cmdname , const NnVector &argv )
 {
     if( properties.get("debug") != NULL ){
@@ -40,7 +40,7 @@ static int do_source( const NnString &cmdname , const NnVector &argv )
         return 0;
     }
 
-    /* usource cvFƒRƒ}ƒ“ƒh“Ç‚Ý‚±‚Ý */
+    /* ã€Œsource â€¦ã€ï¼šã‚³ãƒžãƒ³ãƒ‰èª­ã¿ã“ã¿ */
     FileReader *fr=new FileReader(cmdname.chars());
     if( fr == 0 || fr->eof() ){
         conErr << cmdname << ": no such file or directory.\n";
@@ -69,7 +69,7 @@ static int do_source( const NnString &cmdname , const NnVector &argv )
         }
         delete fr;
     }else{
-        ScriptShell scrShell( fr ); /* fr ‚Ìíœ‹`–±‚Í scrShell ‚ÖˆÏ÷ */
+        ScriptShell scrShell( fr ); /* fr ã®å‰Šé™¤ç¾©å‹™ã¯ scrShell ã¸å§”è­² */
         if( scrShell ){
             for( int i=0 ; i < argv.size() ; i++ ){
                 if( argv.const_at(i) != NULL )
@@ -84,9 +84,9 @@ static int do_source( const NnString &cmdname , const NnVector &argv )
     return 0;
 }
 
-/* ƒVƒFƒ‹ƒtƒ@ƒCƒ‹‚Ì“Ç‚Ýž‚Ý.
+/* ã‚·ã‚§ãƒ«ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿.
  * return
- *	í‚É 0
+ *	å¸¸ã« 0
  */
 int cmd_source( NyadosShell &shell , const NnString &argv )
 {
@@ -95,7 +95,7 @@ int cmd_source( NyadosShell &shell , const NnString &argv )
     NyadosShell::dequote( arg1 );
 
     if( arg1.compare("-h") == 0 ){
-	/* usource -h cvFƒqƒXƒgƒŠ“Ç‚Ý‚±‚Ý */
+	/* ã€Œsource -h â€¦ã€ï¼šãƒ’ã‚¹ãƒˆãƒªèª­ã¿ã“ã¿ */
 	NyadosShell::dequote( left );
 	FileReader fr( left.chars() );
 	if( fr.eof() ){
@@ -117,12 +117,12 @@ int cmd_source( NyadosShell &shell , const NnString &argv )
     return 0;
 }
 
-/* Œ»Ýˆ—’†‚Ì rcfname ‚Ì–¼‘O
- * ‹ó‚¾‚Æ’Êí‚Ì _nya ‚ªŒÄ‚Ño‚³‚ê‚éB
+/* ç¾åœ¨å‡¦ç†ä¸­ã® rcfname ã®åå‰
+ * ç©ºã ã¨é€šå¸¸ã® _nya ãŒå‘¼ã³å‡ºã•ã‚Œã‚‹ã€‚
  */
 NnString rcfname;
 
-/* nyaos.rcfname ‚Æ‚¢‚¤ Lua •Ï”‚Éƒtƒ@ƒCƒ‹–¼‚ðƒZƒbƒg‚·‚é */
+/* nyaos.rcfname ã¨ã„ã† Lua å¤‰æ•°ã«ãƒ•ã‚¡ã‚¤ãƒ«åã‚’ã‚»ãƒƒãƒˆã™ã‚‹ */
 static void set_rcfname_for_Lua( const char *fname )
 {
     NyaosLua L(NULL);
@@ -137,12 +137,12 @@ static void set_rcfname_for_Lua( const char *fname )
 }
 
 
-/* rcfname_ ‚ð _nya ‚Æ‚µ‚ÄŒÄ‚Ño‚· */
+/* rcfname_ ã‚’ _nya ã¨ã—ã¦å‘¼ã³å‡ºã™ */
 void callrc( const NnString &rcfname_ , const NnVector &argv )
 {
     static NnHash already_called;
 
-    if( access( rcfname_.chars() , 0 ) != 0 ){
+    if( NnDir::access( rcfname_.chars() ) != 0 ){
         /* printf( "%s: not found.\n",rcfname_.chars() ); */
         return;
     }
@@ -165,13 +165,13 @@ void callrc( const NnString &rcfname_ , const NnVector &argv )
     set_rcfname_for_Lua( NULL );
 }
 
-/* rcƒtƒ@ƒCƒ‹‚ð’T‚µAŒ©•t‚©‚Á‚½‚à‚Ì‚©‚çAŒÄ‚Ño‚·B
- *	argv0 - exeƒtƒ@ƒCƒ‹‚Ì–¼‘O.
- *      argv - ƒpƒ‰ƒ[ƒ^
+/* rcãƒ•ã‚¡ã‚¤ãƒ«ã‚’æŽ¢ã—ã€è¦‹ä»˜ã‹ã£ãŸã‚‚ã®ã‹ã‚‰ã€å‘¼ã³å‡ºã™ã€‚
+ *	argv0 - exeãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰.
+ *      argv - ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
  */
 void seek_and_call_rc( const char *argv0 , const NnVector &argv )
 {
-    /* EXE ƒtƒ@ƒCƒ‹‚Æ“¯‚¶ƒfƒBƒŒƒNƒgƒŠ‚Ì _nya ‚ðŽŽ‚Ý‚é */
+    /* EXE ãƒ•ã‚¡ã‚¤ãƒ«ã¨åŒã˜ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã® _nya ã‚’è©¦ã¿ã‚‹ */
     NnString rcfn1;
 
     int lastroot=NnDir::lastRoot( argv0 );
@@ -179,9 +179,9 @@ void seek_and_call_rc( const char *argv0 , const NnVector &argv )
         rcfn1.assign( argv0 , lastroot );
         rcfn1 << '\\' << RUN_COMMANDS;
         callrc( rcfn1 , argv );
-    /* / or \ ‚ªŒ©•t‚©‚ç‚È‚©‚Á‚½Žž‚Í
-     * ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚Æ‚Ý‚È‚µ‚ÄŽÀs‚µ‚È‚¢
-     * (“ñdŒÄ‚Ño‚µ‚É‚È‚é‚Ì‚Å)
+    /* / or \ ãŒè¦‹ä»˜ã‹ã‚‰ãªã‹ã£ãŸæ™‚ã¯
+     * ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã¨ã¿ãªã—ã¦å®Ÿè¡Œã—ãªã„
+     * (äºŒé‡å‘¼ã³å‡ºã—ã«ãªã‚‹ã®ã§)
      */
 #if 0
     }else{
@@ -203,11 +203,12 @@ void seek_and_call_rc( const char *argv0 , const NnVector &argv )
     if( rcfn2.compare(rcfn1) != 0 )
         callrc( rcfn2 , argv );
 
-    /* ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚Ì _nya ‚ðŽŽ‚Ý‚é */
+    /* ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã® _nya ã‚’è©¦ã¿ã‚‹ */
     NnString rcfn3;
-    char cwd[ FILENAME_MAX ];
+    // char cwd[ FILENAME_MAX ];
 
-    getcwd( cwd , sizeof(cwd) );
+    NnString cwd;
+    NnDir::getcwd( cwd);
     rcfn3 << cwd << '\\' << RUN_COMMANDS ;
 
     if( rcfn3.compare(rcfn1) !=0 && rcfn3.compare(rcfn2) !=0 )

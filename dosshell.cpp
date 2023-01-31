@@ -10,18 +10,18 @@
 #include "writer.h"
 #include "nua.h"
 
-/* ‚±‚ÌƒnƒbƒVƒ…ƒe[ƒuƒ‹‚ÉAŠg’£q‚ª“o˜^‚³‚ê‚Ä‚¢‚é‚ÆA
- * ‚»‚ÌŠg’£q‚Ìƒtƒ@ƒCƒ‹–¼‚ÍAÀs‰Â”\‚ÆŒ©‚È‚³‚ê‚éB
- * (Šî–{“I‚É“o˜^“à—e‚ÍA•¶š—ñ => •¶š—ñ ‚ª‘O’ñ)
- * ‚È‚¨AŠg’£q‚Í¬•¶š‚É•ÏŠ·‚µ‚ÄŠi”[‚·‚é‚±‚ÆB
+/* ã“ã®ãƒãƒƒã‚·ãƒ¥ãƒ†ãƒ¼ãƒ–ãƒ«ã«ã€æ‹¡å¼µå­ãŒç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã¨ã€
+ * ãã®æ‹¡å¼µå­ã®ãƒ•ã‚¡ã‚¤ãƒ«åã¯ã€å®Ÿè¡Œå¯èƒ½ã¨è¦‹ãªã•ã‚Œã‚‹ã€‚
+ * (åŸºæœ¬çš„ã«ç™»éŒ²å†…å®¹ã¯ã€æ–‡å­—åˆ— => æ–‡å­—åˆ— ãŒå‰æ)
+ * ãªãŠã€æ‹¡å¼µå­ã¯å°æ–‡å­—ã«å¤‰æ›ã—ã¦æ ¼ç´ã™ã‚‹ã“ã¨ã€‚
  */
 NnHash DosShell::executableSuffix;
 
-/* ‚»‚Ìƒtƒ@ƒCƒ‹–¼‚ªƒfƒBƒŒƒNƒgƒŠ‚©‚Ç‚¤‚©‚ğ––”ö‚ÉƒXƒ‰ƒbƒVƒ…‚È‚Ç‚ª
- * ‚Â‚¢‚Ä‚¢‚é‚©‚Ç‚¤‚©‚É‚æ‚è”»’è‚·‚éB
- *      path - ƒtƒ@ƒCƒ‹–¼
+/* ãã®ãƒ•ã‚¡ã‚¤ãƒ«åãŒãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‹ã©ã†ã‹ã‚’æœ«å°¾ã«ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ãªã©ãŒ
+ * ã¤ã„ã¦ã„ã‚‹ã‹ã©ã†ã‹ã«ã‚ˆã‚Šåˆ¤å®šã™ã‚‹ã€‚
+ *      path - ãƒ•ã‚¡ã‚¤ãƒ«å
  * return
- *      ”ñ0 - ƒfƒBƒŒƒNƒgƒŠ , 0 - ˆê”Êƒtƒ@ƒCƒ‹
+ *      é0 - ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª , 0 - ä¸€èˆ¬ãƒ•ã‚¡ã‚¤ãƒ«
  */
 static int isDirectory( const char *path )
 {
@@ -29,19 +29,19 @@ static int isDirectory( const char *path )
     return lastroot != -1 && path[lastroot+1] == '\0';
 }
 
-/* ‚»‚Ìƒtƒ@ƒCƒ‹–¼‚ªÀs‰Â”\‚©‚Ç‚¤‚©‚ğŠg’£q‚æ‚è”»’è‚·‚éB
- *      path - ƒtƒ@ƒCƒ‹–¼
+/* ãã®ãƒ•ã‚¡ã‚¤ãƒ«åãŒå®Ÿè¡Œå¯èƒ½ã‹ã©ã†ã‹ã‚’æ‹¡å¼µå­ã‚ˆã‚Šåˆ¤å®šã™ã‚‹ã€‚
+ *      path - ãƒ•ã‚¡ã‚¤ãƒ«å
  * return
- *      ”ñ0 - Às‰Â”\ , 0 - Às•s”\
+ *      é0 - å®Ÿè¡Œå¯èƒ½ , 0 - å®Ÿè¡Œä¸èƒ½
  */
 static int isExecutable( const char *path )
 {
     const char *suffix=strrchr(path,'.');
-    /* Šg’£q‚ª‚È‚¯‚ê‚ÎAÀs•s”\ */
+    /* æ‹¡å¼µå­ãŒãªã‘ã‚Œã°ã€å®Ÿè¡Œä¸èƒ½ */
     if( suffix == NULL || suffix[0]=='\0' || suffix[1]=='\0' )
         return 0;
     
-    /* ¬•¶š‰» */
+    /* å°æ–‡å­—åŒ– */
     NnString sfxlwr(suffix+1);
     sfxlwr.downcase();
 
@@ -52,10 +52,10 @@ static int isExecutable( const char *path )
         || DosShell::executableSuffix.get(sfxlwr) != NULL ;
 }
 
-/* $e ‚È‚Ç‚Ì•¶š—ñ‚ğ§Œä•¶š‚ğŠÜ‚ñ‚¾ƒeƒLƒXƒg‚Ö•ÏŠ·‚·‚é
- * (å‚Éƒvƒƒ“ƒvƒg—p•¶š—ñ‰ğß)
- *    sp - Œ³•¶š—ñ
- *    result - •ÏŠ·Œã•¶š—ñ‚ÌŠi”[æ
+/* $e ãªã©ã®æ–‡å­—åˆ—ã‚’åˆ¶å¾¡æ–‡å­—ã‚’å«ã‚“ã ãƒ†ã‚­ã‚¹ãƒˆã¸å¤‰æ›ã™ã‚‹
+ * (ä¸»ã«ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆç”¨æ–‡å­—åˆ—è§£é‡ˆ)
+ *    sp - å…ƒæ–‡å­—åˆ—
+ *    result - å¤‰æ›å¾Œæ–‡å­—åˆ—ã®æ ¼ç´å…ˆ
  */
 void eval_dollars_sequence( const char *sp , NnString &result )
 {
@@ -92,13 +92,13 @@ void eval_dollars_sequence( const char *sp , NnString &result )
                         result << '0';
                     result.addValueOf( thetime->tm_mday );
                     switch( thetime->tm_wday ){
-                        case 0: result << " (“ú)"; break;
-                        case 1: result << " (Œ)"; break;
-                        case 2: result << " (‰Î)"; break;
-                        case 3: result << " (…)"; break;
-                        case 4: result << " (–Ø)"; break;
-                        case 5: result << " (‹à)"; break;
-                        case 6: result << " (“y)"; break;
+                        case 0: result << " (æ—¥)"; break;
+                        case 1: result << " (æœˆ)"; break;
+                        case 2: result << " (ç«)"; break;
+                        case 3: result << " (æ°´)"; break;
+                        case 4: result << " (æœ¨)"; break;
+                        case 5: result << " (é‡‘)"; break;
+                        case 6: result << " (åœŸ)"; break;
                     }
                     break;
                 case 'E': result << '\x1B'; break;
@@ -181,11 +181,11 @@ void eval_dollars_sequence( const char *sp , NnString &result )
     }
 }
 
-/* ƒRƒ}ƒ“ƒh–¼•âŠ®‚Ì‚½‚ß‚ÌŒó•âƒŠƒXƒg‚ğì¬‚·‚éB
- *      region - ”í•âŠ®•¶š—ñ‚Ì”ÍˆÍ
- *      array - •âŠ®Œó•â‚ğ“ü‚ê‚éêŠ
+/* ã‚³ãƒãƒ³ãƒ‰åè£œå®Œã®ãŸã‚ã®å€™è£œãƒªã‚¹ãƒˆã‚’ä½œæˆã™ã‚‹ã€‚
+ *      region - è¢«è£œå®Œæ–‡å­—åˆ—ã®ç¯„å›²
+ *      array - è£œå®Œå€™è£œã‚’å…¥ã‚Œã‚‹å ´æ‰€
  * return
- *      Œó•â‚Ì”
+ *      å€™è£œã®æ•°
  */
 int DosShell::makeTopCompletionList( const NnString &region , NnVector &array )
 {
@@ -196,7 +196,7 @@ int DosShell::makeTopCompletionListCore( const NnString &region , NnVector &arra
 {
     NnString pathcore;
 
-    /* æ“ª‚Ìˆø—p•„‚ğœ‚­ */
+    /* å…ˆé ­ã®å¼•ç”¨ç¬¦ã‚’é™¤ã */
     if( region.at(0) == '"' ){
         pathcore = region.chars() + 1;
     }else{
@@ -220,7 +220,7 @@ int DosShell::makeTopCompletionListCore( const NnString &region , NnVector &arra
     if( path == NULL )
         return array.size();
 
-    /* ŠÂ‹«•Ï” PATH ‚ğ‘€ì‚·‚é */
+    /* ç’°å¢ƒå¤‰æ•° PATH ã‚’æ“ä½œã™ã‚‹ */
     NnString rest(path);
     while( ! rest.empty() ){
 	NnString path1;
@@ -240,7 +240,7 @@ int DosShell::makeTopCompletionListCore( const NnString &region , NnVector &arra
             }
         }
     }
-    /* ƒGƒCƒŠƒAƒXEŠÖ”–¼‚ğŒ©‚É‚ä‚­ : (’ˆÓ)ƒOƒ[ƒoƒ‹•Ï”‚ğQÆ‚µ‚Ä‚¢‚é */
+    /* ã‚¨ã‚¤ãƒªã‚¢ã‚¹ãƒ»é–¢æ•°åã‚’è¦‹ã«ã‚†ã : (æ³¨æ„)ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã‚’å‚ç…§ã—ã¦ã„ã‚‹ */
     extern NnHash aliases,functions;
     static NnHash *hash_list[]={ &aliases , &functions , NULL };
     for( NnHash **hash=hash_list ; *hash != NULL ; ++hash ){
@@ -251,7 +251,7 @@ int DosShell::makeTopCompletionListCore( const NnString &region , NnVector &arra
             }
         }
     }
-    /* nyaos.command ‚ğŒ©‚É‚ä‚­ */
+    /* nyaos.command ã‚’è¦‹ã«ã‚†ã */
     const static char *commands[]={ "command" , "command2" , NULL };
     for( const char **p=commands ; *p != NULL ; ++p ){
         NyaosLua L(*p);
@@ -295,17 +295,17 @@ int DosShell::getkey()
     return Console::getkey();
 }
 
-/* •ÒWŠJnƒtƒbƒN */
+/* ç·¨é›†é–‹å§‹ãƒ•ãƒƒã‚¯ */
 void DosShell::start()
 {
-    /* ‰æ–ÊÁ‹ƒR[ƒh‚Ì“Ç‚İæ‚è */
+    /* ç”»é¢æ¶ˆå»ã‚³ãƒ¼ãƒ‰ã®èª­ã¿å–ã‚Š */
     NnString *clear = dynamic_cast<NnString*>( properties.get("term_clear") );
     if( clear != NULL ){
         eval_dollars_sequence(clear->chars() , this->clear_ );
     }else{
         this->clear_ = "\x1B[2J";
     }
-    /* ƒJ[ƒ\ƒ‹•\¦ƒR[ƒh‚Ì“Ç‚İæ‚è */
+    /* ã‚«ãƒ¼ã‚½ãƒ«è¡¨ç¤ºã‚³ãƒ¼ãƒ‰ã®èª­ã¿å–ã‚Š */
     NnString *cursor_on = dynamic_cast<NnString*>( properties.get("term_cursor_on") );
     if( cursor_on != NULL ){
         eval_dollars_sequence(cursor_on->chars() , this->cursor_on_ );
@@ -318,7 +318,7 @@ void DosShell::start()
 #endif
 }
 
-/* •ÒWI—¹ƒtƒbƒN */
+/* ç·¨é›†çµ‚äº†ãƒ•ãƒƒã‚¯ */
 void DosShell::end()
 {
     putchar('\n');
@@ -328,12 +328,12 @@ void DosShell::end()
 }
 
 #ifdef PROMPT_SHIFT
-/* ƒvƒƒ“ƒvƒg‚Ì‚¤‚¿AnƒJƒ‰ƒ€–Ú‚©‚ç‚ğæ‚èo‚·
- *      prompt - Œ³•¶š—ñ
- *      offset - æ‚èo‚·ˆÊ’u
- *      result - æ‚èo‚µ‚½Œ‹‰Ê
+/* ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã®ã†ã¡ã€nã‚«ãƒ©ãƒ ç›®ã‹ã‚‰ã‚’å–ã‚Šå‡ºã™
+ *      prompt - å…ƒæ–‡å­—åˆ—
+ *      offset - å–ã‚Šå‡ºã™ä½ç½®
+ *      result - å–ã‚Šå‡ºã—ãŸçµæœ
  * return
- *      ’Šoƒvƒƒ“ƒvƒg‚ÌŒ…”
+ *      æŠ½å‡ºãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã®æ¡æ•°
  */
 static int prompt_substr( const NnString &prompt , int offset , NnString &result )
 {
@@ -377,11 +377,11 @@ static int prompt_substr( const NnString &prompt , int offset , NnString &result
 
 
 #else
-/* ƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX‚ğŠÜ‚Ü‚È‚¢•¶š”‚ğ“¾‚é. 
- *      p - •¶š—ñæ“ªƒ|ƒCƒ“ƒ^
+/* ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’å«ã¾ãªã„æ–‡å­—æ•°ã‚’å¾—ã‚‹. 
+ *      p - æ–‡å­—åˆ—å…ˆé ­ãƒã‚¤ãƒ³ã‚¿
  * return
- *      •¶š—ñ‚Ì‚¤‚¿AƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX‚ğŠÜ‚Ü‚È‚¢•ª‚Ì’·‚³
- *      (ƒˆ‚ÈŒ…”)
+ *      æ–‡å­—åˆ—ã®ã†ã¡ã€ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’å«ã¾ãªã„åˆ†ã®é•·ã•
+ *      (ç´”ç²‹ãªæ¡æ•°)
  */
 static int strlenNotEscape( const char *p )
 {
@@ -402,8 +402,8 @@ static int strlenNotEscape( const char *p )
 #endif
 
 
-/* ƒvƒƒ“ƒvƒg‚ğ•\¦‚·‚é.
- * return ƒvƒƒ“ƒvƒg‚ÌŒ…”(ƒoƒCƒg”‚Å‚Í‚È‚¢=>ƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX‚ğŠÜ‚Ü‚È‚¢)
+/* ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã‚’è¡¨ç¤ºã™ã‚‹.
+ * return ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã®æ¡æ•°(ãƒã‚¤ãƒˆæ•°ã§ã¯ãªã„=>ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’å«ã¾ãªã„)
  */
 int DosShell::prompt()
 {
@@ -415,13 +415,13 @@ int DosShell::prompt()
         lua_pushstring(L,sp && *sp ? sp : "");
         if( lua_pcall(L,1,2,0) == 0 ){
             if( lua_isnil(L,-2) ){
-                /* nil Ë ƒvƒƒ“ƒvƒg‚É•ÏX‚È‚µ */
+                /* nil â‡’ ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã«å¤‰æ›´ãªã— */
                 eval_dollars_sequence( sp , prompt );
             }else if( lua_toboolean(L,-2) ){
-                /* true,"•¶š—ñ" Ë $ƒ}ƒNƒ‚ğ•]‰¿‚µ‚Ä•\¦ */
+                /* true,"æ–‡å­—åˆ—" â‡’ $ãƒã‚¯ãƒ­ã‚’è©•ä¾¡ã—ã¦è¡¨ç¤º */
                 eval_dollars_sequence( lua_tostring(L,-1) , prompt );
             }else{
-                /* false,"•¶š—ñ" Ë $ƒ}ƒNƒ‚ğ•]‰¿‚µ‚È‚¢‚Å•\¦ */
+                /* false,"æ–‡å­—åˆ—" â‡’ $ãƒã‚¯ãƒ­ã‚’è©•ä¾¡ã—ãªã„ã§è¡¨ç¤º */
                 prompt = lua_tostring(L,-1);
             }
         }else{
@@ -441,7 +441,7 @@ int DosShell::prompt()
     conOut << prompt;
 #endif
 
-    /* •K‚¸ƒL[ƒv‚µ‚È‚­‚Ä‚Í‚¢‚¯‚È‚¢•ÒW—Ìˆæ‚ÌƒTƒCƒY‚ğæ“¾‚·‚é */
+    /* å¿…ãšã‚­ãƒ¼ãƒ—ã—ãªãã¦ã¯ã„ã‘ãªã„ç·¨é›†é ˜åŸŸã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ */
     NnString *temp;
     int minEditWidth = 10;
     if(    (temp=(NnString*)properties.get("mineditwidth")) != NULL
@@ -477,7 +477,7 @@ void DosShell::clear()
 }
 
 #ifdef NYACUS
-/* ƒ^ƒCƒgƒ‹‚ğİ’è‚·‚é. */
+/* ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®šã™ã‚‹. */
 void DosShell::title()
 {
     NyaosLua L("title");
@@ -487,12 +487,12 @@ void DosShell::title()
         lua_pushstring(L,title_);
         if( lua_pcall(L,1,2,0) == 0 ){
             if( lua_toboolean(L,-2) ){
-                /* true,"•¶š—ñ" Ë $ƒ}ƒNƒ‚ğ•]‰¿‚µ‚Ä•\¦ */
+                /* true,"æ–‡å­—åˆ—" â‡’ $ãƒã‚¯ãƒ­ã‚’è©•ä¾¡ã—ã¦è¡¨ç¤º */
                 NnString title;
                 eval_dollars_sequence( lua_tostring(L,-1) , title );
                 Console::setConsoleTitle( title.chars() );
             }else if( ! lua_isnil(L,-2) ){
-                /* false,"•¶š—ñ" Ë $ƒ}ƒNƒ‚ğ•]‰¿‚µ‚È‚¢‚Å•\¦ */
+                /* false,"æ–‡å­—åˆ—" â‡’ $ãƒã‚¯ãƒ­ã‚’è©•ä¾¡ã—ãªã„ã§è¡¨ç¤º */
                 Console::setConsoleTitle( lua_tostring(L,-1) );
             }
         }else{

@@ -1,5 +1,5 @@
 /* ntconsole.cpp
- *   ƒRƒ“ƒ\[ƒ‹‚ğ’¼Ú‘€ì‚·‚éŠÖ”‚È‚Ç‚ğŠi”[‚·‚éB
+ *   ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã‚’ç›´æ¥æ“ä½œã™ã‚‹é–¢æ•°ãªã©ã‚’æ ¼ç´ã™ã‚‹ã€‚
  */
 
 #ifndef __OS2__
@@ -12,7 +12,7 @@
 #include "ntcons.h"
 #include "nnstring.h"
 
-#if defined(__EMX__) /*** OS/2 ê—p static •Ï”/ŠÖ”ŒQ ***/
+#if defined(__EMX__) /*** OS/2 å°‚ç”¨ static å¤‰æ•°/é–¢æ•°ç¾¤ ***/
 #  define ESCAPE_SEQUENCE_OK
 
 #include <sys/kbdscan.h>
@@ -43,7 +43,7 @@ static int init_os2()
     return 0;
 }
 
-#elif defined(NYACUS) /*** Borland C++/VC++ ê—p static •Ï”/ŠÖ”ŒQ ***/
+#elif defined(NYACUS) /*** Borland C++/VC++ å°‚ç”¨ static å¤‰æ•°/é–¢æ•°ç¾¤ ***/
 
 #include <windows.h>
 
@@ -55,7 +55,7 @@ static BOOL     bStdinIsConsole;
 
 static DWORD    default_console_mode = ~0u;
 
-/* •ÏX‚³‚ê‚½•W€“üo—Í‚ğŒ³‚É–ß‚· */
+/* å¤‰æ›´ã•ã‚ŒãŸæ¨™æº–å…¥å‡ºåŠ›ã‚’å…ƒã«æˆ»ã™ */
 void Console::restore_default_console_mode()
 {
     if( default_console_mode != ~0u ){
@@ -64,22 +64,22 @@ void Console::restore_default_console_mode()
     }
 }
 
-/* API‚É‚æ‚é•W€“üo—Í‚Ì‰Šú‰» */
+/* APIã«ã‚ˆã‚‹æ¨™æº–å…¥å‡ºåŠ›ã®åˆæœŸåŒ– */
 static void initializeStdio()
 {
     static bool firstcalled=true;
 
-    hStdin  = GetStdHandle(STD_INPUT_HANDLE);   /* •W€“ü—Íƒnƒ“ƒhƒ‹‚Ìæ“¾ */
-    hStdout = GetStdHandle(STD_OUTPUT_HANDLE);  /* •W€o—Íƒnƒ“ƒhƒ‹‚Ìæ“¾ */
+    hStdin  = GetStdHandle(STD_INPUT_HANDLE);   /* æ¨™æº–å…¥åŠ›ãƒãƒ³ãƒ‰ãƒ«ã®å–å¾— */
+    hStdout = GetStdHandle(STD_OUTPUT_HANDLE);  /* æ¨™æº–å‡ºåŠ›ãƒãƒ³ãƒ‰ãƒ«ã®å–å¾— */
     if( firstcalled ){
         firstcalled = false;
 
         DWORD dw;
-        /* stdin ƒŠƒ_ƒCƒŒƒNƒg‚Ì‘Îˆistdin‚ğunbuffered mode ‚Éj*/
+        /* stdin ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆæ™‚ã®å¯¾å‡¦ï¼ˆstdinã‚’unbuffered mode ã«ï¼‰*/
         setvbuf(stdin, NULL, _IONBF, 0);
         setmode(fileno(stdin), O_BINARY);
         if (GetConsoleMode(hStdin, &dw)) {
-            /* Win32ƒRƒ“ƒ\[ƒ‹‚Ìê‡‚Í”O‚Ì‚½‚ßƒ_ƒCƒŒƒNƒgƒ‚[ƒh‚Éİ’è */
+            /* Win32ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã®å ´åˆã¯å¿µã®ãŸã‚ãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆãƒ¢ãƒ¼ãƒ‰ã«è¨­å®š */
             bStdinIsConsole = TRUE;
             if( default_console_mode == ~0u ){
                 default_console_mode = dw;
@@ -119,11 +119,11 @@ void Console::getLocate(int &x,int &y)
     y = csbi.dwCursorPosition.Y;
 }
 
-#else /***** DOS —p static ŠÖ”/•Ï”ŒQ ****/
+#else /***** DOS ç”¨ static é–¢æ•°/å¤‰æ•°ç¾¤ ****/
 static NnString tinyClipBoard;
 #endif
 
-/* ƒRƒ“ƒ\[ƒ‹‚ÌƒNƒŠƒA */
+/* ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã®ã‚¯ãƒªã‚¢ */
 void  Console::clear()
 {
 #if defined(ESCAPE_SEQUENCE_OK)
@@ -138,26 +138,26 @@ void  Console::clear()
     if (hStdout == (HANDLE )-1L)
 	initializeStdio();
 
-    /* ƒRƒ“ƒ\[ƒ‹‚ÌƒLƒƒƒ‰ƒNƒ^ƒoƒbƒtƒ@î•ñ‚ğæ“¾ */
+    /* ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã®ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒãƒƒãƒ•ã‚¡æƒ…å ±ã‚’å–å¾— */
     if(GetConsoleScreenBufferInfo(hStdout,&csbi) == FALSE)
 	initializeStdio();
 
-    /* ƒLƒƒƒ‰ƒNƒ^ƒoƒbƒtƒ@ƒTƒCƒY‚ğŒvZ */
+    /* ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒãƒƒãƒ•ã‚¡ã‚µã‚¤ã‚ºã‚’è¨ˆç®— */
     dwConsoleSize = csbi.dwSize.X * csbi.dwSize.Y;
 
-    /* ƒLƒƒƒ‰ƒNƒ^ƒoƒbƒtƒ@‚ğ‹ó”’‚Å–„‚ß‚é */
+    /* ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒãƒƒãƒ•ã‚¡ã‚’ç©ºç™½ã§åŸ‹ã‚ã‚‹ */
     FillConsoleOutputCharacter(
         hStdout,' ',dwConsoleSize,coordScreen,&dwCharsWritten);
 
-    /* Œ»İ‚ÌƒeƒLƒXƒg‘®«‚Ìæ“¾ */
+    /* ç¾åœ¨ã®ãƒ†ã‚­ã‚¹ãƒˆå±æ€§ã®å–å¾— */
     if (GetConsoleScreenBufferInfo(hStdout,&csbi) == FALSE)
         return;
 
-    /* ‚·‚×‚Ä‚Ì•¶š‚É‘Î‚µ‚Äæ“¾‚µ‚½ƒeƒLƒXƒg‘®«‚ğ“K—p‚·‚é */
+    /* ã™ã¹ã¦ã®æ–‡å­—ã«å¯¾ã—ã¦å–å¾—ã—ãŸãƒ†ã‚­ã‚¹ãƒˆå±æ€§ã‚’é©ç”¨ã™ã‚‹ */
     FillConsoleOutputAttribute(
         hStdout,csbi.wAttributes,dwConsoleSize,coordScreen,&dwCharsWritten);
 
-    /* ƒJ[ƒ\ƒ‹ˆÊ’u‚ğ¶ãŠp‚ÉˆÚ“® */
+    /* ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å·¦ä¸Šè§’ã«ç§»å‹• */
     SetConsoleCursorPosition(hStdout,coordScreen);
 # else
 #   error Write Platform specific Console::clear()!
@@ -247,7 +247,7 @@ static int getkey_()
     if (bStdinIsConsole) {
         c = getch_replacement_for_msvc();
     } else {
-        /* stdin ‚ªƒŠƒ_ƒCƒŒƒNƒg‚³‚ê‚Ä‚¢‚éê‡i‚í‚è‚Æ“K“–j */
+        /* stdin ãŒãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã•ã‚Œã¦ã„ã‚‹å ´åˆï¼ˆã‚ã‚Šã¨é©å½“ï¼‰ */
         c = fgetc(stdin);
         if (c == '\n') c = '\r';
         if (c == EOF) exit(0);
@@ -263,13 +263,13 @@ int Console::getkey()
     int ch=getkey_();
     if( isKanji(ch) ){
 #if 0
-        /* ƒ³ MSVCRT.DLL ‚ğg‚¤ê‡A§ŒäƒL[‚ª
-         * 0xE0 ‚Æ‚¢‚¤ƒvƒŒƒtƒBƒbƒNƒX‚Å—^‚¦‚ç‚ê‚Ä‚µ‚Ü‚¤‚Ì‚ÅA
-         * ‚±‚Ì‚æ‚¤‚È—áŠO‚ğİ‚¯‚È‚­‚Ä‚Í‚¢‚¯‚È‚©‚Á‚½B
+        /* ç´”æ­£ MSVCRT.DLL ã‚’ä½¿ã†å ´åˆã€åˆ¶å¾¡ã‚­ãƒ¼ãŒ
+         * 0xE0 ã¨ã„ã†ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ã§ä¸ãˆã‚‰ã‚Œã¦ã—ã¾ã†ã®ã§ã€
+         * ã“ã®ã‚ˆã†ãªä¾‹å¤–ã‚’è¨­ã‘ãªãã¦ã¯ã„ã‘ãªã‹ã£ãŸã€‚
          * 
-         * Œ»İ‚ÍALukewarmì‚Ì©‘O getch ‚ğ—˜—p‚µ‚Ä‚¢‚é‚Ì‚ÅA
-         * “––â‘è‚Í‰ğÁ‚³‚ê‚Ä‚¢‚éB
-         * (ƒvƒŒƒtƒBƒbƒNƒX‚ª 0 ‚É‚È‚Á‚Ä‚¢‚é)
+         * ç¾åœ¨ã¯ã€Lukewarmæ°ä½œã®è‡ªå‰ getch ã‚’åˆ©ç”¨ã—ã¦ã„ã‚‹ã®ã§ã€
+         * å½“å•é¡Œã¯è§£æ¶ˆã•ã‚Œã¦ã„ã‚‹ã€‚
+         * (ãƒ—ãƒ¬ãƒ•ã‚£ãƒƒã‚¯ã‚¹ãŒ 0 ã«ãªã£ã¦ã„ã‚‹)
          */
 	if( ch ==0xE0 ) /* xscript */
 	    ch = 0x01;

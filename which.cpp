@@ -6,8 +6,8 @@
 #include "nnstring.h"
 #include "shell.h"
 
-/* ƒfƒBƒŒƒNƒgƒŠ‚Å‚Í‚È‚­Aƒtƒ@ƒCƒ‹‚Æ‚µ‚Ä‘¶Ý‚µ‚Ä‚¢‚ê‚Î 1
- * ‚³‚à‚È‚¯‚ê‚Î 0 ‚ð•Ô‚·
+/* ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ã¯ãªãã€ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã—ã¦å­˜åœ¨ã—ã¦ã„ã‚Œã° 1
+ * ã•ã‚‚ãªã‘ã‚Œã° 0 ã‚’è¿”ã™
  */
 static int is_file( const NnString &path )
 {
@@ -24,13 +24,13 @@ static int is_file( const NnString &path )
 }
 
 
-/* ƒtƒ‹ƒpƒXˆê•àŽè‘O‚É‚È‚Á‚Ä‚¢‚éƒtƒ@ƒCƒ‹–¼‚ÉA.exe Šg’£Žq‚ð•â‚Á‚ÄA
- * ‘¶Ý‚ª‚ ‚é‚©‚ðŠm”F‚·‚é
- *    nm - ƒtƒ‹ƒpƒXˆê•àŽè‘O‚É‚È‚Á‚Ä‚¢‚éƒtƒ@ƒCƒ‹–¼
- *    which - Œ©•t‚©‚Á‚½Žž‚ÉA•â‚Á‚½ƒpƒX–¼‚ðŠi”[‚·‚éæ
+/* ãƒ•ãƒ«ãƒ‘ã‚¹ä¸€æ­©æ‰‹å‰ã«ãªã£ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«åã«ã€.exe æ‹¡å¼µå­ã‚’è£œã£ã¦ã€
+ * å­˜åœ¨ãŒã‚ã‚‹ã‹ã‚’ç¢ºèªã™ã‚‹
+ *    nm - ãƒ•ãƒ«ãƒ‘ã‚¹ä¸€æ­©æ‰‹å‰ã«ãªã£ã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«å
+ *    which - è¦‹ä»˜ã‹ã£ãŸæ™‚ã«ã€è£œã£ãŸãƒ‘ã‚¹åã‚’æ ¼ç´ã™ã‚‹å…ˆ
  * return
- *     0 - Œ©•t‚©‚Á‚½(which ‚É’l‚ª“ü‚é)
- *    -1 - Œ©•t‚©‚ç‚È‚©‚Á‚½
+ *     0 - è¦‹ä»˜ã‹ã£ãŸ(which ã«å€¤ãŒå…¥ã‚‹)
+ *    -1 - è¦‹ä»˜ã‹ã‚‰ãªã‹ã£ãŸ
  */
 static int exists( const char *nm , NnString &which )
 {
@@ -55,20 +55,20 @@ static int exists( const char *nm , NnString &which )
 }
 
 
-/* ŽÀsƒtƒ@ƒCƒ‹‚ÌƒpƒX‚ð’T‚·
- *      nm      < ŽÀsƒtƒ@ƒCƒ‹‚Ì–¼‘O
- *      which   > Œ©‚Â‚©‚Á‚½êŠ
+/* å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒ‘ã‚¹ã‚’æŽ¢ã™
+ *      nm      < å®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰
+ *      which   > è¦‹ã¤ã‹ã£ãŸå ´æ‰€
  * return
- *      0 - ”­Œ©
- *      -1 - Œ©‚Â‚©‚ç‚¸
+ *      0 - ç™ºè¦‹
+ *      -1 - è¦‹ã¤ã‹ã‚‰ãš
  */
 int which( const char *nm, NnString &which )
 {
     if( exists(nm,which)==0 )
         return 0;
 
-    /* ‘Š‘ÎƒpƒXŽw’èEâ‘ÎƒpƒXŽw’è‚µ‚Ä‚¢‚é‚à‚Ì‚ÍA
-     * ŠÂ‹«•Ï”PATH‚ð‚½‚Ç‚Á‚Ä‚Ü‚ÅAŒŸõ‚µ‚È‚¢
+    /* ç›¸å¯¾ãƒ‘ã‚¹æŒ‡å®šãƒ»çµ¶å¯¾ãƒ‘ã‚¹æŒ‡å®šã—ã¦ã„ã‚‹ã‚‚ã®ã¯ã€
+     * ç’°å¢ƒå¤‰æ•°PATHã‚’ãŸã©ã£ã¦ã¾ã§ã€æ¤œç´¢ã—ãªã„
      */
     if( NnString::findLastOf(nm,"/\\") >= 0 ){
         return -1;

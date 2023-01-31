@@ -14,12 +14,12 @@
 #  define INCL_DOSFILEMGR
 #  include <os2.h>
 #else
-#  include <direct.h>
+#include <direct.h>
 #endif
 
 #include "nndir.h"
 
-/* Default Special Folder İ’è‚Ì‚½‚ß */
+/* Default Special Folder è¨­å®šã®ãŸã‚ */
 #ifdef NYACUS 
 #    include <windows.h>
 #    include <shlobj.h>
@@ -58,7 +58,7 @@ static void stamp_conv( time_t time1 , NnTimeStamp &stamp_ )
     }
 }
 
-/** u...\v¨u..\..\v DOS,OS/2 ‚Ìˆ× */
+/** ã€Œ...\ã€â†’ã€Œ..\..\ã€ DOS,OS/2 ã®ç‚º */
 void NnDir::extractDots( const char *&sp , NnString &dst )
 {
     ++sp;
@@ -79,7 +79,7 @@ void NnDir::operator++()
 {
     status = NnDir::findnext();
 }
-/* ƒtƒ@ƒCƒ‹‚ª‚ ‚ê‚ÎAƒtƒ@ƒCƒ‹–¼•¶š—ñƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^‚ğ•Ô‚·B
+/* ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚Œã°ã€ãƒ•ã‚¡ã‚¤ãƒ«åæ–‡å­—åˆ—ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™ã€‚
  */
 NnObject *NnDir::operator * ()
 {
@@ -175,26 +175,26 @@ void NnDir::Core::stamp( NnTimeStamp &stamp_ )
     unsigned fdate = *(unsigned short*)&findbuf.fdateLastWrite;
     unsigned ftime = *(unsigned short*)&findbuf.ftimeLastWrite;
 
-    /*  */
-    stamp_.second = ( ftime & 0x1F) * 2 ;      /* •b:5bit(0..31) */
-    stamp_.minute = ( (ftime >> 5 ) & 0x3F );  /* •ª:6bit(0..63) */
-    stamp_.hour   =  ftime >> 11;              /* :5bit */
+    /* æ™‚åˆ» */
+    stamp_.second = ( ftime & 0x1F) * 2 ;      /* ç§’:5bit(0..31) */
+    stamp_.minute = ( (ftime >> 5 ) & 0x3F );  /* åˆ†:6bit(0..63) */
+    stamp_.hour   =  ftime >> 11;              /* æ™‚:5bit */
 
-    /* “ú•t */
-    stamp_.day    = (fdate & 0x1F);            /* “ú:5bit(0..31) */
-    stamp_.month = ( (fdate >> 5 ) & 0x0F );   /* Œ:4bit(0..16) */
-    stamp_.year   =  (fdate >> 9 ) + 1980;     /* ”N:7bit */
+    /* æ—¥ä»˜ */
+    stamp_.day    = (fdate & 0x1F);            /* æ—¥:5bit(0..31) */
+    stamp_.month = ( (fdate >> 5 ) & 0x0F );   /* æœˆ:4bit(0..16) */
+    stamp_.year   =  (fdate >> 9 ) + 1980;     /* å¹´:7bit */
 }
 
 #endif
 
-/* ‚¢‚í‚ä‚é _dos_findfirst
- *	p_path - ƒpƒX (ƒƒCƒ‹ƒhƒJ[ƒh•”ŠÜ‚Ş)
- *	attr   - ƒAƒgƒŠƒrƒ…[ƒg
+/* ã„ã‚ã‚†ã‚‹ _dos_findfirst
+ *	p_path - ãƒ‘ã‚¹ (ãƒ¯ã‚¤ãƒ«ãƒ‰ã‚«ãƒ¼ãƒ‰éƒ¨å«ã‚€)
+ *	attr   - ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆ
  * return
- *	0 ... ¬Œ÷
- *	1 ... ¸”s(ÅŒã‚Ìƒtƒ@ƒCƒ‹‚¾‚Á‚½“™)
- *	-1 .. ¸”s(LFN‚ªƒTƒ|[ƒg‚³‚ê‚Ä‚¢‚È‚¢)
+ *	0 ... æˆåŠŸ
+ *	1 ... å¤±æ•—(æœ€å¾Œã®ãƒ•ã‚¡ã‚¤ãƒ«ã ã£ãŸç­‰)
+ *	-1 .. å¤±æ•—(LFNãŒã‚µãƒãƒ¼ãƒˆã•ã‚Œã¦ã„ãªã„)
  */
 unsigned NnDir::findfirst(  const char *path , unsigned attr )
 {
@@ -240,11 +240,11 @@ void NnDir::findclose()
     }
 }
 
-/* ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ‚ğ“¾‚é.(LFN‘Î‰‚Ìê‡‚Ì‚İ)
- *	pwd - ƒJƒŒƒ“ƒgƒfƒBƒŒƒNƒgƒŠ
+/* ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å¾—ã‚‹.(LFNå¯¾å¿œã®å ´åˆã®ã¿)
+ *	pwd - ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
  * return
- *	0 ... ¬Œ÷
- *	1 ... ¸”s
+ *	0 ... æˆåŠŸ
+ *	1 ... å¤±æ•—
  */
 int NnDir::getcwd( NnString &pwd )
 {
@@ -261,10 +261,10 @@ int NnDir::getcwd( NnString &pwd )
     return 0;
 }
 
-/* ƒXƒ‰ƒbƒVƒ…‚ğƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚Ö•ÏŠ·‚·‚é
- * d•¡‚µ‚½ \ ‚â / ‚ğˆê‚Â‚É‚·‚é.
- * 	src - Œ³•¶š—ñ
- *	dst - Œ‹‰Ê•¶š—ñ‚Ì“ü‚ê•¨
+/* ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã‚’ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã¸å¤‰æ›ã™ã‚‹
+ * é‡è¤‡ã—ãŸ \ ã‚„ / ã‚’ä¸€ã¤ã«ã™ã‚‹.
+ * 	src - å…ƒæ–‡å­—åˆ—
+ *	dst - çµæœæ–‡å­—åˆ—ã®å…¥ã‚Œç‰©
  */
 void NnDir::f2b( const char *sp , NnString &dst )
 {
@@ -293,11 +293,11 @@ void NnDir::f2b( const char *sp , NnString &dst )
 }
 
 
-/* ƒpƒX–¼•ÏŠ·‚ğs‚¤B
- * EƒXƒ‰ƒbƒVƒ…‚ğƒoƒbƒNƒXƒ‰ƒbƒVƒ…‚Ö•ÏŠ·
- * Eƒ`ƒ‹ƒ_‚ğŠÂ‹«•Ï”HOME‚Ì“à—e‚Ö•ÏŠ·
- * 	src - Œ³•¶š—ñ
- *	dst - Œ‹‰Ê•¶š—ñ‚Ì“ü‚ê•¨
+/* ãƒ‘ã‚¹åå¤‰æ›ã‚’è¡Œã†ã€‚
+ * ãƒ»ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã‚’ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã¸å¤‰æ›
+ * ãƒ»ãƒãƒ«ãƒ€ã‚’ç’°å¢ƒå¤‰æ•°HOMEã®å†…å®¹ã¸å¤‰æ›
+ * 	src - å…ƒæ–‡å­—åˆ—
+ *	dst - çµæœæ–‡å­—åˆ—ã®å…¥ã‚Œç‰©
  */
 void NnDir::filter( const char *sp , NnString &dst_ )
 {
@@ -333,10 +333,10 @@ void NnDir::filter( const char *sp , NnString &dst_ )
 }
 
 /* chdir.
- *	argv - ƒfƒBƒŒƒNƒgƒŠ–¼
+ *	argv - ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå
  * return
- *	 0 - ¬Œ÷
- *	-1 - ¸”s
+ *	 0 - æˆåŠŸ
+ *	-1 - å¤±æ•—
  */
 int NnDir::chdir( const char *argv )
 {
@@ -365,32 +365,32 @@ int NnDir::chdir( const char *argv )
     return ::chdir( newdir.chars() );
 }
 
-/* ƒtƒ@ƒCƒ‹ƒNƒ[ƒY
- *  fd - ƒnƒ“ƒhƒ‹
+/* ãƒ•ã‚¡ã‚¤ãƒ«ã‚¯ãƒ­ãƒ¼ã‚º
+ *  fd - ãƒãƒ³ãƒ‰ãƒ«
  */
 void NnDir::close( int fd )
 {
     ::close(fd);
 }
-/* ƒtƒ@ƒCƒ‹o—Í
- * (“Á‚ÉLFN‘Î‰‚Æ‚¢‚¤‚í‚¯‚Å‚Í‚È‚¢‚ªAƒRƒ“ƒpƒCƒ‰ˆË‘¶ƒR[ƒh‚ğ
- *  ”ğ‚¯‚é‚½‚ßì¬)
- *      fd - ƒnƒ“ƒhƒ‹
- *      ptr - ƒoƒbƒtƒ@‚ÌƒAƒhƒŒƒX
- *      size - ƒoƒbƒtƒ@‚ÌƒTƒCƒY
+/* ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
+ * (ç‰¹ã«LFNå¯¾å¿œã¨ã„ã†ã‚ã‘ã§ã¯ãªã„ãŒã€ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ä¾å­˜ã‚³ãƒ¼ãƒ‰ã‚’
+ *  é¿ã‘ã‚‹ãŸã‚ä½œæˆ)
+ *      fd - ãƒãƒ³ãƒ‰ãƒ«
+ *      ptr - ãƒãƒƒãƒ•ã‚¡ã®ã‚¢ãƒ‰ãƒ¬ã‚¹
+ *      size - ãƒãƒƒãƒ•ã‚¡ã®ã‚µã‚¤ã‚º
  * return
- *      Ào—ÍƒTƒCƒY (-1 : ƒGƒ‰[)
+ *      å®Ÿå‡ºåŠ›ã‚µã‚¤ã‚º (-1 : ã‚¨ãƒ©ãƒ¼)
  */
 int NnDir::write( int fd , const void *ptr , size_t size )
 {
     return ::write(fd,ptr,size);
 }
 
-/* LFN ‘Î‰ OPEN
- *      fname - ƒtƒ@ƒCƒ‹–¼
- *      mode - "w","r","a" ‚Ì‚¢‚¸‚ê‚©
+/* LFN å¯¾å¿œ OPEN
+ *      fname - ãƒ•ã‚¡ã‚¤ãƒ«å
+ *      mode - "w","r","a" ã®ã„ãšã‚Œã‹
  * return
- *      ƒnƒ“ƒhƒ‹(ƒGƒ‰[:-1)
+ *      ãƒãƒ³ãƒ‰ãƒ«(ã‚¨ãƒ©ãƒ¼æ™‚:-1)
  */
 int NnDir::open( const char *fname , const char *mode )
 {
@@ -412,16 +412,16 @@ int NnDir::open( const char *fname , const char *mode )
     }
 }
 
-/* ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹–¼‚ğì‚é.  */
+/* ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«åã‚’ä½œã‚‹.  */
 const NnString &NnDir::tempfn()
 {
     static NnString result;
 
-    /* ƒtƒ@ƒCƒ‹–¼•”•ª(”ñƒfƒBƒŒƒNƒgƒŠ•”•ª)‚ğì‚é */
+    /* ãƒ•ã‚¡ã‚¤ãƒ«åéƒ¨åˆ†(éãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨åˆ†)ã‚’ä½œã‚‹ */
     char tempname[ FILENAME_MAX ];
     tmpnam( tempname );
     
-    /* ƒfƒBƒŒƒNƒgƒŠ•”•ª‚ğì¬ */
+    /* ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªéƒ¨åˆ†ã‚’ä½œæˆ */
     const char *tmpdir;
     if(   ((tmpdir=getEnv("TEMP",NULL)) != NULL )
        || ((tmpdir=getEnv("TMP",NULL))  != NULL ) ){
@@ -439,9 +439,9 @@ int NnDir::access( const char *path )
     NnDir dir(path); return *dir == NULL;
 }
 
-/* ƒJƒŒƒ“ƒgƒhƒ‰ƒCƒu‚ğ•ÏX‚·‚é
- *    driveletter - ƒhƒ‰ƒCƒu•¶š('A'..'Z')
- * return 0:¬Œ÷,!0:¸”s
+/* ã‚«ãƒ¬ãƒ³ãƒˆãƒ‰ãƒ©ã‚¤ãƒ–ã‚’å¤‰æ›´ã™ã‚‹
+ *    driveletter - ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­—('A'..'Z')
+ * return 0:æˆåŠŸ,!0:å¤±æ•—
  */
 int  NnDir::chdrive( int driveletter )
 {
@@ -453,8 +453,8 @@ int  NnDir::chdrive( int driveletter )
 #endif
 }
 
-/* ƒJƒŒƒ“ƒgƒhƒ‰ƒCƒu‚ğæ“¾‚·‚éB
- * return ƒhƒ‰ƒCƒu•¶š 'A'...'Z'
+/* ã‚«ãƒ¬ãƒ³ãƒˆãƒ‰ãƒ©ã‚¤ãƒ–ã‚’å–å¾—ã™ã‚‹ã€‚
+ * return ãƒ‰ãƒ©ã‚¤ãƒ–æ–‡å­— 'A'...'Z'
  */
 int NnDir::getcwdrive()
 {
@@ -473,8 +473,8 @@ int NnFileStat::compare( const NnSortable &another ) const
 NnFileStat::~NnFileStat(){}
 
 #ifdef NYACUS
-/* My Document ‚È‚Ç‚ğ ~desktop ‚È‚Ç‚Æ“o˜^‚·‚é
- * QlËhttp://www001.upp.so-net.ne.jp/yamashita/doc/shellfolder.htm
+/* My Document ãªã©ã‚’ ~desktop ãªã©ã¨ç™»éŒ²ã™ã‚‹
+ * å‚è€ƒâ‡’http://www001.upp.so-net.ne.jp/yamashita/doc/shellfolder.htm
  */
 void NnDir::set_default_special_folder()
 {
@@ -543,7 +543,7 @@ NnFileStat *NnFileStat::getstat(const NnString &name)
     }
     if( stat1.st_mode & S_IFDIR )
 	attr |= ATTR_DIRECTORY ;
-    if( (stat1.st_mode & S_IWUSR) == 0 )
+    if( (stat1.st_mode & S_IWRITE) == 0 )
 	attr |= ATTR_READONLY ;
     
     stamp_conv( stat1.st_mtime , stamp1 );

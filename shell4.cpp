@@ -23,7 +23,7 @@ static void glob( NnString &line )
     }
 }
 
-/* ‹tƒNƒH[ƒg‚Å“Ç‚İ‚±‚ß‚é•¶š—ñ—Ê‚ğ–ß‚· */
+/* é€†ã‚¯ã‚©ãƒ¼ãƒˆã§èª­ã¿ã“ã‚ã‚‹æ–‡å­—åˆ—é‡ã‚’æˆ»ã™ */
 static int getQuoteMax()
 {
     NnString *max=(NnString*)properties.get("backquote");
@@ -54,15 +54,15 @@ static void buffering_thread( void *b_ )
 
 #endif
 
-/* ƒRƒ}ƒ“ƒh‚Ì•W€o—Í‚Ì“à—e‚ğ•¶š—ñ‚Éæ‚è‚Ş. 
- *   cmdline - Às‚·‚éƒRƒ}ƒ“ƒh
- *   dst - •W€o—Í‚Ì“à—e
- *   max - ˆø—p‚ÌãŒÀ. 0 ‚Ì‚ÍãŒÀ–³‚µ
- *   shrink - “ñ‚ÂˆÈã‚Ì‹ó”’•¶š‚ğˆê‚Â‚É‚·‚é‚Í true ‚Æ‚·‚é
+/* ã‚³ãƒãƒ³ãƒ‰ã®æ¨™æº–å‡ºåŠ›ã®å†…å®¹ã‚’æ–‡å­—åˆ—ã«å–ã‚Šè¾¼ã‚€. 
+ *   cmdline - å®Ÿè¡Œã™ã‚‹ã‚³ãƒãƒ³ãƒ‰
+ *   dst - æ¨™æº–å‡ºåŠ›ã®å†…å®¹
+ *   max - å¼•ç”¨ã®ä¸Šé™. 0 ã®æ™‚ã¯ä¸Šé™ç„¡ã—
+ *   shrink - äºŒã¤ä»¥ä¸Šã®ç©ºç™½æ–‡å­—ã‚’ä¸€ã¤ã«ã™ã‚‹æ™‚ã¯ true ã¨ã™ã‚‹
  * return
- *   0  : ¬Œ÷
- *   -1 : ƒI[ƒo[ƒtƒ[(max ‚Ü‚Å‚Í dst ‚Éæ‚è‚ñ‚Å‚¢‚é)
- *   -2 : ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚ªì¬‚Å‚«‚È‚©‚Á‚½
+ *   0  : æˆåŠŸ
+ *   -1 : ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼(max ã¾ã§ã¯ dst ã«å–ã‚Šè¾¼ã‚“ã§ã„ã‚‹)
+ *   -2 : ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ãŒä½œæˆã§ããªã‹ã£ãŸ
  */
 int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
 {
@@ -73,7 +73,7 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
     if( mkpipeline( pipefd ) != 0 )
         return -1;
 
-    /* o—Í‚ğó‚¯~‚ß‚éƒXƒŒƒbƒh‚ğæs‚µ‚Ä‘–‚ç‚¹‚Ä‚¨‚­ */
+    /* å‡ºåŠ›ã‚’å—ã‘æ­¢ã‚ã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’å…ˆè¡Œã—ã¦èµ°ã‚‰ã›ã¦ãŠã */
     BufferingInfo buffer(pipefd[0],max);
 #ifdef __EMX__
     if( _beginthread( buffering_thread , NULL , 655350u , &buffer ) == -1 )
@@ -142,16 +142,16 @@ int eval_cmdline( const char *cmdline, NnString &dst, int max , bool shrink)
     return rc;
 }
 
-/* ‹tƒNƒH[ƒgˆ—
- *      sp  Œ³•¶š—ñ(`‚ÌŸ‚ğw‚µ‚Ä‚¢‚é‚±‚Æ)
- *      dst æ•¶š—ñ
- *      max ãŒÀ
- *      quote ˆø—p•„‚ÉˆÍ‚Ü‚ê‚Ä‚¢‚é‚È‚ç ”ñ0 ‚ÉƒZƒbƒg‚·‚éB
- *           (0 ‚ÌA& ‚â > ‚Æ‚¢‚Á‚½•¶š‚ğƒNƒH[ƒg‚·‚é)
+/* é€†ã‚¯ã‚©ãƒ¼ãƒˆå‡¦ç†
+ *      sp  å…ƒæ–‡å­—åˆ—(`ã®æ¬¡ã‚’æŒ‡ã—ã¦ã„ã‚‹ã“ã¨)
+ *      dst å…ˆæ–‡å­—åˆ—
+ *      max ä¸Šé™
+ *      quote å¼•ç”¨ç¬¦ã«å›²ã¾ã‚Œã¦ã„ã‚‹ãªã‚‰ é0 ã«ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
+ *           (0 ã®æ™‚ã€& ã‚„ > ã¨ã„ã£ãŸæ–‡å­—ã‚’ã‚¯ã‚©ãƒ¼ãƒˆã™ã‚‹)
  * return
- *      0  ¬Œ÷
- *      -1 ƒI[ƒo[ƒtƒ[
- *      -2 ƒeƒ“ƒ|ƒ‰ƒŠƒtƒ@ƒCƒ‹‚ªì¬‚Å‚«‚È‚¢B
+ *      0  æˆåŠŸ
+ *      -1 ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼
+ *      -2 ãƒ†ãƒ³ãƒãƒ©ãƒªãƒ•ã‚¡ã‚¤ãƒ«ãŒä½œæˆã§ããªã„ã€‚
  */
 static int doQuote( const char *&sp , NnString &dst , int max , int quote )
 {
@@ -159,7 +159,7 @@ static int doQuote( const char *&sp , NnString &dst , int max , int quote )
     NnString q;
     while( *sp != '\0' ){
         if( *sp =='`' && !escape ){
-            /* ˜A‘±‚·‚é `` ‚ÍAˆê‚Â‚Ì ` ‚Ö•ÏŠ·‚·‚éB */
+            /* é€£ç¶šã™ã‚‹ `` ã¯ã€ä¸€ã¤ã® ` ã¸å¤‰æ›ã™ã‚‹ã€‚ */
             if( *(sp+1) != '`' )
                 break;
 	    ++sp;
@@ -208,12 +208,12 @@ static int doQuote( const char *&sp , NnString &dst , int max , int quote )
 }
 
 
-/* ƒŠƒ_ƒCƒŒƒNƒgæ‚ğ“Ç‚İæ‚èAŒ‹‰Ê‚ğ FileWriter ƒIƒuƒWƒFƒNƒg‚Å•Ô‚·.
- * ƒI[ƒvƒ“‚Å‚«‚È‚¢ê‡‚ÍƒGƒ‰[ƒƒbƒZ[ƒW‚àŸè‚Éo—Í.
- *	sp Å‰‚Ì'>'‚Ì’¼Œã
- *         ÀsŒã‚ÍA
+/* ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆå…ˆã‚’èª­ã¿å–ã‚Šã€çµæœã‚’ FileWriter ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã§è¿”ã™.
+ * ã‚ªãƒ¼ãƒ—ãƒ³ã§ããªã„å ´åˆã¯ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚‚å‹æ‰‹ã«å‡ºåŠ›.
+ *	sp æœ€åˆã®'>'ã®ç›´å¾Œ
+ *         å®Ÿè¡Œå¾Œã¯ã€
  * return
- *      o—Íæ
+ *      å‡ºåŠ›å…ˆ
  */
 static FileWriter *readWriteRedirect( const char *&sp )
 {
@@ -242,12 +242,12 @@ static FileWriter *readWriteRedirect( const char *&sp )
     }
 }
 
-/* sp ‚ª“ÁêƒtƒHƒ‹ƒ_[‚ğ¦‚·•¶š—ñ‚©‚çn‚Ü‚Á‚Ä‚¢‚½‚ç^‚ğ•Ô‚·
- *	sp c æ“ªˆÊ’u
- *	quote c “ñdˆø—p•„“à‚È‚ç^‚É‚·‚é
- *	spc c ’¼‘O‚Ì•¶š‚ª‹ó”’‚È‚ç^‚É‚µ‚Ä‚¨‚­
+/* sp ãŒç‰¹æ®Šãƒ•ã‚©ãƒ«ãƒ€ãƒ¼ã‚’ç¤ºã™æ–‡å­—åˆ—ã‹ã‚‰å§‹ã¾ã£ã¦ã„ãŸã‚‰çœŸã‚’è¿”ã™
+ *	sp â€¦ å…ˆé ­ä½ç½®
+ *	quote â€¦ äºŒé‡å¼•ç”¨ç¬¦å†…ãªã‚‰çœŸã«ã™ã‚‹
+ *	spc â€¦ ç›´å‰ã®æ–‡å­—ãŒç©ºç™½ãªã‚‰çœŸã«ã—ã¦ãŠã
  * return
- *	doFolder ‚Å•ÏŠ·‚·‚×‚«•¶š—ñ‚Å‚ ‚ê‚ÎA‚»‚Ì’·‚³
+ *	doFolder ã§å¤‰æ›ã™ã¹ãæ–‡å­—åˆ—ã§ã‚ã‚Œã°ã€ãã®é•·ã•
  */
 int isFolder( const char *sp , int quote , int spc )
 {
@@ -272,10 +272,10 @@ int isFolder( const char *sp , int quote , int spc )
     }
     return 0;
 }
-/* sp ‚Ån‚Ü‚é“ÁêƒtƒHƒ‹ƒ_[–¼‚ğ–{—ˆ‚ÌƒtƒHƒ‹ƒ_[–¼‚Ö•ÏŠ·‚·‚é
- *	sp c æ“ªˆÊ’u
- *	len c ’·‚³
- *	dst c –{—ˆ‚ÌƒtƒHƒ‹ƒ_[–¼‚ğ“ü‚ê‚é‚Æ‚±‚ë
+/* sp ã§å§‹ã¾ã‚‹ç‰¹æ®Šãƒ•ã‚©ãƒ«ãƒ€ãƒ¼åã‚’æœ¬æ¥ã®ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼åã¸å¤‰æ›ã™ã‚‹
+ *	sp â€¦ å…ˆé ­ä½ç½®
+ *	len â€¦ é•·ã•
+ *	dst â€¦ æœ¬æ¥ã®ãƒ•ã‚©ãƒ«ãƒ€ãƒ¼åã‚’å…¥ã‚Œã‚‹ã¨ã“ã‚
  */	
 static void doFolder( const char *&sp , int len , NnString &dst )
 {
@@ -289,28 +289,28 @@ static void doFolder( const char *&sp , int len , NnString &dst )
     }
 }
 
-/* ŠÂ‹«•Ï”‚È‚Ç‚ğ“WŠJ‚·‚é(“à‘ ƒRƒ}ƒ“ƒhŒü‚¯)
- *	src - Œ³•¶š—ñ
- *	dst - Œ‹‰Ê‚ª“ü‚é
+/* ç’°å¢ƒå¤‰æ•°ãªã©ã‚’å±•é–‹ã™ã‚‹(å†…è”µã‚³ãƒãƒ³ãƒ‰å‘ã‘)
+ *	src - å…ƒæ–‡å­—åˆ—
+ *	dst - çµæœãŒå…¥ã‚‹
  * return
- *      0 - ¬Œ÷ , -1 - ¸”s
+ *      0 - æˆåŠŸ , -1 - å¤±æ•—
  *
- * ‚±‚±‚Åu^v•¶š‚Ìíœ‚às‚¤
+ * ã“ã“ã§ã€Œ^ã€æ–‡å­—ã®å‰Šé™¤ã‚‚è¡Œã†
  */
 int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 {
-    /* ƒpƒCƒv‚Ü‚í‚è‚Ìˆ—‚ğæ‚ÉÀs‚·‚é */
-    NnString firstcmd; /* Å‰‚ÌƒpƒCƒv•¶š‚Ü‚Å‚ÌƒRƒ}ƒ“ƒh */
-    NnString restcmd;  /* ‚»‚êˆÚs‚ÌƒRƒ}ƒ“ƒh */
+    /* ãƒ‘ã‚¤ãƒ—ã¾ã‚ã‚Šã®å‡¦ç†ã‚’å…ˆã«å®Ÿè¡Œã™ã‚‹ */
+    NnString firstcmd; /* æœ€åˆã®ãƒ‘ã‚¤ãƒ—æ–‡å­—ã¾ã§ã®ã‚³ãƒãƒ³ãƒ‰ */
+    NnString restcmd;  /* ãã‚Œç§»è¡Œã®ã‚³ãƒãƒ³ãƒ‰ */
     src.splitTo( firstcmd , restcmd , "|" , "\"`" );
     if( ! restcmd.empty() ){
-	if( restcmd.at(0) == '&' ){ /* •W€o—Í+ƒGƒ‰[o—Í */
+	if( restcmd.at(0) == '&' ){ /* æ¨™æº–å‡ºåŠ›+ã‚¨ãƒ©ãƒ¼å‡ºåŠ› */
 	    NnString pipecmds( restcmd.chars()+1 );
 
             PipeWriter *pw=new PipeWriter(pipecmds);
             if( pw == NULL || ! pw->ok() ){
-                /* PipeWriter “à‚ÅƒGƒ‰[‚ğo—Í‚µ‚Ä‚¢‚é‚Ì‚ÅA
-                 * ƒƒbƒZ[ƒW‚Ío‚³‚È‚­‚Ä‚æ‚¢B
+                /* PipeWriter å†…ã§ã‚¨ãƒ©ãƒ¼ã‚’å‡ºåŠ›ã—ã¦ã„ã‚‹ã®ã§ã€
+                 * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯å‡ºã•ãªãã¦ã‚ˆã„ã€‚
                  * perror( pipecmds.chars() );
                  */
                 delete pw;
@@ -318,13 +318,13 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    }
             conOut_ = pw ;
             conErr_ = new WriterClone(pw);
-	}else{ /* •W€o—Í‚Ì‚İ */
+	}else{ /* æ¨™æº–å‡ºåŠ›ã®ã¿ */
             NnString pipecmds( restcmd.chars() );
 
             PipeWriter *pw=new PipeWriter(pipecmds);
             if( pw == NULL || ! pw->ok() ){
-                /* PipeWriter “à‚ÅƒGƒ‰[‚ğo—Í‚µ‚Ä‚¢‚é‚Ì‚ÅA
-                 * ƒƒbƒZ[ƒW‚Ío‚³‚È‚­‚Ä‚æ‚¢B
+                /* PipeWriter å†…ã§ã‚¨ãƒ©ãƒ¼ã‚’å‡ºåŠ›ã—ã¦ã„ã‚‹ã®ã§ã€
+                 * ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã¯å‡ºã•ãªãã¦ã‚ˆã„ã€‚
                  * perror( pipecmds.chars() );
                  */
                 delete pw;
@@ -375,7 +375,7 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
 	    }
 	}else if( *sp == '1' && *(sp+1) == '>' && !escape && !quote ){
 	    if( ! restcmd.empty() ){
-		/* ‚·‚Å‚ÉƒŠƒ_ƒCƒŒƒNƒg‚µ‚Ä‚¢‚½‚çAƒGƒ‰[ */
+		/* ã™ã§ã«ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã—ã¦ã„ãŸã‚‰ã€ã‚¨ãƒ©ãƒ¼ */
 		conErr << "ambigous redirect.\n";
 		return -1;
 	    }
@@ -440,17 +440,17 @@ int NyadosShell::explode4internal( const NnString &src , NnString &dst )
     return 0;
 }
 
-/* ƒqƒAƒhƒLƒ…ƒƒ“ƒg‚ğs‚¤
- *    sp - u<<ENDv‚ÌÅ‰‚Ì < ‚ÌˆÊ’u‚ğ·‚·B
- *    dst - Œ‹‰Ê(u< ˆêƒtƒ@ƒCƒ‹–¼v“™)‚ª“ü‚é
- *    prefix - u<voru v
+/* ãƒ’ã‚¢ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆã‚’è¡Œã†
+ *    sp - ã€Œ<<ENDã€ã®æœ€åˆã® < ã®ä½ç½®ã‚’å·®ã™ã€‚
+ *    dst - çµæœ(ã€Œ< ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«åã€ç­‰)ãŒå…¥ã‚‹
+ *    prefix - ã€Œ<ã€orã€Œ ã€
  */
 void NyadosShell::doHereDocument( const char *&sp , NnString &dst , char prefix )
 {
     int quote_mode = 0 , quote = 0 ;
     sp += 2;
 
-    /* I’[ƒ}[ƒN‚ğ“Ç‚İæ‚é */
+    /* çµ‚ç«¯ãƒãƒ¼ã‚¯ã‚’èª­ã¿å–ã‚‹ */
     NnString endWord;
     while( *sp != '\0' && (!isspace(*sp & 255) || quote ) ){
 	if( *sp == '"' ){
@@ -461,7 +461,7 @@ void NyadosShell::doHereDocument( const char *&sp , NnString &dst , char prefix 
 	}
 	++sp;
     }
-    /* ƒhƒLƒ…ƒƒ“ƒg•”•ª‚ğˆêƒtƒ@ƒCƒ‹‚É‘‚«o‚· */
+    /* ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆéƒ¨åˆ†ã‚’ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™ */
     this->heredocfn=NnDir::tempfn();
     FILE *fp=fopen( heredocfn.chars() , "w" );
     if( fp != NULL ){
@@ -473,8 +473,8 @@ void NyadosShell::doHereDocument( const char *&sp , NnString &dst , char prefix 
 	this->nesting.append( prompt );
 
 	while( this->readline(line) >= 0 && !line.startsWith(endWord) ){
-	    /* <<"EOF" ‚Å‚Í‚È‚­A<<EOF Œ`®‚Ìê‡‚ÍA
-	     * %...% Œ`®‚Ì’PŒê‚ğ’uŠ·‚·‚é•K—v‚ ‚è
+	    /* <<"EOF" ã§ã¯ãªãã€<<EOF å½¢å¼ã®å ´åˆã¯ã€
+	     * %...% å½¢å¼ã®å˜èªã‚’ç½®æ›ã™ã‚‹å¿…è¦ã‚ã‚Š
 	     */
 	    if( ! quote_mode )
 		variable_filter( line );
@@ -491,22 +491,22 @@ void NyadosShell::doHereDocument( const char *&sp , NnString &dst , char prefix 
 }
 
 
-/* ŠO•”ƒRƒ}ƒ“ƒh—pƒvƒŠƒvƒƒZƒX.
- * E%1,%2 ‚ğ•ÏŠ·‚·‚é
- * EƒvƒƒOƒ‰ƒ€–¼‚Ì / ‚ğ ‚Ö•ÏŠ·‚·‚éB
- *      src - Œ³•¶š—ñ
- *      dst - ‰ÁH‚µ‚½Œ‹‰Ê•¶š—ñ‚Ì“ü‚êæ
- * return 0 - ¬Œ÷ , -1 ¸”s(ƒI[ƒo[ƒtƒ[‚È‚Ç)
+/* å¤–éƒ¨ã‚³ãƒãƒ³ãƒ‰ç”¨ãƒ—ãƒªãƒ—ãƒ­ã‚»ã‚¹.
+ * ãƒ»%1,%2 ã‚’å¤‰æ›ã™ã‚‹
+ * ãƒ»ãƒ—ãƒ­ã‚°ãƒ©ãƒ åã® / ã‚’ ï¿¥ã¸å¤‰æ›ã™ã‚‹ã€‚
+ *      src - å…ƒæ–‡å­—åˆ—
+ *      dst - åŠ å·¥ã—ãŸçµæœæ–‡å­—åˆ—ã®å…¥ã‚Œå…ˆ
+ * return 0 - æˆåŠŸ , -1 å¤±æ•—(ã‚ªãƒ¼ãƒãƒ¼ãƒ•ãƒ­ãƒ¼ãªã©)
  */
 int NyadosShell::explode4external( const NnString &src , NnString &dst )
 {
     DBG( printf("NyadosShell::explode4external('%s',...)\n",src.chars()) );
-    /* ƒvƒƒOƒ‰ƒ€–¼‚ğƒtƒBƒ‹ƒ^[‚É‚©‚¯‚éFƒ`ƒ‹ƒ_•ÏŠ·‚È‚Ç */
+    /* ãƒ—ãƒ­ã‚°ãƒ©ãƒ åã‚’ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã«ã‹ã‘ã‚‹ï¼šãƒãƒ«ãƒ€å¤‰æ›ãªã© */
     NnString progname,args;
     src.splitTo( progname,args );
     NnDir::filter( progname.chars() , dst );
 
-    /* ƒvƒƒOƒ‰ƒ€–¼‚É‹ó”’‚ªŠÜ‚Ü‚ê‚Ä‚¢‚½‚çA"" ‚ÅˆÍ‚İ’¼‚· */
+    /* ãƒ—ãƒ­ã‚°ãƒ©ãƒ åã«ç©ºç™½ãŒå«ã¾ã‚Œã¦ã„ãŸã‚‰ã€"" ã§å›²ã¿ç›´ã™ */
     if( dst.findOf(" ") >= 0 ){
         dst.dequote();
         dst.unshift('"');
@@ -522,7 +522,7 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
     bool escape=false;
     int len;
 
-    // ˆø”‚ÌƒRƒs[.
+    // å¼•æ•°ã®ã‚³ãƒ”ãƒ¼.
     int spc=1;
     for( const char *sp=args.chars() ; *sp != '\0' ; ++sp ){
         if( *sp == '"' )
@@ -544,10 +544,10 @@ int NyadosShell::explode4external( const NnString &src , NnString &dst )
                 break;
             }
 	}else if( *sp == '<' && *(sp+1) == '<' && !quote && !escape ){
-	    /* ƒqƒAƒhƒLƒ…ƒƒ“ƒg */
+	    /* ãƒ’ã‚¢ãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ */
 	    doHereDocument( sp , dst , '<' );
 	}else if( *sp == '<' && *(sp+1) == '=' && !quote && !escape ){
-	    /* ƒCƒ“ƒ‰ƒCƒ“ƒtƒ@ƒCƒ‹ƒeƒLƒXƒg */
+	    /* ã‚¤ãƒ³ãƒ©ã‚¤ãƒ³ãƒ•ã‚¡ã‚¤ãƒ«ãƒ†ã‚­ã‚¹ãƒˆ */
 	    doHereDocument( sp , dst , ' ' );
 	}else if( *sp == '|' && *(sp+1) == '&' && !escape ){
 	    dst << "2>&1 |";

@@ -8,7 +8,7 @@
 #undef  CTRL
 #define CTRL(x) ((x) & 0x1F)
 
-/* ‹@”\‚ğ–¼‘O‚©‚çˆø‚¯‚éƒf[ƒ^ƒx[ƒX */
+/* æ©Ÿèƒ½ã‚’åå‰ã‹ã‚‰å¼•ã‘ã‚‹ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ */
 NnHash  KeyFunction::function_dictionary;
 
 void KeyFunction::regist()
@@ -211,7 +211,7 @@ static struct {
   { "UP",                    0x148    /* <Up arrow> */ },
 };
 
-/* ƒL[‚Ì–¼‘O‚©‚çAƒL[ƒR[ƒh‚ğ“¾‚é */
+/* ã‚­ãƒ¼ã®åå‰ã‹ã‚‰ã€ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ã‚’å¾—ã‚‹ */
 int KeyFunction::code_sub( const char *keyname1 , int start , int end )
 {
     if( start >= end ){
@@ -264,14 +264,14 @@ int KeyFunctionEdit::bind(int keycode)
     return 0;
 }
 
-/** ƒL[‚ğƒoƒCƒ“ƒh‚·‚éB
- *	keyno	- ƒL[ƒR[ƒh(”’l)
- *	funcname - ‹@”\–¼(•¶š—ñ)
+/** ã‚­ãƒ¼ã‚’ãƒã‚¤ãƒ³ãƒ‰ã™ã‚‹ã€‚
+ *	keyno	- ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰(æ•°å€¤)
+ *	funcname - æ©Ÿèƒ½å(æ–‡å­—åˆ—)
  * return
- *	 0 : ¬Œ÷
- *	-1 : ‹@”\–¼‚ª•s“K
- *	-2 : ƒL[”Ô†‚ª•s“K(”ÍˆÍƒGƒ‰[)
- *      -3 : ƒL[‚ª•s“K(•¶š—ñ‚Æ‚µ‚Ä)
+ *	 0 : æˆåŠŸ
+ *	-1 : æ©Ÿèƒ½åãŒä¸é©
+ *	-2 : ã‚­ãƒ¼ç•ªå·ãŒä¸é©(ç¯„å›²ã‚¨ãƒ©ãƒ¼)
+ *      -3 : ã‚­ãƒ¼ãŒä¸é©(æ–‡å­—åˆ—ã¨ã—ã¦)
  */
 int GetLine::bindkey( const char *keyname , const char *funcname )
 {
@@ -397,7 +397,7 @@ void GetLine::bindinit()
     bindmap[ CTRL('\\') ] = &GetLine::ime_toggle;
     bindmap[ CTRL('R') ] = &GetLine::i_search;
 
-    /* bindmap[ KEY_ALT_RETURN ] = * ©ALT_RETURN ‚ÍDOS‘‹‚Å‚Íg‚¦‚È‚¢ */
+    /* bindmap[ KEY_ALT_RETURN ] = * â†ALT_RETURN ã¯DOSçª“ã§ã¯ä½¿ãˆãªã„ */
     bindmap[ CTRL('O') ]      =
     bindmap[ KEY_CTRL_TAB ]   = &GetLine::complete_next ;
     

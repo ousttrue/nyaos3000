@@ -3,10 +3,10 @@
 
 Reader *conIn_ = new StreamReader(stdin);
 
-/* ˆês“ü—Í
- *    line - “ü—Í•¶š—ñ(‰üs‚ÍŠÜ‚Ü‚È‚¢)
+/* ä¸€è¡Œå…¥åŠ›
+ *    line - å…¥åŠ›æ–‡å­—åˆ—(æ”¹è¡Œã¯å«ã¾ãªã„)
  * return
- *     •¶š” / -1:EOF
+ *     æ–‡å­—æ•° / -1:EOF
  */
 int Reader::readLine( NnString &line )
 {

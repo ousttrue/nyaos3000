@@ -3,42 +3,42 @@
 
 /** Nihongo Nano class library
  *
- *      NnObject (�I�u�W�F�N�g)
- *        �� NnSortable (��r�\�I�u�W�F�N�g)
- *        ��   �� NnString (������)
- *        �� NnVector  (�ϒ��z��)
- *        �� NnHash (������L�[�̃n�b�V��)
- *        �� NnBullet  (������L�[�ƒl�̃y�A)
- *        �� Writer    (�ďo��)
- *        ��   �� StreamWriter  (FILE*�o��)
- *        ��      �� FileWriter (�t�@�C���o��)
- *        ��      �� PipeWriter (�p�C�v�o��)
- *        �� Reader    (�ē���)
- *        ��   �� StreamReader  (FILE*����)
- *        ��      �� FileReader (�t�@�C������)
- *        ��      �� PipeReader (�p�C�v����)
- *        �� NnEnum    (�C�^���[�^�[)
- *             �� NnHash::Each (�n�b�V���̊e�v�f �� NnBullet )
- *             �� NnDir           (�f�B���N�g��     �� NnString )
+ *      NnObject (オブジェクト)
+ *        ┣ NnSortable (比較可能オブジェクト)
+ *        ┃   ┗ NnString (文字列)
+ *        ┣ NnVector  (可変長配列)
+ *        ┣ NnHash (文字列キーのハッシュ)
+ *        ┣ NnBullet  (文字列キーと値のペア)
+ *        ┣ Writer    (汎出力)
+ *        ┃   ┗ StreamWriter  (FILE*出力)
+ *        ┃      ┣ FileWriter (ファイル出力)
+ *        ┃      ┗ PipeWriter (パイプ出力)
+ *        ┣ Reader    (汎入力)
+ *        ┃   ┗ StreamReader  (FILE*入力)
+ *        ┃      ┣ FileReader (ファイル入力)
+ *        ┃      ┗ PipeReader (パイプ入力)
+ *        ┗ NnEnum    (イタレーター)
+ *             ┣ NnHash::Each (ハッシュの各要素 → NnBullet )
+ *             ┗ NnDir           (ディレクトリ     → NnString )
  *
- * �Edelete ���錠��/�`�����u���L���v�ƌĂԁB
+ * ・delete する権利/義務を「所有権」と呼ぶ。
  *
- * �E�R���N�V�����n�I�u�W�F�N�g�͔�i�[�I�u�W�F�N�g�ɑ΂���
- *   ���L����L����B���������āAauto/static�n�̃I�u�W�F�N�g��
- *   �R���N�V�����n�I�u�W�F�N�g�֓o�^�ł��Ȃ��B
+ * ・コレクション系オブジェクトは被格納オブジェクトに対する
+ *   所有権を有する。したがって、auto/static系のオブジェクトは
+ *   コレクション系オブジェクトへ登録できない。
  *
- * �ENnObject �́A�f�X�g���N�^�����z�����Ă���A
- *   �R���N�V�����n�I�u�W�F�N�g�Ɋi�[�����I�u�W�F�N�g��
- *   NnObject ����h�����Ȃ��Ă͂����Ȃ��B
+ * ・NnObject は、デストラクタを仮想化しており、
+ *   コレクション系オブジェクトに格納されるオブジェクトは
+ *   NnObject から派生しなくてはいけない。
  *
- * �E�����ɓn�����I�u�W�F�N�g�Ɋւ��āA���L�����ړ�����ꍇ��
- *   �|�C���^�n������B
- *      (��)
+ * ・引数に渡したオブジェクトに関して、所有権も移動する場合は
+ *   ポインタ渡しする。
+ *      (例)
  *          NnVector vec;
  *          vec.append( new NnString("hogehoge") );
  */
 
-/* �����̐擪�o�C�g�ł���΁A��0 ��Ԃ� */
+/* 漢字の先頭バイトであれば、非0 を返す */
 extern char dbcs_table[ 256 + 128 ];
 void init_dbcs_table();
 
@@ -52,18 +52,18 @@ void init_dbcs_table();
 #undef  isAlpha
 #define isAlpha(x) isalpha((unsigned)((x)&255))
     
-/* �ÓI�z��̗v�f��Ԃ� */
+/* 静的配列の要素を返す */
 #undef  numof
 #define numof(X) (sizeof(X)/sizeof((X)[0]))
 
-/* �ŏ��̕��̒l���O��\���萔�Ƃ��� */
+/* 最小の負の値を例外を表す定数とする */
 enum{ EXCEPTIONS = (int)(~0u-(~0u >> 1)) };
 
 class NnSortable;
 
-/** NnObject �N���X
- *   �f�X�g���N�^�����z���������N���X�B
- *   ������p������΁ANnVector , NnHash �ɓo�^���邱�Ƃ��ł���B
+/** NnObject クラス
+ *   デストラクタを仮想化した基底クラス。
+ *   これを継承すれば、NnVector , NnHash に登録することができる。
  */
 class NnObject {
 public:
@@ -73,37 +73,37 @@ public:
     virtual const char *repr() const { return "<NnObject>"; }
 };
 
-/** NnSortable �N���X
- *    ��r�\�ȃI�u�W�F�N�g�͂��ꂩ��p������ƁA
- *    NnVector �ŁAsort,uniq ���\�b�h���g�����Ƃ��ł���B
+/** NnSortable クラス
+ *    比較可能なオブジェクトはこれから継承すると、
+ *    NnVector で、sort,uniq メソッドを使うことができる。
  */
 class NnSortable : public NnObject {
 public:
-    /** x �Ɣ�r���āA�召�֌W�� ���E��E���̐��l�ŕԂ��B*/
+    /** x と比較して、大小関係を 負・零・正の数値で返す。*/
     virtual int compare( const NnSortable &x) const = 0;
     virtual NnSortable *sortable();
 };
 
-/** NnEnum �N���X
- *    �v�f������񋓂���C���^�[�t�F�C�X
+/** NnEnum クラス
+ *    要素を一つずつ列挙するインターフェイス
  */
 class NnEnum : public NnObject {
 public:
-    /** ���̗v�f�ֈړ����� */
+    /** 次の要素へ移動する */
     virtual void      operator ++ ()=0;
     void next(){ ++*this; }
 
-    /** ���ݍ����Ă���v�f�ւ̃|�C���^��Ԃ�.
-     *  �S�Ă̗v�f�𑖍����I���ƁANULL ��Ԃ�.
+    /** 現在差している要素へのポインタを返す.
+     *  全ての要素を走査し終わると、NULL を返す.
      */
     virtual NnObject *operator *  ()=0;
 
-    /** �܂��S�Ă̗v�f�𑖍����Ă��Ȃ���� �^��Ԃ� */
+    /** まだ全ての要素を走査していなければ 真を返す */
     virtual int more();
 };
 
-/* ���̃w�b�_�Ő錾����Ă��郁�\�b�h�̎��̂�
- * NnString.cpp �Œ�`����Ă���B
+/* このヘッダで宣言されているメソッドの実体は
+ * NnString.cpp で定義されている。
  */
 const char *getEnv( const char *var , const char *none=NULL );
 

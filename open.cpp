@@ -40,7 +40,7 @@ static void the_open( const char *fname , const char *action )
     setup_string << "OPEN=" << action;
     setup_string.upcase();
 
-    // emx/gcc ‚Ì _fullpath ‚Íbackslash‚ðslash‚É‚©‚¦‚Ä‚µ‚Ü‚¤.
+    // emx/gcc ã® _fullpath ã¯backslashã‚’slashã«ã‹ãˆã¦ã—ã¾ã†.
     _fullpath( path , fn.chars() , sizeof(path) );
     fn = path;
     fn.slash2yen();
@@ -87,7 +87,7 @@ int cmd_open( NyadosShell &shell , const NnString &argv )
 }
 
  
-/* ŽQlƒŠƒ“ƒNF
+/* å‚è€ƒãƒªãƒ³ã‚¯ï¼š
  * http://www.sm.rim.or.jp/~shishido/shelle.html
  * http://www.microsoft.com/japan/msdn/library/default.asp?url=/japan/msdn/library/ja/jpshell/html/_win32_ShellExecute.asp
 

@@ -4,10 +4,10 @@
 
 #include "nnhash.h"
 
-/* ”Ä—p‚Ég‚¤AƒvƒƒpƒeƒB[ƒNƒ‰ƒX */
+/* æ±ç”¨ã«ä½¿ã†ã€ãƒ—ãƒ­ãƒ‘ãƒ†ã‚£ãƒ¼ã‚¯ãƒ©ã‚¹ */
 NnHash properties;
 
-/* Pair - ƒnƒbƒVƒ…ƒe[ƒuƒ‹‚Ì—v‘f : ƒL[‚Æ’l‚ÌƒyƒA‚ÉŠÖ‚·‚éƒNƒ‰ƒX */
+/* Pair - ãƒãƒƒã‚·ãƒ¥ãƒ†ãƒ¼ãƒ–ãƒ«ã®è¦ç´  : ã‚­ãƒ¼ã¨å€¤ã®ãƒšã‚¢ã«é–¢ã™ã‚‹ã‚¯ãƒ©ã‚¹ */
 NnHash::Pair::~Pair()
 {
     delete value_;
@@ -26,10 +26,10 @@ inline NnHash::Pair *NnHash::Pair::connect( NnHash::Pair *ele )
     return rv;
 }
 
-/* HashTable ‚ğ‰Šú‰»‚·‚é
+/* HashTable ã‚’åˆæœŸåŒ–ã™ã‚‹
  * return
- *	0 ... ¬Œ÷
- *     -1 ... ¸”s
+ *	0 ... æˆåŠŸ
+ *     -1 ... å¤±æ•—
  */
 int NnHash::init()
 {
@@ -43,12 +43,12 @@ int NnHash::init()
 }
 
 /* NnHash::put
- *	key ‚Ì’l‚Æ‚µ‚Ä rep ‚ğ“o˜^‚·‚éB
- *	key == 0 ‚ÌAíœ‚·‚éB
+ *	key ã®å€¤ã¨ã—ã¦ rep ã‚’ç™»éŒ²ã™ã‚‹ã€‚
+ *	key == 0 ã®æ™‚ã€å‰Šé™¤ã™ã‚‹ã€‚
  * return
- *       0 : ¬Œ÷
- *      -1 : ‰Šú‰»ƒGƒ‰[(ƒe[ƒuƒ‹‘S‘Ì‚ÌŠm•Û‚Ì¸”s)
- *      -2 : ƒƒ‚ƒŠŠm•ÛƒGƒ‰[(—v‘f’PˆÊ)
+ *       0 : æˆåŠŸ
+ *      -1 : åˆæœŸåŒ–ã‚¨ãƒ©ãƒ¼(ãƒ†ãƒ¼ãƒ–ãƒ«å…¨ä½“ã®ç¢ºä¿ã®å¤±æ•—)
+ *      -2 : ãƒ¡ãƒ¢ãƒªç¢ºä¿ã‚¨ãƒ©ãƒ¼(è¦ç´ å˜ä½)
  */
 int NnHash::put_(const NnString &key, NnObject *obj)
 {
@@ -65,19 +65,19 @@ int NnHash::put_(const NnString &key, NnObject *obj)
     Pair **pre=&table[index];
     for(;;){
         if( cur->key().compare(key)==0 ){
-            /* ƒL[‚ª“¯‚¶I */
+            /* ã‚­ãƒ¼ãŒåŒã˜ï¼ */
             if( obj != NULL ){
-                /* ’l‚ª”ñNULL‚Ìê‡A—v‘f‚ğ’uŠ· */
+                /* å€¤ãŒéNULLã®å ´åˆã€è¦ç´ ã‚’ç½®æ› */
                 cur->replace( obj );
             }else{
-                /* ’l‚ª NULL ‚Ìê‡A—v‘f‚Ìíœ */
+                /* å€¤ãŒ NULL ã®å ´åˆã€è¦ç´ ã®å‰Šé™¤ */
                 *pre = cur->next();
                 delete cur;
             }
             return 0;
         }
         if( cur->next() == NULL ){
-            /* V‹KƒIƒuƒWƒFƒNƒg */
+            /* æ–°è¦ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ */
             if( obj != NULL ){
                 Pair *t=new Pair(key,obj);
                 if( t == NULL )
@@ -104,11 +104,11 @@ NnObject *NnHash::get(const char *key)
 }
 
 
-/* ˜A‘z”z—ñ‚ğŒŸõ‚·‚éB
- *	key ƒL[’l 
+/* é€£æƒ³é…åˆ—ã‚’æ¤œç´¢ã™ã‚‹ã€‚
+ *	key ã‚­ãƒ¼å€¤ 
  * return
- *	”ñNULL c ƒIƒuƒWƒFƒNƒg‚Ö‚Ìƒ|ƒCƒ“ƒ^
- *	NULL   c ƒ}ƒbƒ`‚·‚éƒIƒuƒWƒFƒNƒg‚Í–³‚©‚Á‚½B
+ *	éNULL â€¦ ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¸ã®ãƒã‚¤ãƒ³ã‚¿
+ *	NULL   â€¦ ãƒãƒƒãƒã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯ç„¡ã‹ã£ãŸã€‚
  */
 NnObject *NnHash::get(const NnString &key)
 {
@@ -122,7 +122,7 @@ NnObject *NnHash::get(const NnString &key)
     return NULL;
 }
 
-/* ƒfƒXƒgƒ‰ƒNƒ^
+/* ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
  */
 NnHash::~NnHash()
 {
@@ -140,8 +140,8 @@ NnHash::~NnHash()
     delete[]table;
 }
 
-/* ƒnƒbƒVƒ…—pƒJ[ƒ\ƒ‹‰Šú‰»
- *	hash - ƒnƒbƒVƒ…
+/* ãƒãƒƒã‚·ãƒ¥ç”¨ã‚«ãƒ¼ã‚½ãƒ«åˆæœŸåŒ–
+ *	hash - ãƒãƒƒã‚·ãƒ¥
  */
 NnHash::Each::Each(const NnHash &h) : hash(h)
 {
@@ -154,8 +154,8 @@ NnHash::Each::Each(const NnHash &h) : hash(h)
     }
 }
 
-/* “à•””z—ñ‚É‘Î‚·‚éƒCƒ“ƒfƒbƒNƒX‚ğˆê‚Âi‚ß‚é.
- * ‹ó‚ÌƒCƒ“ƒfƒbƒNƒX‚Í“Ç‚İ”ò‚Î‚·.
+/* å†…éƒ¨é…åˆ—ã«å¯¾ã™ã‚‹ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’ä¸€ã¤é€²ã‚ã‚‹.
+ * ç©ºã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¯èª­ã¿é£›ã°ã™.
  */
 void NnHash::Each::nextindex()
 {
@@ -169,7 +169,7 @@ void NnHash::Each::nextindex()
     index = 0;
 }
 
-/* ƒnƒbƒVƒ…—pƒJ[ƒ\ƒ‹‚ğˆê‚Âi‚ß‚é. */
+/* ãƒãƒƒã‚·ãƒ¥ç”¨ã‚«ãƒ¼ã‚½ãƒ«ã‚’ä¸€ã¤é€²ã‚ã‚‹. */
 void NnHash::Each::operator ++ ()
 {
     if( ptr == NULL )
@@ -195,11 +195,11 @@ NnHash::NnHash( const NnHash &o )
     }
 }
 
-/* ŠÂ‹«•Ï”‚Ì’l‚ğ“¾‚é(ŠÂ‹«•Ï”‚Ì‘å•¶š/¬•¶š‚ğ‹æ•Ê‚µ‚È‚¢)
- *    var - ŠÂ‹«•Ï”–¼
- *    none - ŠÂ‹«•Ï”‚ª‘¶İ‚µ‚È‚¢‚É•Ô‚·’l.
+/* ç’°å¢ƒå¤‰æ•°ã®å€¤ã‚’å¾—ã‚‹(ç’°å¢ƒå¤‰æ•°ã®å¤§æ–‡å­—/å°æ–‡å­—ã‚’åŒºåˆ¥ã—ãªã„)
+ *    var - ç’°å¢ƒå¤‰æ•°å
+ *    none - ç’°å¢ƒå¤‰æ•°ãŒå­˜åœ¨ã—ãªã„æ™‚ã«è¿”ã™å€¤.
  * return
- *     ŠÂ‹«•Ï”‚Ì’l
+ *     ç’°å¢ƒå¤‰æ•°ã®å€¤
  */
 const char *getEnv( const char *var , const char *none )
 {

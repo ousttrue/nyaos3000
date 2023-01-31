@@ -14,20 +14,20 @@
 extern NnHash properties;
 extern NnHash aliases;
 
-/* ƒGƒCƒŠƒAƒX‚È‚Ç‚Ìİ’èŒn‚ÌƒRƒ}ƒ“ƒh‚Ì‹¤’Êˆ—
- *      hash - ˆµ‚¤ƒnƒbƒVƒ…ƒe[ƒuƒ‹
- *      argv - İ’è“à—e
- *              ‹ó => ‘S‚Ä‚Ì‘Î‰‚ğ•W€o—Í‚Öo‚·
- *              ‚Pƒg[ƒNƒ“‚Ì‚İ => ‚»‚Ìƒg[ƒNƒ“‚É‘Î‰‚·‚é’l‚ğo—Í
- *              ‚Qƒg[ƒNƒ“ˆÈã => Å‰‚Ìƒg[ƒNƒ“‚ÉŒã‚Ì“à—e‚ğ‘ã“ü‚·‚é
- *      lower - 1 ‚Ì‚Æ‚«A’l‚É tolower ‚ÌƒtƒBƒ‹ƒ^‚ğ‚©‚¯‚éB
+/* ã‚¨ã‚¤ãƒªã‚¢ã‚¹ãªã©ã®è¨­å®šç³»ã®ã‚³ãƒãƒ³ãƒ‰ã®å…±é€šå‡¦ç†
+ *      hash - æ‰±ã†ãƒãƒƒã‚·ãƒ¥ãƒ†ãƒ¼ãƒ–ãƒ«
+ *      argv - è¨­å®šå†…å®¹
+ *              ç©º => å…¨ã¦ã®å¯¾å¿œã‚’æ¨™æº–å‡ºåŠ›ã¸å‡ºã™
+ *              ï¼‘ãƒˆãƒ¼ã‚¯ãƒ³ã®ã¿ => ãã®ãƒˆãƒ¼ã‚¯ãƒ³ã«å¯¾å¿œã™ã‚‹å€¤ã‚’å‡ºåŠ›
+ *              ï¼’ãƒˆãƒ¼ã‚¯ãƒ³ä»¥ä¸Š => æœ€åˆã®ãƒˆãƒ¼ã‚¯ãƒ³ã«å¾Œã®å†…å®¹ã‚’ä»£å…¥ã™ã‚‹
+ *      lower - 1 ã®ã¨ãã€å€¤ã« tolower ã®ãƒ•ã‚£ãƒ«ã‚¿ã‚’ã‹ã‘ã‚‹ã€‚
  * return
- *      í‚É 0
+ *      å¸¸ã« 0
  */
 int cmd_setter( NyadosShell &shell , NnHash &hash , const NnString &argv )
 {
     if( argv.empty() ){
-	// ˆê——•\¦.
+	// ä¸€è¦§è¡¨ç¤º.
 	for( NnHash::Each itr(hash) ; itr.more() ; ++itr )
             conOut 
                 << itr->key() << ' '
@@ -41,7 +41,7 @@ int cmd_setter( NyadosShell &shell , NnHash &hash , const NnString &argv )
         return 0;
     argv.splitTo( name , *value );
     int equalPos=name.findOf("=");
-    if( equalPos >= 0 ){ /* bash ŒİŠ·‚Ìİ’è® */
+    if( equalPos >= 0 ){ /* bash äº’æ›ã®è¨­å®šå¼ */
         NnString left ( name.chars() , equalPos );
         NnString right( name.chars()+equalPos+1 );
         name = left;
@@ -61,14 +61,14 @@ int cmd_setter( NyadosShell &shell , NnHash &hash , const NnString &argv )
 	    name.shift();
 	    hash.remove( name );
 	}else{
-	    // ‚PƒGƒCƒŠƒAƒX“à—e•\¦.
+	    // ï¼‘ã‚¨ã‚¤ãƒªã‚¢ã‚¹å†…å®¹è¡¨ç¤º.
 	    NnString *rvalue=(NnString *)hash.get( name );
 	    if( rvalue != NULL )
                 conOut << name << ' ' << *rvalue << '\n';
 	    delete value;
 	}
     }else{
-	// ƒGƒCƒŠƒAƒX’è‹`.
+	// ã‚¨ã‚¤ãƒªã‚¢ã‚¹å®šç¾©.
 	if( value->startsWith("\"") ){
 	    NnString tmp;
 
@@ -81,17 +81,17 @@ int cmd_setter( NyadosShell &shell , NnHash &hash , const NnString &argv )
 }
 
 
-/* ƒGƒCƒŠƒAƒX‚Ì’è‹`QÆ‚ğs‚¤.
- *	argv - ˆø”
+/* ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã®å®šç¾©å‚ç…§ã‚’è¡Œã†.
+ *	argv - å¼•æ•°
  * return
- *	í‚É 0
+ *	å¸¸ã« 0
  */
 int cmd_alias( NyadosShell &shell , const NnString &argv )
 {
     return cmd_setter( shell , aliases , argv );
 }
 
-/* •Ê–¼‚ğíœ‚·‚é */
+/* åˆ¥åã‚’å‰Šé™¤ã™ã‚‹ */
 int cmd_unalias( NyadosShell & , const NnString &argv )
 {
     aliases.remove( argv );

@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include <io.h>
 #include <sys/types.h>
-#include <unistd.h>
+// #include <unistd.h>
+#include <process.h>
 #include "nnhash.h"
 #include "getline.h"
 #include "nua.h"
@@ -60,13 +61,13 @@ static BOOL WINAPI handle_ctrl_c(DWORD ctrlChar)
 }
 #endif
 
-/* Lua ‚ğ(•K—v‚Å‚ ‚ê‚Î)‰Šú‰»‚·‚é‚Æ“¯‚ÉA
- * NYAOS ƒe[ƒuƒ‹ã‚ÌƒIƒuƒWƒFƒNƒg‚ğƒXƒ^ƒbƒN‚ÉÏ‚Ş
- *    field - nyaos ã‚ÌƒtƒB[ƒ‹ƒh–¼BNULL ‚Ì‚Í nyaos ©‘Ì‚ğÏ‚Ş
- *    L     - luaState ƒIƒuƒWƒFƒNƒgBNULL ‚Ì‚ÍA“–ŠÖ”‚Åæ“¾‚·‚éB
+/* Lua ã‚’(å¿…è¦ã§ã‚ã‚Œã°)åˆæœŸåŒ–ã™ã‚‹ã¨åŒæ™‚ã«ã€
+ * NYAOS ãƒ†ãƒ¼ãƒ–ãƒ«ä¸Šã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ã‚¹ã‚¿ãƒƒã‚¯ã«ç©ã‚€
+ *    field - nyaos ä¸Šã®ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰åã€‚NULL ã®æ™‚ã¯ nyaos è‡ªä½“ã‚’ç©ã‚€
+ *    L     - luaState ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã€‚NULL ã®æ™‚ã¯ã€å½“é–¢æ•°ã§å–å¾—ã™ã‚‹ã€‚
  * return
- *    not NULL - luaState ƒIƒuƒWƒFƒNƒg
- *    NULL     - ‰Šú‰»¸”s or nyaos ‚ªƒe[ƒuƒ‹‚Å‚È‚©‚Á‚½
+ *    not NULL - luaState ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+ *    NULL     - åˆæœŸåŒ–å¤±æ•— or nyaos ãŒãƒ†ãƒ¼ãƒ–ãƒ«ã§ãªã‹ã£ãŸ
  */
 NyaosLua::NyaosLua( const char *field ) : NnLua()
 {
@@ -185,9 +186,9 @@ int nua_iter_factory(lua_State *L)
     return 2;
 }
 
-/* #‰‰Zq‚ÉŒÀ‚Á‚Ä‚ÍA‰½ŒÌ‚©AƒXƒ^ƒbƒN‚É
- *   [ƒ†[ƒUƒIƒWƒFƒNƒg] [NIL]
- * ‚Æ“ü‚Á‚Ä‚­‚é‚Ì‚ÅAƒXƒ^ƒbƒNˆÊ’u‚É’ˆÓ‚ª•K—v
+/* #æ¼”ç®—å­ã«é™ã£ã¦ã¯ã€ä½•æ•…ã‹ã€ã‚¹ã‚¿ãƒƒã‚¯ã«
+ *   [ãƒ¦ãƒ¼ã‚¶ã‚ªã‚¸ã‚§ã‚¯ãƒˆ] [NIL]
+ * ã¨å…¥ã£ã¦ãã‚‹ã®ã§ã€ã‚¹ã‚¿ãƒƒã‚¯ä½ç½®ã«æ³¨æ„ãŒå¿…è¦
  * */
 int nua_vector_len(lua_State *L)
 {
@@ -447,12 +448,12 @@ int nua_default_complete(lua_State *L)
         lua_pushinteger( L , ++count );
 
         lua_newtable( L );
-        /* ƒtƒ‹ƒpƒX */
+        /* ãƒ•ãƒ«ãƒ‘ã‚¹ */
         lua_pushinteger( L , 1 );
         lua_pushstring( L, pair->first()->repr() );
         lua_settable( L , -3 ) ;
 
-        /* ƒtƒ@ƒCƒ‹–¼•”•ª‚Ì‚İ */
+        /* ãƒ•ã‚¡ã‚¤ãƒ«åéƒ¨åˆ†ã®ã¿ */
         lua_pushinteger( L , 2 );
         lua_pushstring( L, pair->second_or_first()->repr() );
         lua_settable( L , -3 ) ;
@@ -474,10 +475,10 @@ int nua_putenv(lua_State *L )
 
 int NyaosLua::initialized=0;
 
-/* NYAOS Œü‚¯ Lua ŠÂ‹«‰Šú‰»
+/* NYAOS å‘ã‘ Lua ç’°å¢ƒåˆæœŸåŒ–
  * return
- *    0  : ¬Œ÷ 
- *    !0 : ¸”s
+ *    0  : æˆåŠŸ 
+ *    !0 : å¤±æ•—
  */
 int NyaosLua::init()
 {
@@ -634,7 +635,7 @@ int NyaosLua::init()
 
 void redirect_emu_to_real(int &back_in, int &back_out,int &back_err)
 {
-    /* •W€“ü—Í‚ÌƒŠƒ_ƒCƒŒƒNƒg‚É‘Î‰ */
+    /* æ¨™æº–å…¥åŠ›ã®ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã«å¯¾å¿œ */
     int cur_in=0;
     StreamReader *sr=dynamic_cast<StreamReader*>( conIn_ );
     if( sr != NULL ){
@@ -647,7 +648,7 @@ void redirect_emu_to_real(int &back_in, int &back_out,int &back_err)
         back_in = ::dup(0);
         ::dup2( cur_in , 0 );
     }
-    /* •W€o—Í‚ÌƒŠƒ_ƒCƒŒƒNƒgEƒpƒCƒvo—Í‚É‘Î‰ */
+    /* æ¨™æº–å‡ºåŠ›ã®ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆãƒ»ãƒ‘ã‚¤ãƒ—å‡ºåŠ›ã«å¯¾å¿œ */
     int cur_out=+1;
     StreamWriter *sw=dynamic_cast<StreamWriter*>( conOut_  );
     if( sw != NULL ){
@@ -666,7 +667,7 @@ void redirect_emu_to_real(int &back_in, int &back_out,int &back_err)
         back_out = ::dup(1);
         ::dup2( cur_out , 1 );
     }
-    /* •W€ƒGƒ‰[o—Í‚ÌƒŠƒ_ƒCƒŒƒNƒgEƒpƒCƒvo—Í‚É‘Î‰ */
+    /* æ¨™æº–ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã®ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆãƒ»ãƒ‘ã‚¤ãƒ—å‡ºåŠ›ã«å¯¾å¿œ */
     int cur_err=+2;
     sw=dynamic_cast<StreamWriter*>( &conErr );
     if( sw != NULL ){
@@ -689,17 +690,17 @@ void redirect_emu_to_real(int &back_in, int &back_out,int &back_err)
 
 void redirect_rewind(int back_in, int back_out,int back_err)
 {
-    /* •W€ƒGƒ‰[o—Í‚ğŒ³‚É–ß‚· */
+    /* æ¨™æº–ã‚¨ãƒ©ãƒ¼å‡ºåŠ›ã‚’å…ƒã«æˆ»ã™ */
     if( back_err >= 0 ){
         ::dup2( back_err , 2 );
         ::close( back_err );
     }
-    /* •W€o—Í‚ğŒ³‚É–ß‚· */
+    /* æ¨™æº–å‡ºåŠ›ã‚’å…ƒã«æˆ»ã™ */
     if( back_out >= 0 ){
         ::dup2( back_out , 1 );
         ::close( back_out );
     }
-    /* •W€“ü—Í‚ğŒ³‚É–ß‚· */
+    /* æ¨™æº–å…¥åŠ›ã‚’å…ƒã«æˆ»ã™ */
     if( back_in >= 0 ){
         ::dup2( back_in , 0 );
         ::close( back_in );
@@ -730,7 +731,7 @@ int cmd_lua_e( NyadosShell &shell , const NnString &argv )
     SetConsoleCtrlHandler( handle_ctrl_c , TRUE );
 #endif
 
-    /* Lua ƒCƒ“ƒ^ƒvƒŠƒ^ƒR[ƒ‹ */
+    /* Lua ã‚¤ãƒ³ã‚¿ãƒ—ãƒªã‚¿ã‚³ãƒ¼ãƒ« */
     if( luaL_loadstring(L,arg1.chars() ) || lua_pcall( L , 0 , 0 , 0 ) ){
         const char *msg = lua_tostring( L , -1 );
         conErr << msg << '\n';

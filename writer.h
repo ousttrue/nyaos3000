@@ -22,9 +22,9 @@ extern Writer *conOut_,*conErr_;
 #define conOut (*conOut_)
 #define conErr (*conErr_)
 
-/* <stdio.h> ‚Ì FILE* ‚ğ’Ê‚¶‚Äo—Í‚·‚é WriterŒnƒNƒ‰ƒX.
- * ƒtƒ@ƒCƒ‹‚ÌƒI[ƒvƒ“ƒNƒ[ƒY‚È‚Ç‚Í‚µ‚È‚¢B
- * ‚Ù‚Æ‚ñ‚ÇAstdout,stderrê—p
+/* <stdio.h> ã® FILE* ã‚’é€šã˜ã¦å‡ºåŠ›ã™ã‚‹ Writerç³»ã‚¯ãƒ©ã‚¹.
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚ªãƒ¼ãƒ—ãƒ³ã‚¯ãƒ­ãƒ¼ã‚ºãªã©ã¯ã—ãªã„ã€‚
+ * ã»ã¨ã‚“ã©ã€stdout,stderrå°‚ç”¨
  */
 class StreamWriter : public Writer {
     FILE *fp_;
@@ -43,8 +43,8 @@ public:
     NnObject *clone() const { return new StreamWriter(fp_); }
 };
 
-/* ’á…€I/OƒCƒ“ƒ^[ƒtƒFƒCƒX‚ğg‚Á‚ÄA‰æ–Êo—Í‚ğ‚·‚éB
- * - ƒtƒ@ƒCƒ‹ƒfƒBƒXƒNƒŠƒvƒ^‚Í©“®ƒNƒ[ƒY‚µ‚È‚¢
+/* ä½æ°´æº–I/Oã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã‚’ä½¿ã£ã¦ã€ç”»é¢å‡ºåŠ›ã‚’ã™ã‚‹ã€‚
+ * - ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‡ã‚£ã‚¹ã‚¯ãƒªãƒ—ã‚¿ã¯è‡ªå‹•ã‚¯ãƒ­ãƒ¼ã‚ºã—ãªã„
  */
 class RawWriter : public Writer {
     int fd_;
@@ -82,8 +82,8 @@ public:
 
 #ifdef NYACUS
 
-/* ƒGƒXƒP[ƒvƒV[ƒPƒ“ƒX‚ğ‰ğß‚µ‚ÄA‰æ–Ê‚ÌƒAƒgƒŠƒrƒ…[ƒg‚Ì
- * ƒRƒ“ƒgƒ[ƒ‹‚Ü‚Ås‚¤o—ÍƒNƒ‰ƒX.
+/* ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’è§£é‡ˆã—ã¦ã€ç”»é¢ã®ã‚¢ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ãƒˆã®
+ * ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã¾ã§è¡Œã†å‡ºåŠ›ã‚¯ãƒ©ã‚¹.
  */
 class AnsiConsoleWriter : public RawWriter {
     static int default_color;
@@ -111,7 +111,7 @@ public:
 
 #endif
 
-/* Writer ‚Ìƒ|ƒCƒ“ƒ^•Ï”‚É‘Î‚µ‚ÄƒŠƒ_ƒCƒŒƒNƒg‚·‚é Writer ƒNƒ‰ƒX. */
+/* Writer ã®ãƒã‚¤ãƒ³ã‚¿å¤‰æ•°ã«å¯¾ã—ã¦ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã™ã‚‹ Writer ã‚¯ãƒ©ã‚¹. */
 class WriterClone : public Writer {
     Writer *rep;
 public:
@@ -123,7 +123,7 @@ public:
     int isatty() const { return rep->isatty(); }
 };
 
-/* o—Í“à—e‚ğ‘S‚ÄÌ‚Ä‚Ä‚µ‚Ü‚¤ Writer */
+/* å‡ºåŠ›å†…å®¹ã‚’å…¨ã¦æ¨ã¦ã¦ã—ã¾ã† Writer */
 class NullWriter : public Writer {
 public:
     NullWriter(){}
@@ -133,7 +133,7 @@ public:
     int ok() const { return 1; }
 };
 
-/* •W€o—ÍE“ü—Í‚ğƒŠƒ_ƒCƒŒƒNƒg‚µ‚½‚èAŒ³‚É–ß‚µ‚½‚è‚·‚éƒNƒ‰ƒX */
+/* æ¨™æº–å‡ºåŠ›ãƒ»å…¥åŠ›ã‚’ãƒªãƒ€ã‚¤ãƒ¬ã‚¯ãƒˆã—ãŸã‚Šã€å…ƒã«æˆ»ã—ãŸã‚Šã™ã‚‹ã‚¯ãƒ©ã‚¹ */
 class Redirect {
     int original_fd;
     int fd_;
